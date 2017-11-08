@@ -20,7 +20,7 @@ export interface Configuration {
 
 const defaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://localhost',
-  mongodbUrl: 'localhost',
+  mongodbUrl: 'mongodb://localhost:27017/poet',
   ipfsUrl: 'http://localhost:5001',
   insightUrl: 'https://test-insight.bitpay.com/api',
 
