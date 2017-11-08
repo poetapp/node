@@ -18,7 +18,7 @@ export interface Configuration {
   readonly bitcoinAddressPrivateKey?: string
 }
 
-const defaultConfiguration: Partial<Configuration> = {
+const defaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://localhost',
   mongodbUrl: 'localhost',
   ipfsUrl: 'http://localhost:5001',
