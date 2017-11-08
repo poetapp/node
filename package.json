@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "start": "node dist",
     "build": "tsc",
     "lint": "tslint -p .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "concurrently --kill-others \"tsc -w\" \"nodemon dist\""
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,8 @@
     "@types/koa": "^2.0.39",
     "@types/koa-router": "^7.0.23",
     "@types/node-fetch": "^1.6.7",
+    "concurrently": "^3.5.0",
+    "nodemon": "^1.12.1",
     "tslint": "^5.8.0",
     "typescript": "^2.6.1"
   }
