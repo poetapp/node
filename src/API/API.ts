@@ -3,6 +3,10 @@ import * as KoaBody from 'koa-body'
 import * as KoaRouter from 'koa-router'
 import { MongoClient } from 'mongodb'
 
+import { isClaim, isValidSignature } from '../Helpers/ClaimHelper'
+import { Configuration } from './Configuration'
+import { IllegalArgumentException } from './Exceptions'
+import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
 import { WorkController } from './WorkController'
 
 export class API {
@@ -17,6 +21,7 @@ export class API {
     this.koaRouter.get('/works/:id', this.getWork)
     this.koaRouter.post('/works', this.postWork)
 
+    this.koa.use(HttpExceptionsMiddleware)
     this.koa.use(KoaBody({ textLimit: 1000000 }))
     this.koa.use(this.koaRouter.allowedMethods())
     this.koa.use(this.koaRouter.routes())
@@ -41,11 +46,14 @@ export class API {
   }
 
   private postWork = (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.workController.create(context.request.body)
-  }
-}
+    const work = context.request.body
 
-export interface Configuration {
-  readonly port: number
-  readonly dbUrl: string
+    if (!isClaim(work))
+      throw new IllegalArgumentException('Request Body must be a Claim.')
+
+    if (!isValidSignature(work))
+      throw new IllegalArgumentException('Claim\'s signature is incorrect.')
+
+    this.workController.create(work)
+  }
 }
