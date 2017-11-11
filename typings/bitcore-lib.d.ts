@@ -8,54 +8,60 @@ declare namespace bitcoreLib {
   export const util: Util
   export const Script: Script
   export const PrivateKey: PrivateKey
-  // export const crypto: Crypto
+
   export namespace crypto {
-    export const BN: BN
-    export const ECDSA: ECDSAInterface
-    export const Hash: HashInterface
+    class BN { }
+    namespace ECDSA {
+      function sign(message: Buffer, key: PrivateKey): Signature
+    }
+    export namespace Hash {
+      function sha256(buffer: Buffer): Uint8Array
+    }
     export const Random: RandomInterface
     export const Point: PointInterface
-    export const Signature: SignatureInterface
+
+    class Signature {
+      SIGHASH_ALL: number
+      toString(): string
+      fromDER(sig: Buffer): this
+    }
   }
 
   interface Transaction {
-    new (serialized?: any): this
-    (serialized?: any): this
-
     inputs: Input[]
     outputs: Output[]
     readonly id: string
     readonly hash: string
     nid: string
 
+    new (serialized?: any): this
+    (serialized?: any): this
+
     from(utxos: UTXO[]): Transaction
-    to(address: Address, amount: number): Transaction
-    to(address: string, amount: number): Transaction
-    change(address: Address): Transaction
-    change(address: string): Transaction
-    sign(privateKey: PrivateKey): Transaction
-    sign(privateKey: string): Transaction
-    applySignature(sig: Signature): Transaction
+    to(address: Address | string, amount: number): Transaction
+    change(address: Address | string): Transaction
+    sign(privateKey: PrivateKey | string): Transaction
+    applySignature(sig: crypto.Signature): Transaction
     addData(data: Buffer): this
   }
 
   interface Block {
-    new(data: Buffer | object): Block
-    (data: Buffer | object): Block
-
     hash: string
     transactions: any[]
     header: {
       time: number
       prevHash: string
     }
+
+    new(data: Buffer | object): Block
+    (data: Buffer | object): Block
   }
 
   interface PrivateKey {
+    publicKey: PublicKey
+
     new(key: string): this
     (source: string): this
-
-    publicKey: PublicKey
   }
 
   interface PublicKey {
@@ -80,18 +86,18 @@ declare namespace bitcoreLib {
   }
 
   interface UnspentOutput {
+    readonly address: Address
+    readonly txId: string
+    readonly outputIndex: number
+    readonly script: Script
+    readonly satoshis: number
+
     (data: object): this
     new (data: object): this
 
     inspect(): string
     fromObject(o: object): this
     toObject(): this
-
-    readonly address: Address
-    readonly txId: string
-    readonly outputIndex: number
-    readonly script: Script
-    readonly satoshis: number
   }
 
   export namespace Networks {
@@ -113,90 +119,17 @@ declare namespace bitcoreLib {
 
 }
 
-type BN = any;
-
-//interface bitcoreLib {
-//  version: string
-//  crypto: Crypto
-//  encoding: EncodingInterface
-//  util: UtilsInterface
-//
-//  Address: IAddress
-//  Block: Block
-//  MerkleBlock: IMerkleBlock
-//  BlockHeader: IBlockHeader
-//  HDPrivateKey: IHDPrivateKey
-//  HDPublicKey: IHDPublicKey
-//  Opcode: IOpcode
-//  PublicKey: IPublicKey
-//  Script: IScript
-//  URI: IURI
-//  Unit: IUnit
-//}
-
-//interface IAddress {
-//  (source: string, network: Network): Address
-//  (source: PublicKey, network: Network): Address
-//
-//  isValid(something: any): boolean
-//}
 interface Address {
 
 }
-interface IMerkleBlock {}
-interface IBlockHeader {}
-interface IHDPrivateKey {}
-interface IHDPublicKey {}
-interface IOpcode {}
-
-interface Script {}
-//interface ITransaction {
-//  UTXO: IUTOX
-//  Sighash: ISighash
-//}
-//interface ISighash {
-//  sighashPreimage(tx: Transaction, sighash: number, index: number, script: Script): Buffer
-//}
 
 interface Input {
 
 }
 
-interface IUTOX {
-  (source: any): UTXO
-}
 interface UTXO {
-}
-interface IURI {}
-interface IUnit {}
-
-/**
- * Crypto
- */
-
-interface Crypto {
-  BN: BN
-  ECDSA: ECDSAInterface
-  Hash: HashInterface
-  Random: RandomInterface
-  Point: PointInterface
-  Signature: SignatureInterface
-}
-
-interface ECDSAInterface {
-}
-interface HashInterface {
-  sha256(buffer: Buffer): Uint8Array
 }
 interface RandomInterface {
 }
 interface PointInterface {
-}
-interface SignatureInterface {
-  SIGHASH_ALL: number
-  fromDER(sig: Buffer): Signature
-}
-interface Signature {}
-
-interface EncodingInterface {
 }
