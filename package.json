@@ -13,12 +13,16 @@
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.5.1",
+    "bitcore-lib": "^0.15.0",
     "form-data": "^2.3.1",
+    "inversify": "^4.5.1",
     "koa": "^2.3.0",
     "koa-body": "^2.5.0",
     "koa-router": "^7.2.1",
     "mongodb": "^2.2.33",
     "node-fetch": "^1.7.3",
+    "protobufjs": "^6.8.0",
+    "reflect-metadata": "^0.1.10",
     "string-to-stream": "^1.1.0"
   },
   "devDependencies": {
@@ -28,6 +32,7 @@
     "@types/koa-router": "^7.0.23",
     "@types/mongodb": "^2.2.15",
     "@types/node-fetch": "^1.6.7",
+    "alsatian": "^2.0.0",
     "concurrently": "^3.5.0",
     "nodemon": "^1.12.1",
     "tslint": "^5.8.0",
