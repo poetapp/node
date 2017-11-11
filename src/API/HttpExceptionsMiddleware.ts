@@ -1,6 +1,6 @@
 import * as Koa from 'koa'
 
-import { IllegalArgumentException } from '../Exceptions/index'
+import { IllegalArgumentException } from './Exceptions'
 
 export const HttpExceptionsMiddleware: Koa.Middleware = async (context: any, next: () => Promise<any>) => {
   try {
