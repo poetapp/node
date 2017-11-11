@@ -1,4 +1,4 @@
-import { Root, Type, INamespace} from 'protobufjs'
+import { Root, Type, INamespace } from 'protobufjs'
 
 import * as PoetProto from './PoetProto.json'
 
