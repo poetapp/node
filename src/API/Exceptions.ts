@@ -1,12 +1,4 @@
-export class Exception {
-  readonly message: string
-
-  constructor(message: string) {
-    this.message = message
-  }
-}
-
-export class IllegalArgumentException extends Exception {
+export class IllegalArgumentException extends Error {
   constructor(message: string) {
     super(message)
   }
