@@ -1,0 +1,20 @@
+package Poet;
+syntax = "proto3";
+
+message Claim {
+      optional bytes id = 1;
+      optional bytes publicKey = 2;
+      optional bytes signature = 3;
+      optional string type = 4;
+      repeated Attribute attributes = 5;
+}
+
+message Block {
+      optional bytes id = 1;
+      repeated Claim claims = 2;
+}
+
+message Attribute {
+      optional string key = 1;
+      optional string value = 2;
+}
