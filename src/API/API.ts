@@ -3,7 +3,8 @@ import * as KoaBody from 'koa-body'
 import * as KoaRouter from 'koa-router'
 import { MongoClient } from 'mongodb'
 
-import { isClaim, isValidSignature } from '../Helpers/ClaimHelper'
+import { isClaim, isValidSignature } from '../Helpers/Claim'
+import { ClaimType } from '../Interfaces'
 import { Configuration } from './Configuration'
 import { IllegalArgumentException } from './Exceptions'
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
@@ -53,6 +54,9 @@ export class API {
 
     if (!isValidSignature(work))
       throw new IllegalArgumentException('Claim\'s signature is incorrect.')
+
+    if (work.type !== ClaimType.Work)
+      throw new IllegalArgumentException('Claim\'s type must be WORK.')
 
     this.workController.create(work)
   }
