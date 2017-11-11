@@ -4,9 +4,11 @@
   "description": "",
   "scripts": {
     "start": "node dist",
-    "build": "tsc",
+    "build": "tsc && npm run copy-json",
     "lint": "tslint -p .",
-    "watch": "concurrently --kill-others \"tsc -w\" \"nodemon dist\""
+    "watch": "concurrently --kill-others \"tsc -w\" \"nodemon dist\"",
+    "test": "npm run build && alsatian './dist/test/**/*.js'",
+    "copy-json": "rsync -a --include '*/' --include '*.json' --exclude '*' src/ dist/src/"
   },
   "keywords": [],
   "author": "",
