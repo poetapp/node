@@ -51,6 +51,33 @@ export class SerializationTest {
 
   @Test()
   @TestCase(TheRaven)
+  public claimIdIncludesPublicKey(work: Work) {
+    Expect(Serialization.getClaimId({
+      ...work,
+      publicKey: '123'
+    })).not.toBe(work.id)
+  }
+
+  @Test()
+  @TestCase(TheRaven)
+  public claimIdIncludesType(work: Work) {
+    Expect(Serialization.getClaimId({
+      ...work,
+      type: 'Asd' as ClaimType
+    })).not.toBe(work.id)
+  }
+
+  @Test()
+  @TestCase(TheRaven)
+  public claimIdIncludesDate(work: Work) {
+    Expect(Serialization.getClaimId({
+      ...work,
+      dateCreated: new Date()
+    })).not.toBe(work.id)
+  }
+
+  @Test()
+  @TestCase(TheRaven)
   public claimToHex(work: Work) {
     const serializedClaim = Serialization.claimToHex(work)
     Expect(serializedClaim).toBe(TheRavenHex)
