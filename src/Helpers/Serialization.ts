@@ -42,8 +42,8 @@ export namespace Serialization {
     return new Buffer(ClaimProto.encode(claimToProto(claim)).finish()).toString('hex')
   }
 
-  export function serializedToClaim(claim: Buffer) {
-    const decoded = ClaimProto.decode(claim)
+  export function hexToClaim(claim: string): Claim {
+    const decoded = ClaimProto.decode(Buffer.from(claim, 'hex'))
     return protoToClaim(decoded)
   }
 
