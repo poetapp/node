@@ -60,8 +60,11 @@ export namespace Serialization {
       signature: ''
     })
     const buffer = ClaimProto.encode(proto).finish()
-    const hash = crypto.createHash('sha256').update(buffer as any).digest().toString('hex')
-    return hash
+    return crypto
+      .createHash('sha256')
+      .update(buffer as any) // TODO: AS ANY: NodeJS' typings don't play well with Uint8Array / Buffer currently.
+      .digest()
+      .toString('hex')
   }
 
 }
