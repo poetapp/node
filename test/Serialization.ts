@@ -173,6 +173,6 @@ export class SerializationTest {
   @Test()
   @TestCase(TheRaven, TheRavenHex)
   public hexToClaimDateCreated(work: Work, hex: string) {
-    Expect(Serialization.hexToClaim(hex).dateCreated).toBe(work.dateCreated)
+    Expect(Serialization.hexToClaim(hex).dateCreated.getTime()).toBe(work.dateCreated.getTime())
   }
 }

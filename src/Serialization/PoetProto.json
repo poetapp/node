@@ -20,10 +20,14 @@
               "type": "string",
               "id": 4
             },
+            "dateCreated": {
+              "type": "int64",
+              "id": 5
+            },
             "attributes": {
               "rule": "repeated",
               "type": "Attribute",
-              "id": 5
+              "id": 6
             }
           }
         },

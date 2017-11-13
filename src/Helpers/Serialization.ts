@@ -23,6 +23,7 @@ export namespace Serialization {
       publicKey: proto.publicKey.toString('hex'),
       signature: proto.signature.toString('hex'),
       type: proto.type,
+      dateCreated: new Date(parseInt(proto.dateCreated, 10)),
       attributes
     }
   }

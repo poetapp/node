@@ -5,8 +5,9 @@ message Claim {
       optional bytes id = 1;
       optional bytes publicKey = 2;
       optional bytes signature = 3;
-      optional string type = 4;
-      repeated Attribute attributes = 5;
+      optional int64 dateCreated = 4;
+      optional string type = 5;
+      repeated Attribute attributes = 6;
 }
 
 message Block {
