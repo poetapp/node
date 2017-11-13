@@ -118,4 +118,34 @@ export class SerializationTest {
       dateCreated: new Date()
     })).not.toBe(TheRavenHex)
   }
+
+  @Test()
+  @TestCase(TheRaven, TheRavenHex)
+  public hexToClaimMatchId(work: Work, hex: string) {
+    Expect(Serialization.hexToClaim(hex).id).toBe(work.id)
+  }
+
+  @Test()
+  @TestCase(TheRaven, TheRavenHex)
+  public hexToClaimPublicKey(work: Work, hex: string) {
+    Expect(Serialization.hexToClaim(hex).publicKey).toBe(work.publicKey)
+  }
+
+  @Test()
+  @TestCase(TheRaven, TheRavenHex)
+  public hexToClaimSignature(work: Work, hex: string) {
+    Expect(Serialization.hexToClaim(hex).signature).toBe(work.signature)
+  }
+
+  @Test()
+  @TestCase(TheRaven, TheRavenHex)
+  public hexToClaimType(work: Work, hex: string) {
+    Expect(Serialization.hexToClaim(hex).type).toBe(work.type)
+  }
+
+  @Test()
+  @TestCase(TheRaven, TheRavenHex)
+  public hexToClaimDateCreated(work: Work, hex: string) {
+    Expect(Serialization.hexToClaim(hex).dateCreated).toBe(work.dateCreated)
+  }
 }
