@@ -76,22 +76,46 @@ export class SerializationTest {
 
   @Test()
   @TestCase(TheRaven)
-  public claimToHexFailIfChangedClaimData(work: Work) {
-    // Changing any field should change the serialized too
+  public claimToHexFailIfChangedClaimId(work: Work) {
+    Expect(Serialization.claimToHex({
+      ...work,
+      id: 'X' + work.id.slice(1)
+    })).not.toBe(TheRavenHex)
+  }
 
+  @Test()
+  @TestCase(TheRaven)
+  public claimToHexFailIfChangedClaimPublicKey(work: Work) {
     Expect(Serialization.claimToHex({
       ...work,
       publicKey: 'a' + work.publicKey.slice(1)
     })).not.toBe(TheRavenHex)
+  }
 
+  @Test()
+  @TestCase(TheRaven)
+  public claimToHexFailIfChangedClaimSignature(work: Work) {
     Expect(Serialization.claimToHex({
       ...work,
       signature: 'b' + work.signature.slice(1)
     })).not.toBe(TheRavenHex)
+  }
 
+  @Test()
+  @TestCase(TheRaven)
+  public claimToHexFailIfChangedClaimType(work: Work) {
     Expect(Serialization.claimToHex({
       ...work,
       type: 'Asd' as ClaimType
+    })).not.toBe(TheRavenHex)
+  }
+
+  @Test()
+  @TestCase(TheRaven)
+  public claimToHexFailIfChangedClaimDate(work: Work) {
+    Expect(Serialization.claimToHex({
+      ...work,
+      dateCreated: new Date()
     })).not.toBe(TheRavenHex)
   }
 }
