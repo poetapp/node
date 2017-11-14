@@ -8,7 +8,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "outDir": "./dist"
+    "outDir": "./dist/ts",
+    "baseUrl": "./src/"
   },
   "include": [
     "./src/**/*",
