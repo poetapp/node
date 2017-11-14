@@ -17,6 +17,6 @@ export class WorkController {
   create(work: any): Promise<any> {
     console.log(`WorkController.create(${JSON.stringify(work)})`)
     // TODO: move this to WorkDAO, verify id, publicKey & signature and send RMQ message here instead
-    return this.collection.insertOne({id: '123', name: 'some name'})
+    return this.collection.insertOne(work)
   }
 }
