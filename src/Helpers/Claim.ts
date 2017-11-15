@@ -1,4 +1,4 @@
-import { Claim } from '../Interfaces'
+import { Claim, ClaimType, Work } from '../Interfaces'
 
 export function isClaim(object: any): object is Claim {
   // TODO: use joi or protobuf
@@ -13,4 +13,8 @@ export function isValidSignature(claim: Claim) {
   //   claim.publicKey
   // )
   return true
+}
+
+export function isWork(claim: Claim): claim is Work {
+  return claim.type !== ClaimType.Work
 }
