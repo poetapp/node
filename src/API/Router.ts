@@ -35,7 +35,6 @@ export class Router {
   }
 
   async start() {
-    console.log('API Loaded Configuration', this.configuration)
     this.koa.listen(this.configuration.port, '0.0.0.0')
   }
 
@@ -45,7 +44,7 @@ export class Router {
     context.body = work
   }
 
-  private postWork = (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+  private postWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     const work = context.request.body
 
     if (!isClaim(work))
@@ -57,6 +56,6 @@ export class Router {
     if (!isValidSignature(work))
       throw new IllegalArgumentException('Claim\'s signature is incorrect.')
 
-    this.workController.create(work)
+    await this.workController.create(work)
   }
 }

@@ -3,25 +3,24 @@ import { Db, MongoClient } from 'mongodb'
 
 import { Messaging } from 'Messaging/Messaging'
 
-import { APIConfiguration } from './APIConfiguration'
 import { Router } from './Router'
-import { RouterConfiguration } from './RouterConfiguration'
+import { ViewConfiguration } from './ViewConfiguration'
 import { WorkController } from './WorkController'
 
 @injectable()
-export class API {
-  private readonly configuration: APIConfiguration
+export class View {
+  private readonly configuration: ViewConfiguration
   private readonly container = new Container()
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
 
-  constructor(configuration: APIConfiguration) {
+  constructor(configuration: ViewConfiguration) {
     this.configuration = configuration
   }
 
   async start() {
-    console.log('API Starting...', this.configuration)
+    console.log('View Starting...', this.configuration)
     this.dbConnection = await MongoClient.connect(this.configuration.dbUrl)
 
     this.messaging = new Messaging()
@@ -32,13 +31,12 @@ export class API {
     this.router = this.container.get('Router')
     this.router.start()
 
-    console.log('API Started')
+    console.log('View Started')
   }
 
   initializeContainer() {
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
-    this.container.bind<RouterConfiguration>('RouterConfiguration').toConstantValue({port: this.configuration.port})
     this.container.bind<WorkController>('WorkController').to(WorkController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
   }
