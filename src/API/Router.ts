@@ -4,6 +4,7 @@ import * as KoaBody from 'koa-body'
 import * as KoaRouter from 'koa-router'
 
 import { isClaim, isValidSignature, isWork } from 'Helpers/Claim'
+import { ClaimType } from 'Interfaces'
 
 import { IllegalArgumentException } from './Exceptions'
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
@@ -50,11 +51,11 @@ export class Router {
     if (!isClaim(work))
       throw new IllegalArgumentException('Request Body must be a Claim.')
 
+    if (!isWork(work))
+      throw new IllegalArgumentException(`Claim's type must be ${ClaimType.Work}, not ${work.type}`)
+
     if (!isValidSignature(work))
       throw new IllegalArgumentException('Claim\'s signature is incorrect.')
-
-    if (!isWork(work))
-      throw new IllegalArgumentException('Claim\'s type must be WORK.')
 
     this.workController.create(work)
   }
