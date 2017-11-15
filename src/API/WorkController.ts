@@ -1,10 +1,12 @@
+import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 
+@injectable()
 export class WorkController {
   private readonly db: Db
   private readonly collection: Collection
 
-  constructor(db: Db) {
+  constructor(@inject('DB') db: Db) {
     this.db = db
     this.collection = this.db.collection('works')
   }

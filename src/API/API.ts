@@ -1,63 +1,38 @@
-import * as Koa from 'koa'
-import * as KoaBody from 'koa-body'
-import * as KoaRouter from 'koa-router'
-import { MongoClient } from 'mongodb'
+import { injectable, Container } from 'inversify'
+import { Db, MongoClient } from 'mongodb'
 
-import { isClaim, isValidSignature } from '../Helpers/Claim'
-import { ClaimType } from '../Interfaces'
-import { Configuration } from './Configuration'
-import { IllegalArgumentException } from './Exceptions'
-import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
+import { APIConfiguration } from './APIConfiguration'
+import { Router } from './Router'
+import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
 
+@injectable()
 export class API {
-  private readonly configuration: Configuration
-  private readonly koa = new Koa()
-  private readonly koaRouter = new KoaRouter()
-  private workController: WorkController
+  private readonly configuration: APIConfiguration
+  private readonly container = new Container()
+  private dbConnection: Db
+  private router: Router
 
-  constructor(configuration: Configuration) {
+  constructor(configuration: APIConfiguration) {
     this.configuration = configuration
-
-    this.koaRouter.get('/works/:id', this.getWork)
-    this.koaRouter.post('/works', this.postWork)
-
-    this.koa.use(HttpExceptionsMiddleware)
-    this.koa.use(KoaBody({ textLimit: 1000000 }))
-    this.koa.use(this.koaRouter.allowedMethods())
-    this.koa.use(this.koaRouter.routes())
   }
 
   async start() {
-    console.log('API Loaded Configuration', this.configuration)
+    console.log('API Starting...', this.configuration)
+    this.dbConnection = await MongoClient.connect(this.configuration.dbUrl)
 
-    // TODO: move db connection code somewhere else (singleton / inversifyjs / etc)
-    const dbConnection = await MongoClient.connect(this.configuration.dbUrl)
+    this.initializeContainer()
 
-    // TODO: move this code to constructor so workController can be readonly
-    this.workController = new WorkController(dbConnection)
+    this.router = this.container.get('Router')
+    this.router.start()
 
-    this.koa.listen(this.configuration.port, '0.0.0.0')
+    console.log('API Started')
   }
 
-  private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    const id = context.params.id
-    const work = await this.workController.getById(id)
-    context.body = work
-  }
-
-  private postWork = (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    const work = context.request.body
-
-    if (!isClaim(work))
-      throw new IllegalArgumentException('Request Body must be a Claim.')
-
-    if (!isValidSignature(work))
-      throw new IllegalArgumentException('Claim\'s signature is incorrect.')
-
-    if (work.type !== ClaimType.Work)
-      throw new IllegalArgumentException('Claim\'s type must be WORK.')
-
-    this.workController.create(work)
+  initializeContainer() {
+    this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
+    this.container.bind<Router>('Router').to(Router)
+    this.container.bind<RouterConfiguration>('RouterConfiguration').toConstantValue({port: this.configuration.port})
+    this.container.bind<WorkController>('WorkController').to(WorkController)
   }
 }

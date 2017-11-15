@@ -1,4 +1,4 @@
-export interface Configuration {
+export interface APIConfiguration {
   readonly port: number
   readonly dbUrl: string
 }
