@@ -16,5 +16,5 @@ export function isValidSignature(claim: Claim) {
 }
 
 export function isWork(claim: Claim): claim is Work {
-  return claim.type !== ClaimType.Work
+  return claim.type === ClaimType.Work
 }
