@@ -1,4 +1,4 @@
-import { ClaimType, Work } from '../src/Interfaces'
+import { ClaimType, Work } from 'Interfaces'
 
 export const TheRaven: Work = {
   id: '10d61d594df81c8018604e2bb0cb1e798ce18675812445e0248db4819e558187',

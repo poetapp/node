@@ -1,9 +1,10 @@
 import { Expect, Test, TestCase } from 'alsatian'
 
-import { Signature } from '../src/Helpers/Signature'
-import { Work } from '../src/Interfaces'
+import { IllegalArgumentException } from 'API/Exceptions'
+import { Signature } from 'Helpers/Signature'
+import { Work } from 'Interfaces'
+
 import { PrivateKey, TheRaven } from './Claims'
-import {IllegalArgumentException} from '../src/API/Exceptions'
 
 export class SignatureTest {
 

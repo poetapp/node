@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 
-import { API } from './API/API'
-import { Configuration } from './Configuration'
+import { API } from 'API/API'
+import { Configuration } from 'Configuration'
 
 async function main() {
   console.log('Running Po.et Node')

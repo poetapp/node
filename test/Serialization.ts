@@ -1,7 +1,8 @@
 import { Expect, Test, TestCase } from 'alsatian'
 
-import { Serialization } from '../src/Helpers/Serialization'
-import { Claim, ClaimAttributes, ClaimType, Work } from '../src/Interfaces'
+import { Serialization } from 'Helpers/Serialization'
+import { Claim, ClaimAttributes, ClaimType, Work } from 'Interfaces'
+
 import { TheRaven, TheRavenHex } from './Claims'
 
 /**
