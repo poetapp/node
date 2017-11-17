@@ -1,20 +1,12 @@
 import { Expect, FocusTests, Test, TestCase } from 'alsatian'
 
-import { createClaim, isValidSignature } from 'Helpers/Claim'
-import { Signature } from 'Helpers/Signature'
+import { createClaim, isValidSignature, signClaim } from 'Helpers/Claim'
 import { ClaimType, Work } from 'Interfaces'
 
-import { TheRaven, PrivateKey } from './Claims'
+import { TheRaven } from './Claims'
 import { Key1 } from './Keys'
 
-@FocusTests
 export class ClaimTest {
-
-  @Test()
-  @TestCase(TheRaven, PrivateKey)
-  public getClaimSignature(work: Work, privateKey: string) {
-    Expect(Signature.signClaim(work, privateKey)).toBe(work.signature)
-  }
 
   @Test()
   @TestCase(TheRaven, Key1.privateKey, Key1.publicKey)
