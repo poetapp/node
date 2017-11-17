@@ -13,6 +13,7 @@ declare namespace bitcoreLib {
     class BN { }
     namespace ECDSA {
       function sign(message: Buffer, key: PrivateKey): Signature
+      function verify(hashbuf: Buffer, sig: Signature, pubkey: PublicKey, endian?: 'little'): boolean
     }
     export namespace Hash {
       function sha256(buffer: Buffer): Uint8Array
@@ -21,9 +22,10 @@ declare namespace bitcoreLib {
     export const Point: PointInterface
 
     class Signature {
+      static fromDER(sig: Buffer): Signature
+      static fromString(data: string): Signature
       SIGHASH_ALL: number
       toString(): string
-      fromDER(sig: Buffer): this
     }
   }
 
@@ -58,14 +60,14 @@ declare namespace bitcoreLib {
   }
 
   interface PrivateKey {
-    publicKey: PublicKey
+    readonly publicKey: PublicKey
 
     new(key: string): this
     (source: string): this
   }
 
-  interface PublicKey {
-    (source: string): this
+  class PublicKey {
+    constructor(source: string)
   }
 
   interface Output {
