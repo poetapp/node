@@ -1,3 +1,5 @@
+import * as bitcore from 'bitcore-lib'
+
 import { Claim, ClaimType, Work } from '../Interfaces'
 
 export function isClaim(object: any): object is Claim {
@@ -5,14 +7,12 @@ export function isClaim(object: any): object is Claim {
   return object.id && object.publicKey && object.signature && object.type && object.attributes
 }
 
-export function isValidSignature(claim: Claim) {
-  // TODO: placeholder function. in the future, do something like
-  // bitcore.crypto.ECDSA.verify(
-  //   claim.id,
-  //   claim.idsignature,
-  //   claim.publicKey
-  // )
-  return true
+export function isValidSignature(claim: Claim): boolean {
+  return bitcore.crypto.ECDSA.verify(
+    Buffer.from(claim.id, 'hex'),
+    bitcore.crypto.Signature.fromString(claim.signature),
+    new bitcore.PublicKey(claim.publicKey)
+  )
 }
 
 export function isWork(claim: Claim): claim is Work {
