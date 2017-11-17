@@ -1,6 +1,8 @@
 import * as bitcore from 'bitcore-lib'
 
-import { Claim, ClaimType, Work } from '../Interfaces'
+import { Claim, ClaimAttributes, ClaimType, Work } from '../Interfaces'
+import { Serialization } from './Serialization'
+import { Signature } from './Signature'
 
 export function isClaim(object: any): object is Claim {
   // TODO: use joi or protobuf
@@ -17,4 +19,26 @@ export function isValidSignature(claim: Claim): boolean {
 
 export function isWork(claim: Claim): claim is Work {
   return claim.type === ClaimType.Work
+}
+
+export function createClaim(privateKey: string, type: ClaimType, attributes: ClaimAttributes): Claim {
+  const claim: Claim = {
+    id: '',
+    publicKey: new bitcore.PrivateKey(privateKey).publicKey.toString(),
+    signature: '',
+    type,
+    dateCreated: new Date(),
+    attributes
+  }
+  const id = Serialization.getClaimId(claim)
+  const signature = Signature.signClaim({
+    ...claim,
+    id
+  }, privateKey)
+  return {
+    ...claim,
+    id,
+    signature
+  }
+
 }
