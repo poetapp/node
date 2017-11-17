@@ -1,6 +1,6 @@
 import { Expect, FocusTests, Test, TestCase } from 'alsatian'
 
-import { createClaim, isValidSignature, signClaim } from 'Helpers/Claim'
+import { createClaim, isValidSignature, getClaimSignature } from 'Helpers/Claim'
 import { ClaimType, Work } from 'Interfaces'
 
 import { TheRaven } from './Claims'

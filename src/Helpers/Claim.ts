@@ -14,7 +14,7 @@ export function isWork(claim: Claim): claim is Work {
   return claim.type === ClaimType.Work
 }
 
-export function signClaim(claim: Claim, privateKey: string): string {
+export function getClaimSignature(claim: Claim, privateKey: string): string {
   if (!claim.publicKey)
     throw new IllegalArgumentException('Cannot sign a claim that has an empty .publicKey field.')
   if (new bitcore.PrivateKey(privateKey).publicKey.toString() !== claim.publicKey)
@@ -46,7 +46,7 @@ export function createClaim(privateKey: string, type: ClaimType, attributes: Cla
     attributes
   }
   const id = Serialization.getClaimId(claim)
-  const signature = signClaim({
+  const signature = getClaimSignature({
     ...claim,
     id
   }, privateKey)
