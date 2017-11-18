@@ -4,9 +4,9 @@ import { IllegalArgumentException } from 'API/Exceptions'
 import { getClaimSignature } from 'Helpers/Claim'
 import { Work } from 'Interfaces'
 
-import { PrivateKey, TheRaven } from './Claims'
+import { PrivateKey, TheRaven } from '../Claims'
 
-export class SignatureTest {
+export class GetClaimSignature {
 
   @Test()
   @TestCase(TheRaven)
