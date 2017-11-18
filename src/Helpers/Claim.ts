@@ -44,11 +44,16 @@ export function getClaimSignature(claim: Claim, privateKey: string): string {
 }
 
 export function isValidSignature(claim: Claim): boolean {
-  return bitcore.crypto.ECDSA.verify(
-    Buffer.from(claim.id, 'hex'),
-    bitcore.crypto.Signature.fromString(claim.signature),
-    new bitcore.PublicKey(claim.publicKey)
-  )
+  try {
+    return bitcore.crypto.ECDSA.verify(
+      Buffer.from(claim.id, 'hex'),
+      bitcore.crypto.Signature.fromString(claim.signature),
+      new bitcore.PublicKey(claim.publicKey)
+    )
+  } catch (exception) {
+    console.log('Exception caught while attempting to verify signature.', exception)
+    return false
+  }
 }
 
 export function createClaim(privateKey: string, type: ClaimType, attributes: ClaimAttributes): Claim {
