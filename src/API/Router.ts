@@ -6,7 +6,7 @@ import * as KoaRouter from 'koa-router'
 import { isClaim, isValidSignature, isWork } from 'Helpers/Claim'
 import { ClaimType } from 'Interfaces'
 
-import { IllegalArgumentException } from './Exceptions'
+import { IllegalArgumentException, NotFoundException } from './Exceptions'
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
@@ -41,6 +41,10 @@ export class Router {
   private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     const id = context.params.id
     const work = await this.workController.getById(id)
+
+    if (!work)
+      throw new NotFoundException('')
+
     context.body = work
   }
 
@@ -57,5 +61,8 @@ export class Router {
       throw new IllegalArgumentException('Claim\'s signature is incorrect.')
 
     await this.workController.create(work)
+
+    context.body = ''
+    context.status = 202
   }
 }
