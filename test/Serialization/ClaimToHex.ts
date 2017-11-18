@@ -3,9 +3,9 @@ import { Expect, Test, TestCase } from 'alsatian'
 import { Serialization } from 'Helpers/Serialization'
 import { Claim, ClaimAttributes, ClaimType, Work } from 'Interfaces'
 
-import { TheRaven, TheRavenHex } from './Claims'
+import { TheRaven, TheRavenHex } from '../Claims'
 
-export class SerializationTest {
+export class ClaimToHex {
 
   @Test()
   @TestCase(TheRaven)
@@ -77,37 +77,7 @@ export class SerializationTest {
     })).not.toBe(TheRavenHex)
   }
 
-  @Test()
-  @TestCase(TheRaven, TheRavenHex)
-  public hexToClaimMatchId(work: Work, hex: string) {
-    Expect(Serialization.hexToClaim(hex).id).toBe(work.id)
-  }
-
-  @Test()
-  @TestCase(TheRaven, TheRavenHex)
-  public hexToClaimPublicKey(work: Work, hex: string) {
-    Expect(Serialization.hexToClaim(hex).publicKey).toBe(work.publicKey)
-  }
-
-  @Test()
-  @TestCase(TheRaven, TheRavenHex)
-  public hexToClaimSignature(work: Work, hex: string) {
-    Expect(Serialization.hexToClaim(hex).signature).toBe(work.signature)
-  }
-
-  @Test()
-  @TestCase(TheRaven, TheRavenHex)
-  public hexToClaimType(work: Work, hex: string) {
-    Expect(Serialization.hexToClaim(hex).type).toBe(work.type)
-  }
-
-  @Test()
-  @TestCase(TheRaven, TheRavenHex)
-  public hexToClaimDateCreated(work: Work, hex: string) {
-    Expect(Serialization.hexToClaim(hex).dateCreated.getTime()).toBe(work.dateCreated.getTime())
-  }
 }
-
 
 /**
  * Simple function to help editing a Claim's attributes in an immutable fashion.
