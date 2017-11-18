@@ -3,7 +3,6 @@
  * This file will be moved to poet-js in the future.
  */
 
-import * as crypto from 'crypto'
 import { Message } from 'protobufjs'
 
 import { Claim, ClaimAttributes } from '../Interfaces'
@@ -51,20 +50,6 @@ export namespace Serialization {
   function attributesToProtos(attributes: ClaimAttributes): ReadonlyArray<Message<any>> {
     const attributeArray = Object.entries(attributes).map(([key, value]) => ({key, value}))
     return attributeArray.map(AttributeProto.create, AttributeProto)
-  }
-
-  export function getClaimId(claim: Claim): string {
-    const proto = claimToProto({
-      ...claim,
-      id: '',
-      signature: ''
-    })
-    const buffer = ClaimProto.encode(proto).finish()
-    return crypto
-      .createHash('sha256')
-      .update(buffer as any) // TODO: AS ANY: NodeJS' typings don't play well with Uint8Array / Buffer currently.
-      .digest()
-      .toString('hex')
   }
 
 }

@@ -5,77 +5,7 @@ import { Claim, ClaimAttributes, ClaimType, Work } from 'Interfaces'
 
 import { TheRaven, TheRavenHex } from './Claims'
 
-/**
- * Simple function to help editing a Claim's attributes in an immutable fashion.
- * TODO: support generics once https://github.com/Microsoft/TypeScript/issues/10727 is fixed.
- */
-function editAttributes(claim: Claim, attributes: ClaimAttributes): Claim {
-  return {
-    ...claim,
-    attributes: {
-      ...claim.attributes,
-      ...attributes
-    }
-  }
-}
-
 export class SerializationTest {
-
-  @Test()
-  @TestCase(TheRaven)
-  public claimId(work: Work) {
-    const claimId = Serialization.getClaimId(work)
-    Expect(claimId).toBe(work.id)
-  }
-
-  @Test()
-  @TestCase(TheRaven)
-  public claimIdIgnoresId(work: Work) {
-    // The field .id is ignored in the calculation of the id
-    const ignoreId = Serialization.getClaimId({
-      ...work,
-      id: '123'
-    })
-    Expect(ignoreId).toBe(work.id)
-  }
-
-  @Test()
-  @TestCase(TheRaven)
-  public claimIdIgnoresSignature(work: Work) {
-    // The field .signature is ignored in the calculation of the id
-    const ignoreSignature = Serialization.getClaimId({
-      ...work,
-      signature: '123'
-    })
-    Expect(ignoreSignature).toBe(work.id)
-  }
-
-  @Test()
-  @TestCase(TheRaven)
-  public claimIdIncludesPublicKey(work: Work) {
-    Expect(Serialization.getClaimId({
-      ...work,
-      publicKey: '123'
-    })).not.toBe(work.id)
-  }
-
-  @Test()
-  @TestCase(TheRaven)
-  public claimIdIncludesType(work: Work) {
-    Expect(Serialization.getClaimId({
-      ...work,
-      type: 'Asd' as ClaimType
-    })).not.toBe(work.id)
-  }
-
-  @Test()
-  @TestCase(TheRaven)
-  public claimIdIncludesDate(work: Work) {
-    Expect(Serialization.getClaimId({
-      ...work,
-      dateCreated: new Date()
-    })).not.toBe(work.id)
-  }
 
   @Test()
   @TestCase(TheRaven)
@@ -175,5 +105,20 @@ export class SerializationTest {
   @TestCase(TheRaven, TheRavenHex)
   public hexToClaimDateCreated(work: Work, hex: string) {
     Expect(Serialization.hexToClaim(hex).dateCreated.getTime()).toBe(work.dateCreated.getTime())
+  }
+}
+
+
+/**
+ * Simple function to help editing a Claim's attributes in an immutable fashion.
+ * TODO: support generics once https://github.com/Microsoft/TypeScript/issues/10727 is fixed.
+ */
+function editAttributes(claim: Claim, attributes: ClaimAttributes): Claim {
+  return {
+    ...claim,
+    attributes: {
+      ...claim.attributes,
+      ...attributes
+    }
   }
 }
