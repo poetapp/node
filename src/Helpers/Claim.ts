@@ -4,7 +4,6 @@ import * as bitcore from 'bitcore-lib'
 
 import { IllegalArgumentException } from 'API/Exceptions'
 import { Claim, ClaimAttributes, ClaimType, Work } from 'Interfaces'
-import { ClaimProto } from 'Serialization/PoetProto'
 
 import { Serialization } from './Serialization'
 
@@ -18,15 +17,14 @@ export function isWork(claim: Claim): claim is Work {
 }
 
 export function getClaimId(claim: Claim): string {
-  const proto = Serialization.claimToProto({
+  const buffer = Buffer.from(Serialization.claimToHex({
     ...claim,
     id: '',
     signature: ''
-  })
-  const buffer = ClaimProto.encode(proto).finish()
+  }), 'hex')
   return crypto
     .createHash('sha256')
-    .update(buffer as any) // TODO: AS ANY: NodeJS' typings don't play well with Uint8Array / Buffer currently.
+    .update(buffer)
     .digest()
     .toString('hex')
 }
