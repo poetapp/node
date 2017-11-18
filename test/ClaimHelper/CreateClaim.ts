@@ -1,16 +1,16 @@
-import { Expect, FocusTests, Test, TestCase } from 'alsatian'
+import { Expect, Test, TestCase } from 'alsatian'
 
-import { createClaim, isValidSignature, getClaimSignature } from 'Helpers/Claim'
+import { createClaim, isValidSignature } from 'Helpers/Claim'
 import { ClaimType, Work } from 'Interfaces'
 
-import { TheRaven } from './Claims'
-import { Key1 } from './Keys'
+import { TheRaven } from '../Claims'
+import { Key1 } from '../Keys'
 
-export class ClaimTest {
+export class CreateClaim {
 
   @Test()
   @TestCase(TheRaven, Key1.privateKey, Key1.publicKey)
-  public createClaimPublicKey(work: Work, privateKey: string, publicKey: string) {
+  public publicKey(work: Work, privateKey: string, publicKey: string) {
     const claim = createClaim(
       privateKey,
       ClaimType.Work,
@@ -21,7 +21,7 @@ export class ClaimTest {
 
   @Test()
   @TestCase(TheRaven, Key1.privateKey)
-  public createClaimValidSignature(work: Work, privateKey: string) {
+  public validSignature(work: Work, privateKey: string) {
     const claim = createClaim(
       privateKey,
       ClaimType.Work,
