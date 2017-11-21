@@ -3,7 +3,7 @@ import { Expect, Test, TestCase } from 'alsatian'
 import { getClaimId } from 'Helpers/Claim'
 import { ClaimType, Work } from 'Interfaces'
 
-import { TheRaven } from '../Claims'
+import { TheRaven } from '../../Claims'
 
 export class GetClaimId {
 

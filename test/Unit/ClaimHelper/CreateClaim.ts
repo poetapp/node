@@ -3,8 +3,8 @@ import { Expect, Test, TestCase } from 'alsatian'
 import { createClaim, isValidSignature } from 'Helpers/Claim'
 import { ClaimType, Work } from 'Interfaces'
 
-import { TheRaven } from '../Claims'
-import { Key1 } from '../Keys'
+import { TheRaven } from '../../Claims'
+import { Key1 } from '../../Keys'
 
 export class CreateClaim {
 

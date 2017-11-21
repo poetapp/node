@@ -3,7 +3,7 @@ import { Expect, Test, TestCase } from 'alsatian'
 import { Serialization } from 'Helpers/Serialization'
 import { Work } from 'Interfaces'
 
-import { TheRaven, TheRavenHex } from '../Claims'
+import { TheRaven, TheRavenHex } from '../../Claims'
 
 export class HexToClaim {
 
