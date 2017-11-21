@@ -7,7 +7,9 @@
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
     "lint": "tslint -p .",
     "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon dist/babel/src\"",
-    "test": "npm run build && alsatian './dist/babel/test/**/*.js'",
+    "test": "npm run build && npm run test-only",
+    "test-only": "nyc alsatian './dist/babel/test/**/*.js'",
+    "coverage": "nyc --reporter=lcov report && echo Report created at ./coverage/lcov-report/index.html",
     "copy-json": "rsync -a --include '*/' --include '*.json' --exclude '*' src/ dist/ts/src",
     "build-clear": "rm -rf dist",
     "build-ts": "tsc && npm run copy-json",
@@ -43,6 +45,7 @@
     "babel-plugin-module-resolver": "^3.0.0",
     "concurrently": "^3.5.0",
     "nodemon": "^1.12.1",
+    "nyc": "^11.3.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.1"
   }
