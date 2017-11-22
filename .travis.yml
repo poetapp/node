@@ -9,5 +9,6 @@ services:
   - rabbitmq
 before_script:
   - npm run build
+  - node dist/babel/test/Integration/PrepareDB.js
   - npm start &
   - sleep 5
