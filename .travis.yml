@@ -11,5 +11,3 @@ before_script:
   - npm run build
   - npm start &
   - sleep 5
-after_script:
-  - npm run test-integration
