@@ -17,7 +17,6 @@ export class CreateClaim {
       work.attributes
     )
     Expect(claim.publicKey).toBe(publicKey)
-    Expect(true).toBe(false)
   }
 
   @Test()
