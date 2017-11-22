@@ -29,7 +29,7 @@ export class GetWork {
 
     const body = await response.text()
 
-    Expect(body).toBe('Not Found')
+    Expect(body).toBe('')
 
   }
 }
