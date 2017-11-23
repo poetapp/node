@@ -24,7 +24,7 @@ const defaultConfiguration: Configuration = {
   ipfsUrl: 'http://localhost:5001',
   insightUrl: 'https://test-insight.bitpay.com/api',
 
-  apiPort: 8080,
+  apiPort: 18080,
   poetNetwork: 'BARD',
   poetVersion: [0, 0, 0, 2],
   minimumBlockHeight: 1225900,

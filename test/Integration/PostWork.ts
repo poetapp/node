@@ -6,7 +6,7 @@ import { ClaimType } from 'Interfaces'
 
 import { Key1 } from '../Keys'
 
-const url = 'http://localhost:8080'
+const url = 'http://localhost:18080'
 
 export class PostWork {
 

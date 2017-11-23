@@ -1,7 +1,7 @@
 import { AsyncTest, Expect, FocusTests, TestCase } from 'alsatian'
 import fetch from 'node-fetch'
 
-const url = 'http://localhost:8080'
+const url = 'http://localhost:18080'
 
 export class GetWork {
 
