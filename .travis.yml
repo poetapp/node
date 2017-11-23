@@ -1,6 +1,14 @@
 language: node_js
 node_js:
-- 9.0.0
+ - "9.0.0"
 notifications:
   slack:
     secure: YIQTNvY6Yvrq4LOE63ZeyaeXY5nQHctXkOTa1In0KQmmMrUGcQZI6eFfkiUDEG9bEjiVmmRqvYWnbH8fJrTSWjdQKrDduLuPY/ivE6M79isxsB2gc+bYgQhuh7H+g7vZfGNkcNKQEgDyWol5YGjyMwNFB8JzMzVj1kgnEZ7c4hqpQfXQ+WFCEOnNledWdmuyNX4wP0lWsuD6VuIH8GYtWD6iyYQUj82tFnh+l2RJCAUMFdG3IYg4VWZsweI7u9l1oH8fbxKVl5hNWW49087vGE4wHWcG6ZtRs510ioHlYqgcQpsFE5HejmdfMoAocGaTSq4+drsIDwUsuH0WmyFWa3q2sAwLKv7XRhzAHPcrPaYooWhlCP24zlDWXUAgE7VAtCjgfMTV2osIU70VUxfOxtGtuaMTI265Ws42UF1PV98ZcVfs4Vlt/P76MBb6ECzphKhVMVI7fBOWTYj5a0ovgFA2hJuwQ/VJ/jLhoM1s1MzV2H1l+n9CKanfmnXnXIUphoWoNROQJ2FPYzeGSUZpJbtKxut4W1OfT5MS96U227wJurOG5pjS+MCfJZXVZCeGUsSfSQDEZeyBU6IYyF5G1vnZAqBL38VwPgIX5q+RdYGRtZzNUbVFvo+6J334Jv5U1vJQoapW98chTPNVY8dWlR2Blgf/UGmzR/zWT8/3WGQ=
+services:
+  - mongodb
+  - rabbitmq
+before_script:
+  - npm run build
+  - node dist/babel/test/Integration/PrepareDB.js
+  - npm start &
+  - sleep 5

@@ -7,7 +7,7 @@
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
     "lint": "tslint -p .",
     "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon dist/babel/src\"",
-    "test": "npm run build && npm run test-unit",
+    "test": "nyc alsatian './dist/babel/test/**/*.js'",
     "test-unit": "nyc alsatian './dist/babel/test/Unit/**/*.js'",
     "test-integration": "nyc alsatian './dist/babel/test/Integration/**/*.js'",
     "coverage": "nyc --reporter=lcov report && echo Report created at ./coverage/lcov-report/index.html",

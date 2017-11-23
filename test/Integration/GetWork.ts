@@ -6,7 +6,7 @@ const url = 'http://localhost:8080'
 export class GetWork {
 
   @AsyncTest()
-  @TestCase('123')
+  @TestCase('10d61d594df81c8018604e2bb0cb1e798ce18675812445e0248db4819e558187')
   async getWork200(id: string) {
     const response = await fetch(url + '/works/' + id)
 
@@ -15,7 +15,7 @@ export class GetWork {
     const body = await response.json()
 
     Expect(body.id).toBe(id)
-    Expect(body.name).toBe('some name')
+    Expect(body.attributes.name).toBe('The Raven')
 
   }
 
@@ -29,7 +29,7 @@ export class GetWork {
 
     const body = await response.text()
 
-    Expect(body).toBe('Not Found')
+    Expect(body).toBe('')
 
   }
 }
