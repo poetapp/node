@@ -51,7 +51,11 @@ export function isValidSignature(claim: Claim): boolean {
       new bitcore.PublicKey(claim.publicKey)
     )
   } catch (exception) {
-    console.log('Exception caught while attempting to verify signature.', exception)
+    console.log(JSON.stringify({
+      message: 'Exception caught while attempting to verify signature.',
+      claim,
+      exception
+    }, null, 2))
     return false
   }
 }
