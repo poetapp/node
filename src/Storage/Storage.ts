@@ -7,7 +7,7 @@ import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 import { StorageConfiguration } from './StorageConfiguration'
-import { ClaimController } from './WorkController'
+import { ClaimController } from './ClaimController'
 
 @injectable()
 export class Storage {

@@ -4,7 +4,7 @@ import { isClaim } from 'Helpers/Claim'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
-import { ClaimController } from './WorkController'
+import { ClaimController } from './ClaimController'
 
 @injectable()
 export class Router {
