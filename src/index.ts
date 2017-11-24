@@ -2,6 +2,7 @@ import 'reflect-metadata'
 
 import { API } from 'API/API'
 import { Configuration } from 'Configuration'
+import { Storage } from './Storage/Storage'
 import { View } from './View/View'
 
 async function main() {
@@ -20,6 +21,13 @@ async function main() {
     await view.start()
   } catch (ex) {
     console.log('View was unable to start. Cause was: \n', ex)
+  }
+
+  const storage = new Storage({dbUrl: Configuration.mongodbUrl, ipfsUrl: Configuration.ipfsUrl})
+  try {
+    await storage.start()
+  } catch (ex) {
+    console.log('Storage was unable to start. Cause was: \n', ex)
   }
 }
 

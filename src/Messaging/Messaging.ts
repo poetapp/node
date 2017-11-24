@@ -24,16 +24,20 @@ export class Messaging {
     this.channel = await this.connection.createChannel()
   }
 
-  publish = async (exchange: Exchange, message: string) =>  {
+  publish = async (exchange: Exchange, message: string | object): Promise<void> =>  {
     if (!this.channel)
       throw new Error('Cannot publish before calling start()')
 
     await this.channel.assertExchange(exchange, 'fanout', { durable: false })
 
-    this.channel.publish(exchange, '', Buffer.from(message))
+    const messageString = typeof message === 'string'
+      ? message
+      : JSON.stringify(message)
+
+    this.channel.publish(exchange, '', Buffer.from(messageString))
   }
 
-  consume = async (exchange: Exchange, consume: (message: any) => void) => {
+  consume = async (exchange: Exchange, consume: (message: any) => void): Promise<void> => {
     const assertedExchange = await this.channel.assertExchange(exchange, 'fanout', { durable: false }) as any
     const assertQueue = await this.channel.assertQueue('', {exclusive: true})
     this.channel.bindQueue(assertQueue.queue, exchange, '')

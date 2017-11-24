@@ -8,6 +8,7 @@ services:
   - mongodb
   - rabbitmq
 before_script:
+  - sudo make ipfs
   - npm run build
   - node dist/babel/test/Integration/PrepareDB.js
   - npm start &

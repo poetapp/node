@@ -1,15 +1,19 @@
 import * as FormData from 'form-data'
+import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
-import str from 'string-to-stream'
+import * as str from 'string-to-stream'
+
+import { IPFSConfiguration } from './IPFSConfiguration'
 
 /**
  * Wrapper around IPFS' RPC
  */
+@injectable()
 export class IPFS {
   private readonly url: string
 
-  constructor(url: string) {
-    this.url = url
+  constructor(@inject('IPFSConfiguration') configuration: IPFSConfiguration) {
+    this.url = configuration.ipfsUrl
   }
 
   cat = async (hash: string): Promise<string> =>  {
