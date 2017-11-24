@@ -29,6 +29,6 @@ export class WorkController {
   async create(work: Work): Promise<void> {
     console.log(`WorkController.create(${JSON.stringify(work)})`)
     // TODO: verify id, publicKey, signature and createdDate
-    await this.messaging.publish(Exchange.NewClaim, JSON.stringify(work))
+    await this.messaging.publish(Exchange.NewClaim, work)
   }
 }

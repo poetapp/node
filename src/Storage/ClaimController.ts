@@ -33,10 +33,10 @@ export class ClaimController {
       claimId: claim.id,
       ipfsHash
     })
-    await this.messaging.publish(Exchange.ClaimIPFSHash, JSON.stringify({
+    await this.messaging.publish(Exchange.ClaimIPFSHash, {
       claimId: claim.id,
       ipfsHash
-    }))
+    })
     console.log(`Storage.WorkController.create, created ${ipfsHash}`)
   }
 }
