@@ -13,10 +13,10 @@ export class Router {
 
   constructor(
     @inject('Messaging') messaging: Messaging,
-    @inject('ClaimController') workController: ClaimController
+    @inject('ClaimController') claimController: ClaimController
   ) {
     this.messaging = messaging
-    this.claimController = workController
+    this.claimController = claimController
   }
 
   start() {
