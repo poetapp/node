@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify'
 
-import { isClaim } from 'Helpers/Claim'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -24,7 +23,6 @@ export class Router {
   }
 
   onClaimIPFSHash = async (message: any): Promise<void> => {
-    console.log('onClaimIPFSHash')
     const messageContent = message.content.toString()
     console.log('onClaimIPFSHash', messageContent)
 
