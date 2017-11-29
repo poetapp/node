@@ -21,6 +21,7 @@ export class Router {
   start() {
     this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
     this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
+    this.messaging.consume(Exchange.IPFSHashTxId, this.onIPFSHashTxId)
   }
 
   onNewClaim = (message: any) => {
@@ -34,5 +35,12 @@ export class Router {
     const { claimId, ipfsHash } = JSON.parse(messageContent)
 
     this.workController.setIPFSHash(claimId, ipfsHash)
+  }
+
+  onIPFSHashTxId = (message: any) => {
+    const messageContent = message.content.toString()
+    const { ipfsHash, txId } = JSON.parse(messageContent)
+
+    this.workController.setTxId(ipfsHash, txId)
   }
 }
