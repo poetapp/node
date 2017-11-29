@@ -72,7 +72,7 @@ export class ClaimController {
       ipfsHash,
       txId: tx.id
     })
-    this.messaging.publish(Exchange.ClaimTxId, {
+    this.messaging.publish(Exchange.IPFSHashTxId, {
       ipfsHash,
       txId: tx.id
     })

@@ -30,4 +30,9 @@ export class WorkController {
     console.log('setIPFSHash', workId, ipfsHash)
     const result = this.collection.updateOne({ id: workId }, { $set: { ipfsHash } })
   }
+
+  setTxId = (ipfsHash: string, txId: string): void => {
+    console.log('setTxId', ipfsHash, txId)
+    const result = this.collection.updateMany({ ipfsHash }, { $set: { txId } })
+  }
 }

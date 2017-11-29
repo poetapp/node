@@ -34,8 +34,13 @@ export class InsightHelper {
       }
     })
 
-    const parsedResponse = await response.json()
+    if (!response.ok)
+      throw new Error(JSON.stringify({
+        message: 'Unable to broadcast transaction',
+        reason: await response.text()
+      }))
 
-    return parsedResponse
+    return await response.json()
+
   }
 }

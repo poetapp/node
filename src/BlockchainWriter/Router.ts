@@ -30,6 +30,10 @@ export class Router {
 
     const { claimId, ipfsHash } = JSON.parse(messageContent)
 
-    await this.claimController.timestamp(ipfsHash)
+    try {
+      await this.claimController.timestamp(ipfsHash)
+    } catch (exception) {
+      console.error(exception.message)
+    }
   }
 }
