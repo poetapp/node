@@ -1,5 +1,7 @@
 import * as assert from 'assert'
 import { readFileSync, existsSync } from 'fs'
+import { homedir } from 'os'
+import * as path from 'path'
 
 export interface Configuration {
   readonly rabbitmqUrl: string
@@ -35,18 +37,20 @@ const defaultConfiguration: Configuration = {
 function loadConfigurationWithDefaults(): Configuration {
   console.log('Loading Po.et Configuration')
 
-  const path = '~/.po.et/configuration.json'
+  const configPath = path.join(homedir(), '/.po.et/configuration.json')
 
-  return { ...defaultConfiguration, ...loadConfiguration(path) }
+  return { ...defaultConfiguration, ...loadConfiguration(configPath) }
 }
 
-function loadConfiguration(path: string): Configuration | {} {
-  console.log('Loading Po.et Configuration From File')
-
-  if (!existsSync(path))
+function loadConfiguration(configPath: string): Configuration | {} {
+  if (!existsSync(configPath)) {
+    console.log('File', configPath, 'not found')
     return {}
+  }
 
-  const configuration = JSON.parse(readFileSync(path, 'utf8'))
+  const configuration = JSON.parse(readFileSync(configPath, 'utf8'))
+
+  console.log('Loaded configuration from  ' + configPath, configuration)
 
   if (typeof configuration.poetNetwork === 'string')
     validatePoetNetwork(configuration.poetNetwork)

@@ -4,7 +4,6 @@ declare module 'bitcore-lib' {
 
 declare namespace bitcoreLib {
   export const Block: Block
-  export const Transaction: Transaction
   export const util: Util
   export const Script: Script
   export const PrivateKey: PrivateKey
@@ -29,22 +28,40 @@ declare namespace bitcoreLib {
     }
   }
 
-  interface Transaction {
+  class Transaction {
     inputs: Input[]
     outputs: Output[]
     readonly id: string
     readonly hash: string
     nid: string
 
-    new (serialized?: any): this
-    (serialized?: any): this
+    constructor(serialized?: any)
 
-    from(utxos: UTXO[]): Transaction
+    from(utxos: Transaction.UnspentOutput[]): Transaction
     to(address: Address | string, amount: number): Transaction
     change(address: Address | string): Transaction
     sign(privateKey: PrivateKey | string): Transaction
     applySignature(sig: crypto.Signature): Transaction
     addData(data: Buffer): this
+    serialize(): string
+  }
+
+  export namespace Transaction {
+    class UnspentOutput {
+      static fromObject(o: object): UnspentOutput
+
+      readonly address: Address
+      readonly txId: string
+      readonly outputIndex: number
+      readonly script: Script
+      readonly satoshis: number
+
+      constructor(data: object)
+
+      inspect(): string
+      toObject(): this
+      toString(): string
+    }
   }
 
   interface Block {
@@ -87,27 +104,11 @@ declare namespace bitcoreLib {
     }
   }
 
-  interface UnspentOutput {
-    readonly address: Address
-    readonly txId: string
-    readonly outputIndex: number
-    readonly script: Script
-    readonly satoshis: number
-
-    (data: object): this
-    new (data: object): this
-
-    inspect(): string
-    fromObject(o: object): this
-    toObject(): this
-  }
-
   export namespace Networks {
 
     interface Network {
       readonly name: string
       readonly alias: string
-
     }
 
     export const livenet: Network
@@ -129,8 +130,6 @@ interface Input {
 
 }
 
-interface UTXO {
-}
 interface RandomInterface {
 }
 interface PointInterface {

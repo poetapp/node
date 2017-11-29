@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify'
 
-import { isClaim } from 'Helpers/Claim'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -19,18 +18,20 @@ export class Router {
     this.claimController = claimController
   }
 
-  start() {
-    this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
+  async start() {
+    await this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
   }
 
-  onNewClaim = async (message: any): Promise<void> => {
+  onClaimIPFSHash = async (message: any): Promise<void> => {
     const messageContent = message.content.toString()
+    console.log('onClaimIPFSHash', messageContent)
 
-    const claim = JSON.parse(messageContent)
+    const { claimId, ipfsHash } = JSON.parse(messageContent)
 
-    if (!isClaim(claim))
-      throw new Error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
-
-    await this.claimController.create(claim)
+    try {
+      await this.claimController.timestamp(ipfsHash)
+    } catch (exception) {
+      console.error(exception.message)
+    }
   }
 }
