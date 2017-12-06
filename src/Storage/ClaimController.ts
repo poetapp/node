@@ -49,18 +49,19 @@ export class ClaimController {
     }, null, 2))
 
     const ipfsHashes = poetBlockchainMessage.poetMessages.map(_ => _.ipfsHash)
-
     const claims = await Promise.all(ipfsHashes.map(this.downloadClaim))
+    const extendedClaims = claims.map((claim, index) => ({
+      ...claim,
+      ...poetBlockchainMessage.poetMessages[index]
+    }))
 
     // TODO: store in Storage's DB
     // TODO: send claims to RMQ
-    // TODO: structure claims + ipfsHashes so they can be linked
 
     console.log(JSON.stringify({
       action: 'Download',
       message: 'Downloaded claims from IPFS',
-      ipfsHashes,
-      claims
+      extendedClaims
     }, null, 2))
 
   }
