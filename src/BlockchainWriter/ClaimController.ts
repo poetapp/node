@@ -62,11 +62,20 @@ export class ClaimController {
       .addData(data)
       .sign(this.configuration.bitcoinAddressPrivateKey)
 
-    console.log('\nBitcoin transaction hash is', tx.hash)
+    console.log(JSON.stringify({
+      action: 'timestamp',
+      message: 'Transaction Built',
+      txHash: tx.hash
+    }, null, 2))
 
     const txPostResponse = await this.insightHelper.broadcastTx(tx)
 
-    console.log('\nBroadcasted Tx:', txPostResponse)
+    console.log(JSON.stringify({
+      action: 'timestamp',
+      message: 'Transaction Broadcasted',
+      txHash: tx.hash,
+      txPostResponse
+    }, null, 2))
 
     this.collection.insertOne({
       ipfsHash,
