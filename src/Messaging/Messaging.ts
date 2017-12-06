@@ -1,6 +1,6 @@
 import { Connection, connect, Channel } from 'amqplib'
 
-import { Exchange } from './Messages'
+import { BlockchainPoetTimestampMessage, Exchange } from './Messages'
 
 export class Messaging {
   private readonly connectionUrl: string
@@ -42,5 +42,18 @@ export class Messaging {
     const assertQueue = await this.channel.assertQueue('', {exclusive: true})
     this.channel.bindQueue(assertQueue.queue, exchange, '')
     this.channel.consume(assertQueue.queue, consume, { noAck: true })
+  }
+
+  // TODO: move these business-specific functions to a different file
+  publishPoetBlockchainMessage = async (poetBlockchainMessage: BlockchainPoetTimestampMessage) => {
+    return this.publish(Exchange.PoetBlockchainMessage, poetBlockchainMessage)
+  }
+
+  consumePoetBlockchainMessage = async (consume: (message: BlockchainPoetTimestampMessage) => void) => {
+    await this.consume(Exchange.PoetBlockchainMessage, (message: any) => {
+      const messageContent = message.content.toString()
+      const poetBlockchainMessage = JSON.parse(messageContent)
+      consume(poetBlockchainMessage)
+    })
   }
 }

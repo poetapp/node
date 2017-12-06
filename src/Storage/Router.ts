@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import { isClaim } from 'Helpers/Claim'
-import { Exchange } from 'Messaging/Messages'
+import { BlockchainPoetTimestampMessage, Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
@@ -19,8 +19,9 @@ export class Router {
     this.claimController = claimController
   }
 
-  start() {
-    this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
+  async start() {
+    await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
+    await this.messaging.consumePoetBlockchainMessage(this.onPoetBlockchainMessage)
   }
 
   onNewClaim = async (message: any): Promise<void> => {
@@ -32,5 +33,14 @@ export class Router {
       throw new Error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
 
     await this.claimController.create(claim)
+  }
+
+  onPoetBlockchainMessage = async (poetBlockchainMessage: BlockchainPoetTimestampMessage): Promise<void> => {
+    console.log(JSON.stringify({
+      action: 'onPoetBlockchainMessage',
+      poetBlockchainMessage
+    }, null, 2))
+
+    await this.claimController.download(poetBlockchainMessage)
   }
 }

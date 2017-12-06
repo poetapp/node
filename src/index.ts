@@ -6,6 +6,7 @@ import { API } from 'API/API'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
 import { Storage } from 'Storage/Storage'
 import { View } from 'View/View'
+import { BlockchainReader } from './BlockchainReader/BlockchainReader'
 
 async function main() {
   console.log('Running Po.et Node')
@@ -46,6 +47,20 @@ async function main() {
     } catch (ex) {
       console.log('BlockchainWriter was unable to start. Cause was: \n', ex)
     }
+  }
+
+  const blockchainReader = new BlockchainReader({
+    dbUrl: Configuration.mongodbUrl,
+    insightUrl: Configuration.insightUrl,
+    poetNetwork: Configuration.poetNetwork,
+    poetVersion: Configuration.poetVersion,
+    minimumBlockHeight: Configuration.minimumBlockHeight,
+    blockchainReaderIntervalInSeconds: Configuration.blockchainReaderIntervalInSeconds
+  })
+  try {
+    await blockchainReader.start()
+  } catch (ex) {
+    console.log('BlockchainReader was unable to start. Cause was: \n', ex)
   }
 }
 
