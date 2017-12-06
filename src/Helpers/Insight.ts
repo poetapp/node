@@ -9,15 +9,20 @@ export class InsightHelper {
   }
 
   getUtxo = async (address: string): Promise<ReadonlyArray<bitcore.Transaction.UnspentOutput>> => {
-    const utxoResponse = await fetch(`${this.url}/addrs/${address}/utxo`)
-    const rawutxo = await utxoResponse.json()
+    const response = await fetch(`${this.url}/addrs/${address}/utxo`)
+
+    if (!response.ok)
+      throwError(await response.text())
+
+    const rawutxo = await response.json()
 
     if (!Array.isArray(rawutxo)) {
       console.error({
-        message: 'InsightHelper.getUtxo was expecting server response to be an Array. ',
+        action: 'InsightHelper.getUtxo',
+        message: 'Expected server response to be an Array. ',
         actualResponse: rawutxo
       })
-      throw new Error('InsightHelper.getUtxo was expecting server response to be an Array. ')
+      throw new UnexpectedResponseError('InsightHelper.getUtxo was expecting server response to be an Array. ')
     }
 
     return rawutxo.map(_ => new bitcore.Transaction.UnspentOutput(_))
@@ -35,12 +40,52 @@ export class InsightHelper {
     })
 
     if (!response.ok)
-      throw new Error(JSON.stringify({
-        message: 'Unable to broadcast transaction',
-        reason: await response.text()
-      }))
+      throwError(await response.text())
 
     return await response.json()
-
   }
+
+  /**
+   * @throws BlockHeightOutOfRangeError, InsightError
+   */
+  getBlockHash = async (height: number): Promise<string> => {
+    const response = await fetch(`${this.url}/block-index/${height}`)
+
+    if (!response.ok)
+      throwError(await response.text())
+
+    const json = await response.json()
+
+    return json.blockHash
+  }
+
+  getBlock = async (hash: string): Promise<bitcore.Block> => {
+    const response = await fetch(`${this.url}/rawblock/${hash}`)
+
+    if (!response.ok)
+      throwError(await response.text())
+
+    const json = await response.json()
+
+    return new bitcore.Block(Buffer.from(json.rawblock, 'hex'))
+  }
+}
+
+export class InsightError extends Error {
+  readonly message: string
+
+  constructor(message?: string, ...params: any[]) {
+    super(...params)
+    this.message = message
+  }
+}
+
+export class UnexpectedResponseError extends InsightError { }
+
+export class BlockHeightOutOfRangeError extends InsightError { }
+
+function throwError(serverResponse: string) {
+  if (serverResponse === 'Block height out of range. Code:-8')
+    throw new BlockHeightOutOfRangeError()
+  throw new InsightError(serverResponse)
 }
