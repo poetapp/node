@@ -46,7 +46,8 @@ export class BlockchainReader {
     this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
     this.container.bind<BlockchainReaderServiceConfiguration>('BlockchainReaderServiceConfiguration').toConstantValue({
       minimumBlockHeight: this.configuration.minimumBlockHeight,
-      blockchainReaderIntervalInSeconds: this.configuration.blockchainReaderIntervalInSeconds
+      blockchainReaderIntervalInSeconds: this.configuration.blockchainReaderIntervalInSeconds,
+      forceBlockHeight: this.configuration.forceBlockHeight,
     })
   }
 }

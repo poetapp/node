@@ -55,6 +55,7 @@ async function main() {
     poetNetwork: Configuration.poetNetwork,
     poetVersion: Configuration.poetVersion,
     minimumBlockHeight: Configuration.minimumBlockHeight,
+    forceBlockHeight: Configuration.forceBlockHeight,
     blockchainReaderIntervalInSeconds: Configuration.blockchainReaderIntervalInSeconds
   })
   try {

@@ -24,7 +24,7 @@ export class BlockchainReaderService {
 
   async start() {
     const lastBlockHeight = await this.claimController.findHighestBlockHeight()
-    this.lastBlockHeight = lastBlockHeight || this.configuration.minimumBlockHeight
+    this.lastBlockHeight = this.configuration.forceBlockHeight || lastBlockHeight || this.configuration.minimumBlockHeight
     this.interval.start()
   }
 
@@ -33,7 +33,7 @@ export class BlockchainReaderService {
   }
 
   private scanNewBlock = async () => {
-    const blockHeight = this.lastBlockHeight + 1
+    const blockHeight = this.configuration.forceBlockHeight || this.lastBlockHeight + 1
     try {
       await this.claimController.scanBlock(blockHeight)
       this.lastBlockHeight = blockHeight
