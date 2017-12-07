@@ -94,7 +94,7 @@ export class ClaimController {
     const claim = JSON.parse(text)
 
     if (!isClaim(claim))
-      throw new Error('not claim') // TODO: type error
+      throw new Error('Unrecognized claim')
 
     return claim
   }
