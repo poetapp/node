@@ -45,11 +45,11 @@ export class Messaging {
   }
 
   // TODO: move these business-specific functions to a different file
-  publishPoetBlockchainMessage = async (poetBlockchainMessage: BlockchainPoetTimestampMessage) => {
+  publishPoetTimestamp = async (poetBlockchainMessage: BlockchainPoetTimestampMessage) => {
     return this.publish(Exchange.PoetTimestamp, poetBlockchainMessage)
   }
 
-  consumePoetBlockchainMessage = async (consume: (message: BlockchainPoetTimestampMessage) => void) => {
+  consumePoetTimestamp = async (consume: (message: BlockchainPoetTimestampMessage) => void) => {
     await this.consume(Exchange.PoetTimestamp, (message: any) => {
       const messageContent = message.content.toString()
       const poetBlockchainMessage = JSON.parse(messageContent)

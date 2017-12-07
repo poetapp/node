@@ -21,7 +21,7 @@ export class Router {
 
   async start() {
     await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
-    await this.messaging.consumePoetBlockchainMessage(this.onPoetBlockchainMessage)
+    await this.messaging.consumePoetTimestamp(this.onPoetBlockchainMessage)
   }
 
   onNewClaim = async (message: any): Promise<void> => {

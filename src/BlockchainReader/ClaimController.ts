@@ -70,7 +70,7 @@ export class ClaimController {
       }, { upsert: true})
 
     if (matchingPoetData.length)
-      await this.messaging.publishPoetBlockchainMessage({
+      await this.messaging.publishPoetTimestamp({
         blockHeight,
         blockHash,
         poetMessages: matchingPoetData
