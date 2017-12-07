@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 
+import { BlockchainPoetTimestamp } from 'Helpers/Bitcoin'
 import { isClaim } from 'Helpers/Claim'
 import { Exchange, BlockchainPoetTimestampMessage } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
@@ -50,19 +51,41 @@ export class ClaimController {
 
     const ipfsHashes = poetBlockchainMessage.poetMessages.map(_ => _.ipfsHash)
     const claims = await Promise.all(ipfsHashes.map(this.downloadClaim))
-    const extendedClaims = claims.map((claim, index) => ({
+    const extendedClaims: ReadonlyArray<Claim & BlockchainPoetTimestamp> = claims.map((claim, index) => ({
       ...claim,
       ...poetBlockchainMessage.poetMessages[index]
     }))
-
-    // TODO: store in Storage's DB
-    // TODO: send claims to RMQ
 
     console.log(JSON.stringify({
       action: 'Download',
       message: 'Downloaded claims from IPFS',
       extendedClaims
     }, null, 2))
+
+    const claimidIPFSHashPairs = extendedClaims.map(extendedClaim => ({
+      claimId: extendedClaim.id,
+      ipfsHash: extendedClaim.ipfsHash
+    }))
+
+    const results = await Promise.all(claimidIPFSHashPairs.map(({claimId, ipfsHash}) =>
+      this.collection.updateOne({ claimId }, { $set: { ipfsHash } }, { upsert: true })
+    ))
+
+    const databaseErrors = results.filter(_ => _.result.n !== 1)
+
+    if (databaseErrors.length)
+      console.error(JSON.stringify({
+        action: 'Download',
+        message: 'Error Storing { claimId, ipfsHash } pairs in the DB.',
+        databaseErrors,
+      }, null, 2))
+
+    console.log(JSON.stringify({
+      action: 'Download',
+      message: 'Stored { claimId, ipfsHash } pairs in the DB successfully.',
+    }, null, 2))
+
+    // TODO: send extendedClaims to RMQ
 
   }
 

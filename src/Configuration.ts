@@ -33,7 +33,7 @@ const defaultConfiguration: Configuration = {
   poetVersion: [0, 0, 0, 2],
   minimumBlockHeight: 1253828,
   blockchainReaderIntervalInSeconds: 5,
-  forceBlockHeight: 1253828,
+  forceBlockHeight: 1253829,
 
   enableTimestamping: false,
 }
