@@ -2,7 +2,6 @@
  * General interfaces for types used by the Po.et Node.
  * These will be moved to poet-js in the future.
  */
-import { isClaim } from 'Helpers/Claim'
 
 export interface Claim<T extends ClaimAttributes = ClaimAttributes> {
   readonly id?: string
@@ -13,6 +12,11 @@ export interface Claim<T extends ClaimAttributes = ClaimAttributes> {
 
   readonly type: ClaimType
   readonly attributes: T
+}
+
+export function isClaim(object: any): object is Claim {
+  // TODO: use joi or protobuf
+  return object.id && object.publicKey && object.signature && object.type && object.attributes
 }
 
 export interface ClaimAttributes {

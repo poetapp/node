@@ -3,8 +3,8 @@ import * as Koa from 'koa'
 import * as KoaBody from 'koa-body'
 import * as KoaRouter from 'koa-router'
 
-import { isClaim, isValidSignature, isWork } from 'Helpers/Claim'
-import { ClaimType } from 'Interfaces'
+import { isValidSignature, isWork } from 'Helpers/Claim'
+import { ClaimType, isClaim } from 'Interfaces'
 
 import { IllegalArgumentException, NotFoundException } from './Exceptions'
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'

@@ -7,11 +7,6 @@ import { Claim, ClaimAttributes, ClaimType, Work } from 'Interfaces'
 
 import { Serialization } from './Serialization'
 
-export function isClaim(object: any): object is Claim {
-  // TODO: use joi or protobuf
-  return object.id && object.publicKey && object.signature && object.type && object.attributes
-}
-
 export function isWork(claim: Claim): claim is Work {
   return claim.type === ClaimType.Work
 }

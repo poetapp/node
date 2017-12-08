@@ -1,11 +1,9 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 
-import { isClaim } from 'Helpers/Claim'
+import { Claim, isClaim, ClaimIdIPFSHashPair } from 'Interfaces'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
-
-import { Claim, ClaimIdIPFSHashPair } from 'Interfaces'
 
 import { IPFS } from './IPFS'
 

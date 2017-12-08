@@ -1,7 +1,6 @@
 import { Connection, connect, Channel } from 'amqplib'
 
-import { isClaim } from 'Helpers/Claim'
-import { ClaimIPFSHashPair, isClaimIPFSHashPair, PoetTimestamp } from 'Interfaces'
+import { isClaim, ClaimIPFSHashPair, isClaimIPFSHashPair, PoetTimestamp } from 'Interfaces'
 
 import { Exchange } from './Messages'
 
