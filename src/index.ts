@@ -3,10 +3,10 @@ import 'reflect-metadata'
 import { Configuration } from 'Configuration'
 
 import { API } from 'API/API'
+import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
 import { Storage } from 'Storage/Storage'
 import { View } from 'View/View'
-import { BlockchainReader } from './BlockchainReader/BlockchainReader'
 
 async function main() {
   console.log('Running Po.et Node')
