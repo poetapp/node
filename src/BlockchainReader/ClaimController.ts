@@ -73,10 +73,11 @@ export class ClaimController {
     }, null, 2))
 
     await this.collection.updateOne({ blockHeight }, {
-        $set: { blockHash, transactionIds, poetTimestamps }
+        $set: { blockHash, transactionIds, matchingPoetTimestamps, unmatchingPoetTimestamps }
       }, { upsert: true})
 
-    await this.messaging.publishPoetTimestampsDownloaded(matchingPoetTimestamps)
+    if (matchingPoetTimestamps.length)
+      await this.messaging.publishPoetTimestampsDownloaded(matchingPoetTimestamps)
   }
 
   /**
