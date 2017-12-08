@@ -38,6 +38,10 @@ export interface WorkAttributes extends ClaimAttributes {
   readonly content: string
 }
 
+export function isWork(claim: Claim): claim is Work {
+  return claim.type === ClaimType.Work
+}
+
 export interface TransactionPoetTimestamp {
   readonly transactionId: string
   readonly outputIndex: number
