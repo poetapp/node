@@ -32,3 +32,21 @@ export interface WorkAttributes extends ClaimAttributes {
   readonly tags: string
   readonly content: string
 }
+
+export interface TransactionPoetTimestamp {
+  readonly transactionId: string
+  readonly outputIndex: number
+  readonly prefix: string
+  readonly version: ReadonlyArray<number>
+  readonly ipfsHash: string
+}
+
+export interface PoetTimestamp extends TransactionPoetTimestamp {
+  readonly blockHeight: number
+  readonly blockHash: string
+}
+
+export interface ClaimIdIPFSHashPair {
+  readonly claimId: string
+  readonly ipfsHash: string
+}

@@ -1,6 +1,9 @@
 import { Connection, connect, Channel } from 'amqplib'
 
-import { BlockchainPoetTimestampMessage, Exchange } from './Messages'
+import { isClaim } from 'Helpers/Claim'
+import { PoetTimestamp } from 'Interfaces'
+
+import { Exchange } from './Messages'
 
 export class Messaging {
   private readonly connectionUrl: string
@@ -45,15 +48,34 @@ export class Messaging {
   }
 
   // TODO: move these business-specific functions to a different file
-  publishPoetTimestamp = async (poetBlockchainMessage: BlockchainPoetTimestampMessage) => {
-    return this.publish(Exchange.PoetTimestamp, poetBlockchainMessage)
+  publishPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
+    return this.publish(Exchange.PoetTimestampDownloaded, poetTimestamps)
   }
 
-  consumePoetTimestamp = async (consume: (message: BlockchainPoetTimestampMessage) => void) => {
-    await this.consume(Exchange.PoetTimestamp, (message: any) => {
+  consumePoetTimestampsDownloaded = async (consume: (poetTimestamps: ReadonlyArray<PoetTimestamp>) => void) => {
+    await this.consume(Exchange.PoetTimestampDownloaded, (message: any) => {
       const messageContent = message.content.toString()
-      const poetBlockchainMessage = JSON.parse(messageContent)
-      consume(poetBlockchainMessage)
+      const poetTimestamps = JSON.parse(messageContent)
+
+      if (!Array.isArray(poetTimestamps)) {
+        console.log({
+          action: 'consumePoetTimestampsDownloaded',
+          message: 'Expected poetTimestamps to be an Array.',
+          poetTimestamps,
+        })
+        return
+      }
+
+      if (poetTimestamps.map(isClaim).find(_ => !_)) {
+        console.log({
+          action: 'consumePoetTimestampsDownloaded',
+          message: 'Expected poetTimestamps to be an Array<Claim>.',
+          offendingElements: poetTimestamps.map(isClaim).filter(_ => !_),
+        })
+        return
+      }
+
+      consume(poetTimestamps)
     })
   }
 }

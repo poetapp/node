@@ -1,29 +1,23 @@
 import * as bitcore from 'bitcore-lib'
 
+import { TransactionPoetTimestamp } from 'Interfaces'
+
 export const PREFIX_POET = Buffer.from('POET')
 export const PREFIX_BARD = Buffer.from('BARD')
 
-export interface BlockchainPoetTimestamp {
-  readonly transactionId: string
-  readonly outputIndex: number
-  readonly prefix: string
-  readonly version: ReadonlyArray<number>
-  readonly ipfsHash: string
-}
-
-export function getPoetData(tx: bitcore.Transaction): BlockchainPoetTimestamp {
+export function getPoetTimestamp(tx: bitcore.Transaction): TransactionPoetTimestamp {
   const poetOutput = tx.outputs
     .filter(isOutputDataOut)
     .find(isOutputCorrectNetwork)
 
-  const poetData: Buffer = poetOutput && poetOutput.script.getData()
+  const poetTimestampBuffer: Buffer = poetOutput && poetOutput.script.getData()
 
-  return poetData && {
+  return poetTimestampBuffer && {
     transactionId: tx.id,
     outputIndex: tx.outputs.indexOf(poetOutput),
-    prefix: poetData.slice(0, 4).toString(),
-    version: Array.from(poetData.slice(4, 8)),
-    ipfsHash: poetData.slice(8).toString()
+    prefix: poetTimestampBuffer.slice(0, 4).toString(),
+    version: Array.from(poetTimestampBuffer.slice(4, 8)),
+    ipfsHash: poetTimestampBuffer.slice(8).toString()
   }
 }
 

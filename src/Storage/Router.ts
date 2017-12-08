@@ -1,7 +1,8 @@
 import { inject, injectable } from 'inversify'
 
 import { isClaim } from 'Helpers/Claim'
-import { BlockchainPoetTimestampMessage, Exchange } from 'Messaging/Messages'
+import { PoetTimestamp } from 'Interfaces'
+import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
@@ -21,7 +22,7 @@ export class Router {
 
   async start() {
     await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
-    await this.messaging.consumePoetTimestamp(this.onPoetBlockchainMessage)
+    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetTimestampsDownloaded)
   }
 
   onNewClaim = async (message: any): Promise<void> => {
@@ -35,12 +36,12 @@ export class Router {
     await this.claimController.create(claim)
   }
 
-  onPoetBlockchainMessage = async (poetBlockchainMessage: BlockchainPoetTimestampMessage): Promise<void> => {
+  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>): Promise<void> => {
     console.log(JSON.stringify({
-      action: 'onPoetBlockchainMessage',
-      poetBlockchainMessage
+      action: 'onPoetTimestampsDownloaded',
+      poetTimestamps
     }, null, 2))
 
-    await this.claimController.download(poetBlockchainMessage)
+    await this.claimController.download(poetTimestamps.map(_ => _.ipfsHash))
   }
 }

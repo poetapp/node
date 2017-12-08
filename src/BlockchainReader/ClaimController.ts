@@ -1,9 +1,9 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 
-import { BlockchainPoetTimestamp, getPoetData } from 'Helpers/Bitcoin'
+import { getPoetTimestamp } from 'Helpers/Bitcoin'
 import { InsightHelper } from 'Helpers/Insight'
-import { Exchange } from 'Messaging/Messages'
+import { PoetTimestamp } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
@@ -42,40 +42,41 @@ export class ClaimController {
       action: 'Scanning Block',
       message: 'Block Hash retrieved successfully. Retrieving Raw Block...',
       blockHeight,
-      blockHash
+      blockHash,
     }, null, 2))
 
     const block = await this.insightHelper.getBlock(blockHash)
+    const poetTimestamps: ReadonlyArray<PoetTimestamp> = block.transactions
+      .map(getPoetTimestamp)
+      .filter(_ => _)
+      .map(_ => ({
+        ..._,
+        blockHeight,
+        blockHash,
+      }))
     const transactionIds = block.transactions.map(_ => _.id)
-    const poetData: ReadonlyArray<BlockchainPoetTimestamp> = block.transactions.map(getPoetData).filter(_ => _)
 
-    const matchingPoetData = poetData
-      .filter(this.blockchainPoetMessageNetworkMatches)
-      .filter(this.blockchainPoetMessageVersionMatches)
+    const matchingPoetTimestamps = poetTimestamps
+      .filter(this.poetTimestampNetworkMatches)
+      .filter(this.poetTimestampVersionMatches)
 
-    const unmatchingPoetData = poetData
-      .filter(_ => !matchingPoetData.includes(_))
+    const unmatchingPoetTimestamps = poetTimestamps
+      .filter(_ => !matchingPoetTimestamps.includes(_))
 
     console.log(JSON.stringify({
       action: 'Scanning Block',
       message: 'Raw Block retrieved and scanned successfully.',
       blockHeight,
       blockHash,
-      matchingPoetData,
-      unmatchingPoetData
+      matchingPoetTimestamps,
+      unmatchingPoetTimestamps,
     }, null, 2))
 
     await this.collection.updateOne({ blockHeight }, {
-        $set: { blockHash, transactionIds, poetData }
+        $set: { blockHash, transactionIds, poetTimestamps }
       }, { upsert: true})
 
-    if (matchingPoetData.length)
-      await this.messaging.publishPoetTimestamp({
-        blockHeight,
-        blockHash,
-        poetMessages: matchingPoetData
-      })
-
+    await this.messaging.publishPoetTimestampsDownloaded(matchingPoetTimestamps)
   }
 
   /**
@@ -93,11 +94,11 @@ export class ClaimController {
     return highestBlockHeight
   }
 
-  private blockchainPoetMessageNetworkMatches = (blockchainPoetMessage: BlockchainPoetTimestamp) => {
+  private poetTimestampNetworkMatches = (blockchainPoetMessage: PoetTimestamp) => {
     return blockchainPoetMessage.prefix === this.configuration.poetNetwork
   }
 
-  private blockchainPoetMessageVersionMatches = (blockchainPoetMessage: BlockchainPoetTimestamp) => {
+  private poetTimestampVersionMatches = (blockchainPoetMessage: PoetTimestamp) => {
     if (blockchainPoetMessage.version.length !== this.configuration.poetVersion.length)
       return false
     for (let i = 0; i < blockchainPoetMessage.version.length; i++)
