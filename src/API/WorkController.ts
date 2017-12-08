@@ -23,7 +23,7 @@ export class WorkController {
 
   async getById(id: string): Promise<any> {
     console.log(`WorkController.getByid(${id})`)
-    return this.collection.findOne({id})
+    return this.collection.findOne({ id }, { fields: { _id: false } } )
   }
 
   async create(work: Work): Promise<void> {

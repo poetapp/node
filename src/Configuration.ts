@@ -14,6 +14,8 @@ export interface Configuration {
   readonly poetNetwork: string
   readonly poetVersion: ReadonlyArray<number>
   readonly minimumBlockHeight: number
+  readonly blockchainReaderIntervalInSeconds: number
+  readonly forceBlockHeight?: number
 
   readonly enableTimestamping?: boolean
   readonly bitcoinAddress?: string
@@ -29,9 +31,10 @@ const defaultConfiguration: Configuration = {
   apiPort: 18080,
   poetNetwork: 'BARD',
   poetVersion: [0, 0, 0, 2],
-  minimumBlockHeight: 1225900,
+  minimumBlockHeight: 1253828,
+  blockchainReaderIntervalInSeconds: 5,
 
-  enableTimestamping: false
+  enableTimestamping: false,
 }
 
 function loadConfigurationWithDefaults(): Configuration {

@@ -3,6 +3,7 @@ import 'reflect-metadata'
 import { Configuration } from 'Configuration'
 
 import { API } from 'API/API'
+import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
 import { Storage } from 'Storage/Storage'
 import { View } from 'View/View'
@@ -46,6 +47,21 @@ async function main() {
     } catch (ex) {
       console.log('BlockchainWriter was unable to start. Cause was: \n', ex)
     }
+  }
+
+  const blockchainReader = new BlockchainReader({
+    dbUrl: Configuration.mongodbUrl,
+    insightUrl: Configuration.insightUrl,
+    poetNetwork: Configuration.poetNetwork,
+    poetVersion: Configuration.poetVersion,
+    minimumBlockHeight: Configuration.minimumBlockHeight,
+    forceBlockHeight: Configuration.forceBlockHeight,
+    blockchainReaderIntervalInSeconds: Configuration.blockchainReaderIntervalInSeconds
+  })
+  try {
+    await blockchainReader.start()
+  } catch (ex) {
+    console.log('BlockchainReader was unable to start. Cause was: \n', ex)
   }
 }
 

@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify'
 
+import { ClaimIPFSHashPair, PoetTimestamp } from 'Interfaces'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -18,10 +19,12 @@ export class Router {
     this.workController = workController
   }
 
-  start() {
-    this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
-    this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
-    this.messaging.consume(Exchange.IPFSHashTxId, this.onIPFSHashTxId)
+  async start() {
+    await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
+    await this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
+    await this.messaging.consume(Exchange.IPFSHashTxId, this.onIPFSHashTxId)
+    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetTimestampsDownloaded)
+    await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
   }
 
   onNewClaim = (message: any) => {
@@ -42,5 +45,25 @@ export class Router {
     const { ipfsHash, txId } = JSON.parse(messageContent)
 
     this.workController.setTxId(ipfsHash, txId)
+  }
+
+  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
+    console.log(JSON.stringify({
+      module: 'View',
+      action: 'onPoetTimestampsDownloaded',
+      poetTimestamps,
+    }, null, 2))
+
+    await this.workController.upsertTimestamps(poetTimestamps)
+  }
+
+  onClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
+    console.log(JSON.stringify({
+      module: 'View',
+      action: 'onClaimsDownloaded',
+      claimIPFSHashPairs,
+    }, null, 2))
+
+    await this.workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
   }
 }

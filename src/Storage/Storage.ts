@@ -31,7 +31,7 @@ export class Storage {
     this.initializeContainer()
 
     this.router = this.container.get('Router')
-    this.router.start()
+    await this.router.start()
 
     console.log('Storage Started')
   }

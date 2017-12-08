@@ -66,7 +66,8 @@ declare namespace bitcoreLib {
 
   interface Block {
     hash: string
-    transactions: any[]
+    height: number
+    transactions: Transaction[]
     header: {
       time: number
       prevHash: string
