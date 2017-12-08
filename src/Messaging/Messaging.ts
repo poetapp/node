@@ -1,7 +1,7 @@
 import { Connection, connect, Channel } from 'amqplib'
 
 import { isClaim } from 'Helpers/Claim'
-import { PoetTimestamp } from 'Interfaces'
+import { ClaimIPFSHashPair, isClaimIPFSHashPair, PoetTimestamp } from 'Interfaces'
 
 import { Exchange } from './Messages'
 
@@ -76,6 +76,37 @@ export class Messaging {
       }
 
       consume(poetTimestamps)
+    })
+  }
+
+  publishClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
+    return this.publish(Exchange.ClaimsDownloaded, claimIPFSHashPairs)
+  }
+
+  consumeClaimsDownloaded = async (consume: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => void) => {
+    await this.consume(Exchange.ClaimsDownloaded, (message: any) => {
+      const messageContent = message.content.toString()
+      const claimIPFSHashPairs = JSON.parse(messageContent)
+
+      if (!Array.isArray(claimIPFSHashPairs)) {
+        console.log({
+          action: 'consumeClaimsDownloaded',
+          message: 'Expected claimIPFSHashPairs to be an Array.',
+          claimIPFSHashPairs,
+        })
+        return
+      }
+
+      if (claimIPFSHashPairs.map(isClaimIPFSHashPair).find(_ => !_)) {
+        console.log({
+          action: 'consumePoetTimestampsDownloaded',
+          message: 'Expected poetTimestamps to be an Array<ClaimIPFSHashPair>.',
+          offendingElements: claimIPFSHashPairs.map(isClaimIPFSHashPair).filter(_ => !_),
+        })
+        return
+      }
+
+      consume(claimIPFSHashPairs)
     })
   }
 }

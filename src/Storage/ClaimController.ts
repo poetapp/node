@@ -61,8 +61,10 @@ export class ClaimController {
       ipfsHash,
     })))
 
-    // TODO: send extendedClaims to RMQ
-
+    await this.messaging.publishClaimsDownloaded(ipfsHashes.map((ipfsHash, index) => ({
+      claim: claims[index],
+      ipfsHash,
+    })))
   }
 
   private downloadClaim = async (ipfsHash: string): Promise<Claim> => {

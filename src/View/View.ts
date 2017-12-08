@@ -29,7 +29,7 @@ export class View {
     this.initializeContainer()
 
     this.router = this.container.get('Router')
-    this.router.start()
+    await this.router.start()
 
     console.log('View Started')
   }

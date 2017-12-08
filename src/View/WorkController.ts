@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 
-import { Work } from 'Interfaces'
+import { ClaimIPFSHashPair, PoetTimestamp, Work } from 'Interfaces'
 
 @injectable()
 export class WorkController {
@@ -34,5 +34,17 @@ export class WorkController {
   setTxId = (ipfsHash: string, txId: string): void => {
     console.log('setTxId', ipfsHash, txId)
     const result = this.collection.updateMany({ ipfsHash }, { $set: { txId } })
+  }
+
+  async upsertTimestamps(poetTimestamps: ReadonlyArray<PoetTimestamp>) {
+    await Promise.all(poetTimestamps.map(timestamp =>
+      this.collection.updateOne({ 'timestamp.ipfsHash': timestamp.ipfsHash}, { timestamp }, { upsert: true })
+    ))
+  }
+
+  async upsertClaimIPFSHashPair(claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) {
+    await Promise.all(claimIPFSHashPairs.map(({ claim, ipfsHash }) =>
+      this.collection.updateOne({ 'timestamp.ipfsHash': ipfsHash }, { $set: claim }, { upsert: true })
+    ))
   }
 }
