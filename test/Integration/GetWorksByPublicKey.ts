@@ -5,7 +5,6 @@ import { Claim, isClaim } from '../../src/Interfaces'
 
 const url = 'http://localhost:18080'
 
-@FocusTests
 @TestFixture('GET /works?publicKey=...')
 export class GetWorksByPublicKey {
 
