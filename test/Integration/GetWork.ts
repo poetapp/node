@@ -1,21 +1,27 @@
 import { AsyncTest, Expect, TestCase } from 'alsatian'
 import fetch from 'node-fetch'
 
+import { Claim } from 'Interfaces'
+
+import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
+
 const url = 'http://localhost:18080'
 
 export class GetWork {
 
   @AsyncTest()
-  @TestCase('10d61d594df81c8018604e2bb0cb1e798ce18675812445e0248db4819e558187')
-  async getWork200(id: string) {
-    const response = await fetch(url + '/works/' + id)
+  @TestCase(TheRaven)
+  @TestCase(TheMurdersInTheRueMorgue)
+  @TestCase(AStudyInScarlet)
+  async getWork200(claim: Claim) {
+    const response = await fetch(url + '/works/' + claim.id)
 
     Expect(response.ok).toBeTruthy()
 
     const body = await response.json()
 
-    Expect(body.id).toBe(id)
-    Expect(body.attributes.name).toBe('The Raven')
+    Expect(body.id).toBe(claim.id)
+    Expect(body.attributes.name).toBe(claim.attributes.name)
 
   }
 

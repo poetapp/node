@@ -48,7 +48,11 @@ export namespace Serialization {
   }
 
   function attributesToProtos(attributes: ClaimAttributes): ReadonlyArray<Message<any>> {
-    const attributeArray = Object.entries(attributes).map(([key, value]) => ({key, value}))
+    const attributeArray = Object
+      .entries(attributes)
+      .map(([key, value]) => ({key, value}))
+      .map(({key, value}) => ({key: key.toLowerCase(), value}))
+      .sort((a, b) => a.key.localeCompare(b.key))
     return attributeArray.map(AttributeProto.create, AttributeProto)
   }
 

@@ -1,9 +1,9 @@
 import { Expect, Test, TestCase } from 'alsatian'
 
 import { getClaimId } from 'Helpers/Claim'
-import { ClaimType, Work } from 'Interfaces'
+import { Claim, ClaimType, Work } from 'Interfaces'
 
-import { TheRaven } from '../../Claims'
+import { AStudyInScarlet, makeClaim, TheMurdersInTheRueMorgue, TheRaven } from '../../Claims'
 
 export class GetClaimId {
 
@@ -61,6 +61,40 @@ export class GetClaimId {
       ...work,
       dateCreated: new Date()
     })).not.toBe(work.id)
+  }
+
+  @Test()
+  @TestCase(TheRaven.attributes.name, TheRaven.attributes.author)
+  @TestCase(TheMurdersInTheRueMorgue.attributes.name, TheMurdersInTheRueMorgue.attributes.author)
+  @TestCase(AStudyInScarlet.attributes.name, AStudyInScarlet.attributes.author)
+  public claimIdShouldNotChangeWithAttributeOrdering(name: string, author: string) {
+    const work1: Claim = makeClaim({
+      name,
+      author,
+    })
+    const work2: Claim = makeClaim({
+      author,
+      name,
+    })
+
+    Expect(getClaimId(work1)).toBe(getClaimId(work2))
+  }
+
+  @Test()
+  @TestCase(TheRaven.attributes.name, TheRaven.attributes.author)
+  @TestCase(TheMurdersInTheRueMorgue.attributes.name, TheMurdersInTheRueMorgue.attributes.author)
+  @TestCase(AStudyInScarlet.attributes.name, AStudyInScarlet.attributes.author)
+  public claimIdShouldNotChangeWithAttributeKeyCasing(name: string, author: string) {
+    const work1: Claim = makeClaim({
+      name,
+      author,
+    })
+    const work2: Claim = makeClaim({
+      Author: author,
+      NAME: name,
+    })
+
+    Expect(getClaimId(work1)).toBe(getClaimId(work2))
   }
 
 }
