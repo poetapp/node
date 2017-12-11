@@ -1,7 +1,9 @@
-import { AsyncTest, Expect, FocusTest, FocusTests, TestCase, TestFixture } from 'alsatian'
+import { AsyncTest, Expect, TestCase, TestFixture } from 'alsatian'
 import fetch from 'node-fetch'
-import { TheRaven } from '../Claims'
-import { Claim, isClaim } from '../../src/Interfaces'
+
+import { Claim, isClaim, Work } from 'Interfaces'
+
+import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
 
 const url = 'http://localhost:18080'
 
@@ -10,6 +12,8 @@ export class GetWorksByPublicKey {
 
   @AsyncTest()
   @TestCase(TheRaven.publicKey)
+  @TestCase(TheMurdersInTheRueMorgue.publicKey)
+  @TestCase(AStudyInScarlet.publicKey)
   async getWorksByPublicKeyShouldSucceed(publicKey: string) {
     const response = await fetch(url + '/works/?publicKey=' + publicKey)
 
@@ -19,6 +23,8 @@ export class GetWorksByPublicKey {
 
   @AsyncTest()
   @TestCase(TheRaven.publicKey)
+  @TestCase(TheMurdersInTheRueMorgue.publicKey)
+  @TestCase(AStudyInScarlet.publicKey)
   async getWorksByPublicKeyShouldReturnAnArray(publicKey: string) {
     const response = await fetch(url + '/works/?publicKey=' + publicKey)
 
@@ -33,7 +39,20 @@ export class GetWorksByPublicKey {
 
   @AsyncTest()
   @TestCase(TheRaven.publicKey)
-  async getWorksByPublicKeyShouldReturnOneElement(publicKey: string) {
+  async getWorksByEAPPublicKeyShouldReturnTwoElements(publicKey: string) {
+    const response = await fetch(url + '/works/?publicKey=' + publicKey)
+
+    Expect(response.status).toBe(200)
+    Expect(response.ok).toBeTruthy()
+
+    const claims = await response.json()
+
+    Expect(claims.length).toBe(2)
+  }
+
+  @AsyncTest()
+  @TestCase(AStudyInScarlet.publicKey)
+  async getWorksByACDPublicKeyShouldReturnOneElement(publicKey: string) {
     const response = await fetch(url + '/works/?publicKey=' + publicKey)
 
     Expect(response.status).toBe(200)
@@ -46,6 +65,8 @@ export class GetWorksByPublicKey {
 
   @AsyncTest()
   @TestCase(TheRaven.publicKey)
+  @TestCase(TheMurdersInTheRueMorgue.publicKey)
+  @TestCase(AStudyInScarlet.publicKey)
   async getWorksByPublicKeyShouldReturnClaims(publicKey: string) {
     const response = await fetch(url + '/works/?publicKey=' + publicKey)
 
@@ -61,6 +82,8 @@ export class GetWorksByPublicKey {
 
   @AsyncTest()
   @TestCase(TheRaven.publicKey)
+  @TestCase(TheMurdersInTheRueMorgue.publicKey)
+  @TestCase(AStudyInScarlet.publicKey)
   async getWorksByPublicKeyShouldReturnClaimsMatchingPublicKey(publicKey: string) {
     const response = await fetch(url + '/works/?publicKey=' + publicKey)
 
@@ -75,8 +98,9 @@ export class GetWorksByPublicKey {
   }
 
   @AsyncTest()
-  @TestCase(TheRaven.publicKey, TheRaven)
-  async getWorksByPublicKeyShouldReturnExpectedFields(publicKey: string, expectedClaim: Claim) {
+  @TestCase(TheRaven.publicKey, [TheRaven, TheMurdersInTheRueMorgue])
+  @TestCase(AStudyInScarlet.publicKey, [AStudyInScarlet])
+  async getWorksByPublicKeyShouldReturnExpectedFields(publicKey: string, expectedClaims: ReadonlyArray<Work>) {
     const response = await fetch(url + '/works/?publicKey=' + publicKey)
 
     Expect(response.status).toBe(200)
@@ -89,9 +113,11 @@ export class GetWorksByPublicKey {
       dateCreated: new Date(_.dateCreated)
     }))
 
-    Expect(claims[0].id).toBe(expectedClaim.id)
-    Expect(claims[0].publicKey).toBe(expectedClaim.publicKey)
-    Expect(claims[0].signature).toBe(expectedClaim.signature)
-    Expect(claims[0].dateCreated.toISOString()).toBe(expectedClaim.dateCreated.toISOString())
+    for (let i = 0; i < claims.length; i++) {
+      Expect(claims[i].id).toBe(expectedClaims[i].id)
+      Expect(claims[i].publicKey).toBe(expectedClaims[i].publicKey)
+      Expect(claims[i].signature).toBe(expectedClaims[i].signature)
+      Expect(claims[i].dateCreated.toISOString()).toBe(expectedClaims[i].dateCreated.toISOString())
+    }
   }
 }
