@@ -26,6 +26,15 @@ export class WorkController {
     return this.collection.findOne({ id }, { fields: { _id: false } } )
   }
 
+  async getByPublicKey(publicKey: string): Promise<any> {
+    console.log(JSON.stringify({
+      module: 'API',
+      action: 'WorkController.getByPublicKey',
+      publicKey,
+    }, null, 2))
+    return this.collection.find({ publicKey }, { fields: { _id: false } } ).toArray()
+  }
+
   async create(work: Work): Promise<void> {
     console.log(`WorkController.create(${JSON.stringify(work)})`)
     // TODO: verify id, publicKey, signature and createdDate

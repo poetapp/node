@@ -26,6 +26,7 @@ export class Router {
     this.workController = workController
 
     this.koaRouter.get('/works/:id', this.getWork)
+    this.koaRouter.get('/works', this.getWorks)
     this.koaRouter.post('/works', this.postWork)
 
     this.koa.use(HttpExceptionsMiddleware)
@@ -39,6 +40,11 @@ export class Router {
   }
 
   private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    console.log(JSON.stringify({
+      module: 'API',
+      action: 'Router.getWork',
+      params: context.params
+    }, null, 2))
     const id = context.params.id
     const work = await this.workController.getById(id)
 
@@ -46,6 +52,18 @@ export class Router {
       throw new NotFoundException('')
 
     context.body = work
+  }
+
+  private getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    console.log(JSON.stringify({
+      module: 'API',
+      action: 'Router.getWorks',
+      query: context.query
+    }, null, 2))
+    const publicKey = context.query.publicKey
+    const works = await this.workController.getByPublicKey(publicKey)
+
+    context.body = works
   }
 
   private postWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {

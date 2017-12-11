@@ -1,4 +1,4 @@
-import { AsyncTest, Expect, FocusTests, TestCase } from 'alsatian'
+import { AsyncTest, Expect, TestCase } from 'alsatian'
 import fetch from 'node-fetch'
 
 const url = 'http://localhost:18080'
