@@ -26,7 +26,7 @@ export class BlockchainReader {
     console.log('BlockchainReader Starting...', this.configuration)
     this.dbConnection = await MongoClient.connect(this.configuration.dbUrl)
 
-    this.messaging = new Messaging()
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
 
     this.initializeContainer()

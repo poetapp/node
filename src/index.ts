@@ -12,21 +12,21 @@ async function main() {
   console.log('Running Po.et Node')
   console.log('')
 
-  const api = new API({port: Configuration.apiPort, dbUrl: Configuration.mongodbUrl})
+  const api = new API({port: Configuration.apiPort, dbUrl: Configuration.mongodbUrl, rabbitmqUrl: Configuration.rabbitmqUrl})
   try {
     await api.start()
   } catch (ex) {
     console.log('API was unable to start. Cause was: \n', ex)
   }
 
-  const view = new View({dbUrl: Configuration.mongodbUrl})
+  const view = new View({dbUrl: Configuration.mongodbUrl, rabbitmqUrl: Configuration.rabbitmqUrl})
   try {
     await view.start()
   } catch (ex) {
     console.log('View was unable to start. Cause was: \n', ex)
   }
 
-  const storage = new Storage({dbUrl: Configuration.mongodbUrl, ipfsUrl: Configuration.ipfsUrl})
+  const storage = new Storage({dbUrl: Configuration.mongodbUrl, ipfsUrl: Configuration.ipfsUrl, rabbitmqUrl: Configuration.rabbitmqUrl})
   try {
     await storage.start()
   } catch (ex) {
@@ -36,11 +36,12 @@ async function main() {
   if (Configuration.enableTimestamping) {
     const blockchainWriter = new BlockchainWriter({
       dbUrl: Configuration.mongodbUrl,
+      rabbitmqUrl: Configuration.rabbitmqUrl,
       insightUrl: Configuration.insightUrl,
       bitcoinAddress: Configuration.bitcoinAddress,
       bitcoinAddressPrivateKey: Configuration.bitcoinAddressPrivateKey,
       poetNetwork: Configuration.poetNetwork,
-      poetVersion: Configuration.poetVersion
+      poetVersion: Configuration.poetVersion,
     })
     try {
       await blockchainWriter.start()
@@ -51,12 +52,13 @@ async function main() {
 
   const blockchainReader = new BlockchainReader({
     dbUrl: Configuration.mongodbUrl,
+    rabbitmqUrl: Configuration.rabbitmqUrl,
     insightUrl: Configuration.insightUrl,
     poetNetwork: Configuration.poetNetwork,
     poetVersion: Configuration.poetVersion,
     minimumBlockHeight: Configuration.minimumBlockHeight,
     forceBlockHeight: Configuration.forceBlockHeight,
-    blockchainReaderIntervalInSeconds: Configuration.blockchainReaderIntervalInSeconds
+    blockchainReaderIntervalInSeconds: Configuration.blockchainReaderIntervalInSeconds,
   })
   try {
     await blockchainReader.start()
