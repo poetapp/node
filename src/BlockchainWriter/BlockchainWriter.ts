@@ -9,6 +9,7 @@ import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
+import { ServiceConfiguration } from './ServiceConfiguration'
 
 @injectable()
 export class BlockchainWriter {
@@ -49,5 +50,7 @@ export class BlockchainWriter {
     this.container.bind<InsightHelper>('InsightHelper').toConstantValue(new InsightHelper(this.configuration.insightUrl))
     this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
     this.container.bind<Service>('Service').to(Service)
+    this.container.bind<ServiceConfiguration>('ServiceConfiguration')
+      .toConstantValue({ timestampIntervalInSeconds: this.configuration.timestampIntervalInSeconds })
   }
 }

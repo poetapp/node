@@ -3,17 +3,21 @@ import { inject, injectable } from 'inversify'
 import { Interval } from 'Helpers/Interval'
 
 import { ClaimController } from './ClaimController'
+import { ServiceConfiguration } from './ServiceConfiguration'
 
 @injectable()
 export class Service {
   private readonly claimController: ClaimController
   private readonly interval: Interval
+  private readonly configuration: ServiceConfiguration
 
   constructor(
     @inject('ClaimController') claimController: ClaimController,
+    @inject('ServiceConfiguration') configuration: ServiceConfiguration,
   ) {
     this.claimController = claimController
-    this.interval = new Interval(this.timestampNextHash, 1 * 3000)
+    this.configuration = configuration
+    this.interval = new Interval(this.timestampNextHash, 1000 * configuration.timestampIntervalInSeconds)
   }
 
   async start() {

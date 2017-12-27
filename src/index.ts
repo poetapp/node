@@ -42,6 +42,7 @@ async function main() {
       bitcoinAddressPrivateKey: Configuration.bitcoinAddressPrivateKey,
       poetNetwork: Configuration.poetNetwork,
       poetVersion: Configuration.poetVersion,
+      timestampIntervalInSeconds: Configuration.timestampIntervalInSeconds,
     })
     try {
       await blockchainWriter.start()
