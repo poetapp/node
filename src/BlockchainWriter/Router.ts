@@ -37,7 +37,7 @@ export class Router {
     }, null, 2))
 
     try {
-      await this.claimController.timestampWithRetry(ipfsHash)
+      await this.claimController.requestTimestamp(ipfsHash)
     } catch (exception) {
       console.log(JSON.stringify({
         severity: 'error',

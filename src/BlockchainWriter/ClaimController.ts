@@ -34,7 +34,7 @@ export class ClaimController {
     this.collection = this.db.collection('blockchainWriter')
   }
 
-  async timestampWithRetry(ipfsHash: string): Promise<void> {
+  async requestTimestamp(ipfsHash: string): Promise<void> {
     console.log(JSON.stringify({
       severity: 'debug',
       module: 'BlockchainWriter',
