@@ -32,7 +32,17 @@ export class Router {
     if (!isClaim(claim))
       throw new Error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
 
-    await this.claimController.create(claim)
+    try {
+      await this.claimController.create(claim)
+    } catch (error) {
+      console.log(JSON.stringify({
+        severity: 'error',
+        module: 'Storage',
+        file: 'Router',
+        method: 'onNewClaim',
+        error,
+      }, null, 2))
+    }
   }
 
   onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>): Promise<void> => {
