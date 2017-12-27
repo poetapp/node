@@ -34,7 +34,55 @@ export class ClaimController {
     this.collection = this.db.collection('blockchainWriter')
   }
 
-  async timestamp(ipfsHash: string): Promise<void> {
+  async requestTimestamp(ipfsHash: string): Promise<void> {
+    console.log(JSON.stringify({
+      severity: 'debug',
+      module: 'BlockchainWriter',
+      file: 'ClaimController',
+      method: 'timestampWithRetry',
+      ipfsHash,
+    }, null, 2))
+    await this.collection.insertOne({
+      ipfsHash,
+      txId: null
+    })
+  }
+
+  async timestampNextHash() {
+    console.log(JSON.stringify({
+      severity: 'debug',
+      module: 'BlockchainWriter',
+      file: 'ClaimController',
+      method: 'timestampNextHash',
+    }, null, 2))
+    const entry = await this.collection.findOne({ txId: null })
+    const hash = entry && entry.ipfsHash
+    console.log(JSON.stringify({
+      severity: 'debug',
+      module: 'BlockchainWriter',
+      file: 'ClaimController',
+      method: 'timestampNextHash',
+      hash,
+    }, null, 2))
+
+    if (!hash)
+      return
+
+    try {
+      await this.timestamp(hash)
+    } catch (exception) {
+      console.log(JSON.stringify({
+        severity: 'warn',
+        module: 'BlockchainWriter',
+        file: 'ClaimController',
+        method: 'timestampNextHash',
+        hash,
+        exception,
+      }, null, 2))
+    }
+  }
+
+  private async timestamp(ipfsHash: string): Promise<void> {
     console.log(`BlockchainWriter.ClaimController.timestamp(${ipfsHash})`)
 
     const utxo = await this.insightHelper.getUtxo(this.configuration.bitcoinAddress)
@@ -77,10 +125,7 @@ export class ClaimController {
       txPostResponse
     }, null, 2))
 
-    this.collection.insertOne({
-      ipfsHash,
-      txId: tx.id
-    })
+    this.collection.updateOne({ ipfsHash }, { $set: { txId: tx.id }}, { upsert: true })
     this.messaging.publish(Exchange.IPFSHashTxId, {
       ipfsHash,
       txId: tx.id

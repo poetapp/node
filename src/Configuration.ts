@@ -20,6 +20,7 @@ export interface Configuration {
   readonly enableTimestamping?: boolean
   readonly bitcoinAddress?: string
   readonly bitcoinAddressPrivateKey?: string
+  readonly timestampIntervalInSeconds?: number
 }
 
 const defaultConfiguration: Configuration = {
@@ -35,6 +36,7 @@ const defaultConfiguration: Configuration = {
   blockchainReaderIntervalInSeconds: 5,
 
   enableTimestamping: false,
+  timestampIntervalInSeconds: 30
 }
 
 function loadConfigurationWithDefaults(): Configuration {

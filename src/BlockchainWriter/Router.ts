@@ -24,14 +24,31 @@ export class Router {
 
   onClaimIPFSHash = async (message: any): Promise<void> => {
     const messageContent = message.content.toString()
-    console.log('onClaimIPFSHash', messageContent)
-
     const { claimId, ipfsHash } = JSON.parse(messageContent)
 
+    console.log(JSON.stringify({
+      severity: 'debug',
+      module: 'BlockchainWriter',
+      file: 'Router',
+      method: 'onClaimIPFSHash',
+      message: 'Timestamping requested',
+      claimId,
+      ipfsHash,
+    }, null, 2))
+
     try {
-      await this.claimController.timestamp(ipfsHash)
+      await this.claimController.requestTimestamp(ipfsHash)
     } catch (exception) {
-      console.error(exception.message)
+      console.log(JSON.stringify({
+        severity: 'error',
+        module: 'BlockchainWriter',
+        file: 'Router',
+        method: 'onClaimIPFSHash',
+        message: 'Uncaught exception',
+        exception,
+        claimId,
+        ipfsHash,
+      }, null, 2))
     }
   }
 }
