@@ -28,6 +28,7 @@ export class ClaimController {
   async create(claim: Claim): Promise<void> {
     console.log(`Storage.WorkController.create(${JSON.stringify(claim)})`)
     const ipfsHash = await this.ipfs.addText(JSON.stringify(claim))
+    console.log(`Storage.WorkController.create(${JSON.stringify(claim)}), ipfsHash = ${ipfsHash}`)
     await this.collection.insertOne({
       claimId: claim.id,
       ipfsHash
