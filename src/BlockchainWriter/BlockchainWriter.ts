@@ -8,6 +8,7 @@ import { BlockchainWriterConfiguration } from './BlockchainWriterConfiguration'
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 import { Router } from './Router'
+import { Service } from './Service'
 
 @injectable()
 export class BlockchainWriter {
@@ -16,6 +17,7 @@ export class BlockchainWriter {
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
+  private service: Service
 
   constructor(configuration: BlockchainWriterConfiguration) {
     this.configuration = configuration
@@ -33,6 +35,9 @@ export class BlockchainWriter {
     this.router = this.container.get('Router')
     await this.router.start()
 
+    this.service = this.container.get('Service')
+    await this.service.start()
+
     console.log('BlockchainWriter Started')
   }
 
@@ -43,5 +48,6 @@ export class BlockchainWriter {
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<InsightHelper>('InsightHelper').toConstantValue(new InsightHelper(this.configuration.insightUrl))
     this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
+    this.container.bind<Service>('Service').to(Service)
   }
 }
