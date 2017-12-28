@@ -1,6 +1,8 @@
 # The Po.et Node
 
-The Po.et Node allows you to timestamp documents in a decentralized manner.
+The Po.et Node allows you to timestamp documents in a decentralized manner. 
+
+It's built on top of the Bitcoin's blockchain and [IPFS](https://ipfs.io/).
 
 ## How to Run the Po.et Node
 To run the Po.et Node, you need to clone this repo, make sure you have NodeJS installed and just `npm start`.
