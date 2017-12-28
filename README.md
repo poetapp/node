@@ -50,6 +50,8 @@ By default, timestamping to the blockchain is disabled, and RabbitMQ, IPFS and M
 
 You can change any configuration by placing a json file in `~/.po.et/configuration.json`. Po.et will look for this file upon startup and, if found, merge its contents with the default configuration. 
 
+> **Note**: Po.et will NOT reload the configuration while it's running if you change it. You'll need to restart the Node for configuration changes to apply.
+
 This is what the default configuration looks like:
 
 ```
