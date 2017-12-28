@@ -80,6 +80,31 @@ You can create a valid bitcoin address using [Ian Coleman's Mnemonic Code Conver
 
 Right now, Po.et is timestamping to Testnet, so just make sure your address is a valid Testnet address.
 
+### API
+Currently, the Node exposes three endpoints.
+
+#### `GET /works/:id`
+Returns a single claim by its Id. 
+
+For simplicity, this endpoint adds a `.timestamp` in the response, which is not a real part of the claim, but provides valuable information such as the id of the transaction in which this claim has been timestamped, the IPFS hash by which it can be found, etc.
+
+Returns 404 if the claim isn't found in this Node's database. This doesn't strictly mean the claim doesn't exist in the Po.et network — it just doesn't exist in this Node.
+
+#### `GET /works?publicKey=...`
+Returns an array of claims — all the claims belonging to the passed public key.
+
+#### `GET /works`
+Retrieving all works isn't supported yet. The Node will assumme you intended to call `GET /works?publicKey=undefined`, which will normally return an empty array. Support for this endpoint will be added in the future.
+
+#### `POST /works`
+Publish a work. 
+
+This endpoint is async — unless an immediate error can be detected (such as a malformed claim), the endpoint will return an ACK. There's no guarantee that the work has actually been processed, timestamped an sent to IPFS. To check that, you'll need to `GET /works/:id` and check the `.timestamp` attribute.
+
+This endpoint expects a fully constructed claim — with the correct `.id`, `.publicKey`, `.signature` and `.dateCreated`. See [Building Claims](#building-claims) for information on how to correctly create these attributes.
+
+### Building Claims
+
 ### Running as a Daemon
 Create a file with the following contents and place it in `~/.config/systemd/user/poet-node.service`:
 
