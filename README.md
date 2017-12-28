@@ -78,6 +78,38 @@ You can create a valid bitcoin address using [Ian Coleman's Mnemonic Code Conver
 
 Right now Po.et is timestamping to Testnet, so just make sure your address is a valid Testnet address.
 
+### Running as a Daemon
+Craete a file with the following contents and place it in `~/.config/systemd/user/poet-node.service`:
+
+```
+[Unit]
+Description=Po.et Node Daemon
+After=network.target
+
+[Service]
+ExecStart=/home/ubuntu/.nvm/versions/node/v9.3.0/bin/node /home/ubuntu/node/dist/babel/src/index.js daemon
+WorkingDirectory=/home/ubuntu/node/dist/babel/src/
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=poet-node
+
+[Install]
+WantedBy=default.target
+```
+
+Make sure the paths to NodeJS and Po.et in the `ExecStart` and `WorkingDirectory` entries are correct.
+
+You can then use the following commands to handle the daemon:
+```
+systemctl --user start poet-node
+systemctl --user stop poet-node
+systemctl --user about poet-node
+systemctl --user restart poet-node
+```
+
+And `journalctl -f --user-unit poet-node` to tail the logs, or withou the `-f` to just `less` them.
+
 ## Contributing
 
 ### Compiling
