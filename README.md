@@ -39,14 +39,14 @@ You can also `sudo make sh-mongo` and `sudo make sh-ipfs` to run the mongo shell
 
 You'll need to have Docker installed and running for this. See [How to Install DockerCR](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce).
 
-No Docker image is provided for InsightAPI since Bitpay offers an usable InsightAPI publicly.
+No Docker image is provided for InsightAPI since Bitpay offers a usable InsightAPI publicly.
 
-In a production environment, you may want to run this applications natively installed on the OS rather than dockerized. If you choose to run IPFS dockerized, make sure it's able to communicate with other IPFS nodes outside your network.
+In a production environment, you may want to run these applications natively installed on the OS rather than dockerized. If you choose to run IPFS dockerized, make sure it's able to communicate with other IPFS nodes outside your network.
 
 ### Configuration
 The Po.et Node comes with a default configuration that works out of the box.
 
-By default, timestamping to the blockchain is disabled, and RabbitMQ, IPFS and MongoDB are expected to be running in localhost, with their default ports.
+By default, timestamping to the blockchain is disabled, and RabbitMQ, IPFS and MongoDB are expected to be running in localhost with their default ports.
 
 You can change any configuration by placing a json file in `~/.po.et/configuration.json`. Po.et will look for this file upon startup and, if found, merge its contents with the default configuration. 
 
@@ -74,14 +74,14 @@ This is what the default configuration looks like:
 }
 ```
 
-To enable timestamping to the Bitcoin blockchain, you need to set `enableTimestamping` to `true` and to provide a valid `bitcoinAddress` and the `bitcoinAddressPrivateKey` that owns it.
+To enable timestamping to the Bitcoin blockchain, you need to set `enableTimestamping` to `true` and provide a valid `bitcoinAddress` and the `bitcoinAddressPrivateKey` that owns it.
 
-You can create a valid bitcoin address using [Ian Coleman's Mnemonic Code Converter](https://iancoleman.io/bip39/), creating and exporting the private keys and addresses from bitcoin-cli or wallets that support this, or any other mean that works for you. 
+You can create a valid bitcoin address using [Ian Coleman's Mnemonic Code Converter](https://iancoleman.io/bip39/), creating and exporting the private keys and addresses from bitcoin-cli or wallets that support this or use any other means that work for you. 
 
-Right now Po.et is timestamping to Testnet, so just make sure your address is a valid Testnet address.
+Right now, Po.et is timestamping to Testnet, so just make sure your address is a valid Testnet address.
 
 ### Running as a Daemon
-Craete a file with the following contents and place it in `~/.config/systemd/user/poet-node.service`:
+Create a file with the following contents and place it in `~/.config/systemd/user/poet-node.service`:
 
 ```
 [Unit]
@@ -110,24 +110,24 @@ systemctl --user about poet-node
 systemctl --user restart poet-node
 ```
 
-And `journalctl -f --user-unit poet-node` to tail the logs, or withou the `-f` to just `less` them.
+And `journalctl -f --user-unit poet-node` to tail the logs, or without the `-f` to just `less` them.
 
 ## Contributing
 
 ### Compiling
 Run `npm run build` to compile the source. This will run TypeScript on the source files and place the output in `dist/ts`, and then it'll run Babel and place the output in `dist/babel`.
 
-Currently we're only using Babel to support [absolute import paths](https://github.com/tleunen/babel-plugin-module-resolver).
+Currently, we're only using Babel to support [absolute import paths](https://github.com/tleunen/babel-plugin-module-resolver).
 
 During development, you can also run `npm run watch` to automatically watch for file changes, build the changed files and restart the application on the fly. 
 
 ### Tests
 
-Both unit and integration tests live in this same repo. You can run both with `npm test`, or separately with `npm run test-unit` and `npm run test-integration`.
+Both unit and integration tests live in this same repo. You can run both with `npm test` or separately with `npm run test-unit` and `npm run test-integration`.
 
-The integration tests are hard-coded to hit the `http://localhost:18080` In the future, this will be picked up from an environment variable and defaulted to that same url.
+The integration tests are hard-coded to hit the `http://localhost:18080`. In the future, this will be picked up from an environment variable and defaulted to that same url.
 
-> **Warning:** Running the integration tests wipes out the entire `db.poet.works` collection and inserts testing data. This is done by the `test/integration/PrepareDB.ts` file. In the future, a less invasive mechanism will be developed. Meanwhile, make sure you're confortable with this before running the integration tests!
+> **Warning:** Running the integration tests wipes out the entire `db.poet.works` collection and inserts testing data. This is done by the `test/integration/PrepareDB.ts` file. In the future, a less invasive mechanism will be developed. Meanwhile, make sure you're comfortable with this before running the integration tests!
 
 Currently, Po.et Node is lacking some tests. The most critical paths that aren't being tested right now are:
 - Broadcasting of transactions in a single Node (submit work, wait a bit, get work and expect transactionId to be set and valid)
@@ -139,7 +139,7 @@ See issues [#21][i21], [#22][i22], [#25][i25] and [#27][i27] for more info on th
 Coverage is generated with [Istanbul](https://github.com/istanbuljs/nyc) whenever tests are run.
 A more complete report can be generated by running `npm run coverage`.
 
-This area needs some reviewing - the reports look a bit off sometimes.
+This area needs some reviewing — the reports look a bit off sometimes.
 
 Also, we'll want the Travis job to check that coverage doesn't go down with pull requests. See [#11][i11].
 
@@ -150,7 +150,7 @@ The master branch is blocked - no one can commit to it directly. To contribute c
 TravisCI will run all tests automatically for all pull requests submitted.
 
 ### Code Style
-Please run `npm run lint`. The linting configuration still needs some tweeking, and it'll be added to Travis in the future.
+Please run `npm run lint`. The linting configuration still needs some tweaking, and it'll be added to Travis in the future.
 
 
 
