@@ -41,7 +41,7 @@ You'll need to have Docker installed and running for this. See [How to Install D
 
 No Docker image is provided for InsightAPI since Bitpay offers an usable InsightAPI publicly.
 
-In a production environment, you'll may want to run this applications natively installed on the OS rather than dockerized.
+In a production environment, you may want to run this applications natively installed on the OS rather than dockerized. If you choose to run IPFS dockerized, make sure it's able to communicate with other IPFS nodes outside your network.
 
 ### Configuration
 The Po.et Node comes with a default configuration that works out of the box.
@@ -66,8 +66,8 @@ This is what the default configuration looks like:
   blockchainReaderIntervalInSeconds: 5,
 
   enableTimestamping: false,
-  bitcoinAddress: ''
-  bitcoinAddressPrivateKey: ''
+  bitcoinAddress: '',
+  bitcoinAddressPrivateKey: '',
   timestampIntervalInSeconds: 30
 }
 ```
@@ -83,7 +83,7 @@ Right now Po.et is timestamping to Testnet, so just make sure your address is a 
 ### Compiling
 Run `npm run build` to compile the source. This will run TypeScript on the source files and place the output in `dist/ts`, and then it'll run Babel and place the output in `dist/babel`.
 
-Currently we're only using babel to support [absolute import paths](https://github.com/tleunen/babel-plugin-module-resolver).
+Currently we're only using Babel to support [absolute import paths](https://github.com/tleunen/babel-plugin-module-resolver).
 
 During development, you can also run `npm run watch` to automatically watch for file changes, build the changed files and restart the application on the fly. 
 
@@ -91,11 +91,15 @@ During development, you can also run `npm run watch` to automatically watch for 
 
 Both unit and integration tests live in this same repo. You can run both with `npm test`, or separately with `npm run test-unit` and `npm run test-integration`.
 
+The integration tests are hard-coded to hit the `http://localhost:18080` In the future, this will be picked up from an environment variable and defaulted to that same url.
+
+> **Warning:** Running the integration tests wipes out the entire `db.poet.works` collection and inserts testing data. This is done by the `test/integration/PrepareDB.ts` file. In the future, a less invasive mechanism will be developed. Meanwhile, make sure you're confortable with this before running the integration tests!
+
 Currently, Po.et Node is lacking some tests. The most critical paths that aren't being tested right now are:
 - Broadcasting of transactions in a single Node (submit work, wait a bit, get work and expect transactionId to be set and valid)
 - Replication across nodes (submit WORK to Node A, get WORK in Node B)
 
-See issues [#1][i21], [#22][i22], [#25][i25] and [#27][i27] for more info on this topic.
+See issues [#21][i21], [#22][i22], [#25][i25] and [#27][i27] for more info on this topic.
 
 ### Coverage
 Coverage is generated with [Istanbul](https://github.com/istanbuljs/nyc) whenever tests are run.
