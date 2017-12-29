@@ -80,6 +80,8 @@ To enable timestamping to the Bitcoin blockchain, you need to set `enableTimesta
 
 You can create a valid bitcoin address using [Ian Coleman's Mnemonic Code Converter](https://iancoleman.io/bip39/), creating and exporting the private keys and addresses from bitcoin-cli or wallets that support this or use any other means that work for you. 
 
+You'll also need some bitcoins in that address. In testnet, you can get some for free using a [testnet faucet](https://www.google.com.ar/search?q=testnet+faucet). We've found [flyingkiwi's one](https://testnet.manu.backend.hamburg/faucet) particularly nice.
+
 Right now, Po.et is timestamping to Testnet, so just make sure your address is a valid Testnet address.
 
 ### API
@@ -106,7 +108,6 @@ This endpoint is async — unless an immediate error can be detected (such as a 
 This endpoint expects a fully constructed claim — with the correct `.id`, `.publicKey`, `.signature` and `.dateCreated`. See [Building Claims](#building-claims) for information on how to correctly create these attributes.
 
 ### Building Claims
-
 A Po.et Claim is a JSON object that holds arbitrary information plus a few attributes that allow the network to verify that the claim has actually been created by a certain person, that the claim has not been modified since its creation, and a special field `type` which will allow more features in the future.
 
 For example, a claim could look like this:
@@ -186,7 +187,6 @@ Currently, we're only using Babel to support [absolute import paths](https://git
 During development, you can also run `npm run watch` to automatically watch for file changes, build the changed files and restart the application on the fly. 
 
 ### Tests
-
 Both unit and integration tests live in this same repo. You can run both with `npm test` or separately with `npm run test-unit` and `npm run test-integration`.
 
 The integration tests are hard-coded to hit the `http://localhost:18080`. In the future, this will be picked up from an environment variable and defaulted to that same url.
@@ -208,7 +208,6 @@ This area needs some reviewing — the reports look a bit off sometimes.
 Also, we'll want the Travis job to check that coverage doesn't go down with pull requests. See [#11][i11].
 
 ### Branches and Pull Requests
-
 The master branch is blocked - no one can commit to it directly. To contribute changes, branch off from master and make a PR back to it. 
 
 TravisCI will run all tests automatically for all pull requests submitted.
