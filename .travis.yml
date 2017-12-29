@@ -11,5 +11,6 @@ before_script:
   - sudo make ipfs
   - npm run build
   - node dist/babel/test/Integration/PrepareDB.js
+  - sleep 3
   - npm start &
   - sleep 5
