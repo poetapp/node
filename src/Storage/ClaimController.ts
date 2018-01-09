@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
+import { Claim, isClaim, ClaimIdIPFSHashPair } from 'poet-js'
 
-import { Claim, isClaim, ClaimIdIPFSHashPair } from 'Interfaces'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 

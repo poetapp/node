@@ -1,9 +1,7 @@
 import { AsyncTest, Expect } from 'alsatian'
 import fetch from 'node-fetch'
+import { Claim, ClaimType, createClaim } from 'poet-js'
 import { promisify } from 'util'
-
-import { createClaim } from 'Helpers/Claim'
-import { Claim, ClaimType } from 'Interfaces'
 
 import { Key1 } from '../Keys'
 

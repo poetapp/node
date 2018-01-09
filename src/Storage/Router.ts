@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
+import { isClaim, PoetTimestamp } from 'poet-js'
 
-import { isClaim, PoetTimestamp } from 'Interfaces'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 

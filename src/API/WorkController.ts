@@ -1,10 +1,9 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
+import { Work } from 'poet-js'
 
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
-
-import { Work } from 'Interfaces'
 
 @injectable()
 export class WorkController {

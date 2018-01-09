@@ -1,7 +1,7 @@
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
+import { InsightClient } from 'poet-js'
 
-import { InsightHelper } from 'Helpers/Insight'
 import { Messaging } from 'Messaging/Messaging'
 
 import { BlockchainReaderConfiguration } from './BlockchainReaderConfiguration'
@@ -42,7 +42,7 @@ export class BlockchainReader {
     this.container.bind<BlockchainReaderService>('Cron').to(BlockchainReaderService)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<InsightHelper>('InsightHelper').toConstantValue(new InsightHelper(this.configuration.insightUrl))
+    this.container.bind<InsightClient>('InsightHelper').toConstantValue(new InsightClient(this.configuration.insightUrl))
     this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
     this.container.bind<BlockchainReaderServiceConfiguration>('BlockchainReaderServiceConfiguration').toConstantValue({
       minimumBlockHeight: this.configuration.minimumBlockHeight,

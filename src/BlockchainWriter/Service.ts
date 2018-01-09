@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify'
-
-import { Interval } from 'Helpers/Interval'
+import { Interval } from 'poet-js'
 
 import { ClaimController } from './ClaimController'
 import { ServiceConfiguration } from './ServiceConfiguration'

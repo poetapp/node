@@ -1,11 +1,11 @@
 import * as bitcore from 'bitcore-lib'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
+import { InsightClient } from 'poet-js'
 
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
-import { InsightHelper } from 'Helpers/Insight'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 
 @injectable()
@@ -13,13 +13,13 @@ export class ClaimController {
   private readonly db: Db
   private readonly collection: Collection
   private readonly messaging: Messaging
-  private readonly insightHelper: InsightHelper
+  private readonly insightHelper: InsightClient
   private readonly configuration: ClaimControllerConfiguration
 
   constructor(
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
-    @inject('InsightHelper') insightHelper: InsightHelper,
+    @inject('InsightHelper') insightClient: InsightClient,
     @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
   ) {
     if (!configuration.bitcoinAddress)
@@ -29,7 +29,7 @@ export class ClaimController {
 
     this.db = db
     this.messaging = messaging
-    this.insightHelper = insightHelper
+    this.insightHelper = insightClient
     this.configuration = configuration
     this.collection = this.db.collection('blockchainWriter')
   }
