@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
-
-import { ClaimIPFSHashPair, PoetTimestamp, Work } from 'Interfaces'
+import { ClaimIPFSHashPair, PoetTimestamp, Work } from 'poet-js'
 
 @injectable()
 export class WorkController {

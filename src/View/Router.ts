@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
+import { ClaimIPFSHashPair, PoetTimestamp } from 'poet-js'
 
-import { ClaimIPFSHashPair, PoetTimestamp } from 'Interfaces'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 

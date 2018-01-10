@@ -1,9 +1,7 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
+import { getPoetTimestamp, PoetTimestamp, InsightClient } from 'poet-js'
 
-import { getPoetTimestamp } from 'Helpers/Bitcoin'
-import { InsightHelper } from 'Helpers/Insight'
-import { PoetTimestamp } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
@@ -13,13 +11,13 @@ export class ClaimController {
   private readonly db: Db
   private readonly collection: Collection
   private readonly messaging: Messaging
-  private readonly insightHelper: InsightHelper
+  private readonly insightHelper: InsightClient
   private readonly configuration: ClaimControllerConfiguration
 
   constructor(
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
-    @inject('InsightHelper') insightHelper: InsightHelper,
+    @inject('InsightHelper') insightHelper: InsightClient,
     @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
   ) {
     this.db = db

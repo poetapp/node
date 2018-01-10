@@ -1,7 +1,7 @@
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
+import { InsightClient } from 'poet-js'
 
-import { InsightHelper } from 'Helpers/Insight'
 import { Messaging } from 'Messaging/Messaging'
 
 import { BlockchainWriterConfiguration } from './BlockchainWriterConfiguration'
@@ -47,7 +47,7 @@ export class BlockchainWriter {
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<InsightHelper>('InsightHelper').toConstantValue(new InsightHelper(this.configuration.insightUrl))
+    this.container.bind<InsightClient>('InsightHelper').toConstantValue(new InsightClient(this.configuration.insightUrl))
     this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
     this.container.bind<Service>('Service').to(Service)
     this.container.bind<ServiceConfiguration>('ServiceConfiguration')

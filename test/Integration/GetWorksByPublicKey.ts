@@ -1,7 +1,6 @@
 import { AsyncTest, Expect, TestCase, TestFixture } from 'alsatian'
 import fetch from 'node-fetch'
-
-import { Claim, isClaim, Work } from 'Interfaces'
+import { Claim, isClaim, Work } from 'poet-js'
 
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
 

@@ -1,6 +1,5 @@
 import { Connection, connect, Channel } from 'amqplib'
-
-import { isClaim, ClaimIPFSHashPair, isClaimIPFSHashPair, PoetTimestamp } from 'Interfaces'
+import { isClaim, ClaimIPFSHashPair, isClaimIPFSHashPair, PoetTimestamp } from 'poet-js'
 
 import { Exchange } from './Messages'
 

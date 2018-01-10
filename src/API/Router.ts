@@ -2,11 +2,8 @@ import { injectable, inject } from 'inversify'
 import * as Koa from 'koa'
 import * as KoaBody from 'koa-body'
 import * as KoaRouter from 'koa-router'
+import { ClaimType, isClaim, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from 'poet-js'
 
-import { isValidSignature } from 'Helpers/Claim'
-import { ClaimType, isClaim, isWork } from 'Interfaces'
-
-import { IllegalArgumentException, NotFoundException } from './Exceptions'
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'

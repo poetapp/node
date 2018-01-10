@@ -1,7 +1,5 @@
 import { inject, injectable } from 'inversify'
-
-import { BlockHeightOutOfRangeError } from 'Helpers/Insight'
-import { Interval } from 'Helpers/Interval'
+import { BlockHeightOutOfRangeError, Interval } from 'poet-js'
 
 import { BlockchainReaderServiceConfiguration } from './BlockchainReaderServiceConfiguration'
 import { ClaimController } from './ClaimController'

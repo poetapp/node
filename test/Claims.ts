@@ -1,5 +1,4 @@
-import { ClaimType, Work } from 'Interfaces'
-import { ClaimAttributes } from '../src/Interfaces'
+import { ClaimAttributes, ClaimType, Work } from 'poet-js'
 
 export const TheRaven: Work = {
   id: '1bb5e7959c7cb28936ec93eb6893094241a5bc396f08845b4f52c86034f0ddf8',
