@@ -4,6 +4,25 @@ The Po.et Node allows you to timestamp documents in a decentralized manner.
 
 It's built on top of the Bitcoin's blockchain and [IPFS](https://ipfs.io/).
 
+## Index
+
+- [How to Run the Po.et Node](#how-to-run-the-poet-node)
+    - [Install](#install)
+    - [Dependencies](#dependencies)
+    - [Configuration](#configuration)
+    - [API](#api)
+    - [Building Claims](#building-claims)
+    - [Running as a Daemon](#running-as-a-daemon)
+    - [Supported Platforms](#supported-platforms)
+- [Contributing](#contributing)
+    - [Compiling](#compiling)
+    - [Tests](#tests)
+    - [Coverage](#coverage)
+    - [Branches and Pull Requests](#branches-and-pull-requests)
+    - [Code Style](#code-style)
+- [Roadmap](#roadmap)
+
+
 ## Gitter
 For any questions about developing an application that integrates with the Po.et Node or contributing to Po.et that aren't answered here check out our Gitter community at https://gitter.im/poetapp.
 
