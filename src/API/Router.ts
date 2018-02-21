@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify'
 import * as Koa from 'koa'
 import * as KoaBody from 'koa-body'
+import * as KoaCors from 'koa-cors'
 import * as KoaRouter from 'koa-router'
 import { ClaimType, isClaim, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from 'poet-js'
 
@@ -26,6 +27,7 @@ export class Router {
     this.koaRouter.get('/works', this.getWorks)
     this.koaRouter.post('/works', this.postWork)
 
+    this.koa.use(KoaCors())
     this.koa.use(HttpExceptionsMiddleware)
     this.koa.use(KoaBody({ textLimit: 1000000 }))
     this.koa.use(this.koaRouter.allowedMethods())
