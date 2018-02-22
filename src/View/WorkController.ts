@@ -27,17 +27,17 @@ export class WorkController {
 
   setIPFSHash = (workId: string, ipfsHash: string): void => {
     console.log('setIPFSHash', workId, ipfsHash)
-    const result = this.collection.updateOne({ id: workId }, { $set: { ipfsHash } })
+    const result = this.collection.updateOne({ id: workId }, { $set: { 'timestamp.ipfsHash': ipfsHash } })
   }
 
-  setTxId = (ipfsHash: string, txId: string): void => {
-    console.log('setTxId', ipfsHash, txId)
-    const result = this.collection.updateMany({ ipfsHash }, { $set: { txId } })
+  setTxId = (ipfsHash: string, transactionId: string): void => {
+    console.log('setTxId', ipfsHash, transactionId)
+    const result = this.collection.updateMany({ 'timestamp.ipfsHash': ipfsHash }, { $set: { 'timestamp.transactionId': transactionId } })
   }
 
   async upsertTimestamps(poetTimestamps: ReadonlyArray<PoetTimestamp>) {
     await Promise.all(poetTimestamps.map(timestamp =>
-      this.collection.updateOne({ 'timestamp.ipfsHash': timestamp.ipfsHash}, { timestamp }, { upsert: true })
+      this.collection.updateOne({ 'timestamp.ipfsHash': timestamp.ipfsHash}, { $set: { timestamp } }, { upsert: true })
     ))
   }
 
