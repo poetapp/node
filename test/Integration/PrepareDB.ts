@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb'
 
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
+import { waitForNode } from './Helper'
 
 async function main() {
   console.log('Preparing DB for Integration Tests.')
@@ -11,6 +12,7 @@ async function main() {
   await collection.insertOne(TheMurdersInTheRueMorgue)
   await collection.insertOne(AStudyInScarlet)
   await db.close()
+  await waitForNode()
 }
 
 main().catch(console.error)
