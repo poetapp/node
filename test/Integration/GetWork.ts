@@ -1,19 +1,24 @@
-import { AsyncTest, Expect, TestCase } from 'alsatian'
-import fetch from 'node-fetch'
+import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
 import { Claim } from 'poet-js'
 
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
+import { Client } from './Helper'
 
-const url = 'http://localhost:18080'
-
+@TestFixture('GET /works/:id')
 export class GetWork {
+  private client: Client
+
+  @SetupFixture
+  public setupFixture() {
+    this.client = new Client()
+  }
 
   @AsyncTest()
   @TestCase(TheRaven)
   @TestCase(TheMurdersInTheRueMorgue)
   @TestCase(AStudyInScarlet)
   async getWork200(claim: Claim) {
-    const response = await fetch(url + '/works/' + claim.id)
+    const response = await this.client.getWork(claim.id)
 
     Expect(response.ok).toBeTruthy()
 
@@ -27,7 +32,7 @@ export class GetWork {
   @AsyncTest()
   @TestCase('1234')
   async getWork404(id: string) {
-    const response = await fetch(url + '/works/' + id)
+    const response = await this.client.getWork(id)
 
     Expect(response.status).toBe(404)
     Expect(response.ok).not.toBeTruthy()

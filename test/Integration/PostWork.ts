@@ -1,15 +1,17 @@
-import { AsyncTest, Expect } from 'alsatian'
-import fetch from 'node-fetch'
-import { Claim, ClaimType, createClaim } from 'poet-js'
-import { promisify } from 'util'
+import { AsyncTest, Expect, SetupFixture, TestFixture } from 'alsatian'
+import { ClaimType, createClaim } from 'poet-js'
 
 import { Key1 } from '../Keys'
+import { Client, waitForNode } from './Helper'
 
-const delay = promisify(setTimeout)
-
-const url = 'http://localhost:18080'
-
+@TestFixture('POST /works')
 export class PostWork {
+  private client: Client
+
+  @SetupFixture
+  public setupFixture() {
+    this.client = new Client()
+  }
 
   @AsyncTest()
   async postWorkShouldSucceedWith202() {
@@ -17,7 +19,7 @@ export class PostWork {
       name: 'Name'
     })
 
-    const postResponse = await postWork(claim)
+    const postResponse = await this.client.postWork(claim)
 
     Expect(postResponse.ok).toBeTruthy()
     Expect(postResponse.status).toBe(202)
@@ -29,7 +31,7 @@ export class PostWork {
       name: 'Name'
     })
 
-    const postResponse = await postWork(claim)
+    const postResponse = await this.client.postWork(claim)
     const postResponseBody = await postResponse.text()
 
     Expect(postResponseBody).toBe('')
@@ -41,11 +43,11 @@ export class PostWork {
       name: 'Name'
     })
 
-    await postWork(claim)
+    await this.client.postWork(claim)
 
     await waitForNode()
 
-    const response = await getWork(claim.id)
+    const response = await this.client.getWork(claim.id)
 
     Expect(response.ok).toBeTruthy()
   }
@@ -56,11 +58,11 @@ export class PostWork {
       name: 'Name'
     })
 
-    await postWork(claim)
+    await this.client.postWork(claim)
 
     await waitForNode()
 
-    const response = await getWork(claim.id)
+    const response = await this.client.getWork(claim.id)
 
     const body = await response.json()
 
@@ -73,11 +75,11 @@ export class PostWork {
       name: 'Name'
     })
 
-    await postWork(claim)
+    await this.client.postWork(claim)
 
     await waitForNode()
 
-    const response = await getWork(claim.id)
+    const response = await this.client.getWork(claim.id)
     const body = await response.json()
 
     Expect(body.attributes.name).toBe(claim.attributes.name)
@@ -89,11 +91,11 @@ export class PostWork {
       name: 'Name'
     })
 
-    await postWork(claim)
+    await this.client.postWork(claim)
 
     await waitForNode()
 
-    const response = await getWork(claim.id)
+    const response = await this.client.getWork(claim.id)
     const body = await response.json()
 
     Expect(body.timestamp).toBeDefined()
@@ -108,7 +110,7 @@ export class PostWork {
       name: 'Name'
     })
 
-    const postResponse = await postWork({
+    const postResponse = await this.client.postWork({
       ...claim,
       signature: '123'
     })
@@ -123,26 +125,3 @@ export class PostWork {
 
 }
 
-function getWork(id: string) {
-  return fetch(url + '/works/' + id)
-}
-
-function postWork(claim: Claim) {
-  return fetch(url + '/works/', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(claim)
-  })
-}
-
-/**
- *  Give the Node 300ms for the messages to be passed around and responded internally.
- *  Not particularly deterministic, but we can expect something to be wrong if integration
- *  tests cause such big delays.
- */
-function waitForNode() {
-  return delay(300)
-}
