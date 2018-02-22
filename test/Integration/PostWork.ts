@@ -5,20 +5,9 @@ import { promisify } from 'util'
 
 import { Key1 } from '../Keys'
 
-const url = 'http://localhost:18080'
-
 const delay = promisify(setTimeout)
 
-function postWork(claim: Claim) {
-  return fetch(url + '/works/', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(claim)
-  })
-}
+const url = 'http://localhost:18080'
 
 export class PostWork {
 
@@ -54,13 +43,9 @@ export class PostWork {
 
     await postWork(claim)
 
-    // Give the Node 300ms for the messages to be passed around and responded internally.
-    // Not particularly deterministic, but we can expect something to be wrong if integration
-    // tests cause such big delays.
+    await waitForNode()
 
-    await delay(300)
-
-    const response = await fetch(url + '/works/' + claim.id)
+    const response = await getWork(claim.id)
 
     Expect(response.ok).toBeTruthy()
   }
@@ -73,25 +58,13 @@ export class PostWork {
 
     await postWork(claim)
 
-    // Give the Node 300ms for the messages to be passed around and responded internally.
-    // Not particularly deterministic, but we can expect something to be wrong if integration
-    // tests cause such big delays.
+    await waitForNode()
 
-    await delay(300)
-
-    const response = await fetch(url + '/works/' + claim.id)
-
-    Expect(response.ok).toBeTruthy()
+    const response = await getWork(claim.id)
 
     const body = await response.json()
 
     Expect(body.id).toBe(claim.id)
-
-    Expect(body.ipfsHash).toBeDefined()
-    Expect(body.ipfsHash.length).toBeDefined()
-    Expect(body.ipfsHash.length).toBe(46)
-
-    Expect(body.attributes.name).toBe(claim.attributes.name)
   }
 
   @AsyncTest()
@@ -102,13 +75,9 @@ export class PostWork {
 
     await postWork(claim)
 
-    // Give the Node 300ms for the messages to be passed around and responded internally.
-    // Not particularly deterministic, but we can expect something to be wrong if integration
-    // tests cause such big delays.
+    await waitForNode()
 
-    await delay(300)
-
-    const response = await fetch(url + '/works/' + claim.id)
+    const response = await getWork(claim.id)
     const body = await response.json()
 
     Expect(body.attributes.name).toBe(claim.attributes.name)
@@ -122,18 +91,15 @@ export class PostWork {
 
     await postWork(claim)
 
-    // Give the Node 300ms for the messages to be passed around and responded internally.
-    // Not particularly deterministic, but we can expect something to be wrong if integration
-    // tests cause such big delays.
+    await waitForNode()
 
-    await delay(300)
-
-    const response = await fetch(url + '/works/' + claim.id)
+    const response = await getWork(claim.id)
     const body = await response.json()
 
-    Expect(body.ipfsHash).toBeDefined()
-    Expect(body.ipfsHash.length).toBeDefined()
-    Expect(body.ipfsHash.length).toBe(46)
+    Expect(body.timestamp).toBeDefined()
+    Expect(body.timestamp.ipfsHash).toBeDefined()
+    Expect(body.timestamp.ipfsHash.length).toBeDefined()
+    Expect(body.timestamp.ipfsHash.length).toBe(46)
   }
 
   @AsyncTest()
@@ -155,4 +121,28 @@ export class PostWork {
     Expect(postResponseBody).toBe('Claim\'s signature is incorrect.')
   }
 
+}
+
+function getWork(id: string) {
+  return fetch(url + '/works/' + id)
+}
+
+function postWork(claim: Claim) {
+  return fetch(url + '/works/', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(claim)
+  })
+}
+
+/**
+ *  Give the Node 300ms for the messages to be passed around and responded internally.
+ *  Not particularly deterministic, but we can expect something to be wrong if integration
+ *  tests cause such big delays.
+ */
+function waitForNode() {
+  return delay(300)
 }
