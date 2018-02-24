@@ -3,11 +3,13 @@ import { Db, MongoClient } from 'mongodb'
 
 import { Messaging } from 'Messaging/Messaging'
 
+import { ClaimController } from './ClaimController'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
+import { Service } from './Service'
+import { ServiceConfiguration } from './ServiceConfiguration'
 import { StorageConfiguration } from './StorageConfiguration'
-import { ClaimController } from './ClaimController'
 
 @injectable()
 export class Storage {
@@ -16,6 +18,7 @@ export class Storage {
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
+  private service: Service
 
   constructor(configuration: StorageConfiguration) {
     this.configuration = configuration
@@ -33,6 +36,9 @@ export class Storage {
     this.router = this.container.get('Router')
     await this.router.start()
 
+    this.service = this.container.get('Service')
+    await this.service.start()
+
     console.log('Storage Started')
   }
 
@@ -43,5 +49,8 @@ export class Storage {
     this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({ipfsUrl: this.configuration.ipfsUrl})
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
+    this.container.bind<Service>('Service').to(Service)
+    this.container.bind<ServiceConfiguration>('ServiceConfiguration')
+      .toConstantValue({ downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds })
   }
 }

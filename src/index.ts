@@ -26,7 +26,12 @@ async function main() {
     console.log('View was unable to start. Cause was: \n', ex)
   }
 
-  const storage = new Storage({dbUrl: Configuration.mongodbUrl, ipfsUrl: Configuration.ipfsUrl, rabbitmqUrl: Configuration.rabbitmqUrl})
+  const storage = new Storage({
+    dbUrl: Configuration.mongodbUrl,
+    ipfsUrl: Configuration.ipfsUrl,
+    rabbitmqUrl: Configuration.rabbitmqUrl,
+    downloadIntervalInSeconds: Configuration.downloadIntervalInSeconds,
+  })
   try {
     await storage.start()
   } catch (ex) {
