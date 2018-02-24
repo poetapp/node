@@ -64,7 +64,7 @@ export class ClaimController {
       ipfsHashes,
     }, null, 2))
 
-    await this.collection.insertMany(ipfsHashes.map(ipfsHash => ({ ipfsHash, claimId: null })))
+    await this.collection.insertMany(ipfsHashes.map(ipfsHash => ({ ipfsHash, claimId: null })), { ordered: false })
   }
 
   async downloadNextHash() {
