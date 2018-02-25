@@ -34,13 +34,13 @@ const defaultConfiguration: Configuration = {
   apiPort: 18080,
   poetNetwork: 'BARD',
   poetVersion: [0, 0, 0, 2],
-  minimumBlockHeight: 1253828,
+  minimumBlockHeight: 1279550, // Less than 24 hours before Feb 8th, 2018 - Frost's Release
   blockchainReaderIntervalInSeconds: 5,
 
   enableTimestamping: false,
   timestampIntervalInSeconds: 30,
 
-  downloadIntervalInSeconds: 1,
+  downloadIntervalInSeconds: 5,
 }
 
 function loadConfigurationWithDefaults(): Configuration {
