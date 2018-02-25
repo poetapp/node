@@ -39,6 +39,8 @@ export class Storage {
     this.service = this.container.get('Service')
     await this.service.start()
 
+    await this.createIndices()
+
     console.log('Storage Started')
   }
 
@@ -52,5 +54,11 @@ export class Storage {
     this.container.bind<Service>('Service').to(Service)
     this.container.bind<ServiceConfiguration>('ServiceConfiguration')
       .toConstantValue({ downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds })
+  }
+
+  private async createIndices() {
+    const collection = this.dbConnection.collection('storage')
+    await collection.createIndex({ ipfsHash: 1 }, { unique: true, name: 'ipfsHash-unique' })
+    await collection.createIndex({ attempts: 1 }, { name: 'attempts' })
   }
 }
