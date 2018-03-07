@@ -4,7 +4,6 @@ import { isClaim, ClaimIPFSHashPair, isClaimIPFSHashPair, PoetTimestamp } from '
 import { Exchange } from './Messages'
 
 export class Messaging {
-  private readonly connectionUrl: string
   private connection: Connection
   private channel: Channel
 
