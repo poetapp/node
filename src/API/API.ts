@@ -1,5 +1,5 @@
 import { injectable, Container } from 'inversify'
-import { Db, MongoClient } from 'mongodb'
+import { MongoClient, Db } from 'mongodb'
 
 import { Messaging } from 'Messaging/Messaging'
 
@@ -22,7 +22,8 @@ export class API {
 
   async start() {
     console.log('API Starting...', this.configuration)
-    this.dbConnection = await MongoClient.connect(this.configuration.dbUrl)
+    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await mongoClient.db()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
@@ -30,7 +31,7 @@ export class API {
     this.initializeContainer()
 
     this.router = this.container.get('Router')
-    this.router.start()
+    await this.router.start()
 
     console.log('API Started')
   }
