@@ -26,44 +26,108 @@ export class ClaimController {
   }
 
   async create(claim: Claim): Promise<void> {
-    console.log(`Storage.WorkController.create(${JSON.stringify(claim)})`)
+    console.log(JSON.stringify({
+      severity: 'trace',
+      module: 'Storage',
+      file: 'ClaimController',
+      method: 'create',
+      claim,
+    }, null, 2))
+
     const ipfsHash = await this.ipfs.addText(JSON.stringify(claim))
-    console.log(`Storage.WorkController.create(${JSON.stringify(claim)}), ipfsHash = ${ipfsHash}`)
+
+    console.log(JSON.stringify({
+      severity: 'debug',
+      module: 'Storage',
+      file: 'ClaimController',
+      method: 'create',
+      claim,
+      ipfsHash,
+    }, null, 2))
+
     await this.collection.insertOne({
       claimId: claim.id,
-      ipfsHash
+      ipfsHash,
     })
     await this.messaging.publish(Exchange.ClaimIPFSHash, {
       claimId: claim.id,
-      ipfsHash
+      ipfsHash,
     })
-    console.log(`Storage.WorkController.create, created ${ipfsHash}`)
   }
 
   async download(ipfsHashes: ReadonlyArray<string>) {
     console.log(JSON.stringify({
-      action: 'Download',
-      message: 'Downloading IPFS hashes',
+      severity: 'trace',
+      module: 'Storage',
+      file: 'ClaimController',
+      method: 'download',
       ipfsHashes,
     }, null, 2))
 
-    const claims = await Promise.all(ipfsHashes.map(this.downloadClaim))
+    await this.collection.insertMany(ipfsHashes.map(ipfsHash => ({ ipfsHash, claimId: null })), { ordered: false })
+  }
 
+  async downloadNextHash() {
     console.log(JSON.stringify({
-      action: 'Download',
-      message: 'Downloaded claims from IPFS',
-      claims,
+      severity: 'trace',
+      module: 'Storage',
+      file: 'ClaimController',
+      method: 'downloadNextHash',
     }, null, 2))
 
-    await this.updateClaimIdIPFSHashPairs(ipfsHashes.map((ipfsHash, index) => ({
-      claimId: claims[index].id,
-      ipfsHash,
-    })))
+    const ipfsHashEntry = await this.collection.findOne({ claimId: null, $or: [ {attempts: { $lt: 5 }}, {attempts: { $exists: false }}] })
+    const ipfsHash = ipfsHashEntry && ipfsHashEntry.ipfsHash
 
-    await this.messaging.publishClaimsDownloaded(ipfsHashes.map((ipfsHash, index) => ({
-      claim: claims[index],
+    console.log(JSON.stringify({
+      severity: 'trace',
+      module: 'Storage',
+      file: 'ClaimController',
+      method: 'downloadNextHash',
       ipfsHash,
-    })))
+    }, null, 2))
+
+    if (!ipfsHash)
+      return
+
+    let claim
+    try {
+      claim = await this.downloadClaim(ipfsHash)
+    } catch (exception) {
+      await this.collection.updateOne({ ipfsHash }, { $inc: { attempts: 1 } })
+
+      console.log(JSON.stringify({
+        severity: 'debug',
+        module: 'Storage',
+        file: 'ClaimController',
+        method: 'downloadNextHash',
+        message: 'Exception caught calling downloadClaim',
+        ipfsHash,
+        exception,
+      }, null, 2))
+
+      return
+    }
+
+    console.log(JSON.stringify({
+      severity: 'info',
+      module: 'Storage',
+      file: 'ClaimController',
+      method: 'downloadNextHash',
+      message: 'Successfully downloaded claim from IPFS',
+      ipfsHash,
+      claim,
+    }, null, 2))
+
+    await this.updateClaimIdIPFSHashPairs([{
+      claimId: claim.id,
+      ipfsHash,
+    }])
+
+    await this.messaging.publishClaimsDownloaded([{
+      claim,
+      ipfsHash,
+    }])
+
   }
 
   private downloadClaim = async (ipfsHash: string): Promise<Claim> => {
@@ -77,8 +141,17 @@ export class ClaimController {
   }
 
   private async updateClaimIdIPFSHashPairs(claimIdIPFSHashPairs: ReadonlyArray<ClaimIdIPFSHashPair>) {
+    console.log(JSON.stringify({
+      severity: 'trace',
+      module: 'Storage',
+      file: 'ClaimController',
+      method: 'updateClaimIdIPFSHashPairs',
+      message: 'Storeding { claimId, ipfsHash } pairs in the DB.',
+      claimIdIPFSHashPairs,
+    }, null, 2))
+
     const results = await Promise.all(claimIdIPFSHashPairs.map(({claimId, ipfsHash}) =>
-      this.collection.updateOne({ claimId }, { $set: { ipfsHash } }, { upsert: true })
+      this.collection.updateOne({ ipfsHash }, { $set: { claimId } }, { upsert: true })
     ))
 
     const databaseErrors = results.filter(_ => _.result.n !== 1)
@@ -91,9 +164,14 @@ export class ClaimController {
       }, null, 2))
 
     console.log(JSON.stringify({
-      action: 'Download',
+      severity: 'trace',
+      module: 'Storage',
+      file: 'ClaimController',
+      method: 'updateClaimIdIPFSHashPairs',
       message: 'Stored { claimId, ipfsHash } pairs in the DB successfully.',
+      claimIdIPFSHashPairs,
     }, null, 2))
+
   }
 
 }

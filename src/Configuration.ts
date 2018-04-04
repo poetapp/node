@@ -21,6 +21,8 @@ export interface Configuration {
   readonly bitcoinAddress?: string
   readonly bitcoinAddressPrivateKey?: string
   readonly timestampIntervalInSeconds?: number
+
+  readonly downloadIntervalInSeconds: number
 }
 
 const defaultConfiguration: Configuration = {
@@ -32,11 +34,13 @@ const defaultConfiguration: Configuration = {
   apiPort: 18080,
   poetNetwork: 'BARD',
   poetVersion: [0, 0, 0, 2],
-  minimumBlockHeight: 1253828,
+  minimumBlockHeight: 1279550, // Less than 24 hours before Feb 8th, 2018 - Frost's Release
   blockchainReaderIntervalInSeconds: 5,
 
   enableTimestamping: false,
-  timestampIntervalInSeconds: 30
+  timestampIntervalInSeconds: 30,
+
+  downloadIntervalInSeconds: 5,
 }
 
 function loadConfigurationWithDefaults(): Configuration {
@@ -74,7 +78,7 @@ function validatePoetVersion(poetVersion: any) {
 }
 
 function validatePoetNetwork(poetNetwork: any) {
-  assert(poetNetwork === 'BARD' || poetNetwork === 'POET', 'Field poetVersion must be equal to BARD or POET')
+  assert(poetNetwork === 'BARD' || poetNetwork === 'POET', 'Field poetNetwork must be equal to BARD or POET')
 }
 
 export const Configuration = loadConfigurationWithDefaults()

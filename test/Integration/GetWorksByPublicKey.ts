@@ -1,20 +1,24 @@
-import { AsyncTest, Expect, TestCase, TestFixture } from 'alsatian'
-import fetch from 'node-fetch'
+import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
 import { Claim, isClaim, Work } from 'poet-js'
 
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
-
-const url = 'http://localhost:18080'
+import { Client } from './Helper'
 
 @TestFixture('GET /works?publicKey=...')
 export class GetWorksByPublicKey {
+  private client: Client
+
+  @SetupFixture
+  public setupFixture() {
+    this.client = new Client()
+  }
 
   @AsyncTest()
   @TestCase(TheRaven.publicKey)
   @TestCase(TheMurdersInTheRueMorgue.publicKey)
   @TestCase(AStudyInScarlet.publicKey)
   async getWorksByPublicKeyShouldSucceed(publicKey: string) {
-    const response = await fetch(url + '/works/?publicKey=' + publicKey)
+    const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
@@ -25,7 +29,7 @@ export class GetWorksByPublicKey {
   @TestCase(TheMurdersInTheRueMorgue.publicKey)
   @TestCase(AStudyInScarlet.publicKey)
   async getWorksByPublicKeyShouldReturnAnArray(publicKey: string) {
-    const response = await fetch(url + '/works/?publicKey=' + publicKey)
+    const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
@@ -39,7 +43,7 @@ export class GetWorksByPublicKey {
   @AsyncTest()
   @TestCase(TheRaven.publicKey)
   async getWorksByEAPPublicKeyShouldReturnTwoElements(publicKey: string) {
-    const response = await fetch(url + '/works/?publicKey=' + publicKey)
+    const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
@@ -52,7 +56,7 @@ export class GetWorksByPublicKey {
   @AsyncTest()
   @TestCase(AStudyInScarlet.publicKey)
   async getWorksByACDPublicKeyShouldReturnOneElement(publicKey: string) {
-    const response = await fetch(url + '/works/?publicKey=' + publicKey)
+    const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
@@ -67,7 +71,7 @@ export class GetWorksByPublicKey {
   @TestCase(TheMurdersInTheRueMorgue.publicKey)
   @TestCase(AStudyInScarlet.publicKey)
   async getWorksByPublicKeyShouldReturnClaims(publicKey: string) {
-    const response = await fetch(url + '/works/?publicKey=' + publicKey)
+    const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
@@ -84,7 +88,7 @@ export class GetWorksByPublicKey {
   @TestCase(TheMurdersInTheRueMorgue.publicKey)
   @TestCase(AStudyInScarlet.publicKey)
   async getWorksByPublicKeyShouldReturnClaimsMatchingPublicKey(publicKey: string) {
-    const response = await fetch(url + '/works/?publicKey=' + publicKey)
+    const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
@@ -100,7 +104,7 @@ export class GetWorksByPublicKey {
   @TestCase(TheRaven.publicKey, [TheRaven, TheMurdersInTheRueMorgue])
   @TestCase(AStudyInScarlet.publicKey, [AStudyInScarlet])
   async getWorksByPublicKeyShouldReturnExpectedFields(publicKey: string, expectedClaims: ReadonlyArray<Work>) {
-    const response = await fetch(url + '/works/?publicKey=' + publicKey)
+    const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
