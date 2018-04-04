@@ -78,7 +78,7 @@ function validatePoetVersion(poetVersion: any) {
 }
 
 function validatePoetNetwork(poetNetwork: any) {
-  assert(poetNetwork === 'BARD' || poetNetwork === 'POET', 'Field poetVersion must be equal to BARD or POET')
+  assert(poetNetwork === 'BARD' || poetNetwork === 'POET', 'Field poetNetwork must be equal to BARD or POET')
 }
 
 export const Configuration = loadConfigurationWithDefaults()
