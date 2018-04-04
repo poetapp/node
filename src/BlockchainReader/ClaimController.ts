@@ -82,7 +82,11 @@ export class ClaimController {
    * @returns {Promise<number>} The highest block height from the database, or null if no block has been processed.
    */
   async findHighestBlockHeight(): Promise<number> {
-    const queryResults = await this.collection.find({ }, { blockHeight: true, _id: 0 }).sort({blockHeight: -1}).limit(1).toArray()
+    const queryResults = await this.collection
+      .find({ }, { projection: { blockHeight: true, _id: 0 }})
+      .sort({blockHeight: -1})
+      .limit(1)
+      .toArray()
     const highestBlockHeight = queryResults && !!queryResults.length && queryResults[0].blockHeight || null
 
     console.log(JSON.stringify({
