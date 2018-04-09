@@ -26,7 +26,8 @@ export class BlockchainWriter {
 
   async start() {
     console.log('BlockchainWriter Starting...', this.configuration)
-    this.dbConnection = await MongoClient.connect(this.configuration.dbUrl)
+    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await mongoClient.db()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()

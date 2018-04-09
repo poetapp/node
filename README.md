@@ -1,5 +1,7 @@
 # The Po.et Node
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/poetapp/node.svg)](https://greenkeeper.io/)
+
 The Po.et Node allows you to timestamp documents in a decentralized manner. 
 
 It's built on top of the Bitcoin's blockchain and [IPFS](https://ipfs.io/).
