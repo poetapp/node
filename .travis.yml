@@ -10,7 +10,7 @@ services:
 before_script:
   - sudo make ipfs
   - npm run build
-  - node dist/babel/test/Integration/PrepareDB.js
+  - npm run test-prepare-db
   - sleep 5
   - npm start &
   - sleep 5

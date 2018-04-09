@@ -7,7 +7,7 @@
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
     "lint": "tslint -p .",
     "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon dist/babel/src\"",
-    "test": "nyc alsatian './dist/babel/test/**/*.js'",
+    "test": "nyc alsatian './dist/babel/test/Integration/**/*.js'",
     "test-unit": "nyc alsatian './dist/babel/test/Unit/**/*.js'",
     "test-integration": "nyc alsatian './dist/babel/test/Integration/**/*.js'",
     "coverage": "nyc --reporter=lcov report && echo Report created at ./coverage/lcov-report/index.html",
@@ -15,7 +15,8 @@
     "build-clear": "rm -rf dist",
     "build-ts": "tsc && npm run copy-json",
     "build-babel": "cp .babelrc dist/ts && babel dist/ts/ -d dist/babel --copy-files",
-    "watch-babel": "cp .babelrc dist/ts && babel -w dist/ts/ -d dist/babel --copy-files"
+    "watch-babel": "cp .babelrc dist/ts && babel -w dist/ts/ -d dist/babel --copy-files",
+    "test-prepare-db": "node dist/babel/test/PrepareDB.js"
   },
   "keywords": [],
   "author": "",

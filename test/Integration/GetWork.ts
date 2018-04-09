@@ -20,6 +20,7 @@ export class GetWork {
   async getWork200(claim: Claim) {
     const response = await this.client.getWork(claim.id)
 
+    Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
 
     const body = await response.json()
