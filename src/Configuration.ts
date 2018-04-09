@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import * as path from 'path'
 
-export interface Configuration {
+export interface Configuration extends LoggingConfiguration {
   readonly rabbitmqUrl: string
   readonly mongodbUrl: string
   readonly ipfsUrl: string
@@ -23,9 +23,6 @@ export interface Configuration {
   readonly timestampIntervalInSeconds?: number
 
   readonly downloadIntervalInSeconds: number
-
-  readonly loggingLevel: string
-  readonly loggingPretty: boolean
 }
 
 const defaultConfiguration: Configuration = {
@@ -88,3 +85,8 @@ function validatePoetNetwork(poetNetwork: any) {
 }
 
 export const Configuration = loadConfigurationWithDefaults()
+
+export interface LoggingConfiguration {
+  readonly loggingLevel: string
+  readonly loggingPretty: boolean
+}
