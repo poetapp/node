@@ -23,6 +23,9 @@ export interface Configuration {
   readonly timestampIntervalInSeconds?: number
 
   readonly downloadIntervalInSeconds: number
+
+  readonly loggingLevel: string
+  readonly loggingPretty: boolean
 }
 
 const defaultConfiguration: Configuration = {
@@ -41,6 +44,9 @@ const defaultConfiguration: Configuration = {
   timestampIntervalInSeconds: 30,
 
   downloadIntervalInSeconds: 5,
+
+  loggingLevel: 'info',
+  loggingPretty: true,
 }
 
 function loadConfigurationWithDefaults(): Configuration {

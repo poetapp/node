@@ -1,5 +1,7 @@
 import 'reflect-metadata'
 
+import * as Pino from 'pino'
+
 import { Configuration } from 'Configuration'
 
 import { API } from 'API/API'
@@ -10,7 +12,10 @@ import { View } from 'View/View'
 
 async function main() {
   console.log('Running Po.et Node')
+  console.log('Logging Level:', Configuration.loggingLevel)
   console.log('')
+
+  const logger: Pino.Logger = Pino({ level: Configuration.loggingLevel, prettyPrint: Configuration.loggingPretty })
 
   const api = new API({port: Configuration.apiPort, dbUrl: Configuration.mongodbUrl, rabbitmqUrl: Configuration.rabbitmqUrl})
   try {
@@ -65,11 +70,13 @@ async function main() {
     minimumBlockHeight: Configuration.minimumBlockHeight,
     forceBlockHeight: Configuration.forceBlockHeight,
     blockchainReaderIntervalInSeconds: Configuration.blockchainReaderIntervalInSeconds,
+    loggingLevel: Configuration.loggingLevel,
+    loggingPretty: Configuration.loggingPretty,
   })
   try {
     await blockchainReader.start()
-  } catch (ex) {
-    console.log('BlockchainReader was unable to start. Cause was: \n', ex)
+  } catch (exception) {
+    logger.error({ exception }, 'BlockchainReader was unable to start')
   }
 }
 

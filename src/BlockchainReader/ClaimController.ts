@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
+import * as Pino from 'pino'
 import { getPoetTimestamp, PoetTimestamp, InsightClient } from 'poet-js'
 
 import { Messaging } from 'Messaging/Messaging'
@@ -8,6 +9,7 @@ import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 
 @injectable()
 export class ClaimController {
+  private readonly logger: Pino.Logger
   private readonly db: Db
   private readonly collection: Collection
   private readonly messaging: Messaging
@@ -15,11 +17,13 @@ export class ClaimController {
   private readonly configuration: ClaimControllerConfiguration
 
   constructor(
+    @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
     @inject('InsightHelper') insightHelper: InsightClient,
     @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
   ) {
+    this.logger = logger
     this.db = db
     this.messaging = messaging
     this.insightHelper = insightHelper
@@ -28,20 +32,18 @@ export class ClaimController {
   }
 
   async scanBlock(blockHeight: number): Promise<void> {
-    console.log(JSON.stringify({
-      action: 'Scanning Block',
-      message: 'Retrieving Block Hash...',
+    const logger = this.logger.child({ action: 'scanBlock' })
+
+    logger.trace({
       blockHeight
-    }, null, 2))
+    }, 'Retrieving Block Hash...')
 
     const blockHash = await this.insightHelper.getBlockHash(blockHeight)
 
-    console.log(JSON.stringify({
-      action: 'Scanning Block',
-      message: 'Block Hash retrieved successfully. Retrieving Raw Block...',
+    logger.trace({
       blockHeight,
       blockHash,
-    }, null, 2))
+    }, 'Block Hash retrieved successfully. Retrieving Raw Block...')
 
     const block = await this.insightHelper.getBlock(blockHash)
     const poetTimestamps: ReadonlyArray<PoetTimestamp> = block.transactions
@@ -61,14 +63,12 @@ export class ClaimController {
     const unmatchingPoetTimestamps = poetTimestamps
       .filter(_ => !matchingPoetTimestamps.includes(_))
 
-    console.log(JSON.stringify({
-      action: 'Scanning Block',
-      message: 'Raw Block retrieved and scanned successfully.',
+    logger.trace({
       blockHeight,
       blockHash,
       matchingPoetTimestamps,
       unmatchingPoetTimestamps,
-    }, null, 2))
+    }, 'Raw Block retrieved and scanned successfully')
 
     await this.collection.updateOne({ blockHeight }, {
         $set: { blockHash, transactionIds, matchingPoetTimestamps, unmatchingPoetTimestamps }
@@ -89,10 +89,10 @@ export class ClaimController {
       .toArray()
     const highestBlockHeight = queryResults && !!queryResults.length && queryResults[0].blockHeight || null
 
-    console.log(JSON.stringify({
+    this.logger.info({
       action: 'findHighestBlockHeight',
-      highestBlockHeight
-    }, null, 2))
+      highestBlockHeight,
+    }, 'Highest Block Scanned So Far')
 
     return highestBlockHeight
   }
