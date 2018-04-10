@@ -22,8 +22,8 @@ export class BlockchainReader {
 
   constructor(configuration: BlockchainReaderConfiguration) {
     this.configuration = configuration
-    const baseLogger = Pino({ level: configuration.loggingLevel, prettyPrint: configuration.loggingPretty })
-    this.logger = baseLogger.child({ module: 'BlockchainReader' })
+    this.logger = Pino({ level: configuration.loggingLevel, prettyPrint: configuration.loggingPretty })
+      .child({ module: 'BlockchainReader' })
   }
 
   async start() {
@@ -43,6 +43,7 @@ export class BlockchainReader {
   }
 
   initializeContainer() {
+    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
     this.container.bind<BlockchainReaderService>('Cron').to(BlockchainReaderService)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
@@ -54,6 +55,5 @@ export class BlockchainReader {
       blockchainReaderIntervalInSeconds: this.configuration.blockchainReaderIntervalInSeconds,
       forceBlockHeight: this.configuration.forceBlockHeight,
     })
-    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
   }
 }
