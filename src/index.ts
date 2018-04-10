@@ -2,7 +2,7 @@ import 'reflect-metadata'
 
 import * as Pino from 'pino'
 
-import { Configuration } from 'Configuration'
+import { loadConfigurationWithDefaults } from 'Configuration'
 
 import { API } from 'API/API'
 import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
@@ -12,10 +12,18 @@ import { View } from 'View/View'
 
 async function main() {
   console.log('Running Po.et Node')
+  console.log('')
+  console.log('Loading Configuration...')
+
+  const Configuration = loadConfigurationWithDefaults()
+
+  console.log('Switching to Structured Logging')
   console.log('Logging Level:', Configuration.loggingLevel)
   console.log('')
 
   const logger: Pino.Logger = Pino({ level: Configuration.loggingLevel, prettyPrint: Configuration.loggingPretty })
+
+  logger.info(Configuration, 'Loaded Configuration')
 
   const loggingConfiguration = {
     loggingLevel: Configuration.loggingLevel,
