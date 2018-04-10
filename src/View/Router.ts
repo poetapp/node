@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify'
+import * as Pino from 'pino'
 import { ClaimIPFSHashPair, PoetTimestamp } from 'poet-js'
 
 import { Exchange } from 'Messaging/Messages'
@@ -8,13 +9,16 @@ import { WorkController } from './WorkController'
 
 @injectable()
 export class Router {
+  private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly workController: WorkController
 
   constructor(
+    @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('WorkController') workController: WorkController
   ) {
+    this.logger = logger.child({ file: 'Router' })
     this.messaging = messaging
     this.workController = workController
   }
@@ -48,21 +52,19 @@ export class Router {
   }
 
   onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
-    console.log(JSON.stringify({
-      module: 'View',
-      action: 'onPoetTimestampsDownloaded',
+    this.logger.trace({
+      method: 'onPoetTimestampsDownloaded',
       poetTimestamps,
-    }, null, 2))
+    }, 'Downloaded Po.et Timestamp')
 
     await this.workController.upsertTimestamps(poetTimestamps)
   }
 
   onClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    console.log(JSON.stringify({
-      module: 'View',
-      action: 'onClaimsDownloaded',
+    this.logger.trace({
+      method: 'onClaimsDownloaded',
       claimIPFSHashPairs,
-    }, null, 2))
+    }, 'Downloaded a (IPFS Hash, Claim Id) Pair')
 
     await this.workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
   }

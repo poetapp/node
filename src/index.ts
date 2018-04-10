@@ -30,7 +30,12 @@ async function main() {
     logger.error({ exception }, 'API was unable to start')
   }
 
-  const view = new View({dbUrl: Configuration.mongodbUrl, rabbitmqUrl: Configuration.rabbitmqUrl})
+  const view = new View({
+    dbUrl: Configuration.mongodbUrl,
+    rabbitmqUrl: Configuration.rabbitmqUrl,
+    loggingLevel: Configuration.loggingLevel,
+    loggingPretty: Configuration.loggingPretty,
+  })
   try {
     await view.start()
   } catch (ex) {

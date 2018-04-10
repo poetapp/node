@@ -1,5 +1,6 @@
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
+import * as Pino from 'pino'
 
 import { Messaging } from 'Messaging/Messaging'
 
@@ -9,6 +10,7 @@ import { WorkController } from './WorkController'
 
 @injectable()
 export class View {
+  private readonly logger: Pino.Logger
   private readonly configuration: ViewConfiguration
   private readonly container = new Container()
   private dbConnection: Db
@@ -17,10 +19,12 @@ export class View {
 
   constructor(configuration: ViewConfiguration) {
     this.configuration = configuration
+    this.logger = Pino({ level: configuration.loggingLevel, prettyPrint: configuration.loggingPretty })
+      .child({ module: 'View' })
   }
 
   async start() {
-    console.log('View Starting...', this.configuration)
+    this.logger.info({ configuration: this.configuration }, 'View Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 
@@ -32,10 +36,11 @@ export class View {
     this.router = this.container.get('Router')
     await this.router.start()
 
-    console.log('View Started')
+    this.logger.info('View Started')
   }
 
   initializeContainer() {
+    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<WorkController>('WorkController').to(WorkController)
