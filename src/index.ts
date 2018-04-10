@@ -17,9 +17,13 @@ async function main() {
 
   const logger: Pino.Logger = Pino({ level: Configuration.loggingLevel, prettyPrint: Configuration.loggingPretty })
 
-  const api = new API({
+  const loggingConfiguration = {
     loggingLevel: Configuration.loggingLevel,
     loggingPretty: Configuration.loggingPretty,
+  }
+
+  const api = new API({
+    ...loggingConfiguration,
     port: Configuration.apiPort,
     dbUrl: Configuration.mongodbUrl,
     rabbitmqUrl: Configuration.rabbitmqUrl,
@@ -31,18 +35,18 @@ async function main() {
   }
 
   const view = new View({
+    ...loggingConfiguration,
     dbUrl: Configuration.mongodbUrl,
     rabbitmqUrl: Configuration.rabbitmqUrl,
-    loggingLevel: Configuration.loggingLevel,
-    loggingPretty: Configuration.loggingPretty,
   })
   try {
     await view.start()
-  } catch (ex) {
-    console.log('View was unable to start. Cause was: \n', ex)
+  } catch (exception) {
+    logger.error({ exception }, 'View was unable to start')
   }
 
   const storage = new Storage({
+    ...loggingConfiguration,
     dbUrl: Configuration.mongodbUrl,
     ipfsUrl: Configuration.ipfsUrl,
     rabbitmqUrl: Configuration.rabbitmqUrl,
@@ -50,12 +54,13 @@ async function main() {
   })
   try {
     await storage.start()
-  } catch (ex) {
-    console.log('Storage was unable to start. Cause was: \n', ex)
+  } catch (exception) {
+    logger.error({ exception }, 'Storage was unable to start')
   }
 
   if (Configuration.enableTimestamping) {
     const blockchainWriter = new BlockchainWriter({
+      ...loggingConfiguration,
       dbUrl: Configuration.mongodbUrl,
       rabbitmqUrl: Configuration.rabbitmqUrl,
       insightUrl: Configuration.insightUrl,
@@ -64,17 +69,16 @@ async function main() {
       poetNetwork: Configuration.poetNetwork,
       poetVersion: Configuration.poetVersion,
       timestampIntervalInSeconds: Configuration.timestampIntervalInSeconds,
-      loggingLevel: Configuration.loggingLevel,
-      loggingPretty: Configuration.loggingPretty,
     })
     try {
       await blockchainWriter.start()
-    } catch (ex) {
-      console.log('BlockchainWriter was unable to start. Cause was: \n', ex)
+    } catch (exception) {
+      logger.error({ exception }, 'BlockchainWriter was unable to start')
     }
   }
 
   const blockchainReader = new BlockchainReader({
+    ...loggingConfiguration,
     dbUrl: Configuration.mongodbUrl,
     rabbitmqUrl: Configuration.rabbitmqUrl,
     insightUrl: Configuration.insightUrl,
@@ -83,8 +87,6 @@ async function main() {
     minimumBlockHeight: Configuration.minimumBlockHeight,
     forceBlockHeight: Configuration.forceBlockHeight,
     blockchainReaderIntervalInSeconds: Configuration.blockchainReaderIntervalInSeconds,
-    loggingLevel: Configuration.loggingLevel,
-    loggingPretty: Configuration.loggingPretty,
   })
   try {
     await blockchainReader.start()

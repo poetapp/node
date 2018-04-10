@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify'
+import * as Pino from 'pino'
 import { isClaim, PoetTimestamp } from 'poet-js'
 
 import { Exchange } from 'Messaging/Messages'
@@ -8,13 +9,16 @@ import { ClaimController } from './ClaimController'
 
 @injectable()
 export class Router {
+  private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly claimController: ClaimController
 
   constructor(
+    @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('ClaimController') claimController: ClaimController
   ) {
+    this.logger = logger.child({ file: 'Router' })
     this.messaging = messaging
     this.claimController = claimController
   }
@@ -35,21 +39,18 @@ export class Router {
     try {
       await this.claimController.create(claim)
     } catch (error) {
-      console.log(JSON.stringify({
-        severity: 'error',
-        module: 'Storage',
-        file: 'Router',
+      this.logger.error({
         method: 'onNewClaim',
         error,
-      }, null, 2))
+      }, 'Uncaught Exception while Storing Claim')
     }
   }
 
   onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>): Promise<void> => {
-    console.log(JSON.stringify({
-      action: 'onPoetTimestampsDownloaded',
-      poetTimestamps
-    }, null, 2))
+    this.logger.trace({
+      method: 'onPoetTimestampsDownloaded',
+      poetTimestamps,
+    }, 'Downloading Claims from IPFS')
 
     await this.claimController.download(poetTimestamps.map(_ => _.ipfsHash))
   }
