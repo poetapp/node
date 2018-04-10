@@ -59,6 +59,8 @@ async function main() {
       poetNetwork: Configuration.poetNetwork,
       poetVersion: Configuration.poetVersion,
       timestampIntervalInSeconds: Configuration.timestampIntervalInSeconds,
+      loggingLevel: Configuration.loggingLevel,
+      loggingPretty: Configuration.loggingPretty,
     })
     try {
       await blockchainWriter.start()

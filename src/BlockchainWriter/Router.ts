@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify'
+import * as Pino from 'pino'
 
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
@@ -7,13 +8,16 @@ import { ClaimController } from './ClaimController'
 
 @injectable()
 export class Router {
+  private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly claimController: ClaimController
 
   constructor(
+    @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('ClaimController') claimController: ClaimController
   ) {
+    this.logger = logger.child({ file: 'Router'})
     this.messaging = messaging
     this.claimController = claimController
   }
@@ -23,32 +27,24 @@ export class Router {
   }
 
   onClaimIPFSHash = async (message: any): Promise<void> => {
+    const logger = this.logger.child({ method: 'onClaimIPFSHash' })
+
     const messageContent = message.content.toString()
     const { claimId, ipfsHash } = JSON.parse(messageContent)
 
-    console.log(JSON.stringify({
-      severity: 'debug',
-      module: 'BlockchainWriter',
-      file: 'Router',
-      method: 'onClaimIPFSHash',
-      message: 'Timestamping requested',
+    logger.trace({
       claimId,
       ipfsHash,
-    }, null, 2))
+    }, 'Timestamping requested')
 
     try {
       await this.claimController.requestTimestamp(ipfsHash)
     } catch (exception) {
-      console.log(JSON.stringify({
-        severity: 'error',
-        module: 'BlockchainWriter',
-        file: 'Router',
-        method: 'onClaimIPFSHash',
-        message: 'Uncaught exception',
+      logger.error({
         exception,
         claimId,
         ipfsHash,
-      }, null, 2))
+      }, 'Uncaught exception')
     }
   }
 }
