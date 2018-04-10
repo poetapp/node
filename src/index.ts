@@ -17,11 +17,17 @@ async function main() {
 
   const logger: Pino.Logger = Pino({ level: Configuration.loggingLevel, prettyPrint: Configuration.loggingPretty })
 
-  const api = new API({port: Configuration.apiPort, dbUrl: Configuration.mongodbUrl, rabbitmqUrl: Configuration.rabbitmqUrl})
+  const api = new API({
+    loggingLevel: Configuration.loggingLevel,
+    loggingPretty: Configuration.loggingPretty,
+    port: Configuration.apiPort,
+    dbUrl: Configuration.mongodbUrl,
+    rabbitmqUrl: Configuration.rabbitmqUrl,
+  })
   try {
     await api.start()
-  } catch (ex) {
-    console.log('API was unable to start. Cause was: \n', ex)
+  } catch (exception) {
+    logger.error({ exception }, 'API was unable to start')
   }
 
   const view = new View({dbUrl: Configuration.mongodbUrl, rabbitmqUrl: Configuration.rabbitmqUrl})

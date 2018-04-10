@@ -3,6 +3,7 @@ import * as Koa from 'koa'
 import * as KoaBody from 'koa-body'
 import * as KoaCors from 'koa-cors'
 import * as KoaRouter from 'koa-router'
+import * as Pino from 'pino'
 import { ClaimType, isClaim, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from 'poet-js'
 
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
@@ -11,15 +12,18 @@ import { WorkController } from './WorkController'
 
 @injectable()
 export class Router {
+  private readonly logger: Pino.Logger
   private readonly configuration: RouterConfiguration
   private readonly koa = new Koa()
   private readonly koaRouter = new KoaRouter()
   private readonly workController: WorkController
 
   constructor(
+    @inject('Logger') logger: Pino.Logger,
     @inject('RouterConfiguration') configuration: RouterConfiguration,
     @inject('WorkController') workController: WorkController)
   {
+    this.logger = logger
     this.configuration = configuration
     this.workController = workController
 
@@ -39,11 +43,7 @@ export class Router {
   }
 
   private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    console.log(JSON.stringify({
-      module: 'API',
-      action: 'Router.getWork',
-      params: context.params
-    }, null, 2))
+    this.logger.trace({ params: context.params }, 'Router.getWork')
     const id = context.params.id
     const work = await this.workController.getById(id)
 
@@ -54,11 +54,7 @@ export class Router {
   }
 
   private getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    console.log(JSON.stringify({
-      module: 'API',
-      action: 'Router.getWorks',
-      query: context.query
-    }, null, 2))
+    this.logger.trace({ query: context.query }, 'Router.getWorks')
     const publicKey = context.query.publicKey
     const works = await this.workController.getByPublicKey(publicKey)
 
