@@ -44,7 +44,7 @@ export class Router {
         exception,
         claimId,
         ipfsHash,
-      }, 'Uncaught exception')
+      }, 'Uncaught Exception while requesting timestamp')
     }
   }
 }

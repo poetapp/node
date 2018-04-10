@@ -51,12 +51,13 @@ export class ClaimController {
 
   async timestampNextHash() {
     const logger = this.logger.child({ method: 'timestampNextHash' })
+
     logger.trace('Retrieving Next Hash To Timestamp')
+
     const entry = await this.collection.findOne({ txId: null })
     const hash = entry && entry.ipfsHash
-    this.logger.trace({
-      hash,
-    }, 'Next Hash To Timestamp Retrieved')
+
+    this.logger.trace({ hash }, 'Next Hash To Timestamp Retrieved')
 
     if (!hash)
       return
@@ -67,12 +68,13 @@ export class ClaimController {
       logger.warn({
         hash,
         exception,
-      })
+      }, 'Uncaught Exception While Timestamping Hash')
     }
   }
 
   private async timestamp(ipfsHash: string): Promise<void> {
     const logger = this.logger.child({ method: 'timestamp' })
+
     logger.trace({ ipfsHash }, 'Timestamping IPFS Hash')
 
     const utxo = await this.insightHelper.getUtxo(this.configuration.bitcoinAddress)
@@ -106,7 +108,7 @@ export class ClaimController {
 
     const txPostResponse = await this.insightHelper.broadcastTx(tx)
 
-    logger.trace({
+    logger.info({
       txHash: tx.hash,
       txId: tx.id,
       txPostResponse,

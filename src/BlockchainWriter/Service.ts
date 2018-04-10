@@ -41,7 +41,7 @@ export class Service {
     } catch (error) {
       logger.error({
         error,
-      }, 'Uncaught exception')
+      }, 'Uncaught exception while timestamping next hash')
     }
   }
 
