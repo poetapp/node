@@ -15,26 +15,26 @@ async function main() {
   console.log('')
   console.log('Loading Configuration...')
 
-  const Configuration = loadConfigurationWithDefaults()
+  const configuration = loadConfigurationWithDefaults()
 
   console.log('Switching to Structured Logging')
-  console.log('Logging Level:', Configuration.loggingLevel)
+  console.log('Logging Level:', configuration.loggingLevel)
   console.log('')
 
-  const logger: Pino.Logger = Pino({ level: Configuration.loggingLevel, prettyPrint: Configuration.loggingPretty })
+  const logger: Pino.Logger = Pino({ level: configuration.loggingLevel, prettyPrint: configuration.loggingPretty })
 
-  logger.info(Configuration, 'Loaded Configuration')
+  logger.info(configuration, 'Loaded Configuration')
 
   const loggingConfiguration = {
-    loggingLevel: Configuration.loggingLevel,
-    loggingPretty: Configuration.loggingPretty,
+    loggingLevel: configuration.loggingLevel,
+    loggingPretty: configuration.loggingPretty,
   }
 
   const api = new API({
     ...loggingConfiguration,
-    port: Configuration.apiPort,
-    dbUrl: Configuration.mongodbUrl,
-    rabbitmqUrl: Configuration.rabbitmqUrl,
+    port: configuration.apiPort,
+    dbUrl: configuration.mongodbUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
   })
   try {
     await api.start()
@@ -44,8 +44,8 @@ async function main() {
 
   const view = new View({
     ...loggingConfiguration,
-    dbUrl: Configuration.mongodbUrl,
-    rabbitmqUrl: Configuration.rabbitmqUrl,
+    dbUrl: configuration.mongodbUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
   })
   try {
     await view.start()
@@ -55,10 +55,10 @@ async function main() {
 
   const storage = new Storage({
     ...loggingConfiguration,
-    dbUrl: Configuration.mongodbUrl,
-    ipfsUrl: Configuration.ipfsUrl,
-    rabbitmqUrl: Configuration.rabbitmqUrl,
-    downloadIntervalInSeconds: Configuration.downloadIntervalInSeconds,
+    dbUrl: configuration.mongodbUrl,
+    ipfsUrl: configuration.ipfsUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
+    downloadIntervalInSeconds: configuration.downloadIntervalInSeconds,
   })
   try {
     await storage.start()
@@ -66,17 +66,17 @@ async function main() {
     logger.error({ exception }, 'Storage was unable to start')
   }
 
-  if (Configuration.enableTimestamping) {
+  if (configuration.enableTimestamping) {
     const blockchainWriter = new BlockchainWriter({
       ...loggingConfiguration,
-      dbUrl: Configuration.mongodbUrl,
-      rabbitmqUrl: Configuration.rabbitmqUrl,
-      insightUrl: Configuration.insightUrl,
-      bitcoinAddress: Configuration.bitcoinAddress,
-      bitcoinAddressPrivateKey: Configuration.bitcoinAddressPrivateKey,
-      poetNetwork: Configuration.poetNetwork,
-      poetVersion: Configuration.poetVersion,
-      timestampIntervalInSeconds: Configuration.timestampIntervalInSeconds,
+      dbUrl: configuration.mongodbUrl,
+      rabbitmqUrl: configuration.rabbitmqUrl,
+      insightUrl: configuration.insightUrl,
+      bitcoinAddress: configuration.bitcoinAddress,
+      bitcoinAddressPrivateKey: configuration.bitcoinAddressPrivateKey,
+      poetNetwork: configuration.poetNetwork,
+      poetVersion: configuration.poetVersion,
+      timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
     })
     try {
       await blockchainWriter.start()
@@ -87,14 +87,14 @@ async function main() {
 
   const blockchainReader = new BlockchainReader({
     ...loggingConfiguration,
-    dbUrl: Configuration.mongodbUrl,
-    rabbitmqUrl: Configuration.rabbitmqUrl,
-    insightUrl: Configuration.insightUrl,
-    poetNetwork: Configuration.poetNetwork,
-    poetVersion: Configuration.poetVersion,
-    minimumBlockHeight: Configuration.minimumBlockHeight,
-    forceBlockHeight: Configuration.forceBlockHeight,
-    blockchainReaderIntervalInSeconds: Configuration.blockchainReaderIntervalInSeconds,
+    dbUrl: configuration.mongodbUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
+    insightUrl: configuration.insightUrl,
+    poetNetwork: configuration.poetNetwork,
+    poetVersion: configuration.poetVersion,
+    minimumBlockHeight: configuration.minimumBlockHeight,
+    forceBlockHeight: configuration.forceBlockHeight,
+    blockchainReaderIntervalInSeconds: configuration.blockchainReaderIntervalInSeconds,
   })
   try {
     await blockchainReader.start()
