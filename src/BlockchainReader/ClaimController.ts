@@ -92,7 +92,7 @@ export class ClaimController {
     this.logger.info({
       action: 'findHighestBlockHeight',
       highestBlockHeight,
-    }, 'Highest Block Scanned So Far')
+    }, 'Retrieved Height of Highest Block Scanned So Far')
 
     return highestBlockHeight
   }
