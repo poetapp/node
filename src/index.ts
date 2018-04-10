@@ -23,7 +23,7 @@ async function main() {
 
   const logger: Pino.Logger = Pino({ level: configuration.loggingLevel, prettyPrint: configuration.loggingPretty })
 
-  logger.info(configuration, 'Loaded Configuration')
+  logger.info(configuration, 'Loaded Configuration and merged with defaults')
 
   const loggingConfiguration = {
     loggingLevel: configuration.loggingLevel,
