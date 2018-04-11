@@ -52,19 +52,17 @@ export class Router {
   }
 
   onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
-    this.logger.trace({
-      method: 'onPoetTimestampsDownloaded',
-      poetTimestamps,
-    }, 'Downloaded Po.et Timestamp')
+    const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
+
+    logger.trace({ poetTimestamps }, 'Downloaded Po.et Timestamp')
 
     await this.workController.upsertTimestamps(poetTimestamps)
   }
 
   onClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    this.logger.trace({
-      method: 'onClaimsDownloaded',
-      claimIPFSHashPairs,
-    }, 'Downloaded a (IPFS Hash, Claim Id) Pair')
+    const logger = this.logger.child({ method: 'onClaimsDownloaded' })
+
+    logger.trace({ claimIPFSHashPairs }, 'Downloaded a (IPFS Hash, Claim Id) Pair')
 
     await this.workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
   }
