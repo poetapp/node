@@ -18,7 +18,7 @@ export class WorkController {
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging
   ) {
-    this.logger = logger
+    this.logger = logger.child({ file: 'WorkController' })
     this.db = db
     this.collection = this.db.collection('works')
     this.messaging = messaging

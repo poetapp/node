@@ -7,6 +7,7 @@ import * as Pino from 'pino'
 import { ClaimType, isClaim, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from 'poet-js'
 
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
+import { LoggerMiddleware } from './LoggerMiddleware'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
 
@@ -23,7 +24,7 @@ export class Router {
     @inject('RouterConfiguration') configuration: RouterConfiguration,
     @inject('WorkController') workController: WorkController)
   {
-    this.logger = logger
+    this.logger = logger.child({ file: 'Router' })
     this.configuration = configuration
     this.workController = workController
 
@@ -32,6 +33,7 @@ export class Router {
     this.koaRouter.post('/works', this.postWork)
 
     this.koa.use(KoaCors())
+    this.koa.use(LoggerMiddleware(this.logger))
     this.koa.use(HttpExceptionsMiddleware)
     this.koa.use(KoaBody({ textLimit: 1000000 }))
     this.koa.use(this.koaRouter.allowedMethods())
