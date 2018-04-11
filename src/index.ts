@@ -1,5 +1,7 @@
 import 'reflect-metadata'
 
+import 'Error'
+
 import * as Pino from 'pino'
 
 import { loadConfigurationWithDefaults } from 'Configuration'
