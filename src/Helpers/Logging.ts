@@ -1,8 +1,9 @@
 import { basename } from 'path'
 import * as Pino from 'pino'
-import { LoggingConfiguration } from '../Configuration'
 
-export function newModuleLogger(configuration: LoggingConfiguration, dirname: string): Pino.Logger {
+import { LoggingConfiguration } from 'Configuration'
+
+export function createModuleLogger(configuration: LoggingConfiguration, dirname: string): Pino.Logger {
   return childWithModuleName(Pino(loggingConfigurationToPinoConfiguration(configuration)), dirname)
 }
 

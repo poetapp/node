@@ -2,7 +2,7 @@ import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 
-import { newModuleLogger } from 'Helpers/Logging'
+import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { Router } from './Router'
@@ -20,7 +20,7 @@ export class View {
 
   constructor(configuration: ViewConfiguration) {
     this.configuration = configuration
-    this.logger = newModuleLogger(configuration, __dirname)
+    this.logger = createModuleLogger(configuration, __dirname)
   }
 
   async start() {
