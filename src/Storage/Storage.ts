@@ -29,7 +29,7 @@ export class Storage {
   }
 
   async start() {
-    this.logger.info({ configuration: this.configuration }, 'Starting Starting')
+    this.logger.info({ configuration: this.configuration }, 'Storage Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 

@@ -24,7 +24,6 @@ export class BlockchainReaderService {
     this.claimController = claimController
     this.configuration = configuration
     this.interval = new Interval(this.scanNewBlock, this.configuration.blockchainReaderIntervalInSeconds * 1000)
-    this.logger.info('wachin')
   }
 
   async start() {
