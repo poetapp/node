@@ -1,7 +1,9 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
+import * as Pino from 'pino'
 import { Claim, isClaim, ClaimIdIPFSHashPair } from 'poet-js'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -9,16 +11,19 @@ import { IPFS } from './IPFS'
 
 @injectable()
 export class ClaimController {
+  private readonly logger: Pino.Logger
   private readonly db: Db
   private readonly collection: Collection
   private readonly messaging: Messaging
   private readonly ipfs: IPFS
 
   constructor(
+    @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
     @inject('IPFS') ipfs: IPFS
   ) {
+    this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('storage')
     this.messaging = messaging
@@ -26,24 +31,13 @@ export class ClaimController {
   }
 
   async create(claim: Claim): Promise<void> {
-    console.log(JSON.stringify({
-      severity: 'trace',
-      module: 'Storage',
-      file: 'ClaimController',
-      method: 'create',
-      claim,
-    }, null, 2))
+    const logger = this.logger.child({ method: 'create' })
+
+    logger.trace({ claim }, 'Storing Claim')
 
     const ipfsHash = await this.ipfs.addText(JSON.stringify(claim))
 
-    console.log(JSON.stringify({
-      severity: 'debug',
-      module: 'Storage',
-      file: 'ClaimController',
-      method: 'create',
-      claim,
-      ipfsHash,
-    }, null, 2))
+    logger.info({ claim, ipfsHash }, 'Claim Stored')
 
     await this.collection.insertOne({
       claimId: claim.id,
@@ -56,35 +50,22 @@ export class ClaimController {
   }
 
   async download(ipfsHashes: ReadonlyArray<string>) {
-    console.log(JSON.stringify({
-      severity: 'trace',
-      module: 'Storage',
-      file: 'ClaimController',
-      method: 'download',
-      ipfsHashes,
-    }, null, 2))
+    const logger = this.logger.child({ method: 'download' })
+
+    logger.trace({ ipfsHashes }, 'Downloading Claims')
 
     await this.collection.insertMany(ipfsHashes.map(ipfsHash => ({ ipfsHash, claimId: null })), { ordered: false })
   }
 
   async downloadNextHash() {
-    console.log(JSON.stringify({
-      severity: 'trace',
-      module: 'Storage',
-      file: 'ClaimController',
-      method: 'downloadNextHash',
-    }, null, 2))
+    const logger = this.logger.child({ method: 'downloadNextHash' })
+
+    logger.trace('Downloading Next Hash')
 
     const ipfsHashEntry = await this.collection.findOne({ claimId: null, $or: [ {attempts: { $lt: 5 }}, {attempts: { $exists: false }}] })
     const ipfsHash = ipfsHashEntry && ipfsHashEntry.ipfsHash
 
-    console.log(JSON.stringify({
-      severity: 'trace',
-      module: 'Storage',
-      file: 'ClaimController',
-      method: 'downloadNextHash',
-      ipfsHash,
-    }, null, 2))
+    logger.trace({ ipfsHash }, 'Downloading Next Hash')
 
     if (!ipfsHash)
       return
@@ -95,28 +76,12 @@ export class ClaimController {
     } catch (exception) {
       await this.collection.updateOne({ ipfsHash }, { $inc: { attempts: 1 } })
 
-      console.log(JSON.stringify({
-        severity: 'debug',
-        module: 'Storage',
-        file: 'ClaimController',
-        method: 'downloadNextHash',
-        message: 'Exception caught calling downloadClaim',
-        ipfsHash,
-        exception,
-      }, null, 2))
+      logger.debug({ ipfsHash, exception }, 'Failed to Download Claim')
 
       return
     }
 
-    console.log(JSON.stringify({
-      severity: 'info',
-      module: 'Storage',
-      file: 'ClaimController',
-      method: 'downloadNextHash',
-      message: 'Successfully downloaded claim from IPFS',
-      ipfsHash,
-      claim,
-    }, null, 2))
+    logger.info({ ipfsHash, claim }, 'Successfully downloaded claim from IPFS')
 
     await this.updateClaimIdIPFSHashPairs([{
       claimId: claim.id,
@@ -141,14 +106,9 @@ export class ClaimController {
   }
 
   private async updateClaimIdIPFSHashPairs(claimIdIPFSHashPairs: ReadonlyArray<ClaimIdIPFSHashPair>) {
-    console.log(JSON.stringify({
-      severity: 'trace',
-      module: 'Storage',
-      file: 'ClaimController',
-      method: 'updateClaimIdIPFSHashPairs',
-      message: 'Storeding { claimId, ipfsHash } pairs in the DB.',
-      claimIdIPFSHashPairs,
-    }, null, 2))
+    const logger = this.logger.child({ method: 'updateClaimIdIPFSHashPairs' })
+
+    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsHash } pairs in the DB.')
 
     const results = await Promise.all(claimIdIPFSHashPairs.map(({claimId, ipfsHash}) =>
       this.collection.updateOne({ ipfsHash }, { $set: { claimId } }, { upsert: true })
@@ -157,21 +117,9 @@ export class ClaimController {
     const databaseErrors = results.filter(_ => _.result.n !== 1)
 
     if (databaseErrors.length)
-      console.error(JSON.stringify({
-        action: 'Download',
-        message: 'Error Storing { claimId, ipfsHash } pairs in the DB.',
-        databaseErrors,
-      }, null, 2))
+      logger.error({ databaseErrors }, 'Error storing { claimId, ipfsHash } pairs in the DB.')
 
-    console.log(JSON.stringify({
-      severity: 'trace',
-      module: 'Storage',
-      file: 'ClaimController',
-      method: 'updateClaimIdIPFSHashPairs',
-      message: 'Stored { claimId, ipfsHash } pairs in the DB successfully.',
-      claimIdIPFSHashPairs,
-    }, null, 2))
-
+    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsHash } pairs in the DB successfully.')
   }
 
 }

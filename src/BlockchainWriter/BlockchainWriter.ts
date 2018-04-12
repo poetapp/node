@@ -1,7 +1,9 @@
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
+import * as Pino from 'pino'
 import { InsightClient } from 'poet-js'
 
+import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { BlockchainWriterConfiguration } from './BlockchainWriterConfiguration'
@@ -13,6 +15,7 @@ import { ServiceConfiguration } from './ServiceConfiguration'
 
 @injectable()
 export class BlockchainWriter {
+  private readonly logger: Pino.Logger
   private readonly configuration: BlockchainWriterConfiguration
   private readonly container = new Container()
   private dbConnection: Db
@@ -22,10 +25,11 @@ export class BlockchainWriter {
 
   constructor(configuration: BlockchainWriterConfiguration) {
     this.configuration = configuration
+    this.logger = createModuleLogger(configuration, __dirname)
   }
 
   async start() {
-    console.log('BlockchainWriter Starting...', this.configuration)
+    this.logger.info({ configuration: this.configuration }, 'BlockchainWriter Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 
@@ -40,10 +44,11 @@ export class BlockchainWriter {
     this.service = this.container.get('Service')
     await this.service.start()
 
-    console.log('BlockchainWriter Started')
+    this.logger.info('BlockchainWriter Started')
   }
 
   initializeContainer() {
+    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
