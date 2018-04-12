@@ -4,6 +4,7 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 import { InsightClient } from 'poet-js'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -30,7 +31,7 @@ export class ClaimController {
     if (!configuration.bitcoinAddressPrivateKey)
       throw new Error('configuration.bitcoinAddressPrivateKey is required.')
 
-    this.logger = logger.child({ file: 'ClaimController'})
+    this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.messaging = messaging
     this.insightHelper = insightClient

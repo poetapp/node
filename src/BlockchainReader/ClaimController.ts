@@ -3,6 +3,7 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 import { getPoetTimestamp, PoetTimestamp, InsightClient } from 'poet-js'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
@@ -23,7 +24,7 @@ export class ClaimController {
     @inject('InsightHelper') insightHelper: InsightClient,
     @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
   ) {
-    this.logger = logger
+    this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.messaging = messaging
     this.insightHelper = insightHelper
@@ -32,11 +33,9 @@ export class ClaimController {
   }
 
   async scanBlock(blockHeight: number): Promise<void> {
-    const logger = this.logger.child({ action: 'scanBlock' })
+    const logger = this.logger.child({ method: 'scanBlock' })
 
-    logger.trace({
-      blockHeight
-    }, 'Retrieving Block Hash...')
+    logger.trace({ blockHeight }, 'Retrieving Block Hash...')
 
     const blockHash = await this.insightHelper.getBlockHash(blockHeight)
 
@@ -82,17 +81,16 @@ export class ClaimController {
    * @returns {Promise<number>} The highest block height from the database, or null if no block has been processed.
    */
   async findHighestBlockHeight(): Promise<number> {
+    const logger = this.logger.child({ method: 'findHighestBlockHeight' })
+
     const queryResults = await this.collection
       .find({ }, { projection: { blockHeight: true, _id: 0 }})
-      .sort({blockHeight: -1})
+      .sort({ blockHeight: -1 })
       .limit(1)
       .toArray()
     const highestBlockHeight = queryResults && !!queryResults.length && queryResults[0].blockHeight || null
 
-    this.logger.info({
-      action: 'findHighestBlockHeight',
-      highestBlockHeight,
-    }, 'Retrieved Height of Highest Block Scanned So Far')
+    logger.info({ highestBlockHeight }, 'Retrieved Height of Highest Block Scanned So Far')
 
     return highestBlockHeight
   }

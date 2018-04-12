@@ -2,6 +2,8 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { Interval } from 'poet-js'
 
+import { childWithFileName } from 'Helpers/Logging'
+
 import { ClaimController } from './ClaimController'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
@@ -17,7 +19,7 @@ export class Service {
     @inject('ClaimController') claimController: ClaimController,
     @inject('ServiceConfiguration') configuration: ServiceConfiguration,
   ) {
-    this.logger = logger.child({ file: 'Service' })
+    this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
     this.configuration = configuration
     this.interval = new Interval(this.downloadNextHash, 1000 * configuration.downloadIntervalInSeconds)

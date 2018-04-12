@@ -2,6 +2,7 @@ import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 
+import { newModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
@@ -24,8 +25,7 @@ export class Storage {
 
   constructor(configuration: StorageConfiguration) {
     this.configuration = configuration
-    this.logger = Pino({ level: configuration.loggingLevel, prettyPrint: configuration.loggingPretty })
-      .child({ module: 'Storage' })
+    this.logger = newModuleLogger(configuration, __dirname)
   }
 
   async start() {

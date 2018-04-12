@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { ClaimIPFSHashPair, PoetTimestamp } from 'poet-js'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -18,7 +19,7 @@ export class Router {
     @inject('Messaging') messaging: Messaging,
     @inject('WorkController') workController: WorkController
   ) {
-    this.logger = logger.child({ file: 'Router' })
+    this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.workController = workController
   }

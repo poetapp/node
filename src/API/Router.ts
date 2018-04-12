@@ -6,6 +6,8 @@ import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
 import { ClaimType, isClaim, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from 'poet-js'
 
+import { childWithFileName } from 'Helpers/Logging'
+
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
 import { LoggerMiddleware } from './LoggerMiddleware'
 import { RouterConfiguration } from './RouterConfiguration'
@@ -22,9 +24,9 @@ export class Router {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('RouterConfiguration') configuration: RouterConfiguration,
-    @inject('WorkController') workController: WorkController)
-  {
-    this.logger = logger.child({ file: 'Router' })
+    @inject('WorkController') workController: WorkController,
+  ) {
+    this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
     this.workController = workController
 
@@ -45,7 +47,8 @@ export class Router {
   }
 
   private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.trace({ params: context.params }, 'Router.getWork')
+    this.logger.trace({ params: context.params }, 'GET /works/:id')
+
     const id = context.params.id
     const work = await this.workController.getById(id)
 
@@ -56,7 +59,8 @@ export class Router {
   }
 
   private getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.trace({ query: context.query }, 'Router.getWorks')
+    this.logger.trace({ query: context.query }, 'GET /works')
+
     const publicKey = context.query.publicKey
     const works = await this.workController.getByPublicKey(publicKey)
 
@@ -64,6 +68,8 @@ export class Router {
   }
 
   private postWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    this.logger.trace({ body: context.request.body }, 'POST /works')
+
     const work = context.request.body
 
     if (!isClaim(work))

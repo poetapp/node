@@ -3,6 +3,7 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 import { Claim, isClaim, ClaimIdIPFSHashPair } from 'poet-js'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -22,7 +23,7 @@ export class ClaimController {
     @inject('Messaging') messaging: Messaging,
     @inject('IPFS') ipfs: IPFS
   ) {
-    this.logger = logger.child({ file: 'ClaimController' })
+    this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('storage')
     this.messaging = messaging

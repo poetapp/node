@@ -3,6 +3,7 @@ import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { InsightClient } from 'poet-js'
 
+import { newModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { BlockchainWriterConfiguration } from './BlockchainWriterConfiguration'
@@ -24,8 +25,7 @@ export class BlockchainWriter {
 
   constructor(configuration: BlockchainWriterConfiguration) {
     this.configuration = configuration
-    this.logger = Pino({ level: configuration.loggingLevel, prettyPrint: configuration.loggingPretty })
-      .child({ module: 'BlockchainWriter' })
+    this.logger = newModuleLogger(configuration, __dirname)
   }
 
   async start() {

@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -17,7 +18,7 @@ export class Router {
     @inject('Messaging') messaging: Messaging,
     @inject('ClaimController') claimController: ClaimController
   ) {
-    this.logger = logger.child({ file: 'Router'})
+    this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.claimController = claimController
   }
