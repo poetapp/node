@@ -1,6 +1,8 @@
 import { inject, injectable } from 'inversify'
+import * as Pino from 'pino'
 import { ClaimIPFSHashPair, PoetTimestamp } from 'poet-js'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -8,13 +10,16 @@ import { WorkController } from './WorkController'
 
 @injectable()
 export class Router {
+  private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly workController: WorkController
 
   constructor(
+    @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('WorkController') workController: WorkController
   ) {
+    this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.workController = workController
   }
@@ -48,21 +53,17 @@ export class Router {
   }
 
   onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
-    console.log(JSON.stringify({
-      module: 'View',
-      action: 'onPoetTimestampsDownloaded',
-      poetTimestamps,
-    }, null, 2))
+    const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
+
+    logger.trace({ poetTimestamps }, 'Downloaded Po.et Timestamp')
 
     await this.workController.upsertTimestamps(poetTimestamps)
   }
 
   onClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    console.log(JSON.stringify({
-      module: 'View',
-      action: 'onClaimsDownloaded',
-      claimIPFSHashPairs,
-    }, null, 2))
+    const logger = this.logger.child({ method: 'onClaimsDownloaded' })
+
+    logger.trace({ claimIPFSHashPairs }, 'Downloaded a (IPFS Hash, Claim Id) Pair')
 
     await this.workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
   }

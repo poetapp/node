@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import * as path from 'path'
 
-export interface Configuration {
+export interface Configuration extends LoggingConfiguration {
   readonly rabbitmqUrl: string
   readonly mongodbUrl: string
   readonly ipfsUrl: string
@@ -25,6 +25,11 @@ export interface Configuration {
   readonly downloadIntervalInSeconds: number
 }
 
+export interface LoggingConfiguration {
+  readonly loggingLevel: string
+  readonly loggingPretty: boolean
+}
+
 const defaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://localhost',
   mongodbUrl: 'mongodb://localhost:27017/poet',
@@ -41,14 +46,15 @@ const defaultConfiguration: Configuration = {
   timestampIntervalInSeconds: 30,
 
   downloadIntervalInSeconds: 5,
+
+  loggingLevel: 'info',
+  loggingPretty: true,
 }
 
-function loadConfigurationWithDefaults(): Configuration {
-  console.log('Loading Po.et Configuration')
+export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
-  const configPath = path.join(homedir(), '/.po.et/configuration.json')
-
-  return { ...defaultConfiguration, ...loadConfiguration(configPath) }
+export function loadConfigurationWithDefaults(): Configuration {
+  return { ...defaultConfiguration, ...loadConfiguration(configurationPath()) }
 }
 
 function loadConfiguration(configPath: string): Configuration | {} {
@@ -59,7 +65,7 @@ function loadConfiguration(configPath: string): Configuration | {} {
 
   const configuration = JSON.parse(readFileSync(configPath, 'utf8'))
 
-  console.log('Loaded configuration from  ' + configPath, configuration)
+  console.log('Loaded configuration from ' + configPath)
 
   if (typeof configuration.poetNetwork === 'string')
     validatePoetNetwork(configuration.poetNetwork)
@@ -80,5 +86,3 @@ function validatePoetVersion(poetVersion: any) {
 function validatePoetNetwork(poetNetwork: any) {
   assert(poetNetwork === 'BARD' || poetNetwork === 'POET', 'Field poetNetwork must be equal to BARD or POET')
 }
-
-export const Configuration = loadConfigurationWithDefaults()

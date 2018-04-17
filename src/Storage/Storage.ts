@@ -1,6 +1,8 @@
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
+import * as Pino from 'pino'
 
+import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
@@ -13,6 +15,7 @@ import { StorageConfiguration } from './StorageConfiguration'
 
 @injectable()
 export class Storage {
+  private readonly logger: Pino.Logger
   private readonly configuration: StorageConfiguration
   private readonly container = new Container()
   private dbConnection: Db
@@ -22,10 +25,11 @@ export class Storage {
 
   constructor(configuration: StorageConfiguration) {
     this.configuration = configuration
+    this.logger = createModuleLogger(configuration, __dirname)
   }
 
   async start() {
-    console.log('Storage Starting...', this.configuration)
+    this.logger.info({ configuration: this.configuration }, 'Storage Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 
@@ -42,10 +46,11 @@ export class Storage {
 
     await this.createIndices()
 
-    console.log('Storage Started')
+    this.logger.info('Storage Started')
   }
 
   initializeContainer() {
+    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<IPFS>('IPFS').to(IPFS)

@@ -1,7 +1,9 @@
 import { injectable, Container } from 'inversify'
 import { MongoClient, Db } from 'mongodb'
+import * as Pino from 'pino'
 import { InsightClient } from 'poet-js'
 
+import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { BlockchainReaderConfiguration } from './BlockchainReaderConfiguration'
@@ -12,6 +14,7 @@ import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 
 @injectable()
 export class BlockchainReader {
+  private readonly logger: Pino.Logger
   private readonly configuration: BlockchainReaderConfiguration
   private readonly container = new Container()
   private dbConnection: Db
@@ -20,10 +23,11 @@ export class BlockchainReader {
 
   constructor(configuration: BlockchainReaderConfiguration) {
     this.configuration = configuration
+    this.logger = createModuleLogger(configuration, __dirname)
   }
 
   async start() {
-    console.log('BlockchainReader Starting...', this.configuration)
+    this.logger.info({ configuration: this.configuration }, 'BlockchainReader Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 
@@ -35,10 +39,11 @@ export class BlockchainReader {
     this.cron = this.container.get('Cron')
     await this.cron.start()
 
-    console.log('BlockchainReader Started')
+    this.logger.info('BlockchainReader Started')
   }
 
   initializeContainer() {
+    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
     this.container.bind<BlockchainReaderService>('Cron').to(BlockchainReaderService)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)

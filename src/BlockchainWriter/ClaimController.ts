@@ -1,8 +1,10 @@
 import * as bitcore from 'bitcore-lib'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
+import * as Pino from 'pino'
 import { InsightClient } from 'poet-js'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -10,6 +12,7 @@ import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 
 @injectable()
 export class ClaimController {
+  private readonly logger: Pino.Logger
   private readonly db: Db
   private readonly collection: Collection
   private readonly messaging: Messaging
@@ -17,6 +20,7 @@ export class ClaimController {
   private readonly configuration: ClaimControllerConfiguration
 
   constructor(
+    @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
     @inject('InsightHelper') insightClient: InsightClient,
@@ -27,6 +31,7 @@ export class ClaimController {
     if (!configuration.bitcoinAddressPrivateKey)
       throw new Error('configuration.bitcoinAddressPrivateKey is required.')
 
+    this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.messaging = messaging
     this.insightHelper = insightClient
@@ -35,13 +40,10 @@ export class ClaimController {
   }
 
   async requestTimestamp(ipfsHash: string): Promise<void> {
-    console.log(JSON.stringify({
-      severity: 'debug',
-      module: 'BlockchainWriter',
-      file: 'ClaimController',
+    this.logger.trace({
       method: 'timestampWithRetry',
       ipfsHash,
-    }, null, 2))
+    })
     await this.collection.insertOne({
       ipfsHash,
       txId: null
@@ -49,21 +51,14 @@ export class ClaimController {
   }
 
   async timestampNextHash() {
-    console.log(JSON.stringify({
-      severity: 'debug',
-      module: 'BlockchainWriter',
-      file: 'ClaimController',
-      method: 'timestampNextHash',
-    }, null, 2))
+    const logger = this.logger.child({ method: 'timestampNextHash' })
+
+    logger.trace('Retrieving Next Hash To Timestamp')
+
     const entry = await this.collection.findOne({ txId: null })
     const hash = entry && entry.ipfsHash
-    console.log(JSON.stringify({
-      severity: 'debug',
-      module: 'BlockchainWriter',
-      file: 'ClaimController',
-      method: 'timestampNextHash',
-      hash,
-    }, null, 2))
+
+    this.logger.trace({ hash }, 'Next Hash To Timestamp Retrieved')
 
     if (!hash)
       return
@@ -71,19 +66,17 @@ export class ClaimController {
     try {
       await this.timestamp(hash)
     } catch (exception) {
-      console.log(JSON.stringify({
-        severity: 'warn',
-        module: 'BlockchainWriter',
-        file: 'ClaimController',
-        method: 'timestampNextHash',
+      logger.warn({
         hash,
         exception,
-      }, null, 2))
+      }, 'Uncaught Exception While Timestamping Hash')
     }
   }
 
   private async timestamp(ipfsHash: string): Promise<void> {
-    console.log(`BlockchainWriter.ClaimController.timestamp(${ipfsHash})`)
+    const logger = this.logger.child({ method: 'timestamp' })
+
+    logger.trace({ ipfsHash }, 'Timestamping IPFS Hash')
 
     const utxo = await this.insightHelper.getUtxo(this.configuration.bitcoinAddress)
 
@@ -93,11 +86,10 @@ export class ClaimController {
     // Use only up to 5 unused outputs to avoid large transactions, picking the ones with the most satoshis to ensure enough fee
     const topUtxo = utxo.slice().sort((a, b) => b.satoshis - a.satoshis).slice(0, 5)
 
-    console.log(JSON.stringify({
-      message: 'Got UTXO from Insight',
+    logger.trace({
       address: this.configuration.bitcoinAddress,
-      utxo
-    }, null, 2))
+      utxo,
+    }, 'Got UTXO from Insight')
 
     const data = Buffer.concat([
       Buffer.from(this.configuration.poetNetwork),
@@ -110,26 +102,23 @@ export class ClaimController {
       .addData(data)
       .sign(this.configuration.bitcoinAddressPrivateKey)
 
-    console.log(JSON.stringify({
-      action: 'timestamp',
-      message: 'Transaction Built',
+    logger.trace({
+      address: this.configuration.bitcoinAddress,
       txHash: tx.hash
-    }, null, 2))
+    }, 'Transaction Built')
 
     const txPostResponse = await this.insightHelper.broadcastTx(tx)
 
-    console.log(JSON.stringify({
-      action: 'timestamp',
-      message: 'Transaction Broadcasted',
+    logger.info({
       txHash: tx.hash,
-      txPostResponse
-    }, null, 2))
+      txId: tx.id,
+      txPostResponse,
+    }, 'Transaction Broadcasted')
 
     this.collection.updateOne({ ipfsHash }, { $set: { txId: tx.id }}, { upsert: true })
     this.messaging.publish(Exchange.IPFSHashTxId, {
       ipfsHash,
       txId: tx.id
     })
-    console.log(`BlockchainWriter.ClaimController.timestamp, created ${tx.id}`)
   }
 }

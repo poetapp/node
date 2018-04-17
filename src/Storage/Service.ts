@@ -1,19 +1,25 @@
 import { inject, injectable } from 'inversify'
+import * as Pino from 'pino'
 import { Interval } from 'poet-js'
+
+import { childWithFileName } from 'Helpers/Logging'
 
 import { ClaimController } from './ClaimController'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
 @injectable()
 export class Service {
+  private readonly logger: Pino.Logger
   private readonly claimController: ClaimController
   private readonly interval: Interval
   private readonly configuration: ServiceConfiguration
 
   constructor(
+    @inject('Logger') logger: Pino.Logger,
     @inject('ClaimController') claimController: ClaimController,
     @inject('ServiceConfiguration') configuration: ServiceConfiguration,
   ) {
+    this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
     this.configuration = configuration
     this.interval = new Interval(this.downloadNextHash, 1000 * configuration.downloadIntervalInSeconds)
@@ -31,13 +37,10 @@ export class Service {
     try {
       await this.claimController.downloadNextHash()
     } catch (error) {
-      console.log(JSON.stringify({
-        severity: 'error',
-        module: 'Storage',
-        file: 'Service',
+      this.logger.error({
         method: 'downloadNextHash',
         error,
-      }, null, 2))
+      }, 'Uncaught Error Downloading Next Hash')
     }
   }
 
