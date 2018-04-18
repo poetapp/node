@@ -3,11 +3,12 @@ import { Claim } from 'poet-js'
 import { promisify } from 'util'
 
 const delay = promisify(setTimeout)
+const TEST_URL = process.env.INTEGRATION_TEST_NODE_URL || 'http://localhost:18080'
 
 export class Client {
   readonly url: string
 
-  constructor(url: string = 'http://localhost:18080') {
+  constructor(url: string = TEST_URL) {
     this.url = url
   }
 
