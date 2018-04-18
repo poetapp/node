@@ -14,6 +14,9 @@ sh-mongo:
 sh-ipfs:
 	docker exec -it poet-ipfs /bin/sh
 
+poet-node:
+	docker run --name poet-node -v=$$PWD/.po.et/configuration.json:/usr/src/app/.po.et/configuration.json poetapp/node:latest
+
 setup:
 	if [ -d ~/.nvm ]; then \
 		. $$NVM_DIR/nvm.sh ; \
@@ -23,9 +26,11 @@ setup:
 	npm run build
 	npm start
 
+containers: mongo rabbit ipfs
+
 all: mongo rabbit ipfs setup
 
-containers: mongo rabbit ipfs
+all-docker: containers poet-node
 
 start-api:
 	npm start
