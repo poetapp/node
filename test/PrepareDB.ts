@@ -1,16 +1,15 @@
 import { Db, MongoClient } from 'mongodb'
 
-import { loadConfigurationWithDefaults } from 'Configuration'
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from './Claims'
 import { waitForNode } from './Integration/Helper'
 
 const collectionNames: ReadonlyArray<string> = ['works', 'blockchainReader', 'blockchainWriter', 'storage']
-const { mongodbUrl } = loadConfigurationWithDefaults()
+const MONGO_URL = process.env.POET_MONGODB_URL || 'mongodb://poet-mongo:27017/poet'
 
 async function main() {
   console.log('Preparing DB for Integration Tests.')
 
-  const mongoClient = await MongoClient.connect(mongodbUrl)
+  const mongoClient = await MongoClient.connect(MONGO_URL)
   const db = await mongoClient.db()
 
   console.log(`Cleaning collections ${collectionNames}...`)
