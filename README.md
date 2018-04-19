@@ -70,9 +70,21 @@ make stop
 make clean
 ```
 
+Or you can use the Makefile recipe to create everything in Docker containers:
+```
+cd node
+
+make all-docker
+
+# to clean up and stop processes:
+make stop
+make clean
+```
+
 Make Commands available:
 ```
 make all # makes all dependancies
+make all-docker #runs all services as docker containers (including poet-node)
 make stop # stops the docker containers
 make clean # removes node_modules and all stopped containers
 make setup # setups the api nodejs deps
