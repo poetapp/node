@@ -9,7 +9,10 @@ services:
     ports:
       - "5671:5671"
       - "5672:5672"
+      - "8081:8080"
     hostname: my-rabbit
+    volumes:
+      - .rabbitmq.conf.sample:/etc/rabbitmq/rabbitmq.conf
   poet-ipfs:
     image: jbenet/go-ipfs:latest
     ports:
@@ -30,6 +33,7 @@ services:
       - RABBITMQ_URL=amqp://poet-rabbit
       - MONGODB_URL=mongodb://poet-mongo:27017/poet
       - IPFS_URL=http://poet-ipfs:5001
+    hostname: poet-node
     links:
       - poet-mongo
       - poet-rabbit
