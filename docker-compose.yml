@@ -8,6 +8,7 @@ services:
     image: rabbitmq:3
     ports:
       - "5671-5672:5671-5672"
+    hostname: my-rabbit
   poet-ipfs:
     image: jbenet/go-ipfs:latest
     ports:
@@ -22,6 +23,14 @@ services:
     ports:
       - "18080:18080"
     depends_on:
+      - poet-mongo
+      - poet-rabbit
+      - poet-ipfs
+    environment:
+      - RABBITMQ_URL=amqp://poet-rabbit
+      - MONGODB_URL=mongodb://poet-mongo:27017/poet
+      - IPFS_URL=http://poet-ipfs:5001
+    links:
       - poet-mongo
       - poet-rabbit
       - poet-ipfs

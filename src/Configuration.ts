@@ -31,10 +31,10 @@ export interface LoggingConfiguration {
 }
 
 const defaultConfiguration: Configuration = {
-  rabbitmqUrl: 'amqp://localhost',
-  mongodbUrl: 'mongodb://localhost:27017/poet',
-  ipfsUrl: 'http://localhost:5001',
-  insightUrl: 'https://test-insight.bitpay.com/api',
+  rabbitmqUrl: process.env.RABBITMQ_URL || 'amqp://localhost',
+  mongodbUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/poet',
+  ipfsUrl: process.env.IPFS_URL || 'http://localhost:5001',
+  insightUrl: process.env.INSIGHT_URL || 'https://test-insight.bitpay.com/api',
 
   apiPort: 18080,
   poetNetwork: 'BARD',
