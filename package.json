@@ -34,7 +34,7 @@
     "node-fetch": "1.7.3",
     "pino": "4.16.1",
     "poet-js": "1.0.3",
-    "protobufjs": "6.8.0",
+    "protobufjs": "6.8.6",
     "reflect-metadata": "0.1.10",
     "string-to-stream": "1.1.0"
   },
