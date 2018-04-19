@@ -7,7 +7,8 @@ services:
   poet-rabbit:
     image: rabbitmq:3
     ports:
-      - "5671-5672:5671-5672"
+      - "5671:5671"
+      - "5672:5672"
     hostname: my-rabbit
   poet-ipfs:
     image: jbenet/go-ipfs:latest
@@ -19,7 +20,6 @@ services:
       - .ipfs-docker:/data/ipfs
   poet-node:
     build: .
-    command: npm start
     ports:
       - "18080:18080"
     depends_on:
