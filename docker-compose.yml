@@ -1,0 +1,29 @@
+version: '3'
+services:
+  poet-node:
+    build: .
+    command: npm start
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - poet-mongo
+      - poet-rabbit
+      - poet-ipfs
+  poet-mongo:
+    image: mongo:3.4
+    ports:
+      - "27017:27017"
+  poet-rabbit:
+    image: rabbitmq:3
+    ports:
+      - "5671-5672:5671-5672"
+  poet-ipfs:
+    image: jbenet/go-ipfs:latest
+    ports:
+      - "8080:8080"
+      - "4001:4001"
+      - "5001:5001"
+    volumes:
+      - .ipfs-docker:/data/ipfs
