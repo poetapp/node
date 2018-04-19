@@ -5,3 +5,5 @@ dist
 coverage
 
 .idea
+
+.ipfs-docker
