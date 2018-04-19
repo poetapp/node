@@ -40,19 +40,43 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | b
 # Activate NVM
 . ~/.nvm/nvm.sh
 
-# Install NodeJS
-nvm install 9.3.0
-
 # Clone The Po.et Node
 git clone https://github.com/poetapp/node.git
 
 # Build The Po.et Node
 cd node
+
+# Install NodeJS (will install node version in .nvmrc)
+nvm install
+
 npm i
 npm run build
 
 # Run The Po.et Node
 npm start
+```
+
+Or you can use the Makefile recipes to setup:
+```
+# Clone The Po.et Node
+git clone https://github.com/poetapp/node.git
+
+cd node
+
+make all
+
+# to clean up and stop processes:
+make stop
+make clean
+```
+
+Make Commands available:
+```
+make all # makes all dependancies
+make stop # stops the docker containers
+make clean # removes node_modules and all stopped containers
+make setup # setups the api nodejs deps
+make containers # creates the dependant docker containers for mongodb, rabbitmq and ipfs
 ```
 
 ### Dependencies
