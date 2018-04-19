@@ -15,7 +15,7 @@ sh-ipfs:
 	docker exec -it poet-ipfs /bin/sh
 
 poet-node:
-	docker run --name poet-node -v=$$PWD/.po.et/configuration.json:/usr/src/app/.po.et/configuration.json poetapp/node:latest
+	docker run --name poet-node -v=$$PWD/.po.et/configuration.json.example:/root/.po.et/configuration.json poetapp/node:latest
 
 setup:
 	if [ -d ~/.nvm ]; then \
