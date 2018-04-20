@@ -1,3 +1,0 @@
-loopback_users = none
-listeners.tcp.default = poet-node:5672
-hipe_compile = false

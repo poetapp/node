@@ -9,10 +9,8 @@ services:
     ports:
       - "5671:5671"
       - "5672:5672"
-      - "8081:8080"
+      - "15672:15672"
     hostname: my-rabbit
-    volumes:
-      - .rabbitmq.conf.sample:/etc/rabbitmq/rabbitmq.conf
   poet-ipfs:
     image: jbenet/go-ipfs:latest
     ports:

@@ -6,9 +6,12 @@ RUN mkdir -p /usr/src/app
 
 COPY . /usr/src/app/
 
+COPY app-entrypoint.sh /
+RUN chmod +x /app-entrypoint.sh 
+
 WORKDIR /usr/src/app
 
 RUN npm install
 RUN npm run build
 
-CMD [ "npm", "start" ]
+CMD [ "/app-entrypoint.sh" ]
