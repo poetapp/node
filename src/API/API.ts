@@ -12,7 +12,7 @@ import { WorkController } from './WorkController'
 
 @injectable()
 export class API {
-  private readonly logger: Pino.Logger
+  private readonly loggeer: Pino.Logger
   private readonly configuration: APIConfiguration
   private readonly container = new Container()
   private dbConnection: Db
