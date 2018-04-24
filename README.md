@@ -184,9 +184,25 @@ The `signature` must be set to the result of cryptographically signing the `id` 
 
 The `id` field is the `sha256` of the claim, excluding the `id` and `signature` fields, so `getId(claim) == getId(getId(claim))`. We're using [decodeIO's implementation of](https://github.com/dcodeIO/protobuf.js) Google's [Protobuf library](https://github.com/google/protobuf) in order to serialize the claims to a byte buffer deterministically and hashing this byte buffer. The `.proto` file we're using can be found in [src/Serialization/PoetProto.json](./src/Serialization/PoetProto.json). There's a [poet.proto](./src/Serialization/poet.proto) file that you can use in any other programming language.
 
-All this logic is abstracted away in four functions in our [Claim Helper](./src/Helpers/Claim.ts). We'll move this to a new version of [poet-js](https://github.com/poetapp/poet-js) soon, so there won't be any need to delve into these details. Just calling `createClaim(privateKey, claimType, attributes)` will do.
+All this logic is abstracted away in [poet-js](https://github.com/poetapp/poet-js), so if you're working with JavaScript or TypeScript you can simply use the `createClaim(privateKey, claimType, attributes)` function like so:
 
-> You can find examples on how to build and publish claims in the integration tests in [test/Integration/PostWork](./test/Integration/PostWork.ts).
+```ts
+import { ClaimType, createClaim } from 'poet-js'
+
+const privateKey = 'L1mptZyB6aWkiJU7dvAK4UUjLSaqzcRNYJn3KuAA7oEVyiNn3ZPF'
+
+const claim = createClaim(privateKey, ClaimType.Work, {
+  name: 'The Murders in the Rue Morgue',
+  author: 'Edgar Allan Poe',
+  tags: 'short story, detective story, detective',
+  dateCreated: '1841-01-01T00:00:00.000Z',
+  datePublished: '1841-01-01T00:00:00.000Z',
+  content: 'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...'
+})
+
+```
+
+> You can find more examples on how to build and publish claims in the integration tests in [test/Integration/PostWork](./test/Integration/PostWork.ts).
 
 ### Running as a Daemon
 Create a file with the following contents and place it in `~/.config/systemd/user/poet-node.service`:
