@@ -5,8 +5,11 @@ notifications:
 services:
   - mongodb
   - rabbitmq
+before_install:
+  - npm install -g greenkeeper-lockfile@1
 before_script:
   - sudo make ipfs
+  - greenkeeper-lockfile-update
   - npm run build
   - npm run test-prepare-db
   - sleep 5
@@ -15,3 +18,5 @@ before_script:
 script:
   # - npm run lint
   - npm run test
+after_script:
+  - greenkeeper-lockfile-upload
