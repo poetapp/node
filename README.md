@@ -1,5 +1,6 @@
 # The Po.et Node
 
+[![Build Status](https://travis-ci.org/poetapp/node.svg?branch=master)](https://travis-ci.org/poetapp/node)
 [![Greenkeeper badge](https://badges.greenkeeper.io/poetapp/node.svg)](https://greenkeeper.io/)
 
 The Po.et Node allows you to timestamp documents in a decentralized manner. 
