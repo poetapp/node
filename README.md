@@ -88,7 +88,7 @@ You just need to `sudo make mongo rabbit ipfs` once to create the Docker images,
 
 You can also `sudo make sh-mongo` and `sudo make sh-ipfs` to run the mongo shell or ssh into the IPFS container.
 
-You'll need to have Docker installed and running for this. See [How to Install DockerCR](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce).
+You'll need to have Docker installed and running for this. See [How to Install Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce).
 
 No Docker image is provided for InsightAPI since Bitpay offers a usable InsightAPI publicly.
 
