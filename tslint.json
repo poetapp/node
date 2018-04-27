@@ -1,32 +1,56 @@
 {
-  "defaultSeverity": "error",
+  "linterOptions": {
+      "exclude": [
+        "tslint-rules/src/**/*.ts"
+      ]
+  },
+  "rulesDirectory": ["tslint-plugin-prettier", "tslint-rules/rules"],
   "extends": [
-      "tslint:recommended"
+    "tslint:recommended",
+    "tslint-config-prettier",
+    "tslint-eslint-rules",
+    "tslint-immutable"
   ],
-  "jsRules": {},
   "rules": {
-    "semicolon": [true, "never"],
-    "quotemark": [true, "single", "avoid-escape", "avoid-template"],
-    "no-console": [false],
+    "only-arrow-functions": false,
+    "object-literal-sort-keys": false,
+    "no-console": [true],
     "interface-name": [true, "never-prefix"],
     "no-namespace": [false],
     "indent": [true, "spaces", 2],
     "curly": [true, "as-needed"],
-    "max-line-length": [true, 140],
-    "object-literal-sort-keys": [false], // "match-declaration-order" is desired, but tslint has problems finding interfaces and object-literal-sort-keys defaults to alphabetical
+    "max-line-length": [true, 120],
     "trailing-comma": false,
-    "no-trailing-whitespace": [true, "ignore-blank-lines"],
     "arrow-parens": false,
     "no-empty-interface": false,
     "member-access": false,
     "no-var-requires": false,
+    "no-default-export": true,
+    "no-unused-variable": true,
+    "no-shadowed-variable": false,
+    "no-relative-imports": true,
     "ordered-imports": [
       true,
       {
         "import-sources-order": "lowercase-last",
         "named-imports-order": "any"
       }
-    ]
-  },
-  "rulesDirectory": []
+    ],
+    "prettier": [true, { 
+      "singleQuote": true,
+      "semi": false
+    }],
+
+    // tslint-immutable Recommended built-in rules
+    "no-var-keyword": true,
+    "no-parameter-reassignment": true,
+    "typedef": [true, "call-signature"],
+    // Immutability rules
+    "readonly-keyword": [true, {"ignore-prefix": "mutable"}],
+    "readonly-array": true,
+    "no-let": true,
+    "no-object-mutation": [true, {"ignore-prefix": ["this.mutable", "mutable"]}],
+    "no-delete": true,
+    "no-method-signature": true
+  }
 }

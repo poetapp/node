@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "./rules/",
+    "sourceMap": false,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "es6",
+    "lib": [ "dom", "dom.iterable", "scripthost", "es2017" ],
+    "baseUrl": "./src/",
+    "types": [ "node" ],
+    "experimentalDecorators": true
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}
