@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node dist/babel/src",
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
-    "lint": "tslint -p .",
+    "lint": "tslint -p ./tsconfig.json",
+    "lint:fix": "tslint -p ./tsconfig.json --fix",
     "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon dist/babel/src\"",
     "test": "nyc alsatian './dist/babel/test/Integration/**/*.js'",
     "test-unit": "nyc alsatian './dist/babel/test/Unit/**/*.js'",
@@ -39,6 +40,7 @@
     "string-to-stream": "1.1.0"
   },
   "devDependencies": {
+    "@po.et/tslint-rules": "^1.0.0",
     "@types/amqplib": "0.5.4",
     "@types/bitcore-lib": "0.15.0",
     "@types/form-data": "2.2.0",
@@ -53,7 +55,6 @@
     "concurrently": "3.5.0",
     "nodemon": "1.12.1",
     "nyc": "11.3.0",
-    "tslint": "5.8.0",
     "typescript": "2.6.1"
   }
 }
