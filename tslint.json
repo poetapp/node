@@ -1,32 +1,5 @@
 {
-  "defaultSeverity": "error",
   "extends": [
-      "tslint:recommended"
-  ],
-  "jsRules": {},
-  "rules": {
-    "semicolon": [true, "never"],
-    "quotemark": [true, "single", "avoid-escape", "avoid-template"],
-    "no-console": [false],
-    "interface-name": [true, "never-prefix"],
-    "no-namespace": [false],
-    "indent": [true, "spaces", 2],
-    "curly": [true, "as-needed"],
-    "max-line-length": [true, 140],
-    "object-literal-sort-keys": [false], // "match-declaration-order" is desired, but tslint has problems finding interfaces and object-literal-sort-keys defaults to alphabetical
-    "trailing-comma": false,
-    "no-trailing-whitespace": [true, "ignore-blank-lines"],
-    "arrow-parens": false,
-    "no-empty-interface": false,
-    "member-access": false,
-    "no-var-requires": false,
-    "ordered-imports": [
-      true,
-      {
-        "import-sources-order": "lowercase-last",
-        "named-imports-order": "any"
-      }
-    ]
-  },
-  "rulesDirectory": []
+    "@po.et/tslint-rules"
+  ]
 }
