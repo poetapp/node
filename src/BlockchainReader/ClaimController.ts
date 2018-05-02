@@ -22,7 +22,8 @@ export class ClaimController {
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
     @inject('InsightHelper') insightHelper: InsightClient,
-    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
+    @inject('ClaimControllerConfiguration')
+    configuration: ClaimControllerConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
@@ -39,10 +40,13 @@ export class ClaimController {
 
     const blockHash = await this.insightHelper.getBlockHash(blockHeight)
 
-    logger.trace({
-      blockHeight,
-      blockHash,
-    }, 'Block Hash retrieved successfully. Retrieving Raw Block...')
+    logger.trace(
+      {
+        blockHeight,
+        blockHash
+      },
+      'Block Hash retrieved successfully. Retrieving Raw Block...'
+    )
 
     const block = await this.insightHelper.getBlock(blockHash)
     const poetTimestamps: ReadonlyArray<PoetTimestamp> = block.transactions
@@ -51,7 +55,7 @@ export class ClaimController {
       .map(_ => ({
         ..._,
         blockHeight,
-        blockHash,
+        blockHash
       }))
     const transactionIds = block.transactions.map(_ => _.id)
 
@@ -59,22 +63,37 @@ export class ClaimController {
       .filter(this.poetTimestampNetworkMatches)
       .filter(this.poetTimestampVersionMatches)
 
-    const unmatchingPoetTimestamps = poetTimestamps
-      .filter(_ => !matchingPoetTimestamps.includes(_))
+    const unmatchingPoetTimestamps = poetTimestamps.filter(
+      _ => !matchingPoetTimestamps.includes(_)
+    )
 
-    logger.trace({
-      blockHeight,
-      blockHash,
-      matchingPoetTimestamps,
-      unmatchingPoetTimestamps,
-    }, 'Raw Block retrieved and scanned successfully')
+    logger.trace(
+      {
+        blockHeight,
+        blockHash,
+        matchingPoetTimestamps,
+        unmatchingPoetTimestamps
+      },
+      'Raw Block retrieved and scanned successfully'
+    )
 
-    await this.collection.updateOne({ blockHeight }, {
-        $set: { blockHash, transactionIds, matchingPoetTimestamps, unmatchingPoetTimestamps }
-      }, { upsert: true})
+    await this.collection.updateOne(
+      { blockHeight },
+      {
+        $set: {
+          blockHash,
+          transactionIds,
+          matchingPoetTimestamps,
+          unmatchingPoetTimestamps
+        }
+      },
+      { upsert: true }
+    )
 
     if (matchingPoetTimestamps.length)
-      await this.messaging.publishPoetTimestampsDownloaded(matchingPoetTimestamps)
+      await this.messaging.publishPoetTimestampsDownloaded(
+        matchingPoetTimestamps
+      )
   }
 
   /**
@@ -84,26 +103,40 @@ export class ClaimController {
     const logger = this.logger.child({ method: 'findHighestBlockHeight' })
 
     const queryResults = await this.collection
-      .find({ }, { projection: { blockHeight: true, _id: 0 }})
+      .find({}, { projection: { blockHeight: true, _id: 0 } })
       .sort({ blockHeight: -1 })
       .limit(1)
       .toArray()
-    const highestBlockHeight = queryResults && !!queryResults.length && queryResults[0].blockHeight || null
+    const highestBlockHeight =
+      (queryResults && !!queryResults.length && queryResults[0].blockHeight) ||
+      null
 
-    logger.info({ highestBlockHeight }, 'Retrieved Height of Highest Block Scanned So Far')
+    logger.info(
+      { highestBlockHeight },
+      'Retrieved Height of Highest Block Scanned So Far'
+    )
 
     return highestBlockHeight
   }
 
-  private poetTimestampNetworkMatches = (blockchainPoetMessage: PoetTimestamp) => {
+  private poetTimestampNetworkMatches = (
+    blockchainPoetMessage: PoetTimestamp
+  ) => {
     return blockchainPoetMessage.prefix === this.configuration.poetNetwork
   }
 
-  private poetTimestampVersionMatches = (blockchainPoetMessage: PoetTimestamp) => {
-    if (blockchainPoetMessage.version.length !== this.configuration.poetVersion.length)
+  private poetTimestampVersionMatches = (
+    blockchainPoetMessage: PoetTimestamp
+  ) => {
+    if (
+      blockchainPoetMessage.version.length !==
+      this.configuration.poetVersion.length
+    )
       return false
     for (let i = 0; i < blockchainPoetMessage.version.length; i++)
-      if (blockchainPoetMessage.version[i] !== this.configuration.poetVersion[i])
+      if (
+        blockchainPoetMessage.version[i] !== this.configuration.poetVersion[i]
+      )
         return false
     return true
   }
