@@ -1,7 +1,7 @@
 import { AsyncTest, Expect, SetupFixture, TestFixture } from 'alsatian'
 import { ClaimType, createClaim } from 'poet-js'
 
-import { Key1 } from '../Keys'
+import { Key1 } from 'src/Keys'
 import { Client, waitForNode } from './Helper'
 
 @TestFixture('POST /works')
@@ -120,8 +120,6 @@ export class PostWork {
 
     const postResponseBody = await postResponse.text()
 
-    Expect(postResponseBody).toBe('Claim\'s signature is incorrect.')
+    Expect(postResponseBody).toBe("Claim's signature is incorrect.")
   }
-
 }
-

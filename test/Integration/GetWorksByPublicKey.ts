@@ -1,7 +1,13 @@
-import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
+import {
+  AsyncTest,
+  Expect,
+  SetupFixture,
+  TestCase,
+  TestFixture
+} from 'alsatian'
 import { Claim, isClaim, Work } from 'poet-js'
 
-import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
+import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from 'src/Claims'
 import { Client } from './Helper'
 
 @TestFixture('GET /works?publicKey=...')
@@ -77,8 +83,7 @@ export class GetWorksByPublicKey {
     Expect(response.ok).toBeTruthy()
 
     const claims = await response.json()
-    const allElementsAreClaims = !claims
-      .find((claim: Claim) => !isClaim(claim))
+    const allElementsAreClaims = !claims.find((claim: Claim) => !isClaim(claim))
 
     Expect(allElementsAreClaims).toBeTruthy()
   }
@@ -87,15 +92,18 @@ export class GetWorksByPublicKey {
   @TestCase(TheRaven.publicKey)
   @TestCase(TheMurdersInTheRueMorgue.publicKey)
   @TestCase(AStudyInScarlet.publicKey)
-  async getWorksByPublicKeyShouldReturnClaimsMatchingPublicKey(publicKey: string) {
+  async getWorksByPublicKeyShouldReturnClaimsMatchingPublicKey(
+    publicKey: string
+  ) {
     const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
 
     const claims = await response.json()
-    const allElementsMatchPublicKey = !claims
-      .find((claim: Claim) => claim.publicKey !== publicKey)
+    const allElementsMatchPublicKey = !claims.find(
+      (claim: Claim) => claim.publicKey !== publicKey
+    )
 
     Expect(allElementsMatchPublicKey).toBeTruthy()
   }
@@ -103,7 +111,10 @@ export class GetWorksByPublicKey {
   @AsyncTest()
   @TestCase(TheRaven.publicKey, [TheRaven, TheMurdersInTheRueMorgue])
   @TestCase(AStudyInScarlet.publicKey, [AStudyInScarlet])
-  async getWorksByPublicKeyShouldReturnExpectedFields(publicKey: string, expectedClaims: ReadonlyArray<Work>) {
+  async getWorksByPublicKeyShouldReturnExpectedFields(
+    publicKey: string,
+    expectedClaims: ReadonlyArray<Work>
+  ) {
     const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(200)
@@ -120,7 +131,9 @@ export class GetWorksByPublicKey {
       Expect(claims[i].id).toBe(expectedClaims[i].id)
       Expect(claims[i].publicKey).toBe(expectedClaims[i].publicKey)
       Expect(claims[i].signature).toBe(expectedClaims[i].signature)
-      Expect(claims[i].dateCreated.toISOString()).toBe(expectedClaims[i].dateCreated.toISOString())
+      Expect(claims[i].dateCreated.toISOString()).toBe(
+        expectedClaims[i].dateCreated.toISOString()
+      )
     }
   }
 }
