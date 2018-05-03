@@ -41,11 +41,11 @@ export class ClaimController {
 
     await this.collection.insertOne({
       claimId: claim.id,
-      ipfsHash,
+      ipfsHash
     })
     await this.messaging.publish(Exchange.ClaimIPFSHash, {
       claimId: claim.id,
-      ipfsHash,
+      ipfsHash
     })
   }
 
@@ -54,7 +54,10 @@ export class ClaimController {
 
     logger.trace({ ipfsHashes }, 'Downloading Claims')
 
-    await this.collection.insertMany(ipfsHashes.map(ipfsHash => ({ ipfsHash, claimId: null })), { ordered: false })
+    await this.collection.insertMany(
+      ipfsHashes.map(ipfsHash => ({ ipfsHash, claimId: null })),
+      { ordered: false }
+    )
   }
 
   async downloadNextHash() {
@@ -62,13 +65,15 @@ export class ClaimController {
 
     logger.trace('Downloading Next Hash')
 
-    const ipfsHashEntry = await this.collection.findOne({ claimId: null, $or: [ {attempts: { $lt: 5 }}, {attempts: { $exists: false }}] })
+    const ipfsHashEntry = await this.collection.findOne({
+      claimId: null,
+      $or: [{ attempts: { $lt: 5 } }, { attempts: { $exists: false } }]
+    })
     const ipfsHash = ipfsHashEntry && ipfsHashEntry.ipfsHash
 
     logger.trace({ ipfsHash }, 'Downloading Next Hash')
 
-    if (!ipfsHash)
-      return
+    if (!ipfsHash) return
 
     let claim
     try {
@@ -83,43 +88,61 @@ export class ClaimController {
 
     logger.info({ ipfsHash, claim }, 'Successfully downloaded claim from IPFS')
 
-    await this.updateClaimIdIPFSHashPairs([{
-      claimId: claim.id,
-      ipfsHash,
-    }])
+    await this.updateClaimIdIPFSHashPairs([
+      {
+        claimId: claim.id,
+        ipfsHash
+      }
+    ])
 
-    await this.messaging.publishClaimsDownloaded([{
-      claim,
-      ipfsHash,
-    }])
-
+    await this.messaging.publishClaimsDownloaded([
+      {
+        claim,
+        ipfsHash
+      }
+    ])
   }
 
   private downloadClaim = async (ipfsHash: string): Promise<Claim> => {
     const text = await this.ipfs.cat(ipfsHash)
     const claim = JSON.parse(text)
 
-    if (!isClaim(claim))
-      throw new Error('Unrecognized claim')
+    if (!isClaim(claim)) throw new Error('Unrecognized claim')
 
     return claim
   }
 
-  private async updateClaimIdIPFSHashPairs(claimIdIPFSHashPairs: ReadonlyArray<ClaimIdIPFSHashPair>) {
+  private async updateClaimIdIPFSHashPairs(
+    claimIdIPFSHashPairs: ReadonlyArray<ClaimIdIPFSHashPair>
+  ) {
     const logger = this.logger.child({ method: 'updateClaimIdIPFSHashPairs' })
 
-    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsHash } pairs in the DB.')
+    logger.trace(
+      { claimIdIPFSHashPairs },
+      'Storing { claimId, ipfsHash } pairs in the DB.'
+    )
 
-    const results = await Promise.all(claimIdIPFSHashPairs.map(({claimId, ipfsHash}) =>
-      this.collection.updateOne({ ipfsHash }, { $set: { claimId } }, { upsert: true })
-    ))
+    const results = await Promise.all(
+      claimIdIPFSHashPairs.map(({ claimId, ipfsHash }) =>
+        this.collection.updateOne(
+          { ipfsHash },
+          { $set: { claimId } },
+          { upsert: true }
+        )
+      )
+    )
 
     const databaseErrors = results.filter(_ => _.result.n !== 1)
 
     if (databaseErrors.length)
-      logger.error({ databaseErrors }, 'Error storing { claimId, ipfsHash } pairs in the DB.')
+      logger.error(
+        { databaseErrors },
+        'Error storing { claimId, ipfsHash } pairs in the DB.'
+      )
 
-    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsHash } pairs in the DB successfully.')
+    logger.trace(
+      { claimIdIPFSHashPairs },
+      'Storing { claimId, ipfsHash } pairs in the DB successfully.'
+    )
   }
-
 }

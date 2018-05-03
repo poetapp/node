@@ -1,7 +1,13 @@
-import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
+import {
+  AsyncTest,
+  Expect,
+  SetupFixture,
+  TestCase,
+  TestFixture
+} from 'alsatian'
 import { Claim } from 'poet-js'
 
-import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
+import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from 'src/Claims'
 import { Client } from './Helper'
 
 @TestFixture('GET /works/:id')
@@ -27,7 +33,6 @@ export class GetWork {
 
     Expect(body.id).toBe(claim.id)
     Expect(body.attributes.name).toBe(claim.attributes.name)
-
   }
 
   @AsyncTest()
@@ -41,6 +46,5 @@ export class GetWork {
     const body = await response.text()
 
     Expect(body).toBe('')
-
   }
 }

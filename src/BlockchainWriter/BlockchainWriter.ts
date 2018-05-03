@@ -29,7 +29,10 @@ export class BlockchainWriter {
   }
 
   async start() {
-    this.logger.info({ configuration: this.configuration }, 'BlockchainWriter Starting')
+    this.logger.info(
+      { configuration: this.configuration },
+      'BlockchainWriter Starting'
+    )
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 
@@ -53,10 +56,18 @@ export class BlockchainWriter {
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<InsightClient>('InsightHelper').toConstantValue(new InsightClient(this.configuration.insightUrl))
-    this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
+    this.container
+      .bind<InsightClient>('InsightHelper')
+      .toConstantValue(new InsightClient(this.configuration.insightUrl))
+    this.container
+      .bind<ClaimControllerConfiguration>('ClaimControllerConfiguration')
+      .toConstantValue(this.configuration)
     this.container.bind<Service>('Service').to(Service)
-    this.container.bind<ServiceConfiguration>('ServiceConfiguration')
-      .toConstantValue({ timestampIntervalInSeconds: this.configuration.timestampIntervalInSeconds })
+    this.container
+      .bind<ServiceConfiguration>('ServiceConfiguration')
+      .toConstantValue({
+        timestampIntervalInSeconds: this.configuration
+          .timestampIntervalInSeconds
+      })
   }
 }
