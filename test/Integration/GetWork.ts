@@ -1,4 +1,11 @@
-import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
+/* tslint:disable:no-relative-imports */
+import {
+  AsyncTest,
+  Expect,
+  SetupFixture,
+  TestCase,
+  TestFixture
+} from 'alsatian'
 import { Claim } from 'poet-js'
 
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
@@ -27,7 +34,6 @@ export class GetWork {
 
     Expect(body.id).toBe(claim.id)
     Expect(body.attributes.name).toBe(claim.attributes.name)
-
   }
 
   @AsyncTest()
@@ -41,6 +47,5 @@ export class GetWork {
     const body = await response.text()
 
     Expect(body).toBe('')
-
   }
 }

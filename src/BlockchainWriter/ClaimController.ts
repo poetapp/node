@@ -24,7 +24,8 @@ export class ClaimController {
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
     @inject('InsightHelper') insightClient: InsightClient,
-    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
+    @inject('ClaimControllerConfiguration')
+    configuration: ClaimControllerConfiguration
   ) {
     if (!configuration.bitcoinAddress)
       throw new Error('configuration.bitcoinAddress is required.')
@@ -42,7 +43,7 @@ export class ClaimController {
   async requestTimestamp(ipfsHash: string): Promise<void> {
     this.logger.trace({
       method: 'timestampWithRetry',
-      ipfsHash,
+      ipfsHash
     })
     await this.collection.insertOne({
       ipfsHash,
@@ -60,16 +61,18 @@ export class ClaimController {
 
     this.logger.trace({ hash }, 'Next Hash To Timestamp Retrieved')
 
-    if (!hash)
-      return
+    if (!hash) return
 
     try {
       await this.timestamp(hash)
     } catch (exception) {
-      logger.warn({
-        hash,
-        exception,
-      }, 'Uncaught Exception While Timestamping Hash')
+      logger.warn(
+        {
+          hash,
+          exception
+        },
+        'Uncaught Exception While Timestamping Hash'
+      )
     }
   }
 
@@ -78,18 +81,31 @@ export class ClaimController {
 
     logger.trace({ ipfsHash }, 'Timestamping IPFS Hash')
 
-    const utxo = await this.insightHelper.getUtxo(this.configuration.bitcoinAddress)
+    const utxo = await this.insightHelper.getUtxo(
+      this.configuration.bitcoinAddress
+    )
 
     if (!utxo || !utxo.length)
-      throw new Error(`Wallet seems to be empty. Check funds for ${this.configuration.bitcoinAddress}`)
+      throw new Error(
+        `Wallet seems to be empty. Check funds for ${
+          this.configuration.bitcoinAddress
+        }`
+      )
 
-    // Use only up to 5 unused outputs to avoid large transactions, picking the ones with the most satoshis to ensure enough fee
-    const topUtxo = utxo.slice().sort((a, b) => b.satoshis - a.satoshis).slice(0, 5)
+    // Use only up to 5 unused outputs to avoid large transactions,
+    // picking the ones with the most satoshis to ensure enough fee.
+    const topUtxo = utxo
+      .slice()
+      .sort((a, b) => b.satoshis - a.satoshis)
+      .slice(0, 5)
 
-    logger.trace({
-      address: this.configuration.bitcoinAddress,
-      utxo,
-    }, 'Got UTXO from Insight')
+    logger.trace(
+      {
+        address: this.configuration.bitcoinAddress,
+        utxo
+      },
+      'Got UTXO from Insight'
+    )
 
     const data = Buffer.concat([
       Buffer.from(this.configuration.poetNetwork),
@@ -102,20 +118,30 @@ export class ClaimController {
       .addData(data)
       .sign(this.configuration.bitcoinAddressPrivateKey)
 
-    logger.trace({
-      address: this.configuration.bitcoinAddress,
-      txHash: tx.hash
-    }, 'Transaction Built')
+    logger.trace(
+      {
+        address: this.configuration.bitcoinAddress,
+        txHash: tx.hash
+      },
+      'Transaction Built'
+    )
 
     const txPostResponse = await this.insightHelper.broadcastTx(tx)
 
-    logger.info({
-      txHash: tx.hash,
-      txId: tx.id,
-      txPostResponse,
-    }, 'Transaction Broadcasted')
+    logger.info(
+      {
+        txHash: tx.hash,
+        txId: tx.id,
+        txPostResponse
+      },
+      'Transaction Broadcasted'
+    )
 
-    this.collection.updateOne({ ipfsHash }, { $set: { txId: tx.id }}, { upsert: true })
+    this.collection.updateOne(
+      { ipfsHash },
+      { $set: { txId: tx.id } },
+      { upsert: true }
+    )
     this.messaging.publish(Exchange.IPFSHashTxId, {
       ipfsHash,
       txId: tx.id

@@ -27,7 +27,10 @@ export class BlockchainReader {
   }
 
   async start() {
-    this.logger.info({ configuration: this.configuration }, 'BlockchainReader Starting')
+    this.logger.info(
+      { configuration: this.configuration },
+      'BlockchainReader Starting'
+    )
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 
@@ -45,15 +48,26 @@ export class BlockchainReader {
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<BlockchainReaderService>('Cron').to(BlockchainReaderService)
+    this.container
+      .bind<BlockchainReaderService>('Cron')
+      .to(BlockchainReaderService)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<InsightClient>('InsightHelper').toConstantValue(new InsightClient(this.configuration.insightUrl))
-    this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
-    this.container.bind<BlockchainReaderServiceConfiguration>('BlockchainReaderServiceConfiguration').toConstantValue({
-      minimumBlockHeight: this.configuration.minimumBlockHeight,
-      blockchainReaderIntervalInSeconds: this.configuration.blockchainReaderIntervalInSeconds,
-      forceBlockHeight: this.configuration.forceBlockHeight,
-    })
+    this.container
+      .bind<InsightClient>('InsightHelper')
+      .toConstantValue(new InsightClient(this.configuration.insightUrl))
+    this.container
+      .bind<ClaimControllerConfiguration>('ClaimControllerConfiguration')
+      .toConstantValue(this.configuration)
+    this.container
+      .bind<BlockchainReaderServiceConfiguration>(
+        'BlockchainReaderServiceConfiguration'
+      )
+      .toConstantValue({
+        minimumBlockHeight: this.configuration.minimumBlockHeight,
+        blockchainReaderIntervalInSeconds: this.configuration
+          .blockchainReaderIntervalInSeconds,
+        forceBlockHeight: this.configuration.forceBlockHeight
+      })
   }
 }

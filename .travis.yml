@@ -16,7 +16,7 @@ before_script:
   - npm start &
   - sleep 5
 script:
-  # - npm run lint
+  - npm run lint
   - npm run test
 after_script:
   - greenkeeper-lockfile-upload

@@ -12,17 +12,18 @@ export class Service {
   private readonly logger: Pino.Logger
   private readonly claimController: ClaimController
   private readonly interval: Interval
-  private readonly configuration: ServiceConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('ClaimController') claimController: ClaimController,
-    @inject('ServiceConfiguration') configuration: ServiceConfiguration,
+    @inject('ServiceConfiguration') configuration: ServiceConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
-    this.configuration = configuration
-    this.interval = new Interval(this.timestampNextHash, 1000 * configuration.timestampIntervalInSeconds)
+    this.interval = new Interval(
+      this.timestampNextHash,
+      1000 * configuration.timestampIntervalInSeconds
+    )
   }
 
   async start() {
@@ -41,10 +42,12 @@ export class Service {
     try {
       await this.claimController.timestampNextHash()
     } catch (error) {
-      logger.error({
-        error,
-      }, 'Uncaught exception while timestamping next hash')
+      logger.error(
+        {
+          error
+        },
+        'Uncaught exception while timestamping next hash'
+      )
     }
   }
-
 }

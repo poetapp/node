@@ -1,10 +1,17 @@
+/* tslint:disable:no-console */
 import { Db, MongoClient } from 'mongodb'
 
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from './Claims'
 import { waitForNode } from './Integration/Helper'
 
-const collectionNames: ReadonlyArray<string> = ['works', 'blockchainReader', 'blockchainWriter', 'storage']
-const MONGO_URL = process.env.INTEGRATION_TEST_MONGODB_URL || 'mongodb://localhost:27017/poet'
+const collectionNames: ReadonlyArray<string> = [
+  'works',
+  'blockchainReader',
+  'blockchainWriter',
+  'storage'
+]
+const MONGO_URL =
+  process.env.INTEGRATION_TEST_MONGODB_URL || 'mongodb://localhost:27017/poet'
 
 async function main() {
   console.log('Preparing DB for Integration Tests.')
