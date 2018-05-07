@@ -3,7 +3,8 @@ import { Claim } from 'poet-js'
 import { promisify } from 'util'
 
 const delay = promisify(setTimeout)
-const TEST_URL = process.env.INTEGRATION_TEST_NODE_URL || 'http://localhost:18080'
+const TEST_URL =
+  process.env.INTEGRATION_TEST_NODE_URL || 'http://localhost:18080'
 
 export class Client {
   readonly url: string
@@ -24,13 +25,12 @@ export class Client {
     return fetch(this.url + '/works/', {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(claim)
     })
   }
-
 }
 
 /**

@@ -26,7 +26,9 @@ export class Router {
 
   async start() {
     await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
-    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetTimestampsDownloaded)
+    await this.messaging.consumePoetTimestampsDownloaded(
+      this.onPoetTimestampsDownloaded
+    )
   }
 
   onNewClaim = async (message: any): Promise<void> => {
@@ -35,23 +37,35 @@ export class Router {
     const claim = JSON.parse(messageContent)
 
     if (!isClaim(claim))
-      throw new Error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
+      throw new Error(
+        `Received a ${
+          Exchange.NewClaim
+        } message, but the content isn't a claim.`
+      )
 
     try {
       await this.claimController.create(claim)
     } catch (error) {
-      this.logger.error({
-        method: 'onNewClaim',
-        error,
-      }, 'Uncaught Exception while Storing Claim')
+      this.logger.error(
+        {
+          method: 'onNewClaim',
+          error
+        },
+        'Uncaught Exception while Storing Claim'
+      )
     }
   }
 
-  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>): Promise<void> => {
-    this.logger.trace({
-      method: 'onPoetTimestampsDownloaded',
-      poetTimestamps,
-    }, 'Downloading Claims from IPFS')
+  onPoetTimestampsDownloaded = async (
+    poetTimestamps: ReadonlyArray<PoetTimestamp>
+  ): Promise<void> => {
+    this.logger.trace(
+      {
+        method: 'onPoetTimestampsDownloaded',
+        poetTimestamps
+      },
+      'Downloading Claims from IPFS'
+    )
 
     await this.claimController.download(poetTimestamps.map(_ => _.ipfsHash))
   }

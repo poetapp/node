@@ -1,4 +1,4 @@
-import { LoggingConfiguration } from '../Configuration'
+import { LoggingConfiguration } from 'Configuration'
 
 export interface APIConfiguration extends LoggingConfiguration {
   readonly port: number

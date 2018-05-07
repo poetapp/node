@@ -1,3 +1,4 @@
+/* tslint:disable:no-relative-imports */
 import { AsyncTest, Expect, SetupFixture, TestFixture } from 'alsatian'
 import { ClaimType, createClaim } from 'poet-js'
 
@@ -120,8 +121,6 @@ export class PostWork {
 
     const postResponseBody = await postResponse.text()
 
-    Expect(postResponseBody).toBe('Claim\'s signature is incorrect.')
+    Expect(postResponseBody).toBe("Claim's signature is incorrect.")
   }
-
 }
-
