@@ -46,7 +46,7 @@
     "@types/form-data": "2.2.0",
     "@types/koa": "2.0.39",
     "@types/koa-router": "7.0.28",
-    "@types/mongodb": "3.0.9",
+    "@types/mongodb": "3.0.18",
     "@types/node-fetch": "1.6.7",
     "@types/pino": "4.7.1",
     "alsatian": "2.0.0",
