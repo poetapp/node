@@ -37,7 +37,7 @@
     "poet-js": "1.0.3",
     "protobufjs": "6.8.6",
     "reflect-metadata": "0.1.10",
-    "string-to-stream": "1.1.0"
+    "string-to-stream": "1.1.1"
   },
   "devDependencies": {
     "@po.et/tslint-rules": "1.1.0",
