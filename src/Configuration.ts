@@ -1,3 +1,4 @@
+/* tslint:disable:no-console */
 import * as assert from 'assert'
 import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
@@ -48,10 +49,11 @@ const defaultConfiguration: Configuration = {
   downloadIntervalInSeconds: 5,
 
   loggingLevel: 'info',
-  loggingPretty: true,
+  loggingPretty: true
 }
 
-export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
+export const configurationPath = () =>
+  path.join(homedir(), '/.po.et/configuration.json')
 
 export function loadConfigurationWithDefaults(): Configuration {
   return { ...defaultConfiguration, ...loadConfiguration(configurationPath()) }
@@ -79,10 +81,17 @@ function loadConfiguration(configPath: string): Configuration | {} {
 function validatePoetVersion(poetVersion: any) {
   assert(Array.isArray(poetVersion), 'Field poetVersion must be an Array')
   assert(poetVersion.length === 4, 'Field poetVersion must have 4 elements')
-  poetVersion.forEach((element: any) => assert(Number.isInteger(element) && 0 <= element && element < 256,
-    'Each member of poetVersion must be an integer between 0 and 255'))
+  poetVersion.forEach((element: any) =>
+    assert(
+      Number.isInteger(element) && 0 <= element && element < 256,
+      'Each member of poetVersion must be an integer between 0 and 255'
+    )
+  )
 }
 
 function validatePoetNetwork(poetNetwork: any) {
-  assert(poetNetwork === 'BARD' || poetNetwork === 'POET', 'Field poetNetwork must be equal to BARD or POET')
+  assert(
+    poetNetwork === 'BARD' || poetNetwork === 'POET',
+    'Field poetNetwork must be equal to BARD or POET'
+  )
 }

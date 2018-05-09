@@ -11,10 +11,7 @@ export class WorkController {
   private readonly db: Db
   private readonly collection: Collection
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('DB') db: Db
-  ) {
+  constructor(@inject('Logger') logger: Pino.Logger, @inject('DB') db: Db) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('works')
@@ -25,33 +22,55 @@ export class WorkController {
 
     const existing = await this.collection.findOne({ id: work.id })
 
-    if (existing)
-      return
+    if (existing) return
 
-    const result = this.collection.insertOne(work)
+    this.collection.insertOne(work)
   }
 
   setIPFSHash = (workId: string, ipfsHash: string): void => {
     this.logger.trace({ workId, ipfsHash }, 'Setting the IPFS Hash for a Work')
-    const result = this.collection.updateOne({ id: workId }, { $set: { 'timestamp.ipfsHash': ipfsHash } })
+    this.collection.updateOne(
+      { id: workId },
+      { $set: { 'timestamp.ipfsHash': ipfsHash } }
+    )
   }
 
   setTxId = (ipfsHash: string, transactionId: string): void => {
-    this.logger.trace({ ipfsHash, transactionId }, 'Setting the Transaction ID for a IPFS Hash')
-    const result = this.collection.updateMany({ 'timestamp.ipfsHash': ipfsHash }, { $set: { 'timestamp.transactionId': transactionId } })
+    this.logger.trace(
+      { ipfsHash, transactionId },
+      'Setting the Transaction ID for a IPFS Hash'
+    )
+    this.collection.updateMany(
+      { 'timestamp.ipfsHash': ipfsHash },
+      { $set: { 'timestamp.transactionId': transactionId } }
+    )
   }
 
   async upsertTimestamps(poetTimestamps: ReadonlyArray<PoetTimestamp>) {
     this.logger.trace({ poetTimestamps }, 'Upserting Po.et Timestamps')
-    await Promise.all(poetTimestamps.map(timestamp =>
-      this.collection.updateOne({ 'timestamp.ipfsHash': timestamp.ipfsHash}, { $set: { timestamp } }, { upsert: true })
-    ))
+    await Promise.all(
+      poetTimestamps.map(timestamp =>
+        this.collection.updateOne(
+          { 'timestamp.ipfsHash': timestamp.ipfsHash },
+          { $set: { timestamp } },
+          { upsert: true }
+        )
+      )
+    )
   }
 
-  async upsertClaimIPFSHashPair(claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) {
+  async upsertClaimIPFSHashPair(
+    claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>
+  ) {
     this.logger.trace({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
-    await Promise.all(claimIPFSHashPairs.map(({ claim, ipfsHash }) =>
-      this.collection.updateOne({ 'timestamp.ipfsHash': ipfsHash }, { $set: claim }, { upsert: true })
-    ))
+    await Promise.all(
+      claimIPFSHashPairs.map(({ claim, ipfsHash }) =>
+        this.collection.updateOne(
+          { 'timestamp.ipfsHash': ipfsHash },
+          { $set: claim },
+          { upsert: true }
+        )
+      )
+    )
   }
 }

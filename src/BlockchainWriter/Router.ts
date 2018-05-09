@@ -33,19 +33,25 @@ export class Router {
     const messageContent = message.content.toString()
     const { claimId, ipfsHash } = JSON.parse(messageContent)
 
-    logger.trace({
-      claimId,
-      ipfsHash,
-    }, 'Timestamping requested')
+    logger.trace(
+      {
+        claimId,
+        ipfsHash
+      },
+      'Timestamping requested'
+    )
 
     try {
       await this.claimController.requestTimestamp(ipfsHash)
     } catch (exception) {
-      logger.error({
-        exception,
-        claimId,
-        ipfsHash,
-      }, 'Uncaught Exception while requesting timestamp')
+      logger.error(
+        {
+          exception,
+          claimId,
+          ipfsHash
+        },
+        'Uncaught Exception while requesting timestamp'
+      )
     }
   }
 }
