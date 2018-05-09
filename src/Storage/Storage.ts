@@ -54,25 +54,18 @@ export class Storage {
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<IPFS>('IPFS').to(IPFS)
-    this.container
-      .bind<IPFSConfiguration>('IPFSConfiguration')
-      .toConstantValue({ ipfsUrl: this.configuration.ipfsUrl })
+    this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({ ipfsUrl: this.configuration.ipfsUrl })
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<Service>('Service').to(Service)
-    this.container
-      .bind<ServiceConfiguration>('ServiceConfiguration')
-      .toConstantValue({
-        downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds
-      })
+    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
+      downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds,
+    })
   }
 
   private async createIndices() {
     const collection = this.dbConnection.collection('storage')
-    await collection.createIndex(
-      { ipfsHash: 1 },
-      { unique: true, name: 'ipfsHash-unique' }
-    )
+    await collection.createIndex({ ipfsHash: 1 }, { unique: true, name: 'ipfsHash-unique' })
     await collection.createIndex({ attempts: 1 }, { name: 'attempts' })
   }
 }

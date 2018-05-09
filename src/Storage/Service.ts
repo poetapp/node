@@ -20,10 +20,7 @@ export class Service {
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
-    this.interval = new Interval(
-      this.downloadNextHash,
-      1000 * configuration.downloadIntervalInSeconds
-    )
+    this.interval = new Interval(this.downloadNextHash, 1000 * configuration.downloadIntervalInSeconds)
   }
 
   async start() {
@@ -41,7 +38,7 @@ export class Service {
       this.logger.error(
         {
           method: 'downloadNextHash',
-          error
+          error,
         },
         'Uncaught Error Downloading Next Hash'
       )

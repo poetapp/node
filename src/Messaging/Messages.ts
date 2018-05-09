@@ -7,5 +7,5 @@ export enum Exchange {
   // was stored has been discovered
   IPFSHashTxId = 'IPFS_HAS_TX_ID',
   PoetTimestampDownloaded = 'POET_TIMESTAMP_DOWNLOADED',
-  ClaimsDownloaded = 'CLAIMS_DOWNLOADED'
+  ClaimsDownloaded = 'CLAIMS_DOWNLOADED',
 }

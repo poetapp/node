@@ -23,21 +23,21 @@ async function main() {
 
   const logger: Pino.Logger = Pino({
     level: configuration.loggingLevel,
-    prettyPrint: configuration.loggingPretty
+    prettyPrint: configuration.loggingPretty,
   })
 
   logger.info(configuration, 'Loaded Configuration and merged with defaults')
 
   const loggingConfiguration = {
     loggingLevel: configuration.loggingLevel,
-    loggingPretty: configuration.loggingPretty
+    loggingPretty: configuration.loggingPretty,
   }
 
   const api = new API({
     ...loggingConfiguration,
     port: configuration.apiPort,
     dbUrl: configuration.mongodbUrl,
-    rabbitmqUrl: configuration.rabbitmqUrl
+    rabbitmqUrl: configuration.rabbitmqUrl,
   })
   try {
     await api.start()
@@ -48,7 +48,7 @@ async function main() {
   const view = new View({
     ...loggingConfiguration,
     dbUrl: configuration.mongodbUrl,
-    rabbitmqUrl: configuration.rabbitmqUrl
+    rabbitmqUrl: configuration.rabbitmqUrl,
   })
   try {
     await view.start()
@@ -61,7 +61,7 @@ async function main() {
     dbUrl: configuration.mongodbUrl,
     ipfsUrl: configuration.ipfsUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
-    downloadIntervalInSeconds: configuration.downloadIntervalInSeconds
+    downloadIntervalInSeconds: configuration.downloadIntervalInSeconds,
   })
   try {
     await storage.start()
@@ -79,7 +79,7 @@ async function main() {
       bitcoinAddressPrivateKey: configuration.bitcoinAddressPrivateKey,
       poetNetwork: configuration.poetNetwork,
       poetVersion: configuration.poetVersion,
-      timestampIntervalInSeconds: configuration.timestampIntervalInSeconds
+      timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
     })
     try {
       await blockchainWriter.start()
@@ -97,8 +97,7 @@ async function main() {
     poetVersion: configuration.poetVersion,
     minimumBlockHeight: configuration.minimumBlockHeight,
     forceBlockHeight: configuration.forceBlockHeight,
-    blockchainReaderIntervalInSeconds:
-      configuration.blockchainReaderIntervalInSeconds
+    blockchainReaderIntervalInSeconds: configuration.blockchainReaderIntervalInSeconds,
   })
   try {
     await blockchainReader.start()

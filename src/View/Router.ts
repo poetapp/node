@@ -28,9 +28,7 @@ export class Router {
     await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
     await this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
     await this.messaging.consume(Exchange.IPFSHashTxId, this.onIPFSHashTxId)
-    await this.messaging.consumePoetTimestampsDownloaded(
-      this.onPoetTimestampsDownloaded
-    )
+    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetTimestampsDownloaded)
     await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
   }
 
@@ -54,9 +52,7 @@ export class Router {
     this.workController.setTxId(ipfsHash, txId)
   }
 
-  onPoetTimestampsDownloaded = async (
-    poetTimestamps: ReadonlyArray<PoetTimestamp>
-  ) => {
+  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
     const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
 
     logger.trace({ poetTimestamps }, 'Downloaded Po.et Timestamp')
@@ -64,15 +60,10 @@ export class Router {
     await this.workController.upsertTimestamps(poetTimestamps)
   }
 
-  onClaimsDownloaded = async (
-    claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>
-  ) => {
+  onClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
     const logger = this.logger.child({ method: 'onClaimsDownloaded' })
 
-    logger.trace(
-      { claimIPFSHashPairs },
-      'Downloaded a (IPFS Hash, Claim Id) Pair'
-    )
+    logger.trace({ claimIPFSHashPairs }, 'Downloaded a (IPFS Hash, Claim Id) Pair')
 
     await this.workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
   }

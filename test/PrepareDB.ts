@@ -4,14 +4,8 @@ import { Db, MongoClient } from 'mongodb'
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from './Claims'
 import { waitForNode } from './Integration/Helper'
 
-const collectionNames: ReadonlyArray<string> = [
-  'works',
-  'blockchainReader',
-  'blockchainWriter',
-  'storage'
-]
-const MONGO_URL =
-  process.env.INTEGRATION_TEST_MONGODB_URL || 'mongodb://localhost:27017/poet'
+const collectionNames: ReadonlyArray<string> = ['works', 'blockchainReader', 'blockchainWriter', 'storage']
+const MONGO_URL = process.env.INTEGRATION_TEST_MONGODB_URL || 'mongodb://localhost:27017/poet'
 
 async function main() {
   console.log('Preparing DB for Integration Tests.')
@@ -21,8 +15,7 @@ async function main() {
 
   console.log(`Cleaning collections ${collectionNames}...`)
 
-  for (const collectionName of collectionNames)
-    await emptyCollectionByName(db, collectionName)
+  for (const collectionName of collectionNames) await emptyCollectionByName(db, collectionName)
 
   console.log('Inserting Works...')
   await insertTestWorks(db)

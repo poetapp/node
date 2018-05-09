@@ -44,9 +44,7 @@ export class API {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
-    this.container
-      .bind<RouterConfiguration>('RouterConfiguration')
-      .toConstantValue({ port: this.configuration.port })
+    this.container.bind<RouterConfiguration>('RouterConfiguration').toConstantValue({ port: this.configuration.port })
     this.container.bind<WorkController>('WorkController').to(WorkController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
   }
