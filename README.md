@@ -11,9 +11,11 @@ It's built on top of the Bitcoin's blockchain and [IPFS](https://ipfs.io/).
 
 - [How to Run the Po.et Node](#how-to-run-the-poet-node)
     - [Install](#install)
+    - [Docker Compose](#docker-compose)
+    - [Makefile](#Makefile)
     - [Dependencies](#dependencies)
     - [Configuration](#configuration)
-    - [API](#api)
+- [API](#api)
     - [Building Claims](#building-claims)
     - [Running as a Daemon](#running-as-a-daemon)
     - [Supported Platforms](#supported-platforms)
@@ -57,7 +59,7 @@ npm run build
 npm start
 ```
 
-### With docker-compose:
+### docker-compose
 You need to have [Docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/) installed
 ```bash
 git clone https://github.com/poetapp/node.git
@@ -65,7 +67,7 @@ cd node
 docker-compose up
 ```
 
-### Makefile recipes to setup:
+### Makefile
 ```bash
 # Clone The Po.et Node
 git clone https://github.com/poetapp/node.git
@@ -141,30 +143,30 @@ You'll also need some bitcoins in that address. In testnet, you can get some for
 
 Right now, Po.et is timestamping to Testnet, so just make sure your address is a valid Testnet address.
 
-### API
+## API
 Currently, the Node exposes three endpoints.
 
-#### `GET /works/:id`
+### `GET /works/:id`
 Returns a single claim by its Id. 
 
 For simplicity, this endpoint adds a `.timestamp` in the response, which is not a real part of the claim, but provides valuable information such as the id of the transaction in which this claim has been timestamped, the IPFS hash by which it can be found, etc.
 
 Returns 404 if the claim isn't found in this Node's database. This doesn't strictly mean the claim doesn't exist in the Po.et network — it just doesn't exist in this Node.
 
-#### `GET /works?publicKey=...`
+### `GET /works?publicKey=...`
 Returns an array of claims — all the claims belonging to the passed public key.
 
-#### `GET /works`
+### `GET /works`
 Retrieving all works isn't supported yet. The Node will assumme you intended to call `GET /works?publicKey=undefined`, which will normally return an empty array. Support for this endpoint will be added in the future.
 
-#### `POST /works`
+### `POST /works`
 Publish a work. 
 
 This endpoint is async — unless an immediate error can be detected (such as a malformed claim), the endpoint will return an ACK. There's no guarantee that the work has actually been processed, timestamped an sent to IPFS. To check that, you'll need to `GET /works/:id` and check the `.timestamp` attribute.
 
 This endpoint expects a fully constructed claim — with the correct `.id`, `.publicKey`, `.signature` and `.dateCreated`. See [Building Claims](#building-claims) for information on how to correctly create these attributes.
 
-### Building Claims
+## Building Claims
 A Po.et Claim is a JSON object that holds arbitrary information plus a few attributes that allow the network to verify that the claim has actually been created by a certain person, that the claim has not been modified since its creation, and a special field `type` which will allow more features in the future.
 
 For example, a claim could look like this:
