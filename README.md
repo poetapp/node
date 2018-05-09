@@ -34,7 +34,7 @@ To run the Po.et Node, you need to clone this repo, make sure you have NodeJS in
 You also need to have RabbitMQ, IPFS and MongoDB installed. See [Dependencies](#dependencies) down below.
 
 ### Install
-```
+```bash
 # Install NVM
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
 
@@ -57,8 +57,16 @@ npm run build
 npm start
 ```
 
-Or you can use the Makefile recipes to setup:
+### With docker-compose:
+You need to have [Docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/) installed
+```bash
+git clone https://github.com/poetapp/node.git
+cd node
+docker-compose up
 ```
+
+### Makefile recipes to setup:
+```bash
 # Clone The Po.et Node
 git clone https://github.com/poetapp/node.git
 
@@ -72,7 +80,7 @@ make clean
 ```
 
 Make Commands available:
-```
+```bash
 make all # makes all dependancies
 make stop # stops the docker containers
 make clean # removes node_modules and all stopped containers
