@@ -5,13 +5,11 @@ RUN apt-get update && apt-get install -y rsync
 RUN mkdir -p /usr/src/app
 
 COPY . /usr/src/app/
-
-COPY app-entrypoint.sh /
-RUN chmod +x /app-entrypoint.sh 
+RUN chmod a+x /usr/src/app/wait-for-it.sh
 
 WORKDIR /usr/src/app
 
 RUN npm install
 RUN npm run build
 
-CMD [ "/app-entrypoint.sh" ]
+CMD [ "npm", "start" ]

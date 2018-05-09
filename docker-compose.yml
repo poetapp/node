@@ -36,3 +36,8 @@ services:
       - poet-mongo
       - poet-rabbit
       - poet-ipfs
+    command: >
+      /bin/bash -c "
+        sleep 10;
+        npm start;
+      "
