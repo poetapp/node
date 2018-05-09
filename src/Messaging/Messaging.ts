@@ -1,11 +1,6 @@
 /* tslint:disable:no-console */
 import { Connection, connect, Channel } from 'amqplib'
-import {
-  isClaim,
-  ClaimIPFSHashPair,
-  isClaimIPFSHashPair,
-  PoetTimestamp
-} from 'poet-js'
+import { isClaim, ClaimIPFSHashPair, isClaimIPFSHashPair, PoetTimestamp } from 'poet-js'
 
 import { Exchange } from './Messages'
 
@@ -22,9 +17,7 @@ export class Messaging {
     try {
       this.connection = await connect(this.connectionUrl)
     } catch (ex) {
-      throw new Error(
-        `Unable to connect to RMQ at ${this.connectionUrl}. ${ex.message}`
-      )
+      throw new Error(`Unable to connect to RMQ at ${this.connectionUrl}. ${ex.message}`)
     }
 
     this.connection.on('error', () => {
@@ -37,24 +30,17 @@ export class Messaging {
     this.channel = await this.connection.createChannel()
   }
 
-  publish = async (
-    exchange: Exchange,
-    message: string | object
-  ): Promise<void> => {
+  publish = async (exchange: Exchange, message: string | object): Promise<void> => {
     if (!this.channel) throw new Error('Cannot publish before calling start()')
 
     await this.channel.assertExchange(exchange, 'fanout', { durable: false })
 
-    const messageString =
-      typeof message === 'string' ? message : JSON.stringify(message)
+    const messageString = typeof message === 'string' ? message : JSON.stringify(message)
 
     this.channel.publish(exchange, '', Buffer.from(messageString))
   }
 
-  consume = async (
-    exchange: Exchange,
-    consume: (message: any) => void
-  ): Promise<void> => {
+  consume = async (exchange: Exchange, consume: (message: any) => void): Promise<void> => {
     await this.channel.assertExchange(exchange, 'fanout', { durable: false })
     const assertQueue = await this.channel.assertQueue('', { exclusive: true })
     this.channel.bindQueue(assertQueue.queue, exchange, '')
@@ -62,15 +48,11 @@ export class Messaging {
   }
 
   // TODO: move these business-specific functions to a different file
-  publishPoetTimestampsDownloaded = async (
-    poetTimestamps: ReadonlyArray<PoetTimestamp>
-  ) => {
+  publishPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
     return this.publish(Exchange.PoetTimestampDownloaded, poetTimestamps)
   }
 
-  consumePoetTimestampsDownloaded = async (
-    consume: (poetTimestamps: ReadonlyArray<PoetTimestamp>) => void
-  ) => {
+  consumePoetTimestampsDownloaded = async (consume: (poetTimestamps: ReadonlyArray<PoetTimestamp>) => void) => {
     await this.consume(Exchange.PoetTimestampDownloaded, (message: any) => {
       const messageContent = message.content.toString()
       const poetTimestamps = JSON.parse(messageContent)
@@ -79,7 +61,7 @@ export class Messaging {
         console.log({
           action: 'consumePoetTimestampsDownloaded',
           message: 'Expected poetTimestamps to be an Array.',
-          poetTimestamps
+          poetTimestamps,
         })
         return
       }
@@ -88,7 +70,7 @@ export class Messaging {
         console.log({
           action: 'consumePoetTimestampsDownloaded',
           message: 'Expected poetTimestamps to be an Array<Claim>.',
-          offendingElements: poetTimestamps.map(isClaim).filter(_ => !_)
+          offendingElements: poetTimestamps.map(isClaim).filter(_ => !_),
         })
         return
       }
@@ -97,15 +79,11 @@ export class Messaging {
     })
   }
 
-  publishClaimsDownloaded = async (
-    claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>
-  ) => {
+  publishClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
     return this.publish(Exchange.ClaimsDownloaded, claimIPFSHashPairs)
   }
 
-  consumeClaimsDownloaded = async (
-    consume: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => void
-  ) => {
+  consumeClaimsDownloaded = async (consume: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => void) => {
     await this.consume(Exchange.ClaimsDownloaded, (message: any) => {
       const messageContent = message.content.toString()
       const claimIPFSHashPairs = JSON.parse(messageContent)
@@ -114,7 +92,7 @@ export class Messaging {
         console.log({
           action: 'consumeClaimsDownloaded',
           message: 'Expected claimIPFSHashPairs to be an Array.',
-          claimIPFSHashPairs
+          claimIPFSHashPairs,
         })
         return
       }
@@ -123,9 +101,7 @@ export class Messaging {
         console.log({
           action: 'consumePoetTimestampsDownloaded',
           message: 'Expected poetTimestamps to be an Array<ClaimIPFSHashPair>.',
-          offendingElements: claimIPFSHashPairs
-            .map(isClaimIPFSHashPair)
-            .filter(_ => !_)
+          offendingElements: claimIPFSHashPairs.map(isClaimIPFSHashPair).filter(_ => !_),
         })
         return
       }

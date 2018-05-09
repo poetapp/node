@@ -18,24 +18,18 @@ export class BlockchainReaderService {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('ClaimController') claimController: ClaimController,
-    @inject('BlockchainReaderServiceConfiguration')
-    configuration: BlockchainReaderServiceConfiguration
+    @inject('BlockchainReaderServiceConfiguration') configuration: BlockchainReaderServiceConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
     this.configuration = configuration
-    this.interval = new Interval(
-      this.scanNewBlock,
-      this.configuration.blockchainReaderIntervalInSeconds * 1000
-    )
+    this.interval = new Interval(this.scanNewBlock, this.configuration.blockchainReaderIntervalInSeconds * 1000)
   }
 
   async start() {
     const lastBlockHeight = await this.claimController.findHighestBlockHeight()
     this.lastBlockHeight =
-      this.configuration.forceBlockHeight ||
-      lastBlockHeight ||
-      this.configuration.minimumBlockHeight
+      this.configuration.forceBlockHeight || lastBlockHeight || this.configuration.minimumBlockHeight
     this.interval.start()
   }
 
@@ -46,23 +40,19 @@ export class BlockchainReaderService {
   private scanNewBlock = async () => {
     const logger = this.logger.child({ method: 'scanNewBlock' })
 
-    const blockHeight =
-      this.configuration.forceBlockHeight || this.lastBlockHeight + 1
+    const blockHeight = this.configuration.forceBlockHeight || this.lastBlockHeight + 1
     try {
       await this.claimController.scanBlock(blockHeight)
       this.lastBlockHeight = blockHeight
     } catch (error) {
       if (error instanceof BlockHeightOutOfRangeError)
-        logger.warn(
-          { blockHeight },
-          'BlockHeightOutOfRangeError - Probably Reached Blockchain Tip'
-        )
+        logger.warn({ blockHeight }, 'BlockHeightOutOfRangeError - Probably Reached Blockchain Tip')
       else
         logger.error(
           {
             error,
             blockHeight,
-            lastBlockHeight: this.lastBlockHeight
+            lastBlockHeight: this.lastBlockHeight,
           },
           'Uncaught Error'
         )

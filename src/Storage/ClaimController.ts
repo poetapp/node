@@ -41,11 +41,11 @@ export class ClaimController {
 
     await this.collection.insertOne({
       claimId: claim.id,
-      ipfsHash
+      ipfsHash,
     })
     await this.messaging.publish(Exchange.ClaimIPFSHash, {
       claimId: claim.id,
-      ipfsHash
+      ipfsHash,
     })
   }
 
@@ -54,10 +54,7 @@ export class ClaimController {
 
     logger.trace({ ipfsHashes }, 'Downloading Claims')
 
-    await this.collection.insertMany(
-      ipfsHashes.map(ipfsHash => ({ ipfsHash, claimId: null })),
-      { ordered: false }
-    )
+    await this.collection.insertMany(ipfsHashes.map(ipfsHash => ({ ipfsHash, claimId: null })), { ordered: false })
   }
 
   async downloadNextHash() {
@@ -67,7 +64,7 @@ export class ClaimController {
 
     const ipfsHashEntry = await this.collection.findOne({
       claimId: null,
-      $or: [{ attempts: { $lt: 5 } }, { attempts: { $exists: false } }]
+      $or: [{ attempts: { $lt: 5 } }, { attempts: { $exists: false } }],
     })
     const ipfsHash = ipfsHashEntry && ipfsHashEntry.ipfsHash
 
@@ -91,15 +88,15 @@ export class ClaimController {
     await this.updateClaimIdIPFSHashPairs([
       {
         claimId: claim.id,
-        ipfsHash
-      }
+        ipfsHash,
+      },
     ])
 
     await this.messaging.publishClaimsDownloaded([
       {
         claim,
-        ipfsHash
-      }
+        ipfsHash,
+      },
     ])
   }
 
@@ -112,37 +109,21 @@ export class ClaimController {
     return claim
   }
 
-  private async updateClaimIdIPFSHashPairs(
-    claimIdIPFSHashPairs: ReadonlyArray<ClaimIdIPFSHashPair>
-  ) {
+  private async updateClaimIdIPFSHashPairs(claimIdIPFSHashPairs: ReadonlyArray<ClaimIdIPFSHashPair>) {
     const logger = this.logger.child({ method: 'updateClaimIdIPFSHashPairs' })
 
-    logger.trace(
-      { claimIdIPFSHashPairs },
-      'Storing { claimId, ipfsHash } pairs in the DB.'
-    )
+    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsHash } pairs in the DB.')
 
     const results = await Promise.all(
       claimIdIPFSHashPairs.map(({ claimId, ipfsHash }) =>
-        this.collection.updateOne(
-          { ipfsHash },
-          { $set: { claimId } },
-          { upsert: true }
-        )
+        this.collection.updateOne({ ipfsHash }, { $set: { claimId } }, { upsert: true })
       )
     )
 
     const databaseErrors = results.filter(_ => _.result.n !== 1)
 
-    if (databaseErrors.length)
-      logger.error(
-        { databaseErrors },
-        'Error storing { claimId, ipfsHash } pairs in the DB.'
-      )
+    if (databaseErrors.length) logger.error({ databaseErrors }, 'Error storing { claimId, ipfsHash } pairs in the DB.')
 
-    logger.trace(
-      { claimIdIPFSHashPairs },
-      'Storing { claimId, ipfsHash } pairs in the DB successfully.'
-    )
+    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsHash } pairs in the DB successfully.')
   }
 }

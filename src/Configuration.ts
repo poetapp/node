@@ -49,11 +49,10 @@ const defaultConfiguration: Configuration = {
   downloadIntervalInSeconds: 5,
 
   loggingLevel: 'info',
-  loggingPretty: true
+  loggingPretty: true,
 }
 
-export const configurationPath = () =>
-  path.join(homedir(), '/.po.et/configuration.json')
+export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
 export function loadConfigurationWithDefaults(): Configuration {
   return { ...defaultConfiguration, ...loadConfiguration(configurationPath()) }
@@ -69,11 +68,9 @@ function loadConfiguration(configPath: string): Configuration | {} {
 
   console.log('Loaded configuration from ' + configPath)
 
-  if (typeof configuration.poetNetwork === 'string')
-    validatePoetNetwork(configuration.poetNetwork)
+  if (typeof configuration.poetNetwork === 'string') validatePoetNetwork(configuration.poetNetwork)
 
-  if (typeof configuration.poetVersion === 'object')
-    validatePoetVersion(configuration.poetVersion)
+  if (typeof configuration.poetVersion === 'object') validatePoetVersion(configuration.poetVersion)
 
   return configuration
 }
@@ -90,8 +87,5 @@ function validatePoetVersion(poetVersion: any) {
 }
 
 function validatePoetNetwork(poetNetwork: any) {
-  assert(
-    poetNetwork === 'BARD' || poetNetwork === 'POET',
-    'Field poetNetwork must be equal to BARD or POET'
-  )
+  assert(poetNetwork === 'BARD' || poetNetwork === 'POET', 'Field poetNetwork must be equal to BARD or POET')
 }

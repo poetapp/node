@@ -29,10 +29,7 @@ export class BlockchainWriter {
   }
 
   async start() {
-    this.logger.info(
-      { configuration: this.configuration },
-      'BlockchainWriter Starting'
-    )
+    this.logger.info({ configuration: this.configuration }, 'BlockchainWriter Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 
@@ -63,11 +60,8 @@ export class BlockchainWriter {
       .bind<ClaimControllerConfiguration>('ClaimControllerConfiguration')
       .toConstantValue(this.configuration)
     this.container.bind<Service>('Service').to(Service)
-    this.container
-      .bind<ServiceConfiguration>('ServiceConfiguration')
-      .toConstantValue({
-        timestampIntervalInSeconds: this.configuration
-          .timestampIntervalInSeconds
-      })
+    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
+      timestampIntervalInSeconds: this.configuration.timestampIntervalInSeconds,
+    })
   }
 }

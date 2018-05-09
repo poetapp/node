@@ -36,7 +36,7 @@ export class Router {
     logger.trace(
       {
         claimId,
-        ipfsHash
+        ipfsHash,
       },
       'Timestamping requested'
     )
@@ -48,7 +48,7 @@ export class Router {
         {
           exception,
           claimId,
-          ipfsHash
+          ipfsHash,
         },
         'Uncaught Exception while requesting timestamp'
       )
