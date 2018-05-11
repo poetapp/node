@@ -56,14 +56,10 @@ export const configurationPath = () =>
   path.join(homedir(), '/.po.et/configuration.json')
 
 export function loadConfigurationWithDefaults(): Configuration {
-  // return {
-  //   ...defaultConfiguration,
-  //   ...loadConfigurationFromEnv(),
-  //   ...loadConfigurationFromFile(configurationPath())
-  // }
   return {
     ...defaultConfiguration,
-    ...loadConfigurationFromFile(configurationPath())
+    ...loadConfigurationFromEnv(),
+    ...loadConfigurationFromFile(configurationPath()),
   }
 }
 
@@ -87,19 +83,19 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
 }
 
 function loadConfigurationFromEnv(): Partial<Configuration> {
-  const myenv = { ...process.env }
-  for (const key of Object.keys(myenv)) {
-    console.log('wachen', key, myenv[key])
-    if (!myenv[key])
-      delete myenv[key]
+  // TODO: programmatically generate keys from values by applying camelCase to SCREAMING_SNAKE_CASE
+  const map: { [index: string]: string } = {
+    RABBITMQ_URL: 'rabbitmqUrl',
+    MONGODB_URL: 'mongodbUrl',
+    IPFS_URL: 'ipfsUrl',
+    INSIGHT_URL: 'insightUrl',
+  }
 
-  }
-  return {
-    rabbitmqUrl: myenv.RABBITMQ_URL,
-    mongodbUrl: myenv.MONGODB_URL,
-    ipfsUrl: myenv.IPFS_URL,
-    insightUrl: myenv.INSIGHT_URL
-  }
+  const configurationFromEnv = Object.entries(process.env)
+    .filter(([key, value]) => map[key])
+    .reduce((previousValue, [key, value]) => ({ ...previousValue, [map[key]]: value }), {})
+
+  return configurationFromEnv
 }
 
 function validatePoetVersion(poetVersion: any) {
