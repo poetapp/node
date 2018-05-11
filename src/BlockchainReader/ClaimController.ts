@@ -22,8 +22,7 @@ export class ClaimController {
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
     @inject('InsightHelper') insightHelper: InsightClient,
-    @inject('ClaimControllerConfiguration')
-    configuration: ClaimControllerConfiguration
+    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
@@ -43,7 +42,7 @@ export class ClaimController {
     logger.trace(
       {
         blockHeight,
-        blockHash
+        blockHash,
       },
       'Block Hash retrieved successfully. Retrieving Raw Block...'
     )
@@ -55,7 +54,7 @@ export class ClaimController {
       .map(_ => ({
         ..._,
         blockHeight,
-        blockHash
+        blockHash,
       }))
     const transactionIds = block.transactions.map(_ => _.id)
 
@@ -63,16 +62,14 @@ export class ClaimController {
       .filter(this.poetTimestampNetworkMatches)
       .filter(this.poetTimestampVersionMatches)
 
-    const unmatchingPoetTimestamps = poetTimestamps.filter(
-      _ => !matchingPoetTimestamps.includes(_)
-    )
+    const unmatchingPoetTimestamps = poetTimestamps.filter(_ => !matchingPoetTimestamps.includes(_))
 
     logger.trace(
       {
         blockHeight,
         blockHash,
         matchingPoetTimestamps,
-        unmatchingPoetTimestamps
+        unmatchingPoetTimestamps,
       },
       'Raw Block retrieved and scanned successfully'
     )
@@ -84,16 +81,13 @@ export class ClaimController {
           blockHash,
           transactionIds,
           matchingPoetTimestamps,
-          unmatchingPoetTimestamps
-        }
+          unmatchingPoetTimestamps,
+        },
       },
       { upsert: true }
     )
 
-    if (matchingPoetTimestamps.length)
-      await this.messaging.publishPoetTimestampsDownloaded(
-        matchingPoetTimestamps
-      )
+    if (matchingPoetTimestamps.length) await this.messaging.publishPoetTimestampsDownloaded(matchingPoetTimestamps)
   }
 
   /**
@@ -107,37 +101,21 @@ export class ClaimController {
       .sort({ blockHeight: -1 })
       .limit(1)
       .toArray()
-    const highestBlockHeight =
-      (queryResults && !!queryResults.length && queryResults[0].blockHeight) ||
-      null
+    const highestBlockHeight = (queryResults && !!queryResults.length && queryResults[0].blockHeight) || null
 
-    logger.info(
-      { highestBlockHeight },
-      'Retrieved Height of Highest Block Scanned So Far'
-    )
+    logger.info({ highestBlockHeight }, 'Retrieved Height of Highest Block Scanned So Far')
 
     return highestBlockHeight
   }
 
-  private poetTimestampNetworkMatches = (
-    blockchainPoetMessage: PoetTimestamp
-  ) => {
+  private poetTimestampNetworkMatches = (blockchainPoetMessage: PoetTimestamp) => {
     return blockchainPoetMessage.prefix === this.configuration.poetNetwork
   }
 
-  private poetTimestampVersionMatches = (
-    blockchainPoetMessage: PoetTimestamp
-  ) => {
-    if (
-      blockchainPoetMessage.version.length !==
-      this.configuration.poetVersion.length
-    )
-      return false
+  private poetTimestampVersionMatches = (blockchainPoetMessage: PoetTimestamp) => {
+    if (blockchainPoetMessage.version.length !== this.configuration.poetVersion.length) return false
     for (let i = 0; i < blockchainPoetMessage.version.length; i++)
-      if (
-        blockchainPoetMessage.version[i] !== this.configuration.poetVersion[i]
-      )
-        return false
+      if (blockchainPoetMessage.version[i] !== this.configuration.poetVersion[i]) return false
     return true
   }
 }

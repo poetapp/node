@@ -2,10 +2,7 @@ import * as Koa from 'koa'
 
 import { IllegalArgumentException, NotFoundException } from 'poet-js'
 
-export const HttpExceptionsMiddleware: Koa.Middleware = async (
-  context: any,
-  next: () => Promise<any>
-) => {
+export const HttpExceptionsMiddleware: Koa.Middleware = async (context: any, next: () => Promise<any>) => {
   try {
     await next()
   } catch (exception) {
@@ -17,10 +14,7 @@ export const HttpExceptionsMiddleware: Koa.Middleware = async (
       context.status = 404
     } else {
       if (context.logger)
-        context.logger.error(
-          { exception },
-          'Error Caught at Middleware - Will Return Internal Server Error'
-        )
+        context.logger.error({ exception }, 'Error Caught at Middleware - Will Return Internal Server Error')
 
       context.body = 'Internal Server Error'
       context.status = 503

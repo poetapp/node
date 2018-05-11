@@ -29,17 +29,11 @@ export class WorkController {
 
   setIPFSHash = (workId: string, ipfsHash: string): void => {
     this.logger.trace({ workId, ipfsHash }, 'Setting the IPFS Hash for a Work')
-    this.collection.updateOne(
-      { id: workId },
-      { $set: { 'timestamp.ipfsHash': ipfsHash } }
-    )
+    this.collection.updateOne({ id: workId }, { $set: { 'timestamp.ipfsHash': ipfsHash } })
   }
 
   setTxId = (ipfsHash: string, transactionId: string): void => {
-    this.logger.trace(
-      { ipfsHash, transactionId },
-      'Setting the Transaction ID for a IPFS Hash'
-    )
+    this.logger.trace({ ipfsHash, transactionId }, 'Setting the Transaction ID for a IPFS Hash')
     this.collection.updateMany(
       { 'timestamp.ipfsHash': ipfsHash },
       { $set: { 'timestamp.transactionId': transactionId } }
@@ -59,17 +53,11 @@ export class WorkController {
     )
   }
 
-  async upsertClaimIPFSHashPair(
-    claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>
-  ) {
+  async upsertClaimIPFSHashPair(claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) {
     this.logger.trace({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsHash }) =>
-        this.collection.updateOne(
-          { 'timestamp.ipfsHash': ipfsHash },
-          { $set: claim },
-          { upsert: true }
-        )
+        this.collection.updateOne({ 'timestamp.ipfsHash': ipfsHash }, { $set: claim }, { upsert: true })
       )
     )
   }

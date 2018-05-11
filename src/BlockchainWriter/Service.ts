@@ -20,10 +20,7 @@ export class Service {
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
-    this.interval = new Interval(
-      this.timestampNextHash,
-      1000 * configuration.timestampIntervalInSeconds
-    )
+    this.interval = new Interval(this.timestampNextHash, 1000 * configuration.timestampIntervalInSeconds)
   }
 
   async start() {
@@ -44,7 +41,7 @@ export class Service {
     } catch (error) {
       logger.error(
         {
-          error
+          error,
         },
         'Uncaught exception while timestamping next hash'
       )
