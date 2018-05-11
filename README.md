@@ -13,7 +13,7 @@ It's built on top of the Bitcoin's blockchain and [IPFS](https://ipfs.io/).
 - [How to Run the Po.et Node](#how-to-run-the-poet-node)
     - [Install](#install)
     - [Docker Compose](#docker-compose)
-    - [Makefile](#Makefile)
+    - [Makefile](#makefile)
     - [Dependencies](#dependencies)
     - [Configuration](#configuration)
 - [API](#api)
