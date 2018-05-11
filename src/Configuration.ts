@@ -32,10 +32,10 @@ export interface LoggingConfiguration {
 }
 
 const defaultConfiguration: Configuration = {
-  rabbitmqUrl: process.env.RABBITMQ_URL || 'amqp://localhost',
-  mongodbUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/poet',
-  ipfsUrl: process.env.IPFS_URL || 'http://localhost:5001',
-  insightUrl: process.env.INSIGHT_URL || 'https://test-insight.bitpay.com/api',
+  rabbitmqUrl: 'amqp://localhost',
+  mongodbUrl: 'mongodb://localhost:27017/poet',
+  ipfsUrl: 'http://localhost:5001',
+  insightUrl: 'https://test-insight.bitpay.com/api',
 
   apiPort: 18080,
   poetNetwork: 'BARD',
@@ -56,10 +56,18 @@ export const configurationPath = () =>
   path.join(homedir(), '/.po.et/configuration.json')
 
 export function loadConfigurationWithDefaults(): Configuration {
-  return { ...defaultConfiguration, ...loadConfiguration(configurationPath()) }
+  // return {
+  //   ...defaultConfiguration,
+  //   ...loadConfigurationFromEnv(),
+  //   ...loadConfigurationFromFile(configurationPath())
+  // }
+  return {
+    ...defaultConfiguration,
+    ...loadConfigurationFromFile(configurationPath())
+  }
 }
 
-function loadConfiguration(configPath: string): Configuration | {} {
+function loadConfigurationFromFile(configPath: string): Configuration | {} {
   if (!existsSync(configPath)) {
     console.log('File', configPath, 'not found')
     return {}
@@ -76,6 +84,22 @@ function loadConfiguration(configPath: string): Configuration | {} {
     validatePoetVersion(configuration.poetVersion)
 
   return configuration
+}
+
+function loadConfigurationFromEnv(): Partial<Configuration> {
+  const myenv = { ...process.env }
+  for (const key of Object.keys(myenv)) {
+    console.log('wachen', key, myenv[key])
+    if (!myenv[key])
+      delete myenv[key]
+
+  }
+  return {
+    rabbitmqUrl: myenv.RABBITMQ_URL,
+    mongodbUrl: myenv.MONGODB_URL,
+    ipfsUrl: myenv.IPFS_URL,
+    insightUrl: myenv.INSIGHT_URL
+  }
 }
 
 function validatePoetVersion(poetVersion: any) {
