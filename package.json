@@ -1,6 +1,6 @@
 {
   "name": "@po.et/node",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "",
   "bin": {
     "poet-node": "dist/babel/src/index.js"
@@ -23,6 +23,9 @@
     "test-prepare-db": "node dist/babel/test/PrepareDB.js",
     "prepublishOnly": "npm run build && npm test"
   },
+  "files": [
+    "dist/babel/src"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
