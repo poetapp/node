@@ -1,7 +1,10 @@
 {
-  "name": "poet-node",
-  "version": "1.0.0",
+  "name": "@po.et/node",
+  "version": "1.0.3",
   "description": "",
+  "bin": {
+    "poet-node": "dist/babel/src/index.js"
+  },
   "scripts": {
     "start": "node dist/babel/src",
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
@@ -17,8 +20,12 @@
     "build-ts": "tsc && npm run copy-json",
     "build-babel": "cp .babelrc dist/ts && babel dist/ts/ -d dist/babel --copy-files",
     "watch-babel": "cp .babelrc dist/ts && babel -w dist/ts/ -d dist/babel --copy-files",
-    "test-prepare-db": "node dist/babel/test/PrepareDB.js"
+    "test-prepare-db": "node dist/babel/test/PrepareDB.js",
+    "prepublishOnly": "npm run build && npm test"
   },
+  "files": [
+    "dist/babel/src"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /* tslint:disable:no-console */
 import 'Error'
 import * as Pino from 'pino'
