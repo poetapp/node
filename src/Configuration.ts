@@ -61,10 +61,14 @@ const defaultConfiguration: Configuration = {
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
 export function loadConfigurationWithDefaults(): Configuration {
-  return { ...defaultConfiguration, ...loadConfiguration(configurationPath()) }
+  return {
+    ...defaultConfiguration,
+    ...loadConfigurationFromEnv(),
+    ...loadConfigurationFromFile(configurationPath()),
+  }
 }
 
-function loadConfiguration(configPath: string): Configuration | {} {
+function loadConfigurationFromFile(configPath: string): Configuration | {} {
   if (!existsSync(configPath)) {
     console.log('File', configPath, 'not found')
     return {}
@@ -79,6 +83,22 @@ function loadConfiguration(configPath: string): Configuration | {} {
   if (typeof configuration.poetVersion === 'object') validatePoetVersion(configuration.poetVersion)
 
   return configuration
+}
+
+function loadConfigurationFromEnv(): Partial<Configuration> {
+  // TODO: programmatically generate keys from values by applying camelCase to SCREAMING_SNAKE_CASE
+  const map: { [index: string]: string } = {
+    RABBITMQ_URL: 'rabbitmqUrl',
+    MONGODB_URL: 'mongodbUrl',
+    IPFS_URL: 'ipfsUrl',
+    INSIGHT_URL: 'insightUrl',
+  }
+
+  const configurationFromEnv = Object.entries(process.env)
+    .filter(([key, value]) => map[key])
+    .reduce((previousValue, [key, value]) => ({ ...previousValue, [map[key]]: value }), {})
+
+  return configurationFromEnv
 }
 
 function validatePoetVersion(poetVersion: any) {

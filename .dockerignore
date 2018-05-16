@@ -1,10 +1,9 @@
 node_modules
+.gitignore
+.travis.yml
+makefile
 dist
-
 .nyc_output
 coverage
-
 .idea
-
 .ipfs-docker
-.env
