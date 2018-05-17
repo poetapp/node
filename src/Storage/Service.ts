@@ -33,16 +33,14 @@ export class Service {
 
   private downloadNextHash = async () => {
     try {
-      this.logger.info('Downloading next entry')
-      const result = await this.claimController.downloadNextHash()
-      this.logger.info(result, 'Successfully downloaded entry')
+      await this.claimController.downloadNextHash()
     } catch (error) {
-      this.logger.info(
+      this.logger.error(
         {
           method: 'downloadNextHash',
           error,
         },
-        error.message
+        'Uncaught Error Downloading Next Hash'
       )
     }
   }
