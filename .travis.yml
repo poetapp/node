@@ -3,20 +3,34 @@ notifications:
   slack:
     secure: YIQTNvY6Yvrq4LOE63ZeyaeXY5nQHctXkOTa1In0KQmmMrUGcQZI6eFfkiUDEG9bEjiVmmRqvYWnbH8fJrTSWjdQKrDduLuPY/ivE6M79isxsB2gc+bYgQhuh7H+g7vZfGNkcNKQEgDyWol5YGjyMwNFB8JzMzVj1kgnEZ7c4hqpQfXQ+WFCEOnNledWdmuyNX4wP0lWsuD6VuIH8GYtWD6iyYQUj82tFnh+l2RJCAUMFdG3IYg4VWZsweI7u9l1oH8fbxKVl5hNWW49087vGE4wHWcG6ZtRs510ioHlYqgcQpsFE5HejmdfMoAocGaTSq4+drsIDwUsuH0WmyFWa3q2sAwLKv7XRhzAHPcrPaYooWhlCP24zlDWXUAgE7VAtCjgfMTV2osIU70VUxfOxtGtuaMTI265Ws42UF1PV98ZcVfs4Vlt/P76MBb6ECzphKhVMVI7fBOWTYj5a0ovgFA2hJuwQ/VJ/jLhoM1s1MzV2H1l+n9CKanfmnXnXIUphoWoNROQJ2FPYzeGSUZpJbtKxut4W1OfT5MS96U227wJurOG5pjS+MCfJZXVZCeGUsSfSQDEZeyBU6IYyF5G1vnZAqBL38VwPgIX5q+RdYGRtZzNUbVFvo+6J334Jv5U1vJQoapW98chTPNVY8dWlR2Blgf/UGmzR/zWT8/3WGQ=
 services:
-  - mongodb
-  - rabbitmq
+- mongodb
+- rabbitmq
+- docker
 before_install:
-  - npm install -g greenkeeper-lockfile@1
+- npm install -g greenkeeper-lockfile@1
 before_script:
-  - sudo make ipfs
-  - greenkeeper-lockfile-update
-  - npm run build
-  - npm run test-prepare-db
-  - sleep 5
-  - npm start &
-  - sleep 5
+- sudo make ipfs
+- greenkeeper-lockfile-update
+- npm run build
+- npm run test-prepare-db
+- sleep 5
+- npm start &
+- sleep 5
 script:
-  - npm run lint
-  - npm run test
+- npm run lint
+- npm run test
 after_script:
-  - greenkeeper-lockfile-upload
+- greenkeeper-lockfile-upload
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=poetapp/node
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:v$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
+env:
+  global:
+  - secure: ZlHX7fxpMNNxsyL02d33/J9AkQpWTA8Igy5eciJnIhoK6uXlyRz1F3sO2Xs2U/w73BiGVjAVNAuBDjTlwCAAUWRlLy9XFpYxu+bePGxjW/zm/fDF8Ib9hFjBNFLLJdMxf+jMF4FCJHgtW38lYNklZ+FVK1pq8PLK5Rs+KznJBBFCcWWkFiferzXoX2TTQCTGhu+k4c0nQ75gsYFH7L7lgqt8WLNgA7ZnusMOprh926ENFYfR08tH9tpl3CxlOrZtM5p69GuVxPOj8qmsT5bRSJlcEFYJnkSiLFIYTPvrC+TNATybf4WJkXU5uuqE9A6vA34kH3DieKx4u3bdJMrqwZiJ2UihKQ88gqk23aJyL1LM1ZxmP4b0GcVxyOXQ75hI1hsX48RjgVdvL7p5yYHF2Sb+G2Ls6j06zuXq04EBXk6xeFvbyh6zabKB/xklhtp5+TVjbC9m4oO4aTnXUObSamYhTdq41+nTrLmBM0l8maTUtoYlqIFWTz+Tk0LbJUv6cB4lqRPL9pl9odQSAZuoBC6RF75AHGCBTdB7iFbFavXfpOjSBBEJl/XxAnRHpy8+zDuimjrrukXuLzGMZbbh5zQAQo2fobaUCZhEROaZNCUBoxizldr4HpdQAApCaRv/ap2fZOKNeBqTf1cup7z3Eoyu2LMkZFfB0qCZNririoA=
+  - secure: V26w94Rg4GcG4kBCvZfpjfOq8BLLJKMdxDlkgtxuJoQrBBPtyDpr4kFcj9NHDJIPXOFtRoiDYwlOngETPXJc7zWID0CAFCDRa6DKuT/i6xR/jycL7B8N8w7PTSFTbdQ9KqhVqbUVoXVrpTmg6LkX5It6ByYAdVpZE53Vf6wa5ApjBaosPtp4zaNIoAjYgu47QBJlIbJ0TAmAnqCfLTSbaInJqxj3KzBp//NjmjbUbNNRTwslOLojCByJn0PSRbN+N/Q43zs5moU8hKUpbDoSo8jwDTvNeS/1cK0O6ofCboHwCAisJsj7AgGAYBeyamq9Cz6rBL8NtC5DA5PLMA8y4l1M9tzbThq03IP6KccYJ6FmMFng7cjC20gtDGNaTaPCMmHaIA4cvmaUARqM9NIQjg/e02ZBJJimtGI5bjNXZ5q5YO3WOC42hd52nRosAjbtUXpHoW6XZmb0Wj9DZALHZlxNHkAR6tN4gBTd5FQM/6CBJHXISoL/t3BDQdSiCEdVpyAIy9rcVr6MjmL63LKVdgXK6pNGXuhyg/M34psLjGbZV4uBITAiplWgWErPP7TvhkIZ6BjRU1ooktYq8oc/Xoj2y6sjf/1VGhTqwqLenkwXtZG/LKO9FHoeVernNCZih5Ymw+tkxN6sP6KxZS/gOIHnZHyjazMlRkPf7wq1rkY=
+  - secure: YkMN+xWKGEg5Sq8S1Z4fKHnLTE734AgMp3pjZW0ktMGRXjv6CuZHyDhm2GoGjzcBKb+C08iTLguETAHhE05Gu+fYMtL6Y4BQ13ESv/LNFL5IL5SDaLiJWlJTDdmN6kuhKwtqV496n6kPV7UXqK0FFcqfR47BlIUybZPmccFXErFVRCpFrx42kqyrnnKY3a8f3wpEO962f2xN4uRxGSIccFUAMyG+FeXXojQz+QsEJA7t1fGOsvKImhRhL2l2K7EpCEU4DkKjGn0tMJF0jqn2Fhye7NwKVH0ZellH4MYSpmddUhkBpTabJFWu4UO3gjnkzCHs/RS8t2tmxZOSK6+8L932btqW+6/Fub7zP/ioVTZxJi2+oKxUd1Cij/QzB/hWdlhIFaBtlpKtlIwf8D9w7E/vSV5sJdtj4Z/Cm3q3SHpQpCjHxMpdgA7oqlJwD4AfVG9mrJoi5pSGu8qPTp/V4l6Dl3TQ6NOtxWxe+a76NbqrbH0pEO0FGF6fZM/D64z5YzhxSxbKn+r5B0mbu7kUBT2um+KFdfc3gd6Zm0paQu4QKWIzpHD3rq/YG2L65AfTSTZvoyWxgqvNRb6MGHOnm5BZR2C9/7hzTClmvjS22bwI3ZseU2D/wywutkrZnPnW1F9DadiYlkhMwkC682mMQQaxo+AWd/UTy6qJKFxIcvw=
