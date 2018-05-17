@@ -22,12 +22,12 @@ script:
 after_script:
 - greenkeeper-lockfile-upload
 after_success:
-- export REPO={$REPO}
+- export REPO=poetapp/node
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
 - docker login -u $DOCKER_USER -p $DOCKER_PASS
-- docker build -t {$REPO}:"{$TAG}" .
-- docker tag {$REPO} {$REPO}:"{$TAG}"
-- docker push {$REPO}
+- docker build -t "$REPO":"$TAG" .
+- docker tag "$REPO" "$REPO":"$TAG"
+- docker push "$REPO"
 env:
   global:
   - secure: NudOlo07P3/C715cS8YODRqTuc041wHBBrVUiBY3HjRRWt9yRYNXDrH0NhFkEv8A/+LT5onKmzexr2F8ClfP1ZTcWOGhEkOUXkU4Me2x706DKlOrFYL3UQyNmAoeW+9+amOAG5rIpY+R/pn4A7YQhY813G5/Hmi23DEiLft7C55Wg+ULM7dwSCRJNYttgtbjh7oDyekVNtGdOmp0rRiUVMQMb3+N8jcTg6AQmYHaTElLD2oez60Ne7Htvcc8VMGuTUn2BANkeSCeBuJ8bhGrPuvAkvFbzxM0W3Zlub4jAC0skoTXaI0D0TEyX21HeHQoYxvi1iorgOMzPGCHfKNbALmkhs5aqcD5EJDyq4O4Yy0XAUkjfR1cwmSxdyEkxdxHCKU9OJYHfGHxbi3LLmjOiLXfqbaKrcI9EPN0iMkaDOuCxh2tNE3T/8Xlm7Z2Jf3FLmvdZ6pPttMVUuEfuj9MWvxG9oqlj0oJfTNI+8Ylhy1qFbahuApFd3Fl9bgKqDeU1e1rOUlKXKVlmpf686Xzm54Xe/QikwnR/Jth6mpSnNIg1dnIfLu9/tFB4yaTu/ONQGbz+nj1FBx+nr2JVnsMlzRei11d985z/LrRVFufFrawh3Y5ig9x2hB4DwaZGLIx5CVWPre+WfvvgMbd0Ov+SoxY+tCX3g204bZhIGO+Amw=
