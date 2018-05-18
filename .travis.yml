@@ -23,11 +23,11 @@ after_script:
 - greenkeeper-lockfile-upload
 after_success:
 - export REPO=poetapp/node
-- export TAG=$(git log -1 --pretty=%h)
+- export TAG=v-$(git log -1 --pretty=%h)-beta
 - docker login -u $DOCKER_USER -p $DOCKER_PASS
-- docker build -t $REPO:v-${TAG}-beta .
-- if [ "$TRAVIS_BRANCH" == "master" ]; then docker tag $REPO $REPO:latest; fi
-- if [ -n "$TRAVIS_TAG" ]; then docker tag $REPO $REPO:${TRAVIS_TAG}; fi
+- docker build -t $REPO:${TAG} .
+- if [ "$TRAVIS_BRANCH" == "master" ]; then docker tag $REPO:${TAG} $REPO:latest; fi
+- if [ -n "$TRAVIS_TAG" ]; then docker tag $REPO:${TAG} $REPO:${TRAVIS_TAG}; fi
 - docker push $REPO
 env:
   global:
