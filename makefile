@@ -1,4 +1,6 @@
 SHELL := /bin/bash
+IMAGE := poetapp/node
+
 mongo:
 	docker run -d --name poet-mongo -p 27017:27017 mongo:3.4
 
@@ -41,3 +43,8 @@ clean:
 	fi;
 	docker rm $$(docker ps -a -f name=poet-* -q)
     
+image:
+	docker build -t $(IMAGE) .
+
+push-image:
+	docker push $(IMAGE)

@@ -2,9 +2,14 @@ language: node_js
 notifications:
   slack:
     secure: YIQTNvY6Yvrq4LOE63ZeyaeXY5nQHctXkOTa1In0KQmmMrUGcQZI6eFfkiUDEG9bEjiVmmRqvYWnbH8fJrTSWjdQKrDduLuPY/ivE6M79isxsB2gc+bYgQhuh7H+g7vZfGNkcNKQEgDyWol5YGjyMwNFB8JzMzVj1kgnEZ7c4hqpQfXQ+WFCEOnNledWdmuyNX4wP0lWsuD6VuIH8GYtWD6iyYQUj82tFnh+l2RJCAUMFdG3IYg4VWZsweI7u9l1oH8fbxKVl5hNWW49087vGE4wHWcG6ZtRs510ioHlYqgcQpsFE5HejmdfMoAocGaTSq4+drsIDwUsuH0WmyFWa3q2sAwLKv7XRhzAHPcrPaYooWhlCP24zlDWXUAgE7VAtCjgfMTV2osIU70VUxfOxtGtuaMTI265Ws42UF1PV98ZcVfs4Vlt/P76MBb6ECzphKhVMVI7fBOWTYj5a0ovgFA2hJuwQ/VJ/jLhoM1s1MzV2H1l+n9CKanfmnXnXIUphoWoNROQJ2FPYzeGSUZpJbtKxut4W1OfT5MS96U227wJurOG5pjS+MCfJZXVZCeGUsSfSQDEZeyBU6IYyF5G1vnZAqBL38VwPgIX5q+RdYGRtZzNUbVFvo+6J334Jv5U1vJQoapW98chTPNVY8dWlR2Blgf/UGmzR/zWT8/3WGQ=
+    on_success: change
+    on_failure: always
+    on_error: always
+    on_cancel: always
 services:
   - mongodb
   - rabbitmq
+  - docker
 before_install:
   - npm install -g greenkeeper-lockfile@1
 before_script:
@@ -20,3 +25,15 @@ script:
   - npm run test
 after_script:
   - greenkeeper-lockfile-upload
+after_success:
+  - export REPO=poetapp/node
+  - export TAG=v-$(git log -1 --pretty=%h)-beta
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker build -t $REPO:${TAG} .
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then docker tag $REPO:${TAG} $REPO:latest; fi
+  - if [ -n "$TRAVIS_TAG" ]; then docker tag $REPO:${TAG} $REPO:${TRAVIS_TAG}; fi
+  - docker push $REPO
+env:
+  global:
+  - secure: NudOlo07P3/C715cS8YODRqTuc041wHBBrVUiBY3HjRRWt9yRYNXDrH0NhFkEv8A/+LT5onKmzexr2F8ClfP1ZTcWOGhEkOUXkU4Me2x706DKlOrFYL3UQyNmAoeW+9+amOAG5rIpY+R/pn4A7YQhY813G5/Hmi23DEiLft7C55Wg+ULM7dwSCRJNYttgtbjh7oDyekVNtGdOmp0rRiUVMQMb3+N8jcTg6AQmYHaTElLD2oez60Ne7Htvcc8VMGuTUn2BANkeSCeBuJ8bhGrPuvAkvFbzxM0W3Zlub4jAC0skoTXaI0D0TEyX21HeHQoYxvi1iorgOMzPGCHfKNbALmkhs5aqcD5EJDyq4O4Yy0XAUkjfR1cwmSxdyEkxdxHCKU9OJYHfGHxbi3LLmjOiLXfqbaKrcI9EPN0iMkaDOuCxh2tNE3T/8Xlm7Z2Jf3FLmvdZ6pPttMVUuEfuj9MWvxG9oqlj0oJfTNI+8Ylhy1qFbahuApFd3Fl9bgKqDeU1e1rOUlKXKVlmpf686Xzm54Xe/QikwnR/Jth6mpSnNIg1dnIfLu9/tFB4yaTu/ONQGbz+nj1FBx+nr2JVnsMlzRei11d985z/LrRVFufFrawh3Y5ig9x2hB4DwaZGLIx5CVWPre+WfvvgMbd0Ov+SoxY+tCX3g204bZhIGO+Amw=
+  - secure: sZAPkJRGlfVKd9PodHMY2lSXUDfRBFJOs4ZZjKA/gHZpEsx+ExoNrRLoatlm5NHZjb8IyRPRdnFv1GINjNekdn5jT18Kug8+sndG0NiZdXXpXUHHtbY1fvP9wriL3BomS++UAigN+lw38uow0zcHZSCfGjORqj9bscRUZFw5c8Os3dKfoFAdXx6kSTVPQQTsJ0LlZqrDsPzLC+vwBWa3ZmyFxX1g+2/rM/fFt+e1C3qOPt5Uw7xgxElUS7YCgOWgIkfa8MKn2rlsGf4CQiQf7Dsb1tgQqt6/6tCGx9f66lg4OrbFshrE6XKWOnmryXE9K85M9muqsrNsIQRbzjUhxqCp9X74FEPso277u1qCtarjQc8tySVWBPHDHIMcfdzvUr3ba703oQZMgBb7TxDWoW1xJc3i1REH66cbSkNbyqUSYx+Aiuxh7OY0b26/lmKf842fW5WrEVNihLwITPIAj6QtzkpZ2YpsCmbRb40RzjGgwozFzWKs/doRwb6CW6Sc6VmZfkESsgaN5w7aviFNUZPRxJwMQTYqo5JDIscLmSOgpyoHU5Q8sB4mQVBXF23huqq4lzuMu6CCdgWTSllItJIgibTyo6OtZA12ZjskR+NgCctWYBL+hYsWTGpYz1Ycp2OQB4K2lhzcJGda66FBPOmUxb7vFp2tw1oGg/aYVcU=
