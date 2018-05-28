@@ -26,7 +26,6 @@ It's built on top of the Bitcoin's blockchain and [IPFS](https://ipfs.io/).
     - [Coverage](#coverage)
     - [Branches and Pull Requests](#branches-and-pull-requests)
     - [Code Style](#code-style)
-- [Roadmap](#roadmap)
 
 
 ## Gitter
@@ -290,38 +289,3 @@ TravisCI will run all tests automatically for all pull requests submitted.
 
 ### Code Style
 Please run `npm run lint`. The linting configuration still needs some tweaking, and it'll be added to Travis in the future.
-
-## Roadmap
-Check out the [issues](https://github.com/poetapp/node/issues) to get a rough idea of what's next for The Po.et Node.
-
-Currently they boil down to:
-- 3 features
-- 1 bug
-- 1 research, which could lead to a new feature
-- 9 issues focusing on testing
-- 7 issues focusing on architecture
-
-The features are:
-- Batching claims together to limit the number of blockchain transactions required, and thus lower the amount of fees
-- Providing an option to store whatever goes to IPFS in AWS' S3 as well, in case IPFS fails
-- Blockchain Reader "Fast Mode", see [#30][i30] for more info
-
-The two research issues are:
-- The first is about the possibility of using Open Timestamps. This could enable fee-less timestamping, but may not be conpatible with storing extra data in the transaction output, which is used as a means of communication across Nodes.
-- The second is about moving away from InsightAPI and using Bitcoin Core directly.
-
-The issues focusing on testing are meant to ensure all different code paths are tested by automated tests. The most critical part here is testing replication across Po.et Nodes.
-
-Of the 6 issues that focus on architecture:
-- 3 are about logging
-- One's a refactor to increase code quaility by following an official recommendation
-- One's about creating proper database indexes
-- One's about moving reusable logic away from Node into poet-js
-
-
-[i11]: https://github.com/poetapp/node/issues/11
-[i21]: https://github.com/poetapp/node/issues/21
-[i22]: https://github.com/poetapp/node/issues/22
-[i25]: https://github.com/poetapp/node/issues/25
-[i27]: https://github.com/poetapp/node/issues/27
-[i30]: https://github.com/poetapp/node/issues/30
