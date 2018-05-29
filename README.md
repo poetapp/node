@@ -198,7 +198,7 @@ The `id` field is the `sha256` of the claim, excluding the `id` and `signature` 
 All this logic is abstracted away in [poet-js](https://github.com/poetapp/poet-js), so if you're working with JavaScript or TypeScript you can simply use the `createClaim(privateKey, claimType, attributes)` function like so:
 
 ```ts
-import { ClaimType, createClaim } from 'poet-js'
+import { ClaimType, createClaim } from '@po.et/poet-js'
 
 const privateKey = 'L1mptZyB6aWkiJU7dvAK4UUjLSaqzcRNYJn3KuAA7oEVyiNn3ZPF'
 
