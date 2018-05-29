@@ -1,6 +1,6 @@
 /* tslint:disable:no-relative-imports */
-import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
 import { Claim } from '@po.et/poet-js'
+import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
 
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
 import { Client } from './Helper'
