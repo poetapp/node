@@ -55,7 +55,7 @@
     "@types/koa-router": "7.0.28",
     "@types/mongodb": "3.0.18",
     "@types/node-fetch": "1.6.9",
-    "@types/pino": "4.7.1",
+    "@types/pino": "4.16.0",
     "alsatian": "2.2.1",
     "babel-cli": "6.26.0",
     "babel-plugin-module-resolver": "3.1.1",
