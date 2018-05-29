@@ -4,7 +4,7 @@ import * as KoaBody from 'koa-body'
 import * as KoaCors from 'koa-cors'
 import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
-import { ClaimType, isClaim, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from 'poet-js'
+import { ClaimType, isClaim, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from '@po.et/poet-js'
 
 import { childWithFileName } from 'Helpers/Logging'
 

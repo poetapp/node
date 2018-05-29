@@ -2,7 +2,7 @@ import * as bitcore from 'bitcore-lib'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
-import { InsightClient } from 'poet-js'
+import { InsightClient } from '@po.et/poet-js'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'

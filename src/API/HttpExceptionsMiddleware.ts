@@ -1,6 +1,6 @@
 import * as Koa from 'koa'
 
-import { IllegalArgumentException, NotFoundException } from 'poet-js'
+import { IllegalArgumentException, NotFoundException } from '@po.et/poet-js'
 
 export const HttpExceptionsMiddleware: Koa.Middleware = async (context: any, next: () => Promise<any>) => {
   try {

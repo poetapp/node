@@ -1,7 +1,7 @@
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
-import { InsightClient } from 'poet-js'
+import { InsightClient } from '@po.et/poet-js'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
