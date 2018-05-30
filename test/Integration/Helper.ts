@@ -1,5 +1,5 @@
+import { Claim } from '@po.et/poet-js'
 import fetch from 'node-fetch'
-import { Claim } from 'poet-js'
 import { promisify } from 'util'
 
 const delay = promisify(setTimeout)

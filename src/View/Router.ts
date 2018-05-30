@@ -1,6 +1,6 @@
+import { ClaimIPFSHashPair, PoetTimestamp } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
-import { ClaimIPFSHashPair, PoetTimestamp } from 'poet-js'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
