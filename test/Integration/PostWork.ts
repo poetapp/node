@@ -1,6 +1,6 @@
 /* tslint:disable:no-relative-imports */
+import { ClaimType, createClaim } from '@po.et/poet-js'
 import { AsyncTest, Expect, SetupFixture, TestFixture } from 'alsatian'
-import { ClaimType, createClaim } from 'poet-js'
 
 import { Key1 } from '../Keys'
 import { Client, waitForNode } from './Helper'

@@ -1,6 +1,6 @@
+import { Interval } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
-import { Interval } from 'poet-js'
 
 import { childWithFileName } from 'Helpers/Logging'
 

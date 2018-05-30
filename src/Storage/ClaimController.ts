@@ -1,7 +1,7 @@
+import { Claim, isClaim, ClaimIdIPFSHashPair } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
-import { Claim, isClaim, ClaimIdIPFSHashPair } from 'poet-js'
 
 import { asyncPipe } from 'Helpers/AsyncPipe'
 import { NoMoreEntriesException } from 'Helpers/Exceptions'
