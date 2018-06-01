@@ -12,7 +12,7 @@ services:
       - "15672:15672"
     hostname: my-rabbit
   poet-ipfs:
-    image: jbenet/go-ipfs:latest
+    image: ipfs/go-ipfs:v0.4.15
     ports:
       - "8080:8080"
       - "4001:4001"
