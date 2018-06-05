@@ -1,4 +1,4 @@
-import { Claim, isClaim, ClaimIdIPFSHashPair } from '@po.et/poet-js'
+import { Claim, isValidClaim, ClaimIdIPFSHashPair } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
@@ -233,7 +233,7 @@ export class ClaimController {
     const text = await this.ipfs.cat(ipfsHash)
     const claim = JSON.parse(text)
 
-    if (!isClaim(claim)) throw new Error('Unrecognized claim')
+    if (!isValidClaim(claim)) throw new Error('Unrecognized claim')
 
     return claim
   }
