@@ -113,7 +113,7 @@ export class ClaimController {
     const entry = await this.collection.findOne({
       claimId: null,
       ipfsHash: { $exists: true },
-      $and: [
+      $and: [ // TESTING
         {
           $or: [
             { lastDownloadAttemptTime: null },
