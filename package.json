@@ -36,7 +36,7 @@
     "form-data": "2.3.2",
     "inversify": "4.13.0",
     "koa": "2.5.1",
-    "koa-body": "2.6.0",
+    "koa-body": "4.0.1",
     "koa-cors": "0.0.16",
     "koa-router": "7.4.0",
     "mongodb": "3.0.8",
