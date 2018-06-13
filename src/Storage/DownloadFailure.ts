@@ -6,6 +6,6 @@ export enum FailureType {
 export enum FailureReason {
   InvalidJson = 'INVALID_JSON',
   InvalidClaim = 'INVALID_CLAIM',
-  IPFSGeneric = 'IPFSGeneric',
-  IPFSTimeout = 'IPFSTimeout',
+  IPFSGeneric = 'IPFS_GENERIC',
+  IPFSTimeout = 'IPFS_TIMEOUT',
 }
