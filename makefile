@@ -60,3 +60,6 @@ reset-storage:
 
 print-storage-errors:
 	docker exec -i poet-mongo mongo poet < ./queries/storage-errors.mongo
+
+print-attempt-count:
+	docker exec -i poet-mongo mongo poet < ./queries/attempt-count.mongo
