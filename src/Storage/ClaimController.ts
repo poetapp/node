@@ -4,6 +4,7 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { asyncPipe } from 'Helpers/AsyncPipe'
+import { isFetchTimeoutError } from 'Helpers/FetchError'
 import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds } from 'Helpers/Time'
 import { Exchange } from 'Messaging/Messages'
@@ -105,7 +106,9 @@ export class ClaimController {
       this.updateEntryAttempts,
       this.downloadEntryClaim,
       this.updateEntryPairs,
-      this.publishEntryDownload
+      this.publishEntryDownload,
+      async x => logger.trace(x, 'Successfully downloaded entry'),
+      async () => logger.info('Successfully downloaded entry')
     )
 
     const handleErrors = async (error: Error) => {
@@ -118,12 +121,13 @@ export class ClaimController {
       } else if (error instanceof IPFSGenericError) {
         logger.warn({ error })
         await updateEntryFailureReason(error.ipfsHash, FailureType.Soft, FailureReason.IPFSGeneric)
+      } else {
+        throw error
       }
     }
 
     logger.trace('Downloading next entry')
     await pipe({ retryDelay, maxAttempts }).catch(handleErrors)
-    logger.info('Successfully downloaded entry')
   }
 
   private findEntryToDownload = async ({
@@ -191,7 +195,7 @@ export class ClaimController {
     currentTime?: number
   }) => {
     const logger = this.logger.child({ method: 'updateEntryAttempts' })
-    logger.trace('started updating entry')
+    logger.trace({ entry }, 'started updating entry')
 
     await this.collection.updateOne(
       {
@@ -218,7 +222,7 @@ export class ClaimController {
       try {
         return await this.ipfs.cat(ipfsHash)
       } catch (error) {
-        if (error.name === 'FetchError' && ['request-timeout', 'body-timeout'].includes(error.type)) {
+        if (isFetchTimeoutError(error)) {
           throw new IPFSTimeoutError(ipfsHash)
         } else {
           throw new IPFSGenericError(ipfsHash, error)
@@ -239,7 +243,7 @@ export class ClaimController {
     const serialized = await downloadClaim()
     const claim = parseClaim(serialized)
 
-    if (!isClaim(claim)) throw new InvalidClaim(ipfsHash, FailureReason.InvalidClaim)
+    // if (!isValidClaim(claim)) throw new InvalidClaim(ipfsHash, FailureReason.InvalidClaim)
 
     logger.trace({ ipfsHash, claim }, 'Finished claim download')
 
