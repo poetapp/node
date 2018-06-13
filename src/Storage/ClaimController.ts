@@ -112,18 +112,15 @@ export class ClaimController {
     )
 
     const handleErrors = async (error: Error) => {
-      if (error instanceof NoMoreEntriesException) {
-        logger.trace(error.message)
-      } else if (error instanceof InvalidClaim) {
+      if (error instanceof NoMoreEntriesException) logger.trace(error.message)
+      else if (error instanceof InvalidClaim)
         await updateEntryFailureReason(error.ipfsHash, FailureType.Hard, error.failureReason)
-      } else if (error instanceof IPFSTimeoutError) {
+      else if (error instanceof IPFSTimeoutError)
         await updateEntryFailureReason(error.ipfsHash, FailureType.Soft, FailureReason.IPFSTimeout)
-      } else if (error instanceof IPFSGenericError) {
+      else if (error instanceof IPFSGenericError) {
         logger.warn({ error })
         await updateEntryFailureReason(error.ipfsHash, FailureType.Soft, FailureReason.IPFSGeneric)
-      } else {
-        throw error
-      }
+      } else throw error
     }
 
     logger.trace('Downloading next entry')
@@ -164,11 +161,7 @@ export class ClaimController {
           ],
         },
         {
-          $or: [
-            { failureType: null },
-            { failureType: { $exists: false } },
-            { failureType: { $ne: FailureType.Hard } },
-          ],
+          $or: [{ failureType: null }, { failureType: { $exists: false } }, { failureType: { $ne: FailureType.Hard } }],
         },
       ],
     })
@@ -222,11 +215,8 @@ export class ClaimController {
       try {
         return await this.ipfs.cat(ipfsHash)
       } catch (error) {
-        if (isFetchTimeoutError(error)) {
-          throw new IPFSTimeoutError(ipfsHash)
-        } else {
-          throw new IPFSGenericError(ipfsHash, error)
-        }
+        if (isFetchTimeoutError(error)) throw new IPFSTimeoutError(ipfsHash)
+        else throw new IPFSGenericError(ipfsHash, error)
       }
     }
     const parseClaim = (serialized: string) => {

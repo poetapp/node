@@ -12,10 +12,7 @@ export enum FetchErrorType {
   InvalidJson = 'invalid-json',
 }
 
-const TimeoutFetchErrorTypes: ReadonlyArray<string> = [
-  FetchErrorType.RequestTimeout,
-  FetchErrorType.BodyTimeout,
-]
+const TimeoutFetchErrorTypes: ReadonlyArray<string> = [FetchErrorType.RequestTimeout, FetchErrorType.BodyTimeout]
 
 export const isFetchError = (error: any): error is FetchError => error instanceof Error && error.name === 'FetchError'
 
