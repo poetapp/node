@@ -1,0 +1,4 @@
+db.storage.aggregate([
+  { $match: {claimId: null} } ,
+  { $group: {_id: null, count: { $sum: "$downloadAttempts" } } }
+])
