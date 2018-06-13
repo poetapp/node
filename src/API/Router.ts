@@ -15,7 +15,7 @@ import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { securityHeaders } from 'securityHeaders'
+import { securityHeaders } from 'API/SecurityHeaders'
 
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
 import { LoggerMiddleware } from './LoggerMiddleware'
