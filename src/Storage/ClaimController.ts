@@ -231,7 +231,11 @@ export class ClaimController {
     }
     const parseClaim = (serialized: string) => {
       try {
-        return JSON.parse(serialized)
+        const parsedJson = JSON.parse(serialized)
+        return {
+          ...parsedJson,
+          dateCreated: new Date(parsedJson.dateCreated),
+        }
       } catch (error) {
         throw new InvalidClaim(ipfsHash, FailureReason.InvalidJson)
       }
@@ -243,7 +247,7 @@ export class ClaimController {
     const serialized = await downloadClaim()
     const claim = parseClaim(serialized)
 
-    // if (!isValidClaim(claim)) throw new InvalidClaim(ipfsHash, FailureReason.InvalidClaim)
+    if (!isValidClaim(claim)) throw new InvalidClaim(ipfsHash, FailureReason.InvalidClaim)
 
     logger.trace({ ipfsHash, claim }, 'Finished claim download')
 
