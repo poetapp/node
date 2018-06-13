@@ -1,4 +1,4 @@
-export const securityHeaders = {
+export const SecurityHeaders = {
   frameguard: { action: 'deny' },
   referrerPolicy: { policy: 'same-origin' },
   contentSecurityPolicy: {

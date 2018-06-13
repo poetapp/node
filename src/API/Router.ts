@@ -15,11 +15,11 @@ import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { securityHeaders } from 'API/SecurityHeaders'
 
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
 import { LoggerMiddleware } from './LoggerMiddleware'
 import { RouterConfiguration } from './RouterConfiguration'
+import { SecurityHeaders } from './SecurityHeaders'
 import { WorkController } from './WorkController'
 
 @injectable()
@@ -43,7 +43,7 @@ export class Router {
     this.koaRouter.get('/works', this.getWorks)
     this.koaRouter.post('/works', this.postWork)
 
-    this.koa.use(helmet(securityHeaders))
+    this.koa.use(helmet(SecurityHeaders))
     this.koa.use(KoaCors())
     this.koa.use(LoggerMiddleware(this.logger))
     this.koa.use(HttpExceptionsMiddleware)
