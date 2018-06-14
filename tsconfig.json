@@ -15,5 +15,8 @@
     "./src/**/*",
     "./test/**/*",
     "./typings/**/*"
+  ],
+  "exclude": [
+    "./src/**/*.test.ts"
   ]
 }
