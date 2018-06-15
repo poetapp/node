@@ -12,7 +12,13 @@ import { Messaging } from 'Messaging/Messaging'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 import { FailureReason, FailureType } from './DownloadFailure'
 import { Entry } from './Entry'
-import { NoMoreEntriesException, InvalidClaim, IPFSGenericError, IPFSTimeoutError, errorToIPFSError } from './Exceptions'
+import {
+  NoMoreEntriesException,
+  InvalidClaim,
+  IPFSGenericError,
+  IPFSTimeoutError,
+  errorToIPFSError,
+} from './Exceptions'
 import { IPFS } from './IPFS'
 
 @injectable()
@@ -210,8 +216,7 @@ export class ClaimController {
 
   private downloadEntryClaim = async ({ entry, ...rest }: { entry: Entry }) => {
     const { ipfsHash } = entry
-    const downloadClaim = (ipfsHash: string) =>
-      this.ipfs.cat(ipfsHash).rethrow(errorToIPFSError(ipfsHash))
+    const downloadClaim = (ipfsHash: string) => this.ipfs.cat(ipfsHash).rethrow(errorToIPFSError(ipfsHash))
     const parseClaim = (ipfsHash: string, serialized: string) => {
       try {
         const parsedJson = JSON.parse(serialized)

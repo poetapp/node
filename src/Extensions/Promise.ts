@@ -8,4 +8,4 @@ Promise.prototype.rethrow =
     return this.catch((error: any) => {
       throw translateError(error)
     })
-}
+  }
