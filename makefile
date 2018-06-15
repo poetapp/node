@@ -56,10 +56,10 @@ ipfs-gc:
 	docker exec poet-ipfs ipfs repo gc
 
 reset-storage:
-	docker exec -i poet-mongo mongo poet < ./queries/reset-storage.mongo
+	docker exec -i poet-mongo mongo --quiet poet < ./queries/reset-storage.mongo
 
 print-storage-errors:
-	docker exec -i poet-mongo mongo poet < ./queries/storage-errors.mongo
+	docker exec -i poet-mongo mongo --quiet poet < ./queries/storage-errors.mongo
 
 print-attempt-count:
-	docker exec -i poet-mongo mongo poet < ./queries/attempt-count.mongo
+	docker exec -i poet-mongo mongo --quiet poet < ./queries/attempt-count.mongo
