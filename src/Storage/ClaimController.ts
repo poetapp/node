@@ -4,7 +4,6 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { asyncPipe } from 'Helpers/AsyncPipe'
-import { isFetchTimeoutError } from 'Helpers/FetchError'
 import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds } from 'Helpers/Time'
 import { Exchange } from 'Messaging/Messages'
@@ -13,7 +12,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 import { FailureReason, FailureType } from './DownloadFailure'
 import { Entry } from './Entry'
-import { NoMoreEntriesException, InvalidClaim, IPFSGenericError, IPFSTimeoutError } from './Exceptions'
+import { NoMoreEntriesException, InvalidClaim, IPFSGenericError, IPFSTimeoutError, errorToIPFSError } from './Exceptions'
 import { IPFS } from './IPFS'
 
 @injectable()
@@ -211,15 +210,9 @@ export class ClaimController {
 
   private downloadEntryClaim = async ({ entry, ...rest }: { entry: Entry }) => {
     const { ipfsHash } = entry
-    const downloadClaim = async () => {
-      try {
-        return await this.ipfs.cat(ipfsHash)
-      } catch (error) {
-        if (isFetchTimeoutError(error)) throw new IPFSTimeoutError(ipfsHash)
-        else throw new IPFSGenericError(ipfsHash, error)
-      }
-    }
-    const parseClaim = (serialized: string) => {
+    const downloadClaim = async (ipfsHash: string) =>
+      this.ipfs.cat(ipfsHash).rethrow(errorToIPFSError(ipfsHash))
+    const parseClaim = (ipfsHash: string, serialized: string) => {
       try {
         const parsedJson = JSON.parse(serialized)
         return {
@@ -234,8 +227,8 @@ export class ClaimController {
 
     logger.trace({ ipfsHash }, 'Starting claim download')
 
-    const serialized = await downloadClaim()
-    const claim = parseClaim(serialized)
+    const serialized = await downloadClaim(ipfsHash)
+    const claim = parseClaim(ipfsHash, serialized)
 
     if (!isValidClaim(claim)) throw new InvalidClaim(ipfsHash, FailureReason.InvalidClaim)
 

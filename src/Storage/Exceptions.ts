@@ -1,5 +1,6 @@
 // tslint:disable:max-classes-per-file
 
+import { isFetchTimeoutError } from 'Helpers/FetchError'
 import { FailureReason } from './DownloadFailure'
 
 export class NoMoreEntriesException extends Error {
@@ -38,3 +39,8 @@ export class IPFSTimeoutError extends Error {
     this.ipfsHash = ipfsHash
   }
 }
+
+export const errorToIPFSError = (ipfsHash: string) => (error: Error) =>
+  isFetchTimeoutError(error)
+    ? new IPFSTimeoutError(ipfsHash)
+    : new IPFSGenericError(ipfsHash, error)
