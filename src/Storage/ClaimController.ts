@@ -210,7 +210,7 @@ export class ClaimController {
 
   private downloadEntryClaim = async ({ entry, ...rest }: { entry: Entry }) => {
     const { ipfsHash } = entry
-    const downloadClaim = async (ipfsHash: string) =>
+    const downloadClaim = (ipfsHash: string) =>
       this.ipfs.cat(ipfsHash).rethrow(errorToIPFSError(ipfsHash))
     const parseClaim = (ipfsHash: string, serialized: string) => {
       try {
