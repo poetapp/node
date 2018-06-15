@@ -6,7 +6,7 @@ This module is responsible for interacting with ipfs - managing uploads and down
 
 The following configuration properties affect the Storage Module:
 
-```json
+```js
 {
   "downloadIntervalInSeconds": 1,
   "downloadRetryDelayInMinutes": 1,
@@ -21,7 +21,7 @@ The Storage module uses the `storage` collection.
 
 Entries in the `storage` collection look like this:
 
-```json
+```js
 {
   "_id" : ObjectId("5b236c1551757306d975d6f8"),
   "ipfsHash" : "QmRcMsiG9FbfBomigXv4t67SURi877G8dFEzrhLCATC9fE",
@@ -33,7 +33,7 @@ Entries in the `storage` collection look like this:
 
 They can also look like this:
 
-```json
+```js
 {
   "_id" : ObjectId("5b236c1551757306d975d6ef"),
   "ipfsHash" : "QmNvLwsFPYQuCg2aXUvpUKzgQNAKfvenfjY8KqD29TzVwh",
