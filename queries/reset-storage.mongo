@@ -1,0 +1,5 @@
+db.storage.update(
+    {},
+    {$set: {claimId: null, failureReason: null, failureType: null, downloadAttempts: 0, lastDownloadAttemptTime: 0}},
+    {multi:1}
+)

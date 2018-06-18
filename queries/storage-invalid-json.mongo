@@ -1,0 +1,1 @@
+printjson(db.storage.find({claimId: null, failureReason: 'INVALID_JSON'}, {_id: 0, ipfsHash: 1}).toArray())

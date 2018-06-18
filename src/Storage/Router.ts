@@ -50,14 +50,14 @@ export class Router {
   }
 
   onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>): Promise<void> => {
-    this.logger.trace(
-      {
-        method: 'onPoetTimestampsDownloaded',
-        poetTimestamps,
-      },
-      'Downloading Claims from IPFS'
-    )
+    const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
 
-    await this.claimController.download(poetTimestamps.map(_ => _.ipfsHash))
+    logger.trace({ poetTimestamps }, 'Downloading Claims from IPFS')
+
+    try {
+      await this.claimController.download(poetTimestamps.map(_ => _.ipfsHash))
+    } catch (error) {
+      logger.error({ error }, 'Error downloading IPFS hashes')
+    }
   }
 }

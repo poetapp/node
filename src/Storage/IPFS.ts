@@ -39,7 +39,7 @@ export class IPFS {
     const response = await fetch(`${this.url}/api/v0/add`, {
       method: 'post',
       body: formData,
-      timeout: 1000,
+      timeout: 30000,
     })
 
     const json = await response.json()
