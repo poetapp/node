@@ -128,7 +128,7 @@ export class ClaimController {
       'Transaction Broadcasted'
     )
 
-    this.collection.updateOne({ ipfsHash }, { $set: { txId: tx.id } }, { upsert: true })
+    this.collection.updateOne({ ipfsHash, txId: null }, { $set: { txId: tx.id } }, { upsert: true })
     this.messaging.publish(Exchange.IPFSHashTxId, {
       ipfsHash,
       txId: tx.id,
