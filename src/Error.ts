@@ -6,7 +6,7 @@ if (!('toJSON' in Error.prototype))
         stack: this.stack && this.stack.split('\n'),
         message: this.message,
         code: this.code,
-        type: this.constructor.name,
+        type: this.type || this.constructor.name,
       }
     },
     configurable: true,

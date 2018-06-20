@@ -8,10 +8,10 @@ rabbit:
 	docker run -d --name poet-rabbit --hostname my-rabbit -p 5671-5672:5671-5672 rabbitmq:3
 
 ipfs:
-	docker run -d --name poet-ipfs -p 8080:8080 -p 4001:4001 -p 127.0.0.1:5001:5001 jbenet/go-ipfs:latest
+	docker run -d --name poet-ipfs -p 8080:8080 -p 4001:4001 -p 127.0.0.1:5001:5001 ipfs/go-ipfs:v0.4.15
 
 sh-mongo:
-	docker run -it --link poet-mongo:mongo --rm mongo sh -c 'exec mongo "$$MONGO_PORT_27017_TCP_ADDR:$$MONGO_PORT_27017_TCP_PORT/test"'
+	docker run -it --link poet-mongo:mongo --rm mongo sh -c 'exec mongo "$$MONGO_PORT_27017_TCP_ADDR:$$MONGO_PORT_27017_TCP_PORT/poet"'
 
 sh-ipfs:
 	docker exec -it poet-ipfs /bin/sh
@@ -48,3 +48,18 @@ image:
 
 push-image:
 	docker push $(IMAGE)
+
+ipfs-unpin-all:
+	docker exec poet-ipfs sh -c "ipfs pin ls --type recursive -q | xargs -n1 ipfs pin rm"
+
+ipfs-gc:
+	docker exec poet-ipfs ipfs repo gc
+
+reset-storage:
+	docker exec -i poet-mongo mongo --quiet poet < ./queries/reset-storage.mongo
+
+print-storage-errors:
+	docker exec -i poet-mongo mongo --quiet poet < ./queries/storage-errors.mongo
+
+print-attempt-count:
+	docker exec -i poet-mongo mongo --quiet poet < ./queries/attempt-count.mongo
