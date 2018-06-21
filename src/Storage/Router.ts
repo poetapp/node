@@ -28,8 +28,8 @@ export class Router {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.claimController = claimController
-    this.ipfs = ipfs
     this.directoryCollection = directoryCollection
+    this.ipfs = ipfs
   }
 
   async start() {
