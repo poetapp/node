@@ -8,26 +8,32 @@ interface Configuration {
 
 type addItems = (hashes: ReadonlyArray<string>) => Promise<any>
 
-type findItem = (options?: {
-  currentTime?: number,
-  retryDelay?: number,
-  maxAttempts?: number
-}) => Promise<any>
+type findItem = (
+  options?: {
+    currentTime?: number
+    retryDelay?: number
+    maxAttempts?: number
+  }
+) => Promise<any>
 
-type setSuccessTime = (options: {
-  hash: string,
-  time?: number,
-}) => Promise<any>
+type setSuccessTime = (
+  options: {
+    hash: string
+    time?: number
+  }
+) => Promise<any>
 
-type incAttempts = (options: {
-  hash: string,
-  time?: number,
-}) => Promise<any>
+type incAttempts = (
+  options: {
+    hash: string
+    time?: number
+  }
+) => Promise<any>
 
 export interface DirectoryCollection {
-  addItems: addItems,
-  findItem: findItem,
-  setSuccessTime: setSuccessTime,
+  addItems: addItems
+  findItem: findItem
+  setSuccessTime: setSuccessTime
   incAttempts: incAttempts
 }
 

@@ -7,13 +7,13 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
-import { createDirectoryCollection, DirectoryCollection } from './directoryCollection'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
 import { StorageConfiguration } from './StorageConfiguration'
+import { createDirectoryCollection, DirectoryCollection } from './directoryCollection'
 
 @injectable()
 export class Storage {
@@ -35,7 +35,9 @@ export class Storage {
     this.logger.info({ configuration: this.configuration }, 'Storage Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
-    this.directoryCollection = await createDirectoryCollection({ collection: this.dbConnection.collection('storageDirectories')});
+    this.directoryCollection = await createDirectoryCollection({
+      collection: this.dbConnection.collection('storageDirectories'),
+    })
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
@@ -54,7 +56,6 @@ export class Storage {
   }
 
   initializeContainer() {
-    
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
