@@ -7,8 +7,8 @@ import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
+import { DirectoryCollection } from './DirectoryCollection'
 import { IPFS } from './IPFS'
-import { DirectoryCollection } from './directoryCollection'
 
 @injectable()
 export class Router {

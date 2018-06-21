@@ -7,13 +7,13 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { createDirectoryCollection, DirectoryCollection } from './DirectoryCollection'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
 import { StorageConfiguration } from './StorageConfiguration'
-import { createDirectoryCollection, DirectoryCollection } from './directoryCollection'
 
 @injectable()
 export class Storage {
