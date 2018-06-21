@@ -7,7 +7,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
-import { DirectoryCollection } from './DirectoryCollection'
+import { createDirectoryCollection, DirectoryCollection } from './directoryCollection'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
@@ -24,6 +24,7 @@ export class Storage {
   private router: Router
   private messaging: Messaging
   private service: Service
+  private directoryCollection: DirectoryCollection
 
   constructor(configuration: StorageConfiguration) {
     this.configuration = configuration
@@ -34,6 +35,7 @@ export class Storage {
     this.logger.info({ configuration: this.configuration }, 'Storage Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
+    this.directoryCollection = await createDirectoryCollection({ collection: this.dbConnection.collection('storageDirectories')});
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
@@ -52,10 +54,11 @@ export class Storage {
   }
 
   initializeContainer() {
+    
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
-    this.container.bind<DirectoryCollection>('DirectoryCollection').to(DirectoryCollection)
+    this.container.bind<DirectoryCollection>('DirectoryCollection').toConstantValue(this.directoryCollection)
     this.container.bind<IPFS>('IPFS').to(IPFS)
     this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
       ipfsUrl: this.configuration.ipfsUrl,
@@ -78,8 +81,5 @@ export class Storage {
     const collection = this.dbConnection.collection('storage')
     await collection.createIndex({ ipfsHash: 1 }, { unique: true, name: 'ipfsHash-unique' })
     await collection.createIndex({ attempts: 1 }, { name: 'attempts' })
-    await this.dbConnection
-      .collection('storageDirectories')
-      .createIndex({ hash: 1 }, { unique: true, name: 'hash-unique' })
   }
 }

@@ -7,7 +7,7 @@ import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
-import { DirectoryCollection } from './DirectoryCollection'
+import { DirectoryCollection } from './directoryCollection'
 import { IPFS } from './IPFS'
 
 @injectable()
@@ -28,8 +28,8 @@ export class Router {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.claimController = claimController
-    this.directoryCollection = directoryCollection
     this.ipfs = ipfs
+    this.directoryCollection = directoryCollection
   }
 
   async start() {
