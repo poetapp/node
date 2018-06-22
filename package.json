@@ -13,7 +13,7 @@
     "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon dist/babel/src\"",
     "pretest": "npm run test-prepare-db",
     "test": "npm run test:unit && npm run test:integration",
-    "test:unit": "ts-node ./tests/unit/index.ts",
+    "test:unit": "ts-node --files ./tests/unit/index.ts",
     "test:integration": "nyc alsatian './dist/babel/test/Integration/**/*.js'",
     "coverage": "nyc --reporter=lcov report && echo Report created at ./coverage/lcov-report/index.html",
     "copy-json": "rsync -a --include '*/' --include '*.json' --exclude '*' src/ dist/ts/src",
@@ -68,7 +68,7 @@
     "nyc": "12.0.2",
     "riteway": "2.0.4",
     "sinon": "6.0.0",
-    "ts-node": "6.2.0",
+    "ts-node": "7.0.0",
     "typescript": "2.8.3"
   }
 }
