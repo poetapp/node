@@ -113,7 +113,7 @@ export class Router {
     logger.trace('Downloading IPFS claim hashes from IPFS Directory hash')
     try {
       const collectionItem = await this.directoryCollection.findIncompleteEntry()
-      // if (!collectionItem) return
+      if (!collectionItem) return
       const { ipfsHash: directoryHash } = collectionItem
       await this.directoryCollection.incAttempts({ ipfsHash: directoryHash })
       const fileHashes = await this.ipfs.getDirectoryFileHashes(directoryHash)
