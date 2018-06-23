@@ -72,7 +72,7 @@ export class Router {
       'Downloading Claims from IPFS'
     )
     try {
-      await this.directoryCollection.addItems(poetTimestamps.map(_ => _.ipfsHash))
+      await this.directoryCollection.addEntries(poetTimestamps)
     } catch (error) {
       logger.error({ error, poetTimestamps }, 'Failed to add directory hash to DB collection')
     }
@@ -112,13 +112,13 @@ export class Router {
     const logger = this.logger.child({ method: 'onStorageGetFilesHashesFromNextDirectoryRequest' })
     logger.trace('Downloading IPFS claim hashes from IPFS Directory hash')
     try {
-      const collectionItem = await this.directoryCollection.findItem()
-      if (!collectionItem) return
-      const { hash: directoryHash } = collectionItem
-      await this.directoryCollection.incAttempts({ hash: directoryHash })
+      const collectionItem = await this.directoryCollection.findIncompleteEntry()
+      // if (!collectionItem) return
+      const { ipfsHash: directoryHash } = collectionItem
+      await this.directoryCollection.incAttempts({ ipfsHash: directoryHash })
       const fileHashes = await this.ipfs.getDirectoryFileHashes(directoryHash)
       await this.claimController.download(fileHashes)
-      await this.directoryCollection.setSuccessTime({ hash: directoryHash })
+      await this.directoryCollection.setSuccessTime({ ipfsHash: directoryHash })
       this.messaging.publish(Exchange.StorageGetFilesHashesFromNextDirectorySuccess, { directoryHash, fileHashes })
     } catch (error) {
       logger.error({ error }, 'Error downloading IPFS claim hashes from IPFS Directory hash')

@@ -7,7 +7,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
-import { createDirectoryCollection, DirectoryCollection } from './DirectoryCollection'
+import { DirectoryCollection } from './DirectoryCollection'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
@@ -35,9 +35,8 @@ export class Storage {
     this.logger.info({ configuration: this.configuration }, 'Storage Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
-    this.directoryCollection = await createDirectoryCollection({
-      collection: this.dbConnection.collection('storageDirectories'),
-    })
+    this.directoryCollection = new DirectoryCollection(this.dbConnection.collection('storageDirectories'))
+    await this.directoryCollection.init()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()

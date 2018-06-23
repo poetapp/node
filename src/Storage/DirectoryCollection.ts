@@ -1,51 +1,48 @@
+import { inject, injectable } from 'inversify'
 import { Collection } from 'mongodb'
 
 import { minutesToMiliseconds } from 'Helpers/Time'
 
-interface Configuration {
-  collection: Collection
+export interface Entry {
+  _id?: string
+  attempts?: number
+  ipfsHash: string
+  lastAttemptTime?: number
+  successTime?: string
 }
 
-type addItems = (hashes: ReadonlyArray<string>) => Promise<any>
+type init = () => Promise<void>
 
-type findItem = (
+type addEntries = (entries: ReadonlyArray<{ ipfsHash: string }>) => Promise<any>
+
+type findIncompleteEntry = (
   options?: {
     currentTime?: number
     retryDelay?: number
     maxAttempts?: number
   }
-) => Promise<any>
+) => Promise<Entry>
 
-type setSuccessTime = (
-  options: {
-    hash: string
-    time?: number
+type setSuccessTime = (x: { ipfsHash: string; successTime?: number }) => Promise<any>
+
+type incAttempts = (x: { ipfsHash: string; lastAttemptTime?: number }) => Promise<any>
+
+@injectable()
+export class DirectoryCollection {
+  private readonly collection: Collection
+
+  constructor(@inject('collection') collection: Collection) {
+    this.collection = collection
   }
-) => Promise<any>
 
-type incAttempts = (
-  options: {
-    hash: string
-    time?: number
+  init: init = async () => {
+    await this.collection.createIndex({ ipfsHash: 1 }, { unique: true })
   }
-) => Promise<any>
 
-export interface DirectoryCollection {
-  addItems: addItems
-  findItem: findItem
-  setSuccessTime: setSuccessTime
-  incAttempts: incAttempts
-}
-
-type createDirectoryCollection = (configuration: Configuration) => Promise<DirectoryCollection>
-
-export const createDirectoryCollection: createDirectoryCollection = async ({ collection }) => {
-  await collection.createIndex({ hash: 1 }, { unique: true })
-
-  const addItems: addItems = (hashes = []) =>
-    collection.insertMany(
-      hashes.map(hash => ({
-        hash,
+  addEntries: addEntries = (entries = []) =>
+    this.collection.insertMany(
+      entries.map((entry: Entry) => ({
+        ipfsHash: entry.ipfsHash,
         lastAttemptTime: null,
         successTime: null,
         attempts: 0,
@@ -53,13 +50,13 @@ export const createDirectoryCollection: createDirectoryCollection = async ({ col
       { ordered: false }
     )
 
-  const findItem: findItem = ({
+  findIncompleteEntry: findIncompleteEntry = ({
     currentTime = new Date().getTime(),
     retryDelay = minutesToMiliseconds(20),
     maxAttempts = 20,
   } = {}) =>
-    collection.findOne({
-      hash: { $exists: true },
+    this.collection.findOne({
+      ipfsHash: { $exists: true },
       $and: [
         {
           $or: [
@@ -77,27 +74,20 @@ export const createDirectoryCollection: createDirectoryCollection = async ({ col
       ],
     })
 
-  const setSuccessTime: setSuccessTime = ({ hash = '', time = new Date().getTime() }) =>
-    collection.updateOne(
-      { hash },
+  setSuccessTime: setSuccessTime = ({ ipfsHash, successTime = new Date().getTime() }) =>
+    this.collection.updateOne(
+      { ipfsHash },
       {
-        $set: { successTime: time },
+        $set: { successTime },
       }
     )
 
-  const incAttempts: incAttempts = ({ hash = '', time = new Date().getTime() }) =>
-    collection.updateOne(
-      { hash },
+  incAttempts: incAttempts = ({ ipfsHash, lastAttemptTime = new Date().getTime() }) =>
+    this.collection.updateOne(
+      { ipfsHash },
       {
-        $set: { lastAttemptTime: time },
+        $set: { lastAttemptTime },
         $inc: { attempts: 1 },
       }
     )
-
-  return {
-    addItems,
-    findItem,
-    setSuccessTime,
-    incAttempts,
-  }
 }
