@@ -69,6 +69,6 @@ export class BlockchainWriter {
 
   private async createIndices() {
     const collection = this.dbConnection.collection('blockchainWriter')
-    collection.createIndex({ ipfsHash: 1 }, { unique: true })
+    await collection.createIndex({ ipfsHash: 1 }, { unique: true })
   }
 }
