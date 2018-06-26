@@ -44,6 +44,8 @@ export class BlockchainWriter {
     this.service = this.container.get('Service')
     await this.service.start()
 
+    await this.createIndices()
+
     this.logger.info('BlockchainWriter Started')
   }
 
@@ -63,5 +65,9 @@ export class BlockchainWriter {
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       timestampIntervalInSeconds: this.configuration.timestampIntervalInSeconds,
     })
+  }
+
+  private async createIndices() {
+    this.dbConnection.collection('blockchainWriter').createIndex({ ipfsHash: 1 }, { unique: true })
   }
 }
