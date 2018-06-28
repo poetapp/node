@@ -1,6 +1,6 @@
 /* tslint:disable:no-relative-imports */
 
-import { describe, Try } from 'riteway'
+import { describe } from 'riteway'
 
 import './Promise'
 
