@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify'
-import { Collection } from 'mongodb'
+import { Collection, InsertWriteOpResult } from 'mongodb'
 
+import { ErrorCodes } from 'Helpers/MongoDB'
 import { minutesToMiliseconds } from 'Helpers/Time'
 
 export interface Entry {
@@ -11,9 +12,9 @@ export interface Entry {
   successTime?: string
 }
 
-type init = () => Promise<void>
+type start = () => Promise<void>
 
-type addEntries = (xs: ReadonlyArray<{ ipfsHash: string }>) => Promise<any>
+type addEntries = (xs: ReadonlyArray<{ ipfsHash: string }>) => Promise<InsertWriteOpResult>
 
 type findNextEntry = (
   options?: {
@@ -35,22 +36,24 @@ export class DirectoryCollection {
     this.collection = collection
   }
 
-  init: init = async () => {
+  readonly start: start = async () => {
     await this.collection.createIndex({ ipfsHash: 1 }, { unique: true })
   }
 
-  addEntries: addEntries = (entries = []) =>
-    this.collection.insertMany(
-      entries.map((entry: Entry) => ({
-        ipfsHash: entry.ipfsHash,
-        lastAttemptTime: null,
-        successTime: null,
-        attempts: 0,
-      })),
-      { ordered: false }
-    )
+  readonly addEntries: addEntries = async (entries = []) =>
+    this.collection
+      .insertMany(
+        entries.map((entry: Entry) => ({
+          ipfsHash: entry.ipfsHash,
+          lastAttemptTime: null,
+          successTime: null,
+          attempts: 0,
+        })),
+        { ordered: false }
+      )
+      .ignoreError(error => error.code === ErrorCodes.DuplicateKey)
 
-  findNextEntry: findNextEntry = ({
+  readonly findNextEntry: findNextEntry = ({
     currentTime = new Date().getTime(),
     retryDelay = minutesToMiliseconds(20),
     maxAttempts = 20,
@@ -74,7 +77,7 @@ export class DirectoryCollection {
       ],
     })
 
-  setEntrySuccessTime: setEntrySuccessTime = ({ ipfsHash, successTime = new Date().getTime() }) =>
+  readonly setEntrySuccessTime: setEntrySuccessTime = ({ ipfsHash, successTime = new Date().getTime() }) =>
     this.collection.updateOne(
       { ipfsHash },
       {
@@ -82,7 +85,7 @@ export class DirectoryCollection {
       }
     )
 
-  incEntryAttempts: incEntryAttempts = ({ ipfsHash, lastAttemptTime = new Date().getTime() }) =>
+  readonly incEntryAttempts: incEntryAttempts = ({ ipfsHash, lastAttemptTime = new Date().getTime() }) =>
     this.collection.updateOne(
       { ipfsHash },
       {

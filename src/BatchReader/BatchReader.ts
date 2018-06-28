@@ -1,4 +1,4 @@
-import { injectable, Container } from 'inversify'
+import { Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 
@@ -13,7 +13,6 @@ import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
-@injectable()
 export class BatchReader {
   private readonly logger: Pino.Logger
   private readonly configuration: BatchReaderConfiguration
@@ -35,7 +34,7 @@ export class BatchReader {
     this.dbConnection = await mongoClient.db()
 
     this.directoryCollection = new DirectoryCollection(this.dbConnection.collection('batchReader'))
-    await this.directoryCollection.init()
+    await this.directoryCollection.start()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
