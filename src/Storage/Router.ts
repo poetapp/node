@@ -1,4 +1,4 @@
-import { isClaim, PoetTimestamp } from '@po.et/poet-js'
+import { isClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
@@ -26,7 +26,10 @@ export class Router {
 
   async start() {
     await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
-    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetTimestampsDownloaded)
+    await this.messaging.consume(
+      Exchange.BatchReaderReadNextDirectorySuccess,
+      this.onBatchReaderReadNextDirectorySuccess
+    )
   }
 
   onNewClaim = async (message: any): Promise<void> => {
@@ -49,13 +52,16 @@ export class Router {
     }
   }
 
-  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>): Promise<void> => {
+  onBatchReaderReadNextDirectorySuccess = async (message: any): Promise<void> => {
     const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
 
-    logger.trace({ poetTimestamps }, 'Downloading Claims from IPFS')
+    const messageContent = message.content.toString()
+    const { fileHashes } = JSON.parse(messageContent)
+
+    logger.trace({ fileHashes }, 'Downloading Claims from IPFS')
 
     try {
-      await this.claimController.download(poetTimestamps.map(_ => _.ipfsHash))
+      await this.claimController.download(fileHashes)
     } catch (error) {
       logger.error({ error }, 'Error downloading IPFS hashes')
     }

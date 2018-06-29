@@ -5,6 +5,7 @@ import * as Pino from 'pino'
 
 import { asyncPipe } from 'Helpers/AsyncPipe'
 import { childWithFileName } from 'Helpers/Logging'
+import { ErrorCodes } from 'Helpers/MongoDB'
 import { minutesToMiliseconds } from 'Helpers/Time'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
@@ -81,7 +82,7 @@ export class ClaimController {
         { ordered: false }
       )
     } catch (exception) {
-      if (exception.code !== 11000) throw exception
+      if (exception.code !== ErrorCodes.DuplicateKey) throw exception
       logger.trace({ exception }, 'Duplicate IPFS hash')
     }
   }
