@@ -51,9 +51,18 @@ export class Router {
     }
   }
 
-  onBatchReaderReadNextDirectoryRequest = async (message: any) => {
+  onBatchReaderReadNextDirectoryRequest = async () => {
     const logger = this.logger.child({ method: 'onBatchReaderReadNextDirectoryRequest' })
-    logger.trace('Downloading IPFS claim hashes from IPFS Directory hash')
+    logger.trace('Read next directory request')
+    try {
+      const { fileHashes, directoryHash } = await this.readNextDirectory()
+      logger.trace('Read next directory success', { directoryHash, fileHashes })
+    } catch (error) {
+      logger.error('Read next directory failure', { error })
+    }
+  }
+
+  readNextDirectory = async (): Promise<{ directoryHash: string; fileHashes: ReadonlyArray<string> }> => {
     try {
       const collectionItem = await this.directoryCollection.findNextEntry()
       if (!collectionItem) return
@@ -61,10 +70,10 @@ export class Router {
       await this.directoryCollection.incEntryAttempts({ ipfsHash: directoryHash })
       const fileHashes = await this.ipfs.getDirectoryFileHashes(directoryHash)
       await this.directoryCollection.setEntrySuccessTime({ ipfsHash: directoryHash })
-      this.messaging.publish(Exchange.BatchReaderReadNextDirectorySuccess, { directoryHash, fileHashes })
+      await this.messaging.publish(Exchange.BatchReaderReadNextDirectorySuccess, { directoryHash, fileHashes })
+      return { directoryHash, fileHashes }
     } catch (error) {
-      logger.error({ error }, 'Error downloading IPFS claim hashes from IPFS Directory hash')
-      this.messaging.publish(Exchange.BatchReaderReadNextDirectoryFailure, { error })
+      await this.messaging.publish(Exchange.BatchReaderReadNextDirectoryFailure, { error })
     }
   }
 }

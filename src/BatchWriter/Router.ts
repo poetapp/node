@@ -53,46 +53,67 @@ export class Router {
 
   onBatchWriterCreateNextBatchRequest = async (message: any) => {
     const logger = this.logger.child({ method: 'onBatchWriterCreateNextBatchRequest' })
+    logger.trace('Creat next batch request')
+    try {
+      const { fileHashes, directoryHash } = await this.createNextBatch()
+      logger.trace('Create next batch success', { fileHashes, directoryHash })
+    } catch (error) {
+      logger.error('Create next batch failure', { error })
+    }
+  }
 
-    logger.trace('Batch file hashes request')
+  createNextBatch = async (): Promise<{ fileHashes: ReadonlyArray<string>; directoryHash: string }> => {
     try {
       const items = await this.fileHashCollection.findNextEntries()
       const fileHashes = items.map(x => x.ipfsHash)
       const emptyDirectoryHash = await this.ipfs.createEmptyDirectory()
       const directoryHash = await this.ipfs.addFilesToDirectory({ directoryHash: emptyDirectoryHash, fileHashes })
-      this.messaging.publish(Exchange.BatchWriterCreateNextBatchSuccess, { fileHashes, directoryHash })
-      logger.trace('Batch file hashes success', { fileHashes, directoryHash })
+      await this.messaging.publish(Exchange.BatchWriterCreateNextBatchSuccess, { fileHashes, directoryHash })
+      return { fileHashes, directoryHash }
     } catch (error) {
-      logger.error(
-        {
-          error,
-        },
-        'Batch file hashes failure'
-      )
-      this.messaging.publish(Exchange.BatchWriterCreateNextBatchFailure, {
+      await this.messaging.publish(Exchange.BatchWriterCreateNextBatchFailure, {
         error,
       })
     }
   }
 
-  onBlockchainWriterTimestampSuccess = (message: any): void => {
+  onBlockchainWriterTimestampSuccess = async (message: any): Promise<void> => {
+    const logger = this.logger.child({ method: 'onBatchWriterCompleteHashesRequest' })
     const messageContent = message.content.toString()
     const { fileHashes, directoryHash } = JSON.parse(messageContent)
-    this.messaging.publish(Exchange.BatchWriterCompleteHashesRequest, { fileHashes, directoryHash })
+    try {
+      await this.messaging.publish(Exchange.BatchWriterCompleteHashesRequest, { fileHashes, directoryHash })
+    } catch (error) {
+      logger.error('Failed to publish BatchWriterCompleteHashesRequest')
+    }
   }
 
   onBatchWriterCompleteHashesRequest = async (message: any): Promise<void> => {
     const logger = this.logger.child({ method: 'onBatchWriterCompleteHashesRequest' })
     const messageContent = message.content.toString()
     const { fileHashes, directoryHash } = JSON.parse(messageContent)
-    logger.trace('Marking hashes as complete', { fileHashes, directoryHash })
+    logger.trace('Mark hashes complete reqeust', { fileHashes, directoryHash })
+    try {
+      await this.completeHashes({ fileHashes, directoryHash })
+      await this.fileHashCollection.setEntrySuccessTimes(fileHashes.map((ipfsHash: string) => ({ ipfsHash })))
+      logger.trace('Mark hashes complete success', { fileHashes, directoryHash })
+    } catch (error) {
+      logger.error('Mark hashes complete failure', { error, fileHashes, directoryHash })
+    }
+  }
+
+  completeHashes = async ({
+    fileHashes,
+    directoryHash,
+  }: {
+    fileHashes: ReadonlyArray<string>
+    directoryHash: string
+  }): Promise<void> => {
     try {
       await this.fileHashCollection.setEntrySuccessTimes(fileHashes.map((ipfsHash: string) => ({ ipfsHash })))
-      this.messaging.publish(Exchange.BatchWriterCompleteHashesSuccess, { fileHashes, directoryHash })
-      logger.trace('Successfully mark hashes as complete', { fileHashes, directoryHash })
+      await this.messaging.publish(Exchange.BatchWriterCompleteHashesSuccess, { fileHashes, directoryHash })
     } catch (error) {
-      logger.error({ error }, 'Failed to mark hashes as complete', { fileHashes, directoryHash })
-      this.messaging.publish(Exchange.BatchWriterCompleteHashesFailure, { error, fileHashes, directoryHash })
+      await this.messaging.publish(Exchange.BatchWriterCompleteHashesFailure, { error, fileHashes, directoryHash })
     }
   }
 }

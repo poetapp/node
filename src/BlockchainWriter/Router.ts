@@ -29,40 +29,51 @@ export class Router {
   }
 
   onBatchWriterCreateNextBatchSuccess = async (message: any): Promise<void> => {
+    const logger = this.logger.child({ method: 'onBatchWriterCreateNextBatchSuccess' })
     const messageContent = message.content.toString()
     const { fileHashes, directoryHash } = JSON.parse(messageContent)
-    if (fileHashes.length > 0)
-      this.messaging.publish(Exchange.BlockchainWriterTimestampRequest, { fileHashes, directoryHash })
+    try {
+      if (fileHashes.length > 0)
+        await this.messaging.publish(Exchange.BlockchainWriterTimestampRequest, { fileHashes, directoryHash })
+    } catch (error) {
+      logger.error('Failed to publish BlockchainWriterTimestampRequest')
+    }
   }
 
   onBlockchainWriterTimestampRequest = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onClaimIPFSHash' })
+    const logger = this.logger.child({ method: 'onBlockchainWriterTimestampRequest' })
 
     const messageContent = message.content.toString()
     const { fileHashes, directoryHash } = JSON.parse(messageContent)
 
-    logger.trace(
-      {
-        fileHashes,
-        directoryHash,
-      },
-      'Timestamping requested'
-    )
+    logger.trace('Timestamp request', {
+      fileHashes,
+      directoryHash,
+    })
 
     try {
+      await this.createTimestampRequest({ fileHashes, directoryHash })
+      logger.trace('Timestamp request success', { fileHashes, directoryHash })
+    } catch (error) {
+      logger.error('Timestamp request failure', {
+        error,
+        directoryHash,
+        fileHashes,
+      })
+    }
+  }
+  createTimestampRequest = async ({
+    fileHashes,
+    directoryHash,
+  }: {
+    fileHashes: ReadonlyArray<string>
+    directoryHash: string
+  }): Promise<void> => {
+    try {
       await this.claimController.requestTimestamp(directoryHash)
-      this.messaging.publish(Exchange.BlockchainWriterTimestampSuccess, { fileHashes, directoryHash })
-      logger.trace('time stamping success', { fileHashes, directoryHash })
-    } catch (exception) {
-      logger.error(
-        {
-          exception,
-          directoryHash,
-          fileHashes,
-        },
-        'Uncaught Exception while requesting timestamp'
-      )
-      this.messaging.publish(Exchange.BlockchainWriterTimestampFailure, { error: exception, fileHashes, directoryHash })
+      await this.messaging.publish(Exchange.BlockchainWriterTimestampSuccess, { fileHashes, directoryHash })
+    } catch (error) {
+      await this.messaging.publish(Exchange.BlockchainWriterTimestampFailure, { error, fileHashes, directoryHash })
     }
   }
 }
