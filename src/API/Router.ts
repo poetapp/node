@@ -7,21 +7,21 @@ import {
   NotFoundException,
 } from '@po.et/poet-js'
 import { injectable, inject } from 'inversify'
+import * as Joi from 'joi'
 import * as Koa from 'koa'
 import * as KoaBody from 'koa-body'
 import * as KoaCors from 'koa-cors'
 import * as helmet from 'koa-helmet'
 import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
-import * as Joi from 'joi'
 
 import { childWithFileName } from 'Helpers/Logging'
 
 import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
-import { ValidateMiddleware } from './ValidateMiddleware'
 import { LoggerMiddleware } from './LoggerMiddleware'
 import { RouterConfiguration } from './RouterConfiguration'
 import { SecurityHeaders } from './SecurityHeaders'
+import { ValidateMiddleware } from './ValidateMiddleware'
 import { WorkController } from './WorkController'
 
 @injectable()
@@ -42,11 +42,11 @@ export class Router {
     this.workController = workController
 
     const getWorksSchema = () => ({
-      id: Joi.string().required()
+      id: Joi.string().required(),
     })
 
     const getWorkSchema = () => ({
-      publicKey: Joi.string().required()
+      publicKey: Joi.string().required(),
     })
 
     this.koaRouter.get('/works/:id', ValidateMiddleware({ params: getWorksSchema }), this.getWork)

@@ -1,5 +1,4 @@
 import * as Joi from 'joi'
-import * as Koa from 'koa'
 
 interface ValidateParams {
   readonly query?: (values: object) => {}
