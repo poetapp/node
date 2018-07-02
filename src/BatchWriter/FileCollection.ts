@@ -4,18 +4,18 @@ import { Collection } from 'mongodb'
 export interface Entry {
   _id?: string
   ipfsHash: string
-  successTime?: string
+  successTime?: number // Q: why was string?
 }
 
-type init = () => Promise<void>
+type start = () => Promise<void>
 
 type addEntry = (x: { ipfsHash: string }) => Promise<any>
 
 type findNextEntries = () => Promise<ReadonlyArray<Entry>>
 
-type setEntrySuccessTime = (x: { ipfsHash: string; successTime?: number }) => Promise<any>
+type setEntrySuccessTime = (x: Entry) => Promise<any>
 
-type setEntrySuccessTimes = (xs: ReadonlyArray<{ ipfsHash: string; successTime?: number }>) => Promise<any>
+type setEntrySuccessTimes = (xs: ReadonlyArray<Entry>) => Promise<any>
 
 @injectable()
 export class FileCollection {
@@ -25,11 +25,12 @@ export class FileCollection {
     this.collection = collection
   }
 
-  init: init = async () => {
+  start: start = async () => {
     await this.collection.createIndex({ ipfsHash: 1 }, { unique: true })
   }
 
-  addEntry: addEntry = ({ ipfsHash = '' }) => this.collection.insertOne({ ipfsHash, successTime: null })
+  // Q: advantage of default value for ipfsHash?
+  addEntry: addEntry = ({ ipfsHash }) => this.collection.insertOne({ ipfsHash, successTime: null })
 
   findNextEntries: findNextEntries = () =>
     this.collection.find({ successTime: null }, { fields: { _id: false, ipfsHash: true } }).toArray()

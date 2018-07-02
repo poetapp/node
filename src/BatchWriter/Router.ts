@@ -51,32 +51,31 @@ export class Router {
     }
   }
 
-  onBatchWriterCreateNextBatchRequest = async (message: any) => {
+  onBatchWriterCreateNextBatchRequest = async () => {
     const logger = this.logger.child({ method: 'onBatchWriterCreateNextBatchRequest' })
-    logger.trace('Creat next batch request')
+    logger.trace('Create next batch request')
     try {
       const { fileHashes, directoryHash } = await this.createNextBatch()
       logger.trace({ fileHashes, directoryHash }, 'Create next batch success')
+      await this.messaging.publish(Exchange.BatchWriterCreateNextBatchSuccess, { fileHashes, directoryHash })
     } catch (error) {
       logger.error({ error }, 'Create next batch failure')
-    }
-  }
-
-  createNextBatch = async (): Promise<{ fileHashes: ReadonlyArray<string>; directoryHash: string }> => {
-    try {
-      const items = await this.fileHashCollection.findNextEntries()
-      const fileHashes = items.map(x => x.ipfsHash)
-      const emptyDirectoryHash = await this.ipfs.createEmptyDirectory()
-      const directoryHash = await this.ipfs.addFilesToDirectory({ directoryHash: emptyDirectoryHash, fileHashes })
-      await this.messaging.publish(Exchange.BatchWriterCreateNextBatchSuccess, { fileHashes, directoryHash })
-      return { fileHashes, directoryHash }
-    } catch (error) {
       await this.messaging.publish(Exchange.BatchWriterCreateNextBatchFailure, {
         error,
       })
     }
   }
 
+  // This method should live in a controller, not a router
+  createNextBatch = async (): Promise<{ fileHashes: ReadonlyArray<string>; directoryHash: string }> => {
+    const items = await this.fileHashCollection.findNextEntries()
+    const fileHashes = items.map(({ ipfsHash }) => ipfsHash)
+    const emptyDirectoryHash = await this.ipfs.createEmptyDirectory()
+    const directoryHash = await this.ipfs.addFilesToDirectory({ directoryHash: emptyDirectoryHash, fileHashes })
+    return { fileHashes, directoryHash }
+  }
+
+  // Q: what advantage does this method give us? it simple re-publishes a message, but with a different name
   onBlockchainWriterTimestampSuccess = async (message: any): Promise<void> => {
     const logger = this.logger.child({ method: 'onBatchWriterCompleteHashesRequest' })
     const messageContent = message.content.toString()
@@ -88,11 +87,15 @@ export class Router {
     }
   }
 
+  // A: onBlockchainWriterTimestampSuccess is a routing method, onBatchWriterCompleteHashesRequest is a saga
+  // routing and sagas must be kept apart.
+  // can't use RMQ for in-module communication. use something in-memory, same as redux-saga.
+  // otherwise won't scale.
   onBatchWriterCompleteHashesRequest = async (message: any): Promise<void> => {
     const logger = this.logger.child({ method: 'onBatchWriterCompleteHashesRequest' })
     const messageContent = message.content.toString()
     const { fileHashes, directoryHash } = JSON.parse(messageContent)
-    logger.trace({ fileHashes, directoryHash }, 'Mark hashes complete reqeust')
+    logger.trace({ fileHashes, directoryHash }, 'Mark hashes complete request')
     try {
       await this.completeHashes({ fileHashes, directoryHash })
       await this.fileHashCollection.setEntrySuccessTimes(fileHashes.map((ipfsHash: string) => ({ ipfsHash })))
@@ -102,7 +105,9 @@ export class Router {
     }
   }
 
-  completeHashes = async ({
+  // We don't really need a separate method for this
+  // It's perfectly fine to call and await something from a saga
+  private completeHashes = async ({
     fileHashes,
     directoryHash,
   }: {
