@@ -4,7 +4,7 @@ import { spy } from 'sinon'
 
 import { RequestValidationMiddleware } from './RequestValidationMiddleware'
 
-describe('ValidateMiddleware', async (should: any) => {
+describe('RequestValidationMiddleware', async (should: any) => {
   const { assert } = should('')
 
   const name = 'Jon Doe'
