@@ -122,4 +122,12 @@ export class GetWorksByPublicKey {
       Expect(claims[i].dateCreated.toISOString()).toBe(expectedClaims[i].dateCreated.toISOString())
     }
   }
+
+  @AsyncTest()
+  @TestCase('')
+  async getWorks422(publicKey: string) {
+    const response = await this.client.getWorksByPublicKey(publicKey)
+
+    Expect(response.status).toBe(422)
+  }
 }

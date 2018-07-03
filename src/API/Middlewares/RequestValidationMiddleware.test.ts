@@ -80,43 +80,45 @@ describe('RequestValidationMiddleware', async (should: any) => {
     const throwSpy = spy()
     const context = { ...ctx, ...{ throw: throwSpy } }
 
-    await RequestValidationMiddleware({ body: invalidSchema })(context, next)
-
-    assert({
-      given: 'invalid schema for validating body request',
-      should: 'called throw',
-      actual: context.throw.calledOnce,
-      expected: true,
-    })
+    try {
+      await RequestValidationMiddleware({ body: invalidSchema })(context, next)
+    } catch(e) {
+      assert({
+        given: 'invalid schema for validating body request',
+        should: 'throw new error message',
+        actual: e.message,
+        expected: 'ValidationError: child "name" fails because ["name" must be a number]',
+      })
+    }
   }
 
   {
     const next = spy()
-    const throwSpy = spy()
-    const context = { ...ctx, ...{ throw: throwSpy } }
 
-    await RequestValidationMiddleware({ params: invalidSchema })(context, next)
-
-    assert({
-      given: 'invalid schema for validating params request',
-      should: 'called throw',
-      actual: context.throw.calledOnce,
-      expected: true,
-    })
+    try {
+      await RequestValidationMiddleware({ params: invalidSchema })(ctx, next)
+    } catch(e) {
+      assert({
+        given: 'invalid schema for validating params request',
+        should: 'throw new error message',
+        actual: e.message,
+        expected: 'ValidationError: child "name" fails because ["name" must be a number]',
+      })
+    }
   }
 
   {
     const next = spy()
-    const throwSpy = spy()
-    const context = { ...ctx, ...{ throw: throwSpy } }
 
-    await RequestValidationMiddleware({ query: invalidSchema })(context, next)
-
-    assert({
-      given: 'invalid schema for validating query request',
-      should: 'called throw',
-      actual: context.throw.calledOnce,
-      expected: true,
-    })
+    try {
+      await RequestValidationMiddleware({ query: invalidSchema })(ctx, next)
+    } catch(e) {
+      assert({
+        given: 'invalid schema for validating query request',
+        should: 'throw new error message',
+        actual: e.message,
+        expected: 'ValidationError: child "name" fails because ["name" must be a number]',
+      })
+    }
   }
 })

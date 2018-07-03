@@ -1,5 +1,5 @@
 import * as Joi from 'joi'
-
+import { IllegalArgumentException } from '@po.et/poet-js'
 interface RequestValidationParams {
   readonly query?: (values: object) => {}
   readonly body?: (values: object) => {}
@@ -22,6 +22,6 @@ export const RequestValidationMiddleware = (requestValidationParams: RequestVali
     if (context.logger)
       context.logger.error({ exception }, 'Error Caught at Middleware - Will Return Internal Server Error')
 
-    return context.throw(422, exception)
+    throw new IllegalArgumentException(exception)
   }
 }
