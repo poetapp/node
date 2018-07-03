@@ -1,15 +1,18 @@
 import * as Joi from 'joi'
 
-interface ValidateParams {
+interface RequestValidationParams {
   readonly query?: (values: object) => {}
   readonly body?: (values: object) => {}
   readonly params?: (values: object) => {}
   readonly options?: object
 }
 
-export const ValidateMiddleware = (data: ValidateParams) => async (context: any, next: () => Promise<any>) => {
+export const RequestValidationMiddleware = (requestValidationParams: RequestValidationParams) => async (
+  context: any,
+  next: () => Promise<any>
+) => {
   try {
-    const { query, body, params, options } = data
+    const { query, body, params, options } = requestValidationParams
     /* tslint:disable:no-unused-expression */
     body && (await Joi.validate(context.request.body, body(context.request.body), options))
     query && (await Joi.validate(context.query, query(context.query), options))

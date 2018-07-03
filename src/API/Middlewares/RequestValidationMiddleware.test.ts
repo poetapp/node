@@ -2,7 +2,7 @@ import * as Joi from 'joi'
 import { describe } from 'riteway'
 import { spy } from 'sinon'
 
-import { ValidateMiddleware } from './ValidateMiddleware'
+import { RequestValidationMiddleware } from './RequestValidationMiddleware'
 
 describe('ValidateMiddleware', async (should: any) => {
   const { assert } = should('')
@@ -26,7 +26,7 @@ describe('ValidateMiddleware', async (should: any) => {
   {
     const next = spy()
 
-    await ValidateMiddleware({ body: schema })(ctx, next)
+    await RequestValidationMiddleware({ body: schema })(ctx, next)
 
     assert({
       given: 'valid schema for validating body request',
@@ -39,7 +39,7 @@ describe('ValidateMiddleware', async (should: any) => {
   {
     const next = spy()
 
-    await ValidateMiddleware({ query: schema })(ctx, next)
+    await RequestValidationMiddleware({ query: schema })(ctx, next)
 
     assert({
       given: 'valid schema for validating query request',
@@ -52,7 +52,7 @@ describe('ValidateMiddleware', async (should: any) => {
   {
     const next = spy()
 
-    await ValidateMiddleware({ params: schema })(ctx, next)
+    await RequestValidationMiddleware({ params: schema })(ctx, next)
 
     assert({
       given: 'valid schema for validating params request',
@@ -65,7 +65,7 @@ describe('ValidateMiddleware', async (should: any) => {
   {
     const next = spy()
 
-    await ValidateMiddleware({ body: schema, query: schema, params: schema })(ctx, next)
+    await RequestValidationMiddleware({ body: schema, query: schema, params: schema })(ctx, next)
 
     assert({
       given: 'valid schema for validating body, params and query request together',
@@ -80,7 +80,7 @@ describe('ValidateMiddleware', async (should: any) => {
     const throwSpy = spy()
     const context = { ...ctx, ...{ throw: throwSpy } }
 
-    await ValidateMiddleware({ body: invalidSchema })(context, next)
+    await RequestValidationMiddleware({ body: invalidSchema })(context, next)
 
     assert({
       given: 'invalid schema for validating body request',
@@ -95,7 +95,7 @@ describe('ValidateMiddleware', async (should: any) => {
     const throwSpy = spy()
     const context = { ...ctx, ...{ throw: throwSpy } }
 
-    await ValidateMiddleware({ params: invalidSchema })(context, next)
+    await RequestValidationMiddleware({ params: invalidSchema })(context, next)
 
     assert({
       given: 'invalid schema for validating params request',
@@ -110,7 +110,7 @@ describe('ValidateMiddleware', async (should: any) => {
     const throwSpy = spy()
     const context = { ...ctx, ...{ throw: throwSpy } }
 
-    await ValidateMiddleware({ query: invalidSchema })(context, next)
+    await RequestValidationMiddleware({ query: invalidSchema })(context, next)
 
     assert({
       given: 'invalid schema for validating query request',

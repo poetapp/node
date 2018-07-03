@@ -17,11 +17,11 @@ import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
-import { LoggerMiddleware } from './LoggerMiddleware'
+import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
+import { LoggerMiddleware } from './Middlewares/LoggerMiddleware'
+import { RequestValidationMiddleware } from './Middlewares/RequestValidationMiddleware'
 import { RouterConfiguration } from './RouterConfiguration'
 import { SecurityHeaders } from './SecurityHeaders'
-import { ValidateMiddleware } from './ValidateMiddleware'
 import { WorkController } from './WorkController'
 
 @injectable()
@@ -49,8 +49,8 @@ export class Router {
       publicKey: Joi.string().required(),
     })
 
-    this.koaRouter.get('/works/:id', ValidateMiddleware({ params: getWorksSchema }), this.getWork)
-    this.koaRouter.get('/works', ValidateMiddleware({ query: getWorkSchema }), this.getWorks)
+    this.koaRouter.get('/works/:id', RequestValidationMiddleware({ params: getWorksSchema }), this.getWork)
+    this.koaRouter.get('/works', RequestValidationMiddleware({ query: getWorkSchema }), this.getWorks)
     this.koaRouter.post('/works', this.postWork)
 
     this.koa.use(helmet(SecurityHeaders))
