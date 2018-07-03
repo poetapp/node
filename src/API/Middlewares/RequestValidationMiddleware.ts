@@ -1,5 +1,5 @@
-import * as Joi from 'joi'
 import { IllegalArgumentException } from '@po.et/poet-js'
+import * as Joi from 'joi'
 interface RequestValidationParams {
   readonly query?: (values: object) => {}
   readonly body?: (values: object) => {}
