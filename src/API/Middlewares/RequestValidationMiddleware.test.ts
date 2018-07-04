@@ -117,7 +117,7 @@ describe('RequestValidationMiddleware', async (should: any) => {
         given: 'invalid schema for validating query request',
         should: 'throw new error message',
         actual: e.message,
-        expected: 'ValidationError: child "name" fails because ["name" must be a number]',
+        expected: 'child "name" fails because ["name" must be a number]',
       })
     }
   }
