@@ -41,13 +41,13 @@ export class Router {
     this.configuration = configuration
     this.workController = workController
 
-    const getWorksSchema = ({
+    const getWorksSchema = {
       id: Joi.string().required(),
-    })
+    }
 
-    const getWorkSchema = ({
+    const getWorkSchema = {
       publicKey: Joi.string().required(),
-    })
+    }
 
     this.koaRouter.get('/works/:id', RequestValidationMiddleware({ params: getWorksSchema }), this.getWork)
     this.koaRouter.get('/works', RequestValidationMiddleware({ query: getWorkSchema }), this.getWorks)
