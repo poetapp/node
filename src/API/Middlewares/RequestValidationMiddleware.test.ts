@@ -9,11 +9,11 @@ describe('RequestValidationMiddleware', async (should: any) => {
 
   const name = 'Jon Doe'
 
-  const schema = () => ({
+  const schema = ({
     name: Joi.string(),
   })
 
-  const invalidSchema = () => ({
+  const invalidSchema = ({
     name: Joi.number(),
   })
 
@@ -87,7 +87,7 @@ describe('RequestValidationMiddleware', async (should: any) => {
         given: 'invalid schema for validating body request',
         should: 'throw new error message',
         actual: e.message,
-        expected: 'ValidationError: child "name" fails because ["name" must be a number]',
+        expected: 'child "name" fails because ["name" must be a number]',
       })
     }
   }
@@ -102,7 +102,7 @@ describe('RequestValidationMiddleware', async (should: any) => {
         given: 'invalid schema for validating params request',
         should: 'throw new error message',
         actual: e.message,
-        expected: 'ValidationError: child "name" fails because ["name" must be a number]',
+        expected: 'child "name" fails because ["name" must be a number]',
       })
     }
   }
