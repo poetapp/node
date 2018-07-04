@@ -125,7 +125,7 @@ export class GetWorksByPublicKey {
 
   @AsyncTest()
   @TestCase('')
-  async getWorks422(publicKey: string) {
+  async getWorksShouldFailWith422WhenPassingAnInvalidArgument(publicKey: string) {
     const response = await this.client.getWorksByPublicKey(publicKey)
 
     Expect(response.status).toBe(422)
