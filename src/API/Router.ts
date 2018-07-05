@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@po.et/poet-js'
 import { injectable, inject } from 'inversify'
+import * as Joi from 'joi'
 import * as Koa from 'koa'
 import * as KoaBody from 'koa-body'
 import * as KoaCors from 'koa-cors'
@@ -16,8 +17,9 @@ import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import { HttpExceptionsMiddleware } from './HttpExceptionsMiddleware'
-import { LoggerMiddleware } from './LoggerMiddleware'
+import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
+import { LoggerMiddleware } from './Middlewares/LoggerMiddleware'
+import { RequestValidationMiddleware } from './Middlewares/RequestValidationMiddleware'
 import { RouterConfiguration } from './RouterConfiguration'
 import { SecurityHeaders } from './SecurityHeaders'
 import { WorkController } from './WorkController'
@@ -39,8 +41,20 @@ export class Router {
     this.configuration = configuration
     this.workController = workController
 
-    this.koaRouter.get('/works/:id', this.getWork)
-    this.koaRouter.get('/works', this.getWorks)
+    const getWorksSchema = {
+      params: {
+        id: Joi.string().required(),
+      },
+    }
+
+    const getWorkSchema = {
+      query: {
+        publicKey: Joi.string().required(),
+      },
+    }
+
+    this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorksSchema), this.getWork)
+    this.koaRouter.get('/works', RequestValidationMiddleware(getWorkSchema), this.getWorks)
     this.koaRouter.post('/works', this.postWork)
 
     this.koa.use(helmet(SecurityHeaders))
