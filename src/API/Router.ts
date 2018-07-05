@@ -42,15 +42,19 @@ export class Router {
     this.workController = workController
 
     const getWorksSchema = {
-      id: Joi.string().required(),
+      params: {
+        id: Joi.string().required(),
+      },
     }
 
     const getWorkSchema = {
-      publicKey: Joi.string().required(),
+      query: {
+        publicKey: Joi.string().required(),
+      },
     }
 
-    this.koaRouter.get('/works/:id', RequestValidationMiddleware({ params: getWorksSchema }), this.getWork)
-    this.koaRouter.get('/works', RequestValidationMiddleware({ query: getWorkSchema }), this.getWorks)
+    this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorksSchema), this.getWork)
+    this.koaRouter.get('/works', RequestValidationMiddleware(getWorkSchema), this.getWorks)
     this.koaRouter.post('/works', this.postWork)
 
     this.koa.use(helmet(SecurityHeaders))
