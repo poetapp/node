@@ -1,5 +1,4 @@
 import { Work } from '@po.et/poet-js'
-
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
