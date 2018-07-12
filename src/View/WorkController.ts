@@ -1,8 +1,10 @@
-import { ClaimIPFSHashPair, PoetTimestamp, Work } from '@po.et/poet-js'
+import { Work } from '@po.et/poet-js'
+
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
+import { PoetTimestamp, ClaimIPFSHashPair } from 'Interfaces';
 import { childWithFileName } from 'Helpers/Logging'
 
 @injectable()

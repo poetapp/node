@@ -1,8 +1,10 @@
-import { getPoetTimestamp, PoetTimestamp, InsightClient } from '@po.et/poet-js'
+import { getPoetTimestamp, InsightClient } from '@po.et/poet-js'
+
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
+import { PoetTimestamp } from 'Interfaces'
 import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
