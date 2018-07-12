@@ -1,4 +1,4 @@
-import { isClaim, Claim } from '@po.et/poet-js';
+import { isClaim, Claim } from '@po.et/poet-js'
 
 export interface TransactionPoetTimestamp {
   readonly transactionId: string

@@ -4,8 +4,8 @@ import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
-import { PoetTimestamp } from 'Interfaces'
 import { childWithFileName } from 'Helpers/Logging'
+import { PoetTimestamp } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'

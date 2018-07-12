@@ -3,10 +3,10 @@ import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
-import { ClaimIdIPFSHashPair } from 'Interfaces'
 import { asyncPipe } from 'Helpers/AsyncPipe'
 import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds } from 'Helpers/Time'
+import { ClaimIdIPFSHashPair } from 'Interfaces'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 

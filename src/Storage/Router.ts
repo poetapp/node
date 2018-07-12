@@ -3,8 +3,8 @@ import { isClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
-import { PoetTimestamp } from 'Interfaces'
 import { childWithFileName } from 'Helpers/Logging'
+import { PoetTimestamp } from 'Interfaces'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 

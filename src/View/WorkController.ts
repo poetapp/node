@@ -4,8 +4,8 @@ import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
-import { PoetTimestamp, ClaimIPFSHashPair } from 'Interfaces';
 import { childWithFileName } from 'Helpers/Logging'
+import { PoetTimestamp, ClaimIPFSHashPair } from 'Interfaces'
 
 @injectable()
 export class WorkController {
