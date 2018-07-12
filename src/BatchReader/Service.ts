@@ -37,16 +37,11 @@ export class Service {
   }
 
   private readNextDirectory = async () => {
-    const logError = (logger: Pino.Logger) => (error: any) =>
-      logger.error(
-        {
-          error,
-        },
-        'Uncaught exception in BatchReader Service'
-      )
-
     const logger = this.logger.child({ method: 'readNextDirectory' })
-
-    this.messaging.publish(Exchange.BatchReaderReadNextDirectoryRequest, '').catch(logError(logger))
+    try {
+      await this.messaging.publish(Exchange.BatchReaderReadNextDirectoryRequest, '')
+    } catch(error) {
+      logger.error({ error }, 'Uncaught exception in BatchReader Service')
+    }
   }
 }
