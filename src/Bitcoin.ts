@@ -1,4 +1,3 @@
-/* tslint:disable:no-relative-imports */
 import * as bitcore from 'bitcore-lib'
 
 import { TransactionPoetTimestamp } from 'Interfaces'
