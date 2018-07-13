@@ -3,8 +3,8 @@ import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
-import { childWithFileName } from 'Helpers/Logging'
 import { getPoetTimestamp } from 'Bitcoin'
+import { childWithFileName } from 'Helpers/Logging'
 import { PoetTimestamp } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
