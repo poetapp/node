@@ -67,7 +67,7 @@
     "babel-cli": "6.26.0",
     "babel-plugin-module-resolver": "3.1.1",
     "concurrently": "3.6.0",
-    "nodemon": "1.18.1",
+    "nodemon": "1.18.2",
     "nyc": "12.0.2",
     "riteway": "2.0.4",
     "sinon": "6.0.1",
