@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@po.et/tslint-rules": "1.2.0",
-    "@types/amqplib": "0.5.7",
+    "@types/amqplib": "0.5.8",
     "@types/bitcore-lib": "0.15.0",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
