@@ -1,4 +1,4 @@
-import { Claim, isValidClaim, ClaimIdIPFSHashPair } from '@po.et/poet-js'
+import { Claim, isValidClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
@@ -6,6 +6,7 @@ import * as Pino from 'pino'
 import { asyncPipe } from 'Helpers/AsyncPipe'
 import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds } from 'Helpers/Time'
+import { ClaimIdIPFSHashPair } from 'Interfaces'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
