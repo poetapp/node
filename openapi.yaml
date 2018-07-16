@@ -14,7 +14,7 @@ paths:
         - name: workId
           in: path
           required: true
-          description: Parameter description in CommonMark or HTML.
+          description: Unique Id used for retrieving the work.
           schema:
             type : string
             minimum: 1
@@ -29,13 +29,14 @@ paths:
           description: NOT FOUND
   /works:
     get:
+      summary: Returns an array of all works or an array of works by publicKey.
       parameters:
-          - in: query
-            name: publicKey
+          - name: publicKey
+            in: query
+            required: false
+            description: The public part of a key pair that attributes works to owners. 
             schema:
               type: string
-            required: false
-      summary: Returns an array of all works or works by publicKey.
       responses: 
         '200':
           description: OK
@@ -46,7 +47,7 @@ paths:
         '404':
           description: NOT FOUND
     post:
-      summary: Add a new work to poet node
+      summary: Add a new work to Poet Node.
       requestBody:
         content:
           application/json:
