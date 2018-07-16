@@ -1,9 +1,11 @@
-import { getPoetTimestamp, PoetTimestamp, InsightClient } from '@po.et/poet-js'
+import { InsightClient } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
+import { getPoetTimestamp } from 'Helpers/Bitcoin'
 import { childWithFileName } from 'Helpers/Logging'
+import { PoetTimestamp } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
