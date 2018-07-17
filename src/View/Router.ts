@@ -32,24 +32,24 @@ export class Router {
     await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
   }
 
-  onNewClaim = (message: any) => {
+  onNewClaim = async (message: any) => {
     const messageContent = message.content.toString()
 
-    this.workController.createWork(JSON.parse(messageContent))
+    await this.workController.createWork(JSON.parse(messageContent))
   }
 
-  onClaimIPFSHash = (message: any) => {
+  onClaimIPFSHash = async (message: any) => {
     const messageContent = message.content.toString()
     const { claimId, ipfsHash } = JSON.parse(messageContent)
 
-    this.workController.setIPFSHash(claimId, ipfsHash)
+    await this.workController.setIPFSHash(claimId, ipfsHash)
   }
 
-  onIPFSHashTxId = (message: any) => {
+  onIPFSHashTxId = async (message: any) => {
     const messageContent = message.content.toString()
     const { ipfsHash, txId } = JSON.parse(messageContent)
 
-    this.workController.setTxId(ipfsHash, txId)
+    await this.workController.setTxId(ipfsHash, txId)
   }
 
   onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
