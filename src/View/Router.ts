@@ -32,10 +32,10 @@ export class Router {
     await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
   }
 
-  onNewClaim = (message: any) => {
+  onNewClaim = async (message: any) => {
     const messageContent = message.content.toString()
 
-    this.workController.createWork(JSON.parse(messageContent))
+    await this.workController.createWork(JSON.parse(messageContent))
   }
 
   onClaimIPFSHash = (message: any) => {
