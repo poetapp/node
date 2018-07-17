@@ -28,12 +28,12 @@ export class WorkController {
     await this.collection.insertOne(work)
   }
 
-  setIPFSHash = async (workId: string, ipfsHash: string): void => {
+  setIPFSHash = async (workId: string, ipfsHash: string): Promise<void> => {
     this.logger.trace({ workId, ipfsHash }, 'Setting the IPFS Hash for a Work')
     await this.collection.updateOne({ id: workId }, { $set: { 'timestamp.ipfsHash': ipfsHash } })
   }
 
-  setTxId = async (ipfsHash: string, transactionId: string): void => {
+  setTxId = async (ipfsHash: string, transactionId: string): Promise<void> => {
     this.logger.trace({ ipfsHash, transactionId }, 'Setting the Transaction ID for a IPFS Hash')
     await this.collection.updateMany(
       { 'timestamp.ipfsHash': ipfsHash },
