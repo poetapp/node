@@ -17,7 +17,7 @@
     "test:integration": "alsatian './dist/babel/test/Integration/**/*.js'",
     "coverage": "npm run coverage:unit && npm run coverage:integration",
     "coverage:unit": "nyc --report-dir ./.coverage-unit npm run test:unit",
-    "coverage:integration": "nyc --all false --report-dir ./.coverage-integration npm run test:integration",
+    "coverage:integration": "nyc --report-dir ./.coverage-integration npm run test:integration",
     "copy-json": "rsync -a --include '*/' --include '*.json' --exclude '*' src/ dist/ts/src",
     "build-clear": "rm -rf dist",
     "build-ts": "tsc && npm run copy-json",
