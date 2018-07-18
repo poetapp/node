@@ -13,7 +13,7 @@
     "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon --delay 10 dist/babel/src\"",
     "pretest": "npm run test-prepare-db",
     "test": "npm run test:unit && npm run test:integration",
-    "test:unit": "ts-node --files ./tests/unit/index.ts",
+    "test:unit": "ts-node -r tsconfig-paths/register -r reflect-metadata --files ./tests/unit/index.ts",
     "test:integration": "alsatian './dist/babel/test/Integration/**/*.js'",
     "coverage": "npm run coverage:unit && npm run coverage:integration",
     "coverage:unit": "nyc --report-dir ./.coverage-unit npm run test:unit",
@@ -74,6 +74,7 @@
     "riteway": "2.0.4",
     "sinon": "6.0.1",
     "ts-node": "7.0.0",
+    "tsconfig-paths": "3.4.2",
     "typescript": "2.8.3"
   }
 }
