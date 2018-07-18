@@ -1,0 +1,163 @@
+openapi: 3.0.1
+info:
+  title: Po.et Node API
+  description: Get and Post Works to the Po.et Node
+  version: 1.0.0
+servers:
+  - url: http://localhost:18080
+    description: Po.et node dev port
+paths:
+  /works/{workId}:
+    get:
+      summary: Returns a work by Id.
+      parameters:
+        - name: workId
+          in: path
+          required: true
+          description: Unique Id used for retrieving the work.
+          schema:
+            type : string
+            minimum: 1
+      responses: 
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Work'
+        '404':
+          description: NOT FOUND
+  /works:
+    get:
+      summary: Returns an array of all works or an array of works by publicKey.
+      parameters:
+          - name: publicKey
+            in: query
+            required: false
+            description: The public part of a key pair that attributes works to owners. 
+            schema:
+              type: string
+      responses: 
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Works'
+        '404':
+          description: NOT FOUND
+    post:
+      summary: Add a new work to Po.et Node.
+      requestBody:
+        content:
+          application/json:
+            schema:      # Request body contents
+              $ref: '#/components/schemas/Work'
+            example:   # Sample object
+              publicKey: '02badf4650ba545608242c2d303d587cf4f778ae3cf2b3ef99fbda37555a400fd2'
+              signature: '304402201824b78d3703162eb7f240341968ebfecad1f002f988dbc9ec80c1317e49d6290220470124c7425a5d8024778991863f0a25931a7e45fb72223bea81728a08e30b50'
+              type: 'Work'
+              dateCreated: '2017-12-11T22:58:11.375Z'
+              datePublished: '2017-12-11T22:58:11.375Z'
+              attributes:
+                name: 'The Murders in the Rue Morgue'
+                author: 'Edgar Allan Poe'
+                tags: 'short story, detective story, detective'
+                dateCreated: '1841-01-01T00:00:00.000Z'
+                datePublished: '1841-01-01T00:00:00.000Z'
+                content: 'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...'
+      responses:
+        '200':
+          description: OK
+        '422':
+          description: Unprocessable Entity
+components:
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    # Schema for error response body
+    Error:
+      type: 'object'
+      properties:
+        code:
+          type: 'string'
+        message:
+          type: 'string'
+      required:
+        - code
+        - message
+    Timestamp:
+      type: 'object'
+      properties:
+        transactionId:
+          type: 'string'
+        outputIndex:
+          type: 'integer'
+        prefix:
+          type: 'string'
+        version:
+          type: 'array'
+          items:
+            type: 'integer'
+        ipfsHash:
+          type: 'string'
+        blockHeight:
+          type: 'integer'
+        blockHash:
+          type: 'string'
+    Attributes:
+      type: 'object'
+      properties:
+        name:
+          type: 'string'
+        datePublished:
+          type: 'string'
+          format: 'date-time'
+        dateCreated:
+          type: 'string'
+          format: 'date-time'
+        author:
+          type: 'string'
+        tags:
+          type: 'string'
+        content:
+          type: 'string'
+    Work:
+      type: 'object'
+      required:
+      - 'id'
+      - 'publicKey'
+      - 'signature'
+      - 'type'
+      - 'dateCreated'
+      - 'attributes'
+      properties:
+        id:
+          type: 'string'
+        publicKey:
+          type: 'string'
+        signature:
+          type: 'string'
+        type: 
+          type: 'string'
+        dateCreated:
+          type: 'string'
+        attributes:
+          $ref: '#/components/schemas/Attributes'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    Works:
+      type: 'array'
+      items:
+        $ref: '#/components/schemas/Work'
