@@ -1,5 +1,4 @@
-import { isClaim } from '@po.et/poet-js'
-import { PoetTimestamp } from '@po.et/poet-js'
+import { isClaim, PoetTimestamp } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
