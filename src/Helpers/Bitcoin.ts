@@ -1,6 +1,6 @@
 import * as bitcore from 'bitcore-lib'
 
-import { TransactionPoetTimestamp } from 'Interfaces'
+import { TransactionPoetTimestamp } from '@po.et/poet-js'
 
 export const PREFIX_POET = Buffer.from('POET')
 export const PREFIX_BARD = Buffer.from('BARD')
