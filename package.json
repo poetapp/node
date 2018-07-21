@@ -60,7 +60,7 @@
     "@types/koa-helmet": "3.1.2",
     "@types/koa-router": "7.0.30",
     "@types/mongodb": "3.1.1",
-    "@types/node-fetch": "1.6.9",
+    "@types/node-fetch": "2.1.2",
     "@types/pino": "4.7.1",
     "@types/sinon": "5.0.1",
     "alsatian": "2.2.1",
