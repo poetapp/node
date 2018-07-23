@@ -18,5 +18,8 @@
         "text",
         "text-summary"
     ],
-    "all": true
+    "all": true,
+    "esModules": true,
+    "staticType": "typescript",
+    "plugins": ["classProperties", ["decorators", { "decoratorsBeforeExport": true }]]
 }
