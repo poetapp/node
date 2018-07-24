@@ -68,7 +68,7 @@
     "alsatian": "2.2.1",
     "babel-cli": "6.26.0",
     "babel-plugin-module-resolver": "3.1.1",
-    "concurrently": "3.6.0",
+    "concurrently": "3.6.1",
     "nodemon": "1.18.3",
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "2.0.4",
