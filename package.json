@@ -44,7 +44,7 @@
     "koa-router": "7.4.0",
     "mongodb": "3.1.1",
     "node-fetch": "1.7.3",
-    "pino": "4.17.3",
+    "pino": "4.17.5",
     "protobufjs": "6.8.7",
     "reflect-metadata": "0.1.12",
     "string-to-stream": "1.1.1"
@@ -59,7 +59,7 @@
     "@types/koa": "2.0.46",
     "@types/koa-helmet": "3.1.2",
     "@types/koa-router": "7.0.30",
-    "@types/mongodb": "3.1.1",
+    "@types/mongodb": "3.1.2",
     "@types/node-fetch": "1.6.9",
     "@types/pino": "4.7.1",
     "@types/sinon": "5.0.1",
