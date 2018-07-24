@@ -1,15 +1,15 @@
-import { describe } from 'riteway'
-import * as Pino from 'pino'
+import { Messaging } from 'Messaging/Messaging'
 import { Db, Server } from 'mongodb'
-import { RouterConfiguration } from './RouterConfiguration'
-import { Messaging } from '../Messaging/Messaging'
-import { WorkController } from './WorkController'
-import { Router } from './Router'
+import * as Pino from 'pino'
+import { describe } from 'riteway'
 
+import { Router } from './Router'
+import { RouterConfiguration } from './RouterConfiguration'
+import { WorkController } from './WorkController'
 
 describe('API Router', async (should: any) => {
   const { assert } = should('')
-  
+
   const configuration = { port: 3000 } as RouterConfiguration
   const host = 'http://localhost'
   const port = 3000

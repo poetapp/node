@@ -8,10 +8,10 @@ describe('IPFS', async (should: any) => {
 
   const IPFSConfiguration: IPFSConfiguration = {
     ipfsUrl: '',
-    downloadTimeoutInSeconds: 1
+    downloadTimeoutInSeconds: 1,
   }
-  
-  { 
+
+  {
     const ipfs = new IPFS(IPFSConfiguration)
 
     assert({
