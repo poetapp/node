@@ -23,6 +23,7 @@ export class ClaimController {
     const { ipfsDirectoryHash } = collectionItem
     await this.directoryDAO.incEntryAttempts({ ipfsDirectoryHash })
     const ipfsFileHashes = await this.ipfs.getDirectoryFileHashes(ipfsDirectoryHash)
+    await this.directoryDAO.updateFileHashes({ ipfsDirectoryHash, ipfsFileHashes })
     await this.directoryDAO.setEntrySuccessTime({ ipfsDirectoryHash })
     return { ipfsDirectoryHash, ipfsFileHashes }
   }

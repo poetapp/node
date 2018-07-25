@@ -100,9 +100,9 @@ export class Router {
     const logger = this.logger.child({ method: 'onBatchReaderReadNextDirectorySuccess' })
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
-    logger.info({ ipfsFileHashes, ipfsDirectoryHash }, 'Setting ipfsDirectoryHash on works')
+    logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Setting ipfsDirectoryHash on works')
     try {
-      await this.workController.setFileHashesForDirecotryHash({ ipfsFileHashes, ipfsDirectoryHash })
+      await this.workController.setFileHashesForDirectoryHash({ ipfsFileHashes, ipfsDirectoryHash })
     } catch (error) {
       logger.error({ error, ipfsFileHashes, ipfsDirectoryHash }, 'Failed to set ipfsDirectoryHash on works')
     }

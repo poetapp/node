@@ -80,21 +80,22 @@ export class WorkController {
     )
   }
 
-  setFileHashesForDirecotryHash = async ({
+  setFileHashesForDirectoryHash = async ({
     ipfsFileHashes,
     ipfsDirectoryHash,
   }: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string
   }) => {
-    const logger = this.logger.child({ method: 'setFileHashesForDirecotryHash' })
+    const logger = this.logger.child({ method: 'setFileHashesForDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
     const entry = await this.timestampCollection.findOne({ 'timestamp.ipfsDirectoryHash': ipfsDirectoryHash })
+    logger.debug({ ipfsFileHashes, ipfsDirectoryHash, entry }, 'setting directory hash on work entries')
 
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
         this.workCollection.updateOne(
-          { 'timestamp.ipfsDirectoryHash': ipfsDirectoryHash },
+          { 'timestamp.ipfsFileHash': ipfsFileHash },
           { $set: { timestamp: { ...entry.timestamp, ipfsFileHash } } },
           { upsert: true }
         )
@@ -103,7 +104,7 @@ export class WorkController {
   }
 
   async upsertClaimIPFSHashPair(claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) {
-    this.logger.trace({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
+    this.logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
         this.workCollection.updateOne({ 'timestamp.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true })

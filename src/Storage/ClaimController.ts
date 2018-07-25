@@ -113,9 +113,7 @@ export class ClaimController {
       this.updateEntryAttempts,
       this.downloadEntryClaim,
       this.updateEntryPairs,
-      this.publishEntryDownload,
-      async x => logger.trace(x, 'Successfully downloaded entry'),
-      async () => logger.info('Successfully downloaded entry')
+      this.publishEntryDownload
     )
 
     const handleErrors = async (error: Error) => {
@@ -130,8 +128,16 @@ export class ClaimController {
       } else throw error
     }
 
+    const logSuccess = (x: { claim: Claim; entry: Entry }) => {
+      logger.trace(x, 'Successfully downloaded entry')
+      logger.info({ claimId: x.claim.id }, 'Successfully downloaded entry')
+      return x
+    }
+
     logger.trace('Downloading next entry')
-    await pipe({ retryDelay, maxAttempts }).catch(handleErrors)
+    await pipe({ retryDelay, maxAttempts })
+      .then(logSuccess)
+      .catch(handleErrors)
   }
 
   private findEntryToDownload = async ({

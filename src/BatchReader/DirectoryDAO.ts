@@ -10,6 +10,7 @@ export interface Entry {
   ipfsDirectoryHash: string
   lastAttemptTime?: number
   successTime?: string
+  ipfsFileHashes?: ReadonlyArray<string>
 }
 
 type start = () => Promise<void>
@@ -28,6 +29,8 @@ type setEntrySuccessTime = (x: Entry) => Promise<any>
 
 type incEntryAttempts = (x: Entry) => Promise<any>
 
+type updateFileHashes = (x: Entry) => Promise<any>
+
 @injectable()
 export class DirectoryDAO {
   private readonly directoryCollection: Collection
@@ -45,6 +48,7 @@ export class DirectoryDAO {
       .insertMany(
         entries.map((entry: Entry) => ({
           ipfsDirectoryHash: entry.ipfsDirectoryHash,
+          ipfsFileHashes: null,
           lastAttemptTime: null,
           successTime: null,
           attempts: 0,
@@ -91,6 +95,14 @@ export class DirectoryDAO {
       {
         $set: { lastAttemptTime },
         $inc: { attempts: 1 },
+      }
+    )
+
+  readonly updateFileHashes: updateFileHashes = ({ ipfsDirectoryHash, ipfsFileHashes }) =>
+    this.directoryCollection.updateOne(
+      { ipfsDirectoryHash },
+      {
+        $set: { ipfsFileHashes },
       }
     )
 }
