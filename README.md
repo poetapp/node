@@ -286,7 +286,7 @@ Coverage for integration test
 
 `npm run coverage:integration`
 
-Note: We had to implement our solution for getting a good coverage report. Becasue [nyc](https://github.com/istanbuljs/nyc) and [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/tree/master/packages/istanbul-lib-instrument) lacks the good support for `typescript` projects. For this reason, we are using that tools from own fork. We are contributing with [nyc](https://github.com/istanbuljs/nyc) and [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/tree/master/packages/istanbul-lib-instrument) with the goal merge it our solution
+Note: We had to implement our solution for getting a good coverage report. Becasue [nyc](https://github.com/istanbuljs/nyc) and [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/tree/master/packages/istanbul-lib-instrument) lacks the good support for `typescript` projects. For this reason, we are using that tools from own fork. We are contributing with [nyc](https://github.com/istanbuljs/nyc) and [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/tree/master/packages/istanbul-lib-instrument) with the goal merge our solution
 for all community. You can follow the issues in this [PR](https://github.com/poetapp/node/pull/230), and check the new PRs for [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/tree/master/packages/istanbul-lib-instrument)
 
 Also, we'll want the Travis job to check that coverage doesn't go down with pull requests. See [#11][i11].
