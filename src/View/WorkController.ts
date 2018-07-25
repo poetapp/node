@@ -72,8 +72,8 @@ export class WorkController {
     await Promise.all(
       poetTimestamps.map(timestamp =>
         this.timestampCollection.updateOne(
-          { 'timestamp.ipfsDirectoryHash': timestamp.ipfsDirectoryHash },
-          { $set: { timestamp } },
+          { ipfsDirectoryHash: timestamp.ipfsDirectoryHash },
+          { $set: timestamp },
           { upsert: true }
         )
       )
@@ -89,14 +89,14 @@ export class WorkController {
   }) => {
     const logger = this.logger.child({ method: 'setFileHashesForDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
-    const entry = await this.timestampCollection.findOne({ 'timestamp.ipfsDirectoryHash': ipfsDirectoryHash })
-    logger.debug({ ipfsFileHashes, ipfsDirectoryHash, entry }, 'setting directory hash on work entries')
+    const timestamp = await this.timestampCollection.findOne({ ipfsDirectoryHash }, { projection: { _id: 0 } })
+    logger.debug({ ipfsFileHashes, ipfsDirectoryHash, timestamp }, 'setting directory hash on work entries')
 
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
         this.workCollection.updateOne(
           { 'timestamp.ipfsFileHash': ipfsFileHash },
-          { $set: { timestamp: { ...entry.timestamp, ipfsFileHash } } },
+          { $set: { timestamp: { ...timestamp, ipfsFileHash } } },
           { upsert: true }
         )
       )
