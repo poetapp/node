@@ -1,67 +1,28 @@
-import * as IPFSFactory from 'ipfsd-ctl'
-import { describe } from 'riteway'
 import { IPFS } from './IPFSClient';
 
 const port = 5001
 const ipfsUrl = `http://localhost:${port}`;
 
-const newServer = () => {
-  return IPFSFactory.createServer({ port })
+const ipfs = new IPFS({ ipfsUrl })
+
+const run = async () => {
+  const text = 'foooooooo'
+  const addTextResult = await ipfs.addText(text);
+  console.log('addTextResult', addTextResult);
+
+  const catResult = await ipfs.cat(addTextResult.hash)
+  console.log('catResult', catResult)
+
+  const emptyDirectory = await ipfs.createEmptyDirectory()
+  console.log('emptyDirectory', emptyDirectory)
+
+  const ls = await ipfs.ls('QmcGcrtDGWvij6mmv5Uyqod1ddmycxX1MWKk5VLp8QJTkx')
+  console.log('ls', ls)
+
+  const addFileToDirectory = await ipfs.addFileToDirectory(emptyDirectory.hash, addTextResult.hash, addTextResult.hash)
+  console.log('addFileToDirectory', addFileToDirectory)
 }
 
-const newIPFS = () => {
-  return new IPFS({ ipfsUrl })
-}
-
-describe('IPFSClient()', async (should: any) => {
-  const { assert } = should('')
-
-  {
-    const ipfs = newIPFS();
-    const text = 'foooooooo'
-    const result = await ipfs.addText(text);
-
-    assert({
-      given: 'test',
-      should: 'store the text in ipfs',
-      expected: 'string',
-      actual: result
-    })
-  }
-
-  // {
-  //   const server = newServer();
-    
-
-  //   server.start(async (err: any) => {
-  //     if (err) { 
-  //       console.log('dfs', err)
-  //       throw err
-  //     }
-      
-
-  //     try {
-  //     const result = await ipfs.createEmptyDirectory();
-      
-
-  //     assert({
-  //       given: 'test',
-  //       should: 'store the text in ipfs',
-  //       expected: 'foo',
-  //       actual: result
-  //     })
-  //   }
-  //     catch(err) {
-  //       console.log('ummm', JSON.stringify(err));
-  //     }
-
-  //     server.stop((err: any) => {
-  //       if (err) { throw err }
-
-  //     })
-  //   })
-  // }
-})
-
+run()
 
 

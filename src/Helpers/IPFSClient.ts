@@ -1,7 +1,5 @@
-import * as FormData from 'form-data'
-import fetch, { Response } from 'node-fetch'
+import fetch from 'node-fetch'
 import * as str from 'string-to-stream'
-var Readable = require('readable-stream').Readable
 const ipfsAPI = require('ipfs-api')
 
 interface IPFSConfiguration {
@@ -17,72 +15,51 @@ enum Type {
   Directory = 'Directory',
 }
 
-interface IPFSObject {
-  readonly Name?: string
-  readonly hash: string
-  readonly Size?: number
-  readonly Type?: Type
-  readonly Links?: ReadonlyArray<IPFSObject>
-}
 
-interface LSResult {
-  Arguments: {
-    [key: string]: string
-  }
-  Objects: {
-    [key: string]: IPFSObject
-  }
+interface IPFSObject {
+  readonly name?: string
+  readonly hash: string
+  readonly size?: number
+  readonly type?: Type
+  readonly links?: ReadonlyArray<IPFSObject>
 }
 
 type addFileToDirectory = (directoryHash: string, fileName: string, filehash: string) => Promise<IPFSObject>
 
 type addText = (text: string, x?: FetchOptions) => Promise<IPFSObject>
 
-type cat = (s: string, x?: FetchOptions) => Promise<Response['buffer']>
+type cat = (s: string, x?: FetchOptions) => Promise<Buffer>
 
 type createEmptyDirectory = () => Promise<IPFSObject>
 
-type getDirectoryFileHashes = (s: string) => Promise<ReadonlyArray<string>>
-
-type ls = (s: string) => Promise<LSResult>
+type ls = (s: string) => Promise<ReadonlyArray<IPFSObject>>
 
 export class IPFS {
-  private readonly url: string
   private readonly api: any
 
   constructor(configuration: IPFSConfiguration) {
-    this.url = configuration.ipfsUrl
     this.api = ipfsAPI()
   }
 
-  trace = (label:string) => (value:any) => value
+  trace = (label: string) => (value: any) => value
 
   addFileToDirectory: addFileToDirectory = async (directoryHash, fileName, fileHash) => {
-    const response = await fetch(
-      `${this.url}/api/v0/object/patch/add-link?arg=${directoryHash}&arg=${fileName}&arg=${fileHash}`
-    )
-    return await response.json()
+    const response = await this.api.object.patch.addLink(directoryHash, {name: fileName, multihash: fileHash })
+    return response.toJSON()
   }
 
-  addText: addText = (text: string, fetchOptions): Promise<any> => this.api.files.add({ path: 'myfile.txt', content: str(text) })
-
-  cat: cat = async (hash, fetchOptions) => {
-    const response = await fetch(`${this.url}/api/v0/cat?arg=${hash}`, fetchOptions)
-    return response.json()
+  addText: addText = async (text: string, fetchOptions): Promise<any> => {
+    const response = await this.api.files.add([{ path: 'myfile.txt', content: str(text) }])
+    return response[0]
   }
+
+  cat: cat = async (hash, fetchOptions) => await this.api.cat(hash)
 
   createEmptyDirectory: createEmptyDirectory = async () => {
-    const response = await fetch(`${this.url}/api/v0/object/new?arg=unixfs-dir`)
-    return await response.json()
+    const node = await this.api.object.new('unixfs-dir')
+    const json = node.toJSON()
+    return { ...json, hash: json.multihash }
   }
 
-  getDirectoryFileHashes: getDirectoryFileHashes = async hash => {
-    const response = await this.ls(hash)
-    return response.Objects[hash].Links.map(x => x.hash)
-  }
-
-  ls: ls = async hash => {
-    const response = await fetch(`${this.url}/api/v0/file/ls?arg=${hash}`)
-    return await response.json()
-  }
+  ls: ls = async hash => this.api.ls(hash)
 }
