@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import * as str from 'string-to-stream'
 const ipfsAPI = require('ipfs-api')
 
@@ -14,7 +13,6 @@ enum Type {
   File = 'File',
   Directory = 'Directory',
 }
-
 
 interface IPFSObject {
   readonly name?: string
@@ -44,7 +42,7 @@ export class IPFS {
   trace = (label: string) => (value: any) => value
 
   addFileToDirectory: addFileToDirectory = async (directoryHash, fileName, fileHash) => {
-    const response = await this.api.object.patch.addLink(directoryHash, {name: fileName, multihash: fileHash })
+    const response = await this.api.object.patch.addLink(directoryHash, { name: fileName, multihash: fileHash })
     return response.toJSON()
   }
 
