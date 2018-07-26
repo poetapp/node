@@ -33,7 +33,6 @@
   "license": "ISC",
   "dependencies": {
     "@po.et/poet-js": "1.2.0",
-    "@types/buffers": "^0.1.31",
     "amqplib": "0.5.2",
     "bitcore-lib": "0.15.0",
     "form-data": "2.3.2",
@@ -49,7 +48,6 @@
     "node-fetch": "1.7.3",
     "pino": "4.17.5",
     "protobufjs": "6.8.7",
-    "readable-stream": "^2.3.6",
     "reflect-metadata": "0.1.12",
     "string-to-stream": "1.1.1"
   },
