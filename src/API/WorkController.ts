@@ -4,12 +4,13 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { getDefinedFilters } from 'Helpers/getDefinedFilters'
+import { getDefinedFilters, omitUndefined } from 'Helpers/getDefinedFilters'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 interface WorksFilters {
   readonly publicKey?: string
+  readonly offset?: string
 }
 
 @injectable()
@@ -33,8 +34,11 @@ export class WorkController {
 
   async getByFilters(worksFilters: WorksFilters = {}): Promise<any> {
     this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
+    const { offset } = omitUndefined(worksFilters);
+    const skip = parseInt(offset, 10) > 10 ? parseInt(offset, 10) - 10 : 0;
+    const limit = parseInt(offset, 10) || 10;
     const definedFilters = getDefinedFilters(worksFilters)
-    return this.collection.find(definedFilters, { fields: { _id: false } }).toArray()
+    return this.collection.find(definedFilters, { fields: { _id: false } }).skip(skip).limit(limit).toArray()
   }
 
   async create(work: Work): Promise<void> {

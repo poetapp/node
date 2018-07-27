@@ -50,6 +50,7 @@ export class Router {
     const getWorksSchema = {
       query: {
         publicKey: Joi.string().optional(),
+        offset: Joi.string().optional(),
       },
     }
 
