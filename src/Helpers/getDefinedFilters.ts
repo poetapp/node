@@ -13,6 +13,7 @@ export const getDefinedFilters = (worksFilters: Query = {}): Query => {
   return definedFilters
 }
 
-export const omitUndefined = (data: Query): Query => Object.entries(data)
-  .filter(([key, value]) => value !== undefined)
-  .toObject()
+export const omitUndefined = (data: Query): Query =>
+  Object.entries(data)
+    .filter(([key, value]) => value !== undefined)
+    .toObject()
