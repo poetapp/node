@@ -35,7 +35,7 @@ export class WorkController {
   async getByFilters(worksFilters: WorksFilters = {}): Promise<any> {
     this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
     const { offset } = omitUndefined(worksFilters)
-    const skip = parseInt(offset, 10) > 10 ? parseInt(offset, 10) - 10 : 0
+    const skip = parseInt(offset, 10) > 10 ? parseInt(offset, 10) : 0
     const limit = parseInt(offset, 10) || 10
     const definedFilters = getDefinedFilters(worksFilters)
     return this.collection
