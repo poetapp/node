@@ -22,7 +22,8 @@
     "build-babel": "cp .babelrc dist/ts && babel dist/ts/ -d dist/babel --copy-files",
     "watch-babel": "cp .babelrc dist/ts && babel -w dist/ts/ -d dist/babel --copy-files",
     "test-prepare-db": "node dist/babel/test/PrepareDB.js",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build && npm test",
+    "test:ipfs": "ts-node --files ./src/Helpers/IPFSClient.test.ts"
   },
   "files": [
     "dist/babel/src"
@@ -36,6 +37,7 @@
     "bitcore-lib": "0.15.0",
     "form-data": "2.3.2",
     "inversify": "4.13.0",
+    "ipfs-api": "22.2.4",
     "joi": "13.4.0",
     "koa": "2.5.1",
     "koa-body": "4.0.4",
