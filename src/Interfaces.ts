@@ -1,19 +1,5 @@
 import { isClaim, Claim } from '@po.et/poet-js'
 
-export interface TransactionPoetTimestamp {
-  readonly transactionId: string
-  readonly outputIndex: number
-  readonly prefix: string
-  readonly version: ReadonlyArray<number>
-  readonly ipfsDirectoryHash: string
-}
-
-export interface PoetTimestamp extends TransactionPoetTimestamp {
-  readonly blockHeight: number
-  readonly blockHash: string
-  readonly ipfsFileHash?: string
-}
-
 export interface ClaimIPFSHashPair {
   readonly claim: Claim
   readonly ipfsFileHash: string
