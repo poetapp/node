@@ -63,7 +63,7 @@
     "@types/koa-router": "7.0.31",
     "@types/mongodb": "3.1.2",
     "@types/node-fetch": "1.6.9",
-    "@types/pino": "4.7.1",
+    "@types/pino": "4.16.1",
     "@types/sinon": "5.0.1",
     "alsatian": "2.2.1",
     "babel-cli": "6.26.0",
