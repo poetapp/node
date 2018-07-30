@@ -40,7 +40,7 @@ export class WorkController {
     return this.collection
       .find(definedFilters, { fields: { _id: false } })
       .sort({
-        _id: -1
+        _id: -1,
       })
       .skip(skip)
       .limit(10)
