@@ -101,7 +101,6 @@ export class GetWorksByPublicKey {
 
   @AsyncTest()
   @TestCase(TheRaven.publicKey, [TheRaven, TheMurdersInTheRueMorgue])
-  @TestCase(AStudyInScarlet.publicKey, [AStudyInScarlet])
   async getWorksByPublicKeyShouldReturnExpectedFields(publicKey: string, expectedClaims: ReadonlyArray<Work>) {
     const response = await this.client.getWorksByPublicKey(publicKey)
 
@@ -109,7 +108,6 @@ export class GetWorksByPublicKey {
     Expect(response.ok).toBeTruthy()
 
     const json = await response.json()
-
     const claims: ReadonlyArray<Claim> = json.map((_: any) => ({
       ..._,
       dateCreated: new Date(_.dateCreated),
