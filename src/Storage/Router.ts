@@ -1,7 +1,7 @@
-import { isClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
+import { claimFromJSON } from 'Helpers/Claim'
 import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
@@ -33,18 +33,19 @@ export class Router {
   }
 
   onNewClaim = async (message: any): Promise<void> => {
+    const logger = this.logger.child({ method: 'onNewClaim' })
+
     const messageContent = message.content.toString()
 
-    const claim = JSON.parse(messageContent)
+    const claim = claimFromJSON(JSON.parse(messageContent))
 
-    if (!isClaim(claim)) throw new Error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
+    if (claim === null) logger.error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
 
     try {
       await this.claimController.create(claim)
     } catch (error) {
-      this.logger.error(
+      logger.error(
         {
-          method: 'onNewClaim',
           error,
         },
         'Uncaught Exception while Storing Claim'
