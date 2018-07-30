@@ -26,4 +26,21 @@ describe('API Router', async (should: any) => {
       expected: true,
     })
   }
+
+  {
+    const router = new Router(Pino(), configuration, workController)
+    const result = await router
+      .start()
+      .then(_ => true)
+      .catch(_ => _)
+
+    assert({
+      given: 'calling .start() on a new instance of Router',
+      should: 'not though any errors',
+      actual: result,
+      expected: true,
+    })
+
+    await router.stop()
+  }
 })
