@@ -1,11 +1,4 @@
-import {
-  ClaimType,
-  isClaim,
-  isWork,
-  isValidSignature,
-  IllegalArgumentException,
-  NotFoundException,
-} from '@po.et/poet-js'
+import { ClaimType, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from '@po.et/poet-js'
 import { injectable, inject } from 'inversify'
 import * as Joi from 'joi'
 import * as Koa from 'koa'
