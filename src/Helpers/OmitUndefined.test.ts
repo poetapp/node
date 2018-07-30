@@ -2,7 +2,7 @@ import { describe } from 'riteway'
 
 import { omitUndefined } from './OmitUndefined'
 
-describe('Object.proptype.omitUndefined()', async (should: any) => {
+describe('omitUndefined()', async (should: any) => {
   const { assert } = should('')
   {
     const query = {}
