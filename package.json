@@ -13,9 +13,11 @@
     "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon --delay 10 dist/babel/src\"",
     "pretest": "npm run test-prepare-db",
     "test": "npm run test:unit && npm run test:integration",
-    "test:unit": "ts-node --files ./tests/unit/index.ts",
-    "test:integration": "nyc alsatian './dist/babel/test/Integration/**/*.js'",
-    "coverage": "nyc --reporter=lcov report && echo Report created at ./coverage/lcov-report/index.html",
+    "test:unit": "ts-node -r tsconfig-paths/register -r reflect-metadata --files ./tests/unit/index.ts",
+    "test:integration": "alsatian './dist/babel/test/Integration/**/*.js'",
+    "coverage": "npm run coverage:unit && npm run coverage:integration",
+    "coverage:unit": "nyc --report-dir ./.coverage-unit npm run test:unit",
+    "coverage:integration": "nyc --report-dir ./.coverage-integration npm run test:integration",
     "copy-json": "rsync -a --include '*/' --include '*.json' --exclude '*' src/ dist/ts/src",
     "build-clear": "rm -rf dist",
     "build-ts": "tsc && npm run copy-json",
@@ -68,10 +70,11 @@
     "babel-plugin-module-resolver": "3.1.1",
     "concurrently": "3.6.1",
     "nodemon": "1.18.3",
-    "nyc": "12.0.2",
+    "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "2.0.4",
     "sinon": "6.0.1",
     "ts-node": "7.0.0",
+    "tsconfig-paths": "3.4.2",
     "typescript": "2.8.3"
   }
 }

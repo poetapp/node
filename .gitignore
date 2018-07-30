@@ -8,3 +8,6 @@ coverage
 
 .ipfs-docker
 .env
+
+.coverage-integration
+.coverage-unit
