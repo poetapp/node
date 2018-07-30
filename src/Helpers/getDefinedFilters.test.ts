@@ -1,6 +1,6 @@
 import { describe } from 'riteway'
 
-import { getDefinedFilters } from './getDefinedFilters'
+import { getDefinedFilters } from './GetDefinedFilters'
 
 describe('getDefinedFilters', async (should: any) => {
   const { assert } = should('')
