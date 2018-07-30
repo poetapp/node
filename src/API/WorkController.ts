@@ -35,11 +35,13 @@ export class WorkController {
   async getByFilters(worksFilters: WorksFilters = {}): Promise<any> {
     this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
     const { offset } = omitUndefined(worksFilters)
-    const skip = parseInt(offset, 10)
+    const skip = parseInt(offset, 10) || 0
     const definedFilters = getDefinedFilters(worksFilters)
-    console.log(this.collection.find().limit(10))
     return this.collection
       .find(definedFilters, { fields: { _id: false } })
+      .sort({
+        _id: -1
+      })
       .skip(skip)
       .limit(10)
       .toArray()
