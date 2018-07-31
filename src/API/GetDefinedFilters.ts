@@ -1,5 +1,5 @@
 // tslint:disable-next-line
-import 'Extensions/Array'
+import '../Extensions/Array'
 
 interface WorksFilters {
   readonly publicKey?: string
