@@ -16,6 +16,14 @@ export class Client {
     return fetch(this.url + '/works/' + id)
   }
 
+  getWorks() {
+    return fetch(this.url + '/works/')
+  }
+
+  getWorksTest(test?: string) {
+    return fetch(this.url + '/works/?test=' + test)
+  }
+
   getWorksByPublicKey(publicKey: string) {
     return fetch(this.url + '/works/?publicKey=' + publicKey)
   }

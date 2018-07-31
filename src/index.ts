@@ -5,6 +5,7 @@ import 'Error'
 import * as Pino from 'pino'
 import 'reflect-metadata'
 
+import 'Extensions/Array'
 import 'Extensions/Promise'
 
 import { API } from 'API/API'

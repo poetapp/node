@@ -41,20 +41,20 @@ export class Router {
     this.configuration = configuration
     this.workController = workController
 
-    const getWorksSchema = {
+    const getWorkSchema = {
       params: {
         id: Joi.string().required(),
       },
     }
 
-    const getWorkSchema = {
+    const getWorksSchema = {
       query: {
-        publicKey: Joi.string().required(),
+        publicKey: Joi.string().optional(),
       },
     }
 
-    this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorksSchema), this.getWork)
-    this.koaRouter.get('/works', RequestValidationMiddleware(getWorkSchema), this.getWorks)
+    this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), this.getWork)
+    this.koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), this.getWorks)
     this.koaRouter.post('/works', this.postWork)
 
     this.koa.use(helmet(SecurityHeaders))
@@ -82,10 +82,8 @@ export class Router {
   }
 
   private getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.trace({ query: context.query }, 'GET /works')
-
-    const publicKey = context.query.publicKey
-    const works = await this.workController.getByPublicKey(publicKey)
+    this.logger.trace({ query: context.query }, '/works?query=')
+    const works = await this.workController.getByFilters(context.query)
 
     context.body = works
   }

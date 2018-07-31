@@ -4,8 +4,13 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { getDefinedFilters } from 'Helpers/getDefinedFilters'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
+
+interface WorksFilters {
+  readonly publicKey?: string
+}
 
 @injectable()
 export class WorkController {
@@ -26,9 +31,10 @@ export class WorkController {
     return this.collection.findOne({ id }, { fields: { _id: false } })
   }
 
-  async getByPublicKey(publicKey: string): Promise<any> {
-    this.logger.trace({ method: 'getByPublicKey', publicKey }, 'Getting Works by Public Key from DB')
-    return this.collection.find({ publicKey }, { fields: { _id: false } }).toArray()
+  async getByFilters(worksFilters: WorksFilters = {}): Promise<any> {
+    this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
+    const definedFilters = getDefinedFilters(worksFilters)
+    return this.collection.find(definedFilters, { fields: { _id: false } }).toArray()
   }
 
   async create(work: Work): Promise<void> {
