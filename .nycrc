@@ -1,0 +1,25 @@
+{
+    "extension": [
+        ".ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+        "**/*.test.ts",
+        "./tests/**/*.*",
+        "./test/**/*.*",
+        "./dist/**/*.*",
+        "./coverage/**/*.*"
+    ],
+    "reporter": [
+        "lcov",
+        "html",
+        "text",
+        "text-summary"
+    ],
+    "all": true,
+    "esModules": true,
+    "staticType": "typescript",
+    "plugins": ["classProperties", ["decorators", { "decoratorsBeforeExport": true }]]
+}
