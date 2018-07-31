@@ -24,33 +24,35 @@ export class Router {
   }
 
   async start() {
-    await this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
+    await this.messaging.consume(
+      Exchange.BatchWriterCreateNextBatchSuccess,
+      this.onBlockchainWriterRequestTimestampRequest
+    )
   }
 
-  onClaimIPFSHash = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onClaimIPFSHash' })
+  onBlockchainWriterRequestTimestampRequest = async (message: any): Promise<void> => {
+    const logger = this.logger.child({ method: 'onBlockchainWriterRequestTimestampRequest' })
 
     const messageContent = message.content.toString()
-    const { claimId, ipfsHash } = JSON.parse(messageContent)
+    const { ipfsDirectoryHash } = JSON.parse(messageContent)
 
     logger.trace(
       {
-        claimId,
-        ipfsHash,
+        ipfsDirectoryHash,
       },
-      'Timestamping requested'
+      'creating timestamp request'
     )
 
     try {
-      await this.claimController.requestTimestamp(ipfsHash)
-    } catch (exception) {
+      await this.claimController.requestTimestamp(ipfsDirectoryHash)
+      logger.trace({ ipfsDirectoryHash }, 'Timestamp request created')
+    } catch (error) {
       logger.error(
         {
-          exception,
-          claimId,
-          ipfsHash,
+          error,
+          ipfsDirectoryHash,
         },
-        'Uncaught Exception while requesting timestamp'
+        'Timestamp request failure'
       )
     }
   }

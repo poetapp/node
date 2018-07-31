@@ -34,7 +34,7 @@ export class Service {
   private timestampNextHash = async () => {
     const logger = this.logger.child({ method: 'timestampNextHash' })
 
-    logger.trace('Requestion Timestamping of Next Hash')
+    logger.trace('Requesting Timestamping of Next Hash')
 
     try {
       await this.claimController.timestampNextHash()

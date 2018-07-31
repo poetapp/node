@@ -1,36 +1,35 @@
-import { injectable, Container } from 'inversify'
-import { Db, MongoClient } from 'mongodb'
+import { Container } from 'inversify'
+import { Db, MongoClient, Collection } from 'mongodb'
 import * as Pino from 'pino'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
+import { BatchReaderConfiguration } from './BatchReaderConfiguration'
 import { ClaimController } from './ClaimController'
-import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { DirectoryDAO } from './DirectoryDAO'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
-import { StorageConfiguration } from './StorageConfiguration'
 
-@injectable()
-export class Storage {
+export class BatchReader {
   private readonly logger: Pino.Logger
-  private readonly configuration: StorageConfiguration
+  private readonly configuration: BatchReaderConfiguration
   private readonly container = new Container()
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
   private service: Service
 
-  constructor(configuration: StorageConfiguration) {
+  constructor(configuration: BatchReaderConfiguration) {
     this.configuration = configuration
     this.logger = createModuleLogger(configuration, __dirname)
   }
 
   async start() {
-    this.logger.info({ configuration: this.configuration }, 'Storage Starting')
+    this.logger.info({ configuration: this.configuration }, 'BatchReader Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 
@@ -44,36 +43,27 @@ export class Storage {
 
     this.service = this.container.get('Service')
     await this.service.start()
+    const directoryDAO: DirectoryDAO = this.container.get('DirectoryDAO')
+    await directoryDAO.start()
 
-    await this.createIndices()
-
-    this.logger.info('Storage Started')
+    this.logger.info('BatchReader Started')
   }
 
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
+    this.container.bind<ClaimController>('ClaimController').to(ClaimController)
+    this.container.bind<Collection>('directoryCollection').toConstantValue(this.dbConnection.collection('batchReader'))
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
-    this.container.bind<Router>('Router').to(Router)
+    this.container.bind<DirectoryDAO>('DirectoryDAO').to(DirectoryDAO)
     this.container.bind<IPFS>('IPFS').to(IPFS)
     this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
       ipfsUrl: this.configuration.ipfsUrl,
-      downloadTimeoutInSeconds: this.configuration.downloadTimeoutInSeconds,
     })
-    this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration').toConstantValue({
-      downloadRetryDelayInMinutes: this.configuration.downloadRetryDelayInMinutes,
-      downloadMaxAttempts: this.configuration.downloadMaxAttempts,
-    })
+    this.container.bind<Router>('Router').to(Router)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<Service>('Service').to(Service)
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
-      downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds,
+      readNextDirectoryIntervalInSeconds: this.configuration.readNextDirectoryIntervalInSeconds,
     })
-  }
-
-  private async createIndices() {
-    const collection = this.dbConnection.collection('storage')
-    await collection.createIndex({ ipfsFileHash: 1 }, { unique: true, name: 'ipfsFileHash-unique' })
-    await collection.createIndex({ attempts: 1 }, { name: 'attempts' })
   }
 }

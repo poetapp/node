@@ -5,6 +5,7 @@ import * as Pino from 'pino'
 
 import { asyncPipe } from 'Helpers/AsyncPipe'
 import { childWithFileName } from 'Helpers/Logging'
+import { ErrorCodes } from 'Helpers/MongoDB'
 import { minutesToMiliseconds } from 'Helpers/Time'
 import { ClaimIdIPFSHashPair } from 'Interfaces'
 import { Exchange } from 'Messaging/Messages'
@@ -51,29 +52,29 @@ export class ClaimController {
 
     logger.trace({ claim }, 'Storing Claim')
 
-    const ipfsHash = await this.ipfs.addText(JSON.stringify(claim))
+    const ipfsFileHash = await this.ipfs.addText(JSON.stringify(claim))
 
-    logger.info({ claim, ipfsHash }, 'Claim Stored')
+    logger.info({ claim, ipfsFileHash }, 'Claim Stored')
 
     await this.collection.insertOne({
       claimId: claim.id,
-      ipfsHash,
+      ipfsFileHash,
     })
     await this.messaging.publish(Exchange.ClaimIPFSHash, {
       claimId: claim.id,
-      ipfsHash,
+      ipfsFileHash,
     })
   }
 
-  async download(ipfsHashes: ReadonlyArray<string>) {
+  async download(ipfsFileHashes: ReadonlyArray<string>) {
     const logger = this.logger.child({ method: 'download' })
 
-    logger.trace({ ipfsHashes }, 'Downloading Claims')
+    logger.trace({ ipfsFileHashes }, 'Downloading Claims')
 
     try {
       await this.collection.insertMany(
-        ipfsHashes.map(ipfsHash => ({
-          ipfsHash,
+        ipfsFileHashes.map(ipfsFileHash => ({
+          ipfsFileHash,
           claimId: null,
           lastDownloadAttemptTime: null,
           downloadSuccessTime: null,
@@ -82,7 +83,7 @@ export class ClaimController {
         { ordered: false }
       )
     } catch (exception) {
-      if (exception.code !== 11000) throw exception
+      if (exception.code !== ErrorCodes.DuplicateKey) throw exception
       logger.trace({ exception }, 'Duplicate IPFS hash')
     }
   }
@@ -96,9 +97,9 @@ export class ClaimController {
   } = {}): Promise<void> {
     const logger = this.logger.child({ method: 'downloadNextHash' })
 
-    const updateEntryFailureReason = (ipfsHash: string, failureType: FailureType, failureReason: FailureReason) =>
+    const updateEntryFailureReason = (ipfsFileHash: string, failureType: FailureType, failureReason: FailureReason) =>
       this.collection.updateOne(
-        { ipfsHash },
+        { ipfsFileHash },
         {
           $set: {
             failureType,
@@ -112,25 +113,31 @@ export class ClaimController {
       this.updateEntryAttempts,
       this.downloadEntryClaim,
       this.updateEntryPairs,
-      this.publishEntryDownload,
-      async x => logger.trace(x, 'Successfully downloaded entry'),
-      async () => logger.info('Successfully downloaded entry')
+      this.publishEntryDownload
     )
 
     const handleErrors = async (error: Error) => {
       if (error instanceof NoMoreEntriesException) logger.trace(error.message)
       else if (error instanceof InvalidClaim)
-        await updateEntryFailureReason(error.ipfsHash, FailureType.Hard, error.failureReason)
+        await updateEntryFailureReason(error.ipfsFileHash, FailureType.Hard, error.failureReason)
       else if (error instanceof IPFSTimeoutError)
-        await updateEntryFailureReason(error.ipfsHash, FailureType.Soft, FailureReason.IPFSTimeout)
+        await updateEntryFailureReason(error.ipfsFileHash, FailureType.Soft, FailureReason.IPFSTimeout)
       else if (error instanceof IPFSGenericError) {
         logger.warn({ error })
-        await updateEntryFailureReason(error.ipfsHash, FailureType.Soft, FailureReason.IPFSGeneric)
+        await updateEntryFailureReason(error.ipfsFileHash, FailureType.Soft, FailureReason.IPFSGeneric)
       } else throw error
     }
 
+    const logSuccess = (x: { claim: Claim; entry: Entry }) => {
+      logger.trace(x, 'Successfully downloaded entry')
+      logger.info({ claimId: x.claim.id }, 'Successfully downloaded entry')
+      return x
+    }
+
     logger.trace('Downloading next entry')
-    await pipe({ retryDelay, maxAttempts }).catch(handleErrors)
+    await pipe({ retryDelay, maxAttempts })
+      .then(logSuccess)
+      .catch(handleErrors)
   }
 
   private findEntryToDownload = async ({
@@ -147,7 +154,7 @@ export class ClaimController {
     logger.trace('started finding entry')
     const entry = await this.collection.findOne({
       claimId: null,
-      ipfsHash: { $exists: true },
+      ipfsFileHash: { $exists: true },
       $and: [
         {
           $or: [
@@ -216,9 +223,9 @@ export class ClaimController {
   }
 
   private downloadEntryClaim = async ({ entry, ...rest }: { entry: Entry }) => {
-    const { ipfsHash } = entry
-    const downloadClaim = (ipfsHash: string) => this.ipfs.cat(ipfsHash).rethrow(errorToIPFSError(ipfsHash))
-    const parseClaim = (ipfsHash: string, serialized: string) => {
+    const { ipfsFileHash } = entry
+    const downloadClaim = (ipfsFileHash: string) => this.ipfs.cat(ipfsFileHash).rethrow(errorToIPFSError(ipfsFileHash))
+    const parseClaim = (ipfsFileHash: string, serialized: string) => {
       try {
         const parsedJson = JSON.parse(serialized)
         return {
@@ -226,19 +233,19 @@ export class ClaimController {
           dateCreated: new Date(parsedJson.dateCreated),
         }
       } catch (error) {
-        throw new InvalidClaim(ipfsHash, FailureReason.InvalidJson)
+        throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidJson)
       }
     }
     const logger = this.logger.child({ method: 'downloadEntryClaim' })
 
-    logger.trace({ ipfsHash }, 'Starting claim download')
+    logger.trace({ ipfsFileHash }, 'Starting claim download')
 
-    const serialized = await downloadClaim(ipfsHash)
-    const claim = parseClaim(ipfsHash, serialized)
+    const serialized = await downloadClaim(ipfsFileHash)
+    const claim = parseClaim(ipfsFileHash, serialized)
 
-    if (!isValidClaim(claim)) throw new InvalidClaim(ipfsHash, FailureReason.InvalidClaim)
+    if (!isValidClaim(claim)) throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidClaim)
 
-    logger.trace({ ipfsHash, claim }, 'Finished claim download')
+    logger.trace({ ipfsFileHash, claim }, 'Finished claim download')
 
     return {
       entry,
@@ -254,7 +261,7 @@ export class ClaimController {
     await this.updateClaimIdIPFSHashPairs([
       {
         claimId: claim.id,
-        ipfsHash: entry.ipfsHash,
+        ipfsFileHash: entry.ipfsFileHash,
       },
     ])
 
@@ -274,7 +281,7 @@ export class ClaimController {
     await this.messaging.publishClaimsDownloaded([
       {
         claim,
-        ipfsHash: entry.ipfsHash,
+        ipfsFileHash: entry.ipfsFileHash,
       },
     ])
 
@@ -290,18 +297,19 @@ export class ClaimController {
   private async updateClaimIdIPFSHashPairs(claimIdIPFSHashPairs: ReadonlyArray<ClaimIdIPFSHashPair>) {
     const logger = this.logger.child({ method: 'updateClaimIdIPFSHashPairs' })
 
-    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsHash } pairs in the DB.')
+    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsFileHash } pairs in the DB.')
 
     const results = await Promise.all(
-      claimIdIPFSHashPairs.map(({ claimId, ipfsHash }) =>
-        this.collection.updateOne({ ipfsHash }, { $set: { claimId } }, { upsert: true })
+      claimIdIPFSHashPairs.map(({ claimId, ipfsFileHash }) =>
+        this.collection.updateOne({ ipfsFileHash }, { $set: { claimId } }, { upsert: true })
       )
     )
 
     const databaseErrors = results.filter(_ => _.result.n !== 1)
 
-    if (databaseErrors.length) logger.error({ databaseErrors }, 'Error storing { claimId, ipfsHash } pairs in the DB.')
+    if (databaseErrors.length)
+      logger.error({ databaseErrors }, 'Error storing { claimId, ipfsFileHash } pairs in the DB.')
 
-    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsHash } pairs in the DB successfully.')
+    logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsFileHash } pairs in the DB successfully.')
   }
 }

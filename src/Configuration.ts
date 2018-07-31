@@ -27,6 +27,10 @@ export interface Configuration extends LoggingConfiguration {
   readonly downloadRetryDelayInMinutes: number
   readonly downloadMaxAttempts: number
   readonly downloadTimeoutInSeconds: number
+
+  readonly batchCreationIntervalInSeconds: number
+
+  readonly readDirectoryIntervalInSeconds: number
 }
 
 export interface LoggingConfiguration {
@@ -42,7 +46,7 @@ const defaultConfiguration: Configuration = {
 
   apiPort: 18080,
   poetNetwork: 'BARD',
-  poetVersion: [0, 0, 0, 2],
+  poetVersion: [0, 0, 0, 3],
   minimumBlockHeight: 1279550, // Less than 24 hours before Feb 8th, 2018 - Frost's Release
   blockchainReaderIntervalInSeconds: 5,
 
@@ -56,6 +60,10 @@ const defaultConfiguration: Configuration = {
 
   loggingLevel: 'info',
   loggingPretty: true,
+
+  batchCreationIntervalInSeconds: 600,
+
+  readDirectoryIntervalInSeconds: 30,
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')

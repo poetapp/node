@@ -24,7 +24,7 @@ Entries in the `storage` collection look like this:
 ```js
 {
   "_id" : ObjectId("5b236c1551757306d975d6f8"),
-  "ipfsHash" : "QmRcMsiG9FbfBomigXv4t67SURi877G8dFEzrhLCATC9fE",
+  "ipfsFileHash" : "QmRcMsiG9FbfBomigXv4t67SURi877G8dFEzrhLCATC9fE",
   "lastDownloadAttemptTime" : 1529048279442,
   "downloadAttempts" : 1,
   "claimId" : "ce00f1cbce44b71d5fc80326ddb3eb7d0df1cc00795e78cf3201bebb3b82f9d8"
@@ -36,7 +36,7 @@ They can also look like this:
 ```js
 {
   "_id" : ObjectId("5b236c1551757306d975d6ef"),
-  "ipfsHash" : "QmNvLwsFPYQuCg2aXUvpUKzgQNAKfvenfjY8KqD29TzVwh",
+  "ipfsFileHash" : "QmNvLwsFPYQuCg2aXUvpUKzgQNAKfvenfjY8KqD29TzVwh",
   "lastDownloadAttemptTime" : 1529048118138,
   "downloadAttempts" : 1,
   "failureType" : "HARD",

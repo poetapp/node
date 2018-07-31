@@ -1,6 +1,8 @@
 /* tslint:disable:no-relative-imports */
-import { Claim, isClaim, Work } from '@po.et/poet-js'
+import { Claim, Work } from '@po.et/poet-js'
 import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
+
+import { claimFromJSON } from 'Helpers/Claim'
 
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
 import { Client } from './Helper'
@@ -78,7 +80,7 @@ export class GetWorksByPublicKey {
     Expect(response.ok).toBeTruthy()
 
     const claims = await response.json()
-    const allElementsAreClaims = !claims.find((claim: Claim) => !isClaim(claim))
+    const allElementsAreClaims = !claims.find((claim: Claim) => claimFromJSON(claim) === null)
 
     Expect(allElementsAreClaims).toBeTruthy()
   }

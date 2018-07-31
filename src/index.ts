@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 
 /* tslint:disable:no-console */
-import 'Error'
 import * as Pino from 'pino'
 import 'reflect-metadata'
 
+import 'Extensions/Error'
 import 'Extensions/Promise'
 
 import { API } from 'API/API'
+import { BatchReader } from 'BatchReader/BatchReader'
+import { BatchWriter } from 'BatchWriter/BatchWriter'
 import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
 import { loadConfigurationWithDefaults } from 'Configuration'
@@ -47,6 +49,34 @@ async function main() {
     await api.start()
   } catch (exception) {
     logger.error({ exception }, 'API was unable to start')
+  }
+
+  if (configuration.enableTimestamping) {
+    const batchWriter = new BatchWriter({
+      ...loggingConfiguration,
+      batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
+      dbUrl: configuration.mongodbUrl,
+      ipfsUrl: configuration.ipfsUrl,
+      rabbitmqUrl: configuration.rabbitmqUrl,
+    })
+    try {
+      await batchWriter.start()
+    } catch (exception) {
+      logger.error({ exception }, 'BatchWriter was unable to start')
+    }
+  }
+
+  const batchReader = new BatchReader({
+    ...loggingConfiguration,
+    readNextDirectoryIntervalInSeconds: configuration.readDirectoryIntervalInSeconds,
+    dbUrl: configuration.mongodbUrl,
+    ipfsUrl: configuration.ipfsUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
+  })
+  try {
+    await batchReader.start()
+  } catch (exception) {
+    logger.error({ exception }, 'BatchReader was unable to start')
   }
 
   const view = new View({

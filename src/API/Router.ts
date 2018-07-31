@@ -1,11 +1,4 @@
-import {
-  ClaimType,
-  isClaim,
-  isWork,
-  isValidSignature,
-  IllegalArgumentException,
-  NotFoundException,
-} from '@po.et/poet-js'
+import { ClaimType, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from '@po.et/poet-js'
 import { injectable, inject } from 'inversify'
 import * as Joi from 'joi'
 import * as Koa from 'koa'
@@ -15,6 +8,7 @@ import * as helmet from 'koa-helmet'
 import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
 
+import { claimFromJSON } from 'Helpers/Claim'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
@@ -91,11 +85,13 @@ export class Router {
   }
 
   private postWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.trace({ body: context.request.body }, 'POST /works')
+    const { body } = context.request
 
-    const work = context.request.body
+    this.logger.trace({ body }, 'POST /works')
 
-    if (!isClaim(work)) throw new IllegalArgumentException('Request Body must be a Claim.')
+    const work = claimFromJSON(body)
+
+    if (work === null) throw new IllegalArgumentException('Request Body must be a Claim.')
 
     if (!isWork(work)) throw new IllegalArgumentException(`Claim's type must be ${ClaimType.Work}, not ${work.type}`)
 
