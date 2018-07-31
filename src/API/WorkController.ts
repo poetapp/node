@@ -3,11 +3,11 @@ import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
-import { getDefinedFilters } from './GetDefinedFilters'
 import { childWithFileName } from 'Helpers/Logging'
 import { omitUndefined } from 'Helpers/OmitUndefined'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
+import { getDefinedFilters } from './GetDefinedFilters'
 
 interface WorksFilters {
   readonly publicKey?: string
@@ -35,7 +35,7 @@ export class WorkController {
 
   async getByFilters(worksFilters: WorksFilters = {}): Promise<any> {
     this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
-    const { offset, limit }: { offset?: string, limit?: string } = omitUndefined(worksFilters)
+    const { offset, limit }: { offset?: string; limit?: string } = omitUndefined(worksFilters)
     const skip = parseInt(offset, 10) || 0
     const definedFilters = getDefinedFilters(worksFilters)
     return this.collection

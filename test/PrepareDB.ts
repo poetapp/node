@@ -2,9 +2,9 @@
 import { Db, MongoClient } from 'mongodb'
 
 import {
-  AStudyInScarlet, 
-  TheMurdersInTheRueMorgue, 
-  TheRaven, 
+  AStudyInScarlet,
+  TheMurdersInTheRueMorgue,
+  TheRaven,
   TheWeekOfDiana,
   KnowWhyTheCagedBirdSings,
   GatherTogetherInMyName,
@@ -14,7 +14,8 @@ import {
   ASongFlungUpToHeaven,
   MomAndMeAndMom,
   OnThePulseOfMorning,
-  ABraveAndStartlingTrugh, } from './Claims'
+  ABraveAndStartlingTrugh,
+} from './Claims'
 import { waitForNode } from './Integration/Helper'
 
 const collectionNames: ReadonlyArray<string> = ['works', 'blockchainReader', 'blockchainWriter', 'storage']
@@ -49,17 +50,16 @@ async function insertTestWorks(db: Db) {
   await collection.insertOne(TheRaven)
   await collection.insertOne(TheMurdersInTheRueMorgue)
   await collection.insertOne(AStudyInScarlet)
-  await collection.insertOne(TheWeekOfDiana);
-  await collection.insertOne(KnowWhyTheCagedBirdSings);
-  await collection.insertOne(GatherTogetherInMyName);
-  await collection.insertOne(SinginAndSwinginAndGettingMerryLikeChristmas);
-  await collection.insertOne(TheHeartOfAWoman);
-  await collection.insertOne(AllGodsChildrenNeedTravelingShoes);
-  await collection.insertOne(ASongFlungUpToHeaven);
-  await collection.insertOne(MomAndMeAndMom);
-  await collection.insertOne(OnThePulseOfMorning);
-  await collection.insertOne(ABraveAndStartlingTrugh);
-
+  await collection.insertOne(TheWeekOfDiana)
+  await collection.insertOne(KnowWhyTheCagedBirdSings)
+  await collection.insertOne(GatherTogetherInMyName)
+  await collection.insertOne(SinginAndSwinginAndGettingMerryLikeChristmas)
+  await collection.insertOne(TheHeartOfAWoman)
+  await collection.insertOne(AllGodsChildrenNeedTravelingShoes)
+  await collection.insertOne(ASongFlungUpToHeaven)
+  await collection.insertOne(MomAndMeAndMom)
+  await collection.insertOne(OnThePulseOfMorning)
+  await collection.insertOne(ABraveAndStartlingTrugh)
 }
 
 main().catch(console.error)
