@@ -57,11 +57,11 @@ export class GetWorks {
 
   @AsyncTest()
   @TestCase('4')
-  async getLimitedWorksShouldReturnLimit() {
-    const response = await this.client.getWorks()
+  async getLimitedWorksShouldReturnLimit(limit: string) {
+    const response = await this.client.getLimitedWorks(limit);
     const claims = await response.json()
-    const lessThan10 = claims.length <= 4
-    Expect(lessThan10).toBeTruthy()
+    const lessThan4 = claims.length <= 4
+    Expect(lessThan4).toBeTruthy()
   }
 
   @AsyncTest()
