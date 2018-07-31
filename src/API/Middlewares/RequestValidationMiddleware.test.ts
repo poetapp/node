@@ -9,13 +9,13 @@ describe('RequestValidationMiddleware', async (should: any) => {
 
   const name = 'Jon Doe'
 
-  const schema = ({
+  const schema = {
     name: Joi.string(),
-  })
+  }
 
-  const invalidSchema = ({
+  const invalidSchema = {
     name: Joi.number(),
-  })
+  }
 
   const ctx = {
     query: { name },
@@ -82,7 +82,7 @@ describe('RequestValidationMiddleware', async (should: any) => {
 
     try {
       await RequestValidationMiddleware({ body: invalidSchema })(context, next)
-    } catch(e) {
+    } catch (e) {
       assert({
         given: 'invalid schema for validating body request',
         should: 'throw new error message',
@@ -97,7 +97,7 @@ describe('RequestValidationMiddleware', async (should: any) => {
 
     try {
       await RequestValidationMiddleware({ params: invalidSchema })(ctx, next)
-    } catch(e) {
+    } catch (e) {
       assert({
         given: 'invalid schema for validating params request',
         should: 'throw new error message',
@@ -112,7 +112,7 @@ describe('RequestValidationMiddleware', async (should: any) => {
 
     try {
       await RequestValidationMiddleware({ query: invalidSchema })(ctx, next)
-    } catch(e) {
+    } catch (e) {
       assert({
         given: 'invalid schema for validating query request',
         should: 'throw new error message',
