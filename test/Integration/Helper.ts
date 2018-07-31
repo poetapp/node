@@ -20,6 +20,15 @@ export class Client {
     return fetch(this.url + '/works/')
   }
 
+  getOffsetPublicKeyWorks(offset: string, publicKey: string) {
+    return fetch(this.url + `/works/?offset=${offset}&publicKey=${publicKey}` )
+  }
+
+  getLimitedWorks(limit: string) {
+    return fetch(this.url + `/works/?limit=${limit}`)
+  }
+
+
   getWorksTest(test?: string) {
     return fetch(this.url + '/works/?test=' + test)
   }

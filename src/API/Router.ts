@@ -51,6 +51,7 @@ export class Router {
       query: {
         publicKey: Joi.string().optional(),
         offset: Joi.string().optional(),
+        limit: Joi.string().optional(),
       },
     }
 
