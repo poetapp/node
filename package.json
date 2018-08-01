@@ -72,7 +72,7 @@
     "nodemon": "1.18.3",
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "2.0.4",
-    "sinon": "6.0.1",
+    "sinon": "6.1.4",
     "ts-node": "7.0.0",
     "tsconfig-paths": "3.4.2",
     "typescript": "2.8.3"
