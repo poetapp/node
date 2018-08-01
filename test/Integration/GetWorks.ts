@@ -2,6 +2,8 @@
 import { Claim, isClaim } from '@po.et/poet-js'
 import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
 
+import { claimFromJSON } from 'Helpers/Claim'
+
 import { TheRaven, ABraveAndStartlingTrugh } from '../Claims'
 import { Client } from './Helper'
 
@@ -81,7 +83,8 @@ export class GetWorks {
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
 
-    const claims = await response.json()
+    const JSONclaims = await response.json()
+    const claims = JSONclaims.map((claim: Claim) => claimFromJSON(claim))
     const allElementsAreClaims = !claims.find((claim: Claim) => !isClaim(claim))
 
     Expect(allElementsAreClaims).toBeTruthy()
