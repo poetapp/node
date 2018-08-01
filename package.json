@@ -45,7 +45,7 @@
     "koa-helmet": "4.0.0",
     "koa-router": "7.4.0",
     "mongodb": "3.1.1",
-    "node-fetch": "1.7.3",
+    "node-fetch": "2.2.0",
     "pino": "4.17.6",
     "protobufjs": "6.8.8",
     "reflect-metadata": "0.1.12",
