@@ -83,7 +83,7 @@ export class GetWorks {
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
 
-    const claims = await response.json();
+    const claims = await response.json()
     const allElementsAreClaims = !claims.find((claim: any) => !isClaim(claimFromJSON(claim)))
 
     Expect(allElementsAreClaims).toBeTruthy()
