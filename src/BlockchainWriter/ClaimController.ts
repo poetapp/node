@@ -37,13 +37,13 @@ export class ClaimController {
     this.collection = this.db.collection('blockchainWriter')
   }
 
-  async requestTimestamp(ipfsHash: string): Promise<void> {
+  async requestTimestamp(ipfsDirectoryHash: string): Promise<void> {
     this.logger.trace({
       method: 'timestampWithRetry',
-      ipfsHash,
+      ipfsDirectoryHash,
     })
     await this.collection.insertOne({
-      ipfsHash,
+      ipfsDirectoryHash,
       txId: null,
     })
   }
@@ -54,18 +54,18 @@ export class ClaimController {
     logger.trace('Retrieving Next Hash To Timestamp')
 
     const entry = await this.collection.findOne({ txId: null })
-    const hash = entry && entry.ipfsHash
+    const ipfsDirectoryHash = entry && entry.ipfsDirectoryHash
 
-    this.logger.trace({ hash }, 'Next Hash To Timestamp Retrieved')
+    this.logger.trace({ ipfsDirectoryHash }, 'Next Hash To Timestamp Retrieved')
 
-    if (!hash) return
+    if (!ipfsDirectoryHash) return
 
     try {
-      await this.timestamp(hash)
+      await this.timestamp(ipfsDirectoryHash)
     } catch (exception) {
       logger.warn(
         {
-          hash,
+          ipfsDirectoryHash,
           exception,
         },
         'Uncaught Exception While Timestamping Hash'
@@ -73,10 +73,10 @@ export class ClaimController {
     }
   }
 
-  private async timestamp(ipfsHash: string): Promise<void> {
+  private async timestamp(ipfsDirectoryHash: string): Promise<void> {
     const logger = this.logger.child({ method: 'timestamp' })
 
-    logger.trace({ ipfsHash }, 'Timestamping IPFS Hash')
+    logger.trace({ ipfsDirectoryHash }, 'Timestamping IPFS Hash')
 
     const utxo = await this.insightHelper.getUtxo(this.configuration.bitcoinAddress)
 
@@ -101,7 +101,7 @@ export class ClaimController {
     const data = Buffer.concat([
       Buffer.from(this.configuration.poetNetwork),
       Buffer.from([...this.configuration.poetVersion]),
-      Buffer.from(ipfsHash),
+      Buffer.from(ipfsDirectoryHash),
     ])
     const tx = new bitcore.Transaction()
       .from(topUtxo)
@@ -128,9 +128,9 @@ export class ClaimController {
       'Transaction Broadcasted'
     )
 
-    await this.collection.updateOne({ ipfsHash }, { $set: { txId: tx.id } }, { upsert: true })
+    await this.collection.updateOne({ ipfsDirectoryHash }, { $set: { txId: tx.id } }, { upsert: true })
     await this.messaging.publish(Exchange.IPFSHashTxId, {
-      ipfsHash,
+      ipfsDirectoryHash,
       txId: tx.id,
     })
   }

@@ -1,7 +1,7 @@
-import { isClaim, PoetTimestamp } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
+import { claimFromJSON } from 'Helpers/Claim'
 import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
@@ -26,22 +26,26 @@ export class Router {
 
   async start() {
     await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
-    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetTimestampsDownloaded)
+    await this.messaging.consume(
+      Exchange.BatchReaderReadNextDirectorySuccess,
+      this.onBatchReaderReadNextDirectorySuccess
+    )
   }
 
   onNewClaim = async (message: any): Promise<void> => {
+    const logger = this.logger.child({ method: 'onNewClaim' })
+
     const messageContent = message.content.toString()
 
-    const claim = JSON.parse(messageContent)
+    const claim = claimFromJSON(JSON.parse(messageContent))
 
-    if (!isClaim(claim)) throw new Error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
+    if (claim === null) logger.error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
 
     try {
       await this.claimController.create(claim)
     } catch (error) {
-      this.logger.error(
+      logger.error(
         {
-          method: 'onNewClaim',
           error,
         },
         'Uncaught Exception while Storing Claim'
@@ -49,13 +53,16 @@ export class Router {
     }
   }
 
-  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>): Promise<void> => {
+  onBatchReaderReadNextDirectorySuccess = async (message: any): Promise<void> => {
     const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
 
-    logger.trace({ poetTimestamps }, 'Downloading Claims from IPFS')
+    const messageContent = message.content.toString()
+    const { ipfsFileHashes } = JSON.parse(messageContent)
+
+    logger.trace({ ipfsFileHashes }, 'Downloading Claims from IPFS')
 
     try {
-      await this.claimController.download(poetTimestamps.map(_ => _.ipfsHash))
+      await this.claimController.download(ipfsFileHashes)
     } catch (error) {
       logger.error({ error }, 'Error downloading IPFS hashes')
     }

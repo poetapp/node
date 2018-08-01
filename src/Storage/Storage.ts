@@ -73,7 +73,7 @@ export class Storage {
 
   private async createIndices() {
     const collection = this.dbConnection.collection('storage')
-    await collection.createIndex({ ipfsHash: 1 }, { unique: true, name: 'ipfsHash-unique' })
+    await collection.createIndex({ ipfsFileHash: 1 }, { unique: true, name: 'ipfsFileHash-unique' })
     await collection.createIndex({ attempts: 1 }, { name: 'attempts' })
   }
 }

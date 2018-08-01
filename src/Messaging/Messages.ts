@@ -1,4 +1,9 @@
 export enum Exchange {
+  BatchReaderReadNextDirectoryRequest = 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
+  BatchReaderReadNextDirectorySuccess = 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
+  BatchWriterCreateNextBatchRequest = 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
+  BatchWriterCreateNextBatchSuccess = 'BATCH_WRITER::CREATE_NEXT_BATCH_SUCCESS',
+
   // Event, a new claim has been submitted by a client
   NewClaim = 'NEW_CLAIM',
   // Event, the IPFS hash of a claim has been discovered

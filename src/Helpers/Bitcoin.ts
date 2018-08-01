@@ -15,7 +15,7 @@ export function getPoetTimestamp(tx: bitcore.Transaction): TransactionPoetTimest
       outputIndex: tx.outputs.indexOf(poetOutput),
       prefix: poetTimestampBuffer.slice(0, 4).toString(),
       version: Array.from(poetTimestampBuffer.slice(4, 8)),
-      ipfsHash: poetTimestampBuffer.slice(8).toString(),
+      ipfsDirectoryHash: poetTimestampBuffer.slice(8).toString(),
     }
   )
 }

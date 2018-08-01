@@ -10,35 +10,35 @@ export class NoMoreEntriesException extends Error {
 }
 
 export class InvalidClaim extends Error {
-  readonly ipfsHash: string
+  readonly ipfsFileHash: string
   readonly failureReason: FailureReason
 
-  constructor(ipfsHash: string, failureReason: FailureReason) {
+  constructor(ipfsFileHash: string, failureReason: FailureReason) {
     super()
-    this.ipfsHash = ipfsHash
+    this.ipfsFileHash = ipfsFileHash
     this.failureReason = failureReason
   }
 }
 
 export class IPFSGenericError extends Error {
-  readonly ipfsHash: string
+  readonly ipfsFileHash: string
   readonly underlyingError: Error
 
-  constructor(ipfsHash: string, underlyingError: Error) {
+  constructor(ipfsFileHash: string, underlyingError: Error) {
     super()
-    this.ipfsHash = ipfsHash
+    this.ipfsFileHash = ipfsFileHash
     this.underlyingError = underlyingError
   }
 }
 
 export class IPFSTimeoutError extends Error {
-  readonly ipfsHash: string
+  readonly ipfsFileHash: string
 
-  constructor(ipfsHash: string) {
+  constructor(ipfsFileHash: string) {
     super()
-    this.ipfsHash = ipfsHash
+    this.ipfsFileHash = ipfsFileHash
   }
 }
 
-export const errorToIPFSError = (ipfsHash: string) => (error: Error) =>
-  isFetchTimeoutError(error) ? new IPFSTimeoutError(ipfsHash) : new IPFSGenericError(ipfsHash, error)
+export const errorToIPFSError = (ipfsFileHash: string) => (error: Error) =>
+  isFetchTimeoutError(error) ? new IPFSTimeoutError(ipfsFileHash) : new IPFSGenericError(ipfsFileHash, error)
