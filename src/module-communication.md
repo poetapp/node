@@ -33,7 +33,7 @@ This document describes communication between the high level modules of the poet
   - **BlockchainReader** reads block and publishes `PoetTimestampDownloaded`
 
 - on `PoetTimestampDownloaded`
-  - **BatchReader** stores ipfsDirectoryHash in collection que for reading 
+  - **BatchReader** stores ipfsDirectoryHash in collection queue for reading 
   - **View** stores timestamp information in a timestamp collection
 
 - on `BatchReaderReadNextDirectoryRequest` (published on set interval)
@@ -41,7 +41,7 @@ This document describes communication between the high level modules of the poet
 
 - on `BatchReaderReadNextDirectorySuccess`
   - **Storage** stores the ipfsFileHashes to download 
-  - **View** creates/updates work entry per ipfsFileHash, copies timestamp data from the timestamp collection for the work entry. Copying the timestamp data also fills in missing timestamp infromation from write flow work entries.
+  - **View** creates/updates work entry per ipfsFileHash, copies timestamp data from the timestamp collection for the work entry. Copying the timestamp data also fills in missing timestamp information from write flow work entries.
 
 - on `ClaimsDownloaded`
   - **View** Adds claim to work entry
