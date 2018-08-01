@@ -4,7 +4,7 @@ This document describes communication between the high level modules of the poet
 
 ## Writing Claims
 
-- initial: claim gets posted.
+- initial
   - **API** publishes `newClaim`
 
 - on `newClaim`
@@ -15,21 +15,33 @@ This document describes communication between the high level modules of the poet
   - **BatchWriter** Stores an entry to be batched
   - **View** adds the ipfsFileHash to matching claim entry
 
-- on `IPFSHashTxId`
-
-- on `PoetTimestampDownloaded`
-
-- on `ClaimsDownloaded`
-
 - on `BatchWriterCreateNextBatchRequest`
+  - **BatchWriter** adds fileHashes to directory and publishes `BatchWriterCreateNextBatchSuccess`
 
 - on `BatchWriterCreateNextBatchSuccess`
+  - **BlockchainWriter** stores ipfsDirectoryHash to anchor to the blockchain, publishes `IPFSHashTxId` after anchoring.
+  - **View** adds ipfsDirectoryHash to work entries
+
+- on `IPFSHashTxId`
+  - **View** adds transaction ID on work entries
+
+
 
 ## Reading Claims
+
+- initial
+  - **BlockchainReader** reads block and publishes `PoetTimestampDownloaded`
+
+- on `PoetTimestampDownloaded`
+  - **BatchReader** stores ipfsDirectoryHash to read
+  - **View** stores timestamp information in a timestamp collection
 
 - on `BatchReaderReadNextDirectoryRequest`
   - **BatchReader** reads next directory and publishes `BatchReaderReadNextDirectorySuccess`
 
 - on `BatchReaderReadNextDirectorySuccess`
-  - **Storage** stores all the ipfsFileHashes to download
-  - **View** 
+  - **Storage** stores the ipfsFileHashes to download 
+  - **View** creates/updates work entry per ipfsFileHash
+
+- on `ClaimsDownloaded`
+  - **View** Adds claim to work entry
