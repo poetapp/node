@@ -84,8 +84,12 @@ export class Router {
   }
 
   private getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.trace({ query: context.query }, '/works?query=')
-    const works = await this.workController.getByFilters(context.query)
+    this.logger.trace({ query: context.query }, '/works')
+    const works = await this.workController.getByFilters({
+      ...context.query,
+      offset: parseInt(context.query.offset, 10),
+      limit: parseInt(context.query.limit, 10),
+    })
 
     context.body = works
   }
