@@ -4,7 +4,7 @@ This document describes communication between the high level modules of the poet
 
 ## Writing Claims
 
-- initial
+- initial: User posts a new work to node using `POST /works`
   - **API** publishes `newClaim`
 
 - on `newClaim`
