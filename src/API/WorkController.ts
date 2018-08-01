@@ -4,14 +4,13 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { omitUndefined } from 'Helpers/OmitUndefined'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
-import { getDefinedFilters } from './GetDefinedFilters'
 
 interface WorksFilters {
   readonly publicKey?: string
-  readonly offset?: string
+  readonly offset?: number
+  readonly limit?: number
 }
 
 @injectable()
@@ -30,21 +29,19 @@ export class WorkController {
 
   async getById(id: string): Promise<any> {
     this.logger.trace({ method: 'getById', id }, 'Getting Work by Id from DB')
-    return this.collection.findOne({ id }, { fields: { _id: false } })
+    return this.collection.findOne({ id }, { projection: { _id: false } })
   }
 
-  async getByFilters(worksFilters: WorksFilters = {}): Promise<any> {
+  async getByFilters(worksFilters: WorksFilters = {}): Promise<ReadonlyArray<any>> {
     this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
-    const { offset, limit }: { offset?: string; limit?: string } = omitUndefined(worksFilters)
-    const skip = parseInt(offset, 10) || 0
-    const definedFilters = getDefinedFilters(worksFilters)
+    const { offset, limit, ...filters } = worksFilters
     return this.collection
-      .find(definedFilters, { projection: { _id: false } })
+      .find(filters, { projection: { _id: false } })
       .sort({
         _id: -1,
       })
-      .skip(skip)
-      .limit(parseInt(limit, 10) || 10)
+      .skip(offset)
+      .limit(limit || 10)
       .toArray()
   }
 
