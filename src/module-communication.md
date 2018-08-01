@@ -4,8 +4,8 @@ This document describes communication between the high level modules of the poet
 
 ## Writing Claims
 
-- initial: User posts a new work to node using `POST /works`
-  - **API** publishes `newClaim`
+- initial
+  - **API** User posts a new work to node using `POST /works`, publishes `newClaim`
 
 - on `newClaim`
   - **View** stores the claim information into the work collection
@@ -15,7 +15,7 @@ This document describes communication between the high level modules of the poet
   - **BatchWriter** Stores an entry to be batched
   - **View** adds the ipfsFileHash to matching claim entry
 
-- on `BatchWriterCreateNextBatchRequest`
+- on `BatchWriterCreateNextBatchRequest` (published on set interval)
   - **BatchWriter** groups files hashes into a directory and publishes `BatchWriterCreateNextBatchSuccess`
 
 - on `BatchWriterCreateNextBatchSuccess`
@@ -33,15 +33,15 @@ This document describes communication between the high level modules of the poet
   - **BlockchainReader** reads block and publishes `PoetTimestampDownloaded`
 
 - on `PoetTimestampDownloaded`
-  - **BatchReader** stores ipfsDirectoryHash to read
+  - **BatchReader** stores ipfsDirectoryHash in collection que for reading 
   - **View** stores timestamp information in a timestamp collection
 
-- on `BatchReaderReadNextDirectoryRequest`
+- on `BatchReaderReadNextDirectoryRequest` (published on set interval)
   - **BatchReader** reads next directory and publishes `BatchReaderReadNextDirectorySuccess`
 
 - on `BatchReaderReadNextDirectorySuccess`
   - **Storage** stores the ipfsFileHashes to download 
-  - **View** creates/updates work entry per ipfsFileHash
+  - **View** creates/updates work entry per ipfsFileHash, copies timestamp data from the timestamp collection for the work entry.
 
 - on `ClaimsDownloaded`
   - **View** Adds claim to work entry
