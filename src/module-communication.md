@@ -16,14 +16,14 @@ This document describes communication between the high level modules of the poet
   - **View** adds the ipfsFileHash to matching claim entry
 
 - on `BatchWriterCreateNextBatchRequest`
-  - **BatchWriter** adds fileHashes to directory and publishes `BatchWriterCreateNextBatchSuccess`
+  - **BatchWriter** groups files hashes into a directory and publishes `BatchWriterCreateNextBatchSuccess`
 
 - on `BatchWriterCreateNextBatchSuccess`
   - **BlockchainWriter** stores ipfsDirectoryHash to anchor to the blockchain, publishes `IPFSHashTxId` after anchoring.
   - **View** adds ipfsDirectoryHash to work entries
 
 - on `IPFSHashTxId`
-  - **View** adds transaction ID on work entries
+  - **View** adds transaction ID to work entries
 
 
 
