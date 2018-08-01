@@ -30,7 +30,7 @@ export class WorkController {
 
   async getById(id: string): Promise<any> {
     this.logger.trace({ method: 'getById', id }, 'Getting Work by Id from DB')
-    return this.collection.findOne({ id }, { fields: { _id: false } })
+    return this.collection.findOne({ id }, { projection: { _id: false } })
   }
 
   async getByFilters(worksFilters: WorksFilters = {}): Promise<any> {
