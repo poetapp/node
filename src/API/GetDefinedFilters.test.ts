@@ -5,13 +5,11 @@ import { getDefinedFilters } from './GetDefinedFilters'
 describe('getDefinedFilters', async (should: any) => {
   const { assert } = should('')
 
-  const a = () => Promise.resolve()
-  a()
   assert({
     given: 'empty object',
     should: 'return empty object',
     actual: getDefinedFilters({}),
-    expected: {}
+    expected: {},
   })
   {
     const query = { publicKey: 'test' }
@@ -19,7 +17,7 @@ describe('getDefinedFilters', async (should: any) => {
       given: 'object with defined key value pairs',
       should: 'return object with same keys and values as input',
       actual: getDefinedFilters(query),
-      expected: query
+      expected: query,
     })
   }
   {
@@ -28,16 +26,16 @@ describe('getDefinedFilters', async (should: any) => {
       given: 'object with a single, undefined key',
       should: 'return empty object',
       actual: getDefinedFilters(query),
-      expected: {}
+      expected: {},
     })
   }
   {
-    const query: { publicKey: string, badKey: any } = { publicKey: 'test', badKey: 'ajsdfasdf' }
+    const query: { publicKey: string; badKey: any } = { publicKey: 'test', badKey: 'ajsdfasdf' }
     assert({
       given: 'object with a accepted key and an unwanted key',
       should: 'return an object with the accepted key only',
       actual: getDefinedFilters(query),
-      expected: { publicKey: 'test' }
+      expected: { publicKey: 'test' },
     })
   }
 })
