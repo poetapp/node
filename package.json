@@ -47,7 +47,7 @@
     "mongodb": "3.1.1",
     "node-fetch": "1.7.3",
     "pino": "4.17.6",
-    "protobufjs": "6.8.7",
+    "protobufjs": "6.8.8",
     "reflect-metadata": "0.1.12",
     "string-to-stream": "1.1.1"
   },
@@ -74,7 +74,7 @@
     "riteway": "2.0.4",
     "sinon": "6.1.4",
     "ts-node": "7.0.0",
-    "tsconfig-paths": "3.4.2",
-    "typescript": "2.8.3"
+    "tsconfig-paths": "3.5.0",
+    "typescript": "3.0.1"
   }
 }
