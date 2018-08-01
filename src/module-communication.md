@@ -41,7 +41,7 @@ This document describes communication between the high level modules of the poet
 
 - on `BatchReaderReadNextDirectorySuccess`
   - **Storage** stores the ipfsFileHashes to download 
-  - **View** creates/updates work entry per ipfsFileHash, copies timestamp data from the timestamp collection for the work entry.
+  - **View** creates/updates work entry per ipfsFileHash, copies timestamp data from the timestamp collection for the work entry. Copying the timestamp data also fills in missing timestamp infromation from write flow work entries.
 
 - on `ClaimsDownloaded`
   - **View** Adds claim to work entry
