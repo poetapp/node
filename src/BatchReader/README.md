@@ -25,8 +25,11 @@ The entry point for the module.
 #### `ClaimController.ts`
 Handles the business logic of claims.
 
-#### `DirectoryDAO.ts`   
-A facade, data access object, to provide simplified manipulation of directory hash state in the database.
+#### `Database.ts`
+A database Interface required by the business logic ( Claim Controller ).
+
+#### `DatabaseMongo.ts`
+A mongo database plugin that implements the Database interface.
 
 #### `IPFS.ts`
 Implements an API for the IPFS service.

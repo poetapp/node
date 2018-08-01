@@ -1,30 +1,79 @@
 import { inject, injectable } from 'inversify'
-import { InsertWriteOpResult } from 'mongodb'
 
-import { DirectoryDAO } from './DirectoryDAO'
+import { asyncPipe } from 'Helpers/AsyncPipe'
+import { PoetTimestamp } from 'Interfaces'
+
+import { Database } from './Database'
 import { IPFS } from './IPFS'
+import { ReadEntry } from './ReadEntry'
+
+interface ReadFlowData {
+  readEntry?: ReadEntry
+  ipfsFileHashes?: ReadonlyArray<string>
+}
+
+type timestampToReadEntry = (x: PoetTimestamp) => ReadEntry
+
+type addTimestamps = (xs: ReadonlyArray<PoetTimestamp>) => Promise<void>
+
+type readFlow = (x?: ReadFlowData) => Promise<ReadFlowData>
 
 @injectable()
 export class ClaimController {
-  private readonly directoryDAO: DirectoryDAO
+  private readonly db: Database
   private readonly ipfs: IPFS
 
-  constructor(@inject('DirectoryDAO') directoryDAO: DirectoryDAO, @inject('IPFS') ipfs: IPFS) {
-    this.directoryDAO = directoryDAO
+  constructor(@inject('Database') db: Database, @inject('IPFS') ipfs: IPFS) {
+    this.db = db
     this.ipfs = ipfs
   }
 
-  addEntries = (entries: ReadonlyArray<{ ipfsDirectoryHash: string }>): Promise<InsertWriteOpResult> =>
-    this.directoryDAO.addEntries(entries)
+  timestampToReadEntry: timestampToReadEntry = ({ ipfsDirectoryHash }) => ({
+    attempts: 0,
+    ipfsDirectoryHash,
+    ipfsFileHashes: [],
+  })
 
-  readNextDirectory = async (): Promise<{ ipfsDirectoryHash: string; ipfsFileHashes: ReadonlyArray<string> }> => {
-    const collectionItem = await this.directoryDAO.findNextEntry()
-    if (!collectionItem) return
-    const { ipfsDirectoryHash } = collectionItem
-    await this.directoryDAO.incEntryAttempts({ ipfsDirectoryHash })
-    const ipfsFileHashes = await this.ipfs.getDirectoryFileHashes(ipfsDirectoryHash)
-    await this.directoryDAO.updateFileHashes({ ipfsDirectoryHash, ipfsFileHashes })
-    await this.directoryDAO.setEntrySuccessTime({ ipfsDirectoryHash })
-    return { ipfsDirectoryHash, ipfsFileHashes }
+  addTimestamps: addTimestamps = timestamps => this.db.readEntriesAdd(timestamps.map(this.timestampToReadEntry))
+
+  private readonly findNextEntry: readFlow = async () => {
+    const readEntry = await this.db.readEntryFindIncomplete()
+    return { readEntry }
   }
+
+  private readonly verifyEntryWasFound: readFlow = async x =>
+    x.readEntry ? Promise.resolve(x) : Promise.reject('No entries remaining')
+
+  private readonly incrementEntryAttempts: readFlow = async ({ readEntry, ...rest }) => {
+    const updatedEntry = { ...readEntry, attempts: readEntry.attempts + 1 }
+    await this.db.readEntryUpdate(updatedEntry)
+    return { readEntry: updatedEntry, ...rest }
+  }
+
+  private readonly getFileHashesFromDirectory: readFlow = async ({ readEntry, ...rest }) => {
+    const ipfsFileHashes = await this.ipfs.getDirectoryFileHashes(readEntry.ipfsDirectoryHash)
+    return { readEntry, ipfsFileHashes, ...rest }
+  }
+
+  private readonly addFileHashesToEntry: readFlow = async ({ readEntry, ipfsFileHashes, ...rest }) => {
+    const updatedEntry = { ...readEntry, ipfsFileHashes }
+    await this.db.readEntryUpdate(updatedEntry)
+    return { readEntry: updatedEntry, ipfsFileHashes, ...rest }
+  }
+
+  private readonly setEntryComplete: readFlow = async ({ readEntry, ...rest }) => {
+    const updatedEntry = { ...readEntry, successTime: new Date().getTime() }
+    await this.db.readEntryUpdate(updatedEntry)
+    return { readEntry, ...rest }
+  }
+
+  // tslint:disable-next-line
+  public readonly readNextDirectory: readFlow = asyncPipe(
+    this.findNextEntry,
+    this.verifyEntryWasFound,
+    this.incrementEntryAttempts,
+    this.getFileHashesFromDirectory,
+    this.addFileHashesToEntry,
+    this.setEntryComplete
+  )
 }
