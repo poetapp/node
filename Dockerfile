@@ -1,4 +1,4 @@
-FROM node:9.11.1
+FROM node:10.8.0
 
 RUN apt-get update && apt-get install -y rsync
 
