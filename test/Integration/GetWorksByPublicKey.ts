@@ -102,7 +102,7 @@ export class GetWorksByPublicKey {
   }
 
   @AsyncTest()
-  @TestCase(TheRaven.publicKey, [TheRaven, TheMurdersInTheRueMorgue])
+  @TestCase(TheRaven.publicKey, [TheMurdersInTheRueMorgue, TheRaven])
   @TestCase(AStudyInScarlet.publicKey, [AStudyInScarlet])
   async getWorksByPublicKeyShouldReturnExpectedFields(publicKey: string, expectedClaims: ReadonlyArray<Work>) {
     const response = await this.client.getWorksByPublicKey(publicKey)

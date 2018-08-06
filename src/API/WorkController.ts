@@ -7,6 +7,12 @@ import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
+interface WorksFilters {
+  readonly publicKey?: string
+  readonly offset?: number
+  readonly limit?: number
+}
+
 @injectable()
 export class WorkController {
   private readonly logger: Pino.Logger
@@ -23,12 +29,20 @@ export class WorkController {
 
   async getById(id: string): Promise<any> {
     this.logger.trace({ method: 'getById', id }, 'Getting Work by Id from DB')
-    return this.collection.findOne({ id }, { fields: { _id: false } })
+    return this.collection.findOne({ id }, { projection: { _id: false } })
   }
 
-  async getByPublicKey(publicKey: string): Promise<any> {
-    this.logger.trace({ method: 'getByPublicKey', publicKey }, 'Getting Works by Public Key from DB')
-    return this.collection.find({ publicKey }, { fields: { _id: false } }).toArray()
+  async getByFilters(worksFilters: WorksFilters = {}): Promise<ReadonlyArray<any>> {
+    this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
+    const { offset, limit, ...filters } = worksFilters
+    return this.collection
+      .find(filters, { projection: { _id: false } })
+      .sort({
+        _id: -1,
+      })
+      .skip(offset)
+      .limit(limit || 10)
+      .toArray()
   }
 
   async create(work: Work): Promise<void> {
