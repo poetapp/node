@@ -29,7 +29,7 @@ describe('Array', async (should: any) => {
     assert({
       given: 'array with two pairs of key values',
       should: 'get the values',
-      actual: Object["values"](result),
+      actual: Object.values(result),
       expected: ['value1', 'value2']
     })
   }
