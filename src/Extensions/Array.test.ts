@@ -4,7 +4,7 @@ import './Array'
 describe('Array', async (should: any) => {
   const { assert } = should('')
 
-  {
+  describe('Array.toObject', async (should: any) => {
     const arrayWithObject = [
       ['key1', 'value1'],
       ['key2', 'value2']
@@ -21,16 +21,16 @@ describe('Array', async (should: any) => {
 
     assert({
       given: 'array with two pairs of key values',
-      should: 'get the keys',
+      should: 'get the keys of new object transformed',
       actual: Object.keys(result),
       expected: ['key1', 'key2']
     })
 
     assert({
       given: 'array with two pairs of key values',
-      should: 'get the values',
+      should: 'get the values of new object transformed',
       actual: Object.values(result),
       expected: ['value1', 'value2']
     })
-  }
+  })
 })
