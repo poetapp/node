@@ -54,7 +54,7 @@ export class Router {
     this.koaRouter.post('/works', this.postWork)
 
     this.koa.use(helmet(SecurityHeaders))
-    this.koa.use(KoaCors({ expose: ['X-Total-Count', 'X-Unread'] }))
+    this.koa.use(KoaCors({ expose: ['X-Total-Count'] }))
     this.koa.use(LoggerMiddleware(this.logger))
     this.koa.use(HttpExceptionsMiddleware)
     this.koa.use(KoaBody({ textLimit: 1000000 }))
@@ -79,12 +79,12 @@ export class Router {
 
   private getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     this.logger.trace({ query: context.query }, '/works')
-    const { works, count, unread } = await this.workController.getByFilters({
+    const { works, count } = await this.workController.getByFilters({
       ...context.query,
       offset: parseInt(context.query.offset, 10),
       limit: parseInt(context.query.limit, 10),
     })
-    context.set({ 'X-Total-Count': `${count}`, 'X-Unread': `${unread}` })
+    context.set('X-Total-Count', `${count}`)
     context.body = works
   }
 

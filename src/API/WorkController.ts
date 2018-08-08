@@ -13,9 +13,8 @@ interface WorksFilters {
   readonly limit?: number
 }
 
-interface WorkCount {
+interface WorksWithCount {
   readonly count: number
-  readonly unread: number
   readonly works: ReadonlyArray<string>
 }
 
@@ -38,7 +37,7 @@ export class WorkController {
     return this.collection.findOne({ id }, { projection: { _id: false } })
   }
 
-  async getByFilters(worksFilters: WorksFilters = {}): Promise<WorkCount> {
+  async getByFilters(worksFilters: WorksFilters = {}): Promise<WorksWithCount> {
     this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
     const { offset, limit, ...filters } = worksFilters
     const works = await this.collection
@@ -48,8 +47,7 @@ export class WorkController {
       .limit(limit || 10)
       .toArray()
     const count = await this.collection.count(filters)
-    const unread = count - offset
-    return { count, unread, works }
+    return { count, works }
   }
 
   async create(work: Work): Promise<void> {
