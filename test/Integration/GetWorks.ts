@@ -6,6 +6,11 @@ import { claimFromJSON } from 'Helpers/Claim'
 
 import { TheRaven, ABraveAndStartlingTrugh } from '../Claims'
 import { Client } from './Helper'
+export namespace Api {
+  export enum Headers {
+    TotalCount = '',
+  }
+}
 
 @TestFixture('GET /works')
 export class GetWorks {
@@ -67,12 +72,12 @@ export class GetWorks {
   }
 
   @AsyncTest()
-  @TestCase('4')
-  async getWorksShouldReturnCountInHeader(limit: string) {
-    const response = await this.client.getLimitedWorks(limit)
-    const totalCount = await response.headers.get('Total-Count')
-    const isEqualToLimit = parseInt(totalCount, 10) === 4
-    Expect(isEqualToLimit).toBeTruthy()
+  @TestCase(ABraveAndStartlingTrugh.publicKey)
+  async getWorksShouldReturnCountInHeader(publicKey: string) {
+    const response = await this.client.getWorksByPublicKey(publicKey)
+    const totalCount = await response.headers.get('X-Total-Count')
+    const isEqualToClaimsAvailable = parseInt(totalCount, 10) === 10
+    Expect(isEqualToClaimsAvailable).toBeTruthy()
   }
 
   @AsyncTest()
