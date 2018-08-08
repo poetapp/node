@@ -67,6 +67,15 @@ export class GetWorks {
   }
 
   @AsyncTest()
+  @TestCase('4')
+  async getWorksShouldReturnCountInHeader(limit: string) {
+    const response = await this.client.getLimitedWorks(limit)
+    const totalCount = await response.headers.get('Total-Count')
+    const isEqualToLimit = parseInt(totalCount, 10) === 4
+    Expect(isEqualToLimit).toBeTruthy()
+  }
+
+  @AsyncTest()
   @TestCase('5', ABraveAndStartlingTrugh.publicKey)
   async getOffsetAngelouWorksShouldReturn5(offset: string, publicKey: string) {
     const response = await this.client.getOffsetPublicKeyWorks(offset, publicKey)
