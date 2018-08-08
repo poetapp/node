@@ -155,11 +155,11 @@ For simplicity, this endpoint adds a `.timestamp` in the response, which is not 
 
 Returns 404 if the claim isn't found in this Node's database. This doesn't strictly mean the claim doesn't exist in the Po.et network — it just doesn't exist in this Node.
 
-### `GET /works?publicKey=...`
-Returns an array of claims — all the claims belonging to the passed public key.
+### `GET /works?publicKey=...&limit=x&offset=x`
+Returns a paginated array of claims — all the claims belonging to the passed public key. Default limit per request is 10 claims. This is configurable with limit and offset paramaters where offset is the number of claims to skip and limit is the number of claims returned per request.
 
-### `GET /works`
-Retrieving all works isn't supported yet. The Node will assumme you intended to call `GET /works?publicKey=undefined`, which will normally return an empty array. Support for this endpoint will be added in the future.
+### `GET /works?offset=x&limit=x`
+Returns a paginated array of claims - defaulted to 10 per request. This is configurable with limit and offset paramaters where offset is the number of claims to skip and limit is the number of claims returned per request.
 
 ### `POST /works`
 Publish a work.
