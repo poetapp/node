@@ -21,5 +21,26 @@ describe('Extensions Error', async (should: any) => {
       actual: Object.keys(actual),
       expected: ['stack', 'message', 'type']
     })
+
+    assert({
+      given: 'a new Error',
+      should: 'be the type property a string with the value Error',
+      actual: actual.type === 'Error',
+      expected: true
+    })
+
+    assert({
+      given: 'a new Error',
+      should: 'be the stack property a array',
+      actual: Array.isArray(actual.stack),
+      expected: true
+    })
+
+    assert({
+      given: 'a new Error',
+      should: 'be the stack property a array with strings inside',
+      actual: typeof actual.stack[0] === 'string',
+      expected: true
+    })
   }
 })
