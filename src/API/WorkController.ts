@@ -14,15 +14,13 @@ interface WorksFilters {
 }
 
 interface WorkWithTimestamp {
-  readonly Work: Work & { timestamp: PoetTimestamp };
+  readonly Work: Work & { timestamp: PoetTimestamp }
 }
 
 interface WorksWithCount {
   readonly count: number
   readonly works: ReadonlyArray<WorkWithTimestamp>
 }
-
-
 
 @injectable()
 export class WorkController {
