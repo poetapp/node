@@ -20,11 +20,11 @@ export function getPoetTimestamp(tx: bitcore.Transaction): TransactionPoetTimest
   )
 }
 
-export function isOutputDataOut(output: bitcore.Output) {
+function isOutputDataOut(output: bitcore.Output) {
   return output.script.classify() === bitcore.Script.types.DATA_OUT
 }
 
-export function isOutputCorrectNetwork(output: bitcore.Output) {
+function isOutputCorrectNetwork(output: bitcore.Output) {
   const data: Buffer = output.script.getData()
   return data.indexOf(PREFIX_POET) === 0 || data.indexOf(PREFIX_BARD) === 0
 }
