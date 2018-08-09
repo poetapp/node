@@ -43,4 +43,25 @@ describe('Extensions Error', async (should: any) => {
       expected: true
     })
   }
+
+  {
+    class CustomError extends Error {
+      readonly type: string
+
+      constructor() {
+        super()
+        this.type = 'CustomType'
+      }
+    }
+
+    const customError = new CustomError()
+    const actual = JSON.parse(JSON.stringify(customError))
+
+    assert({
+      given: 'a custom Error with type CustomType',
+      should: 'be the type property CustomType',
+      actual: actual.type === 'CustomType',
+      expected: true
+    })
+  }
 })
