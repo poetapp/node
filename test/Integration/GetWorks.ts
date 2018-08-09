@@ -1,16 +1,11 @@
 /* tslint:disable:no-relative-imports */
-import { Claim, isClaim } from '@po.et/poet-js'
+import { Claim, isClaim, Work, PoetTimestamp } from '@po.et/poet-js'
 import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
 
 import { claimFromJSON } from 'Helpers/Claim'
 
 import { TheRaven, ABraveAndStartlingTrugh } from '../Claims'
 import { Client } from './Helper'
-export namespace Api {
-  export enum Headers {
-    TotalCount = '',
-  }
-}
 
 @TestFixture('GET /works')
 export class GetWorks {

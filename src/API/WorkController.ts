@@ -1,4 +1,4 @@
-import { Work } from '@po.et/poet-js'
+import { Work, PoetTimestamp } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
@@ -13,10 +13,16 @@ interface WorksFilters {
   readonly limit?: number
 }
 
+interface WorkWithTimestamp {
+  readonly Work: Work & { timestamp: PoetTimestamp };
+}
+
 interface WorksWithCount {
   readonly count: number
-  readonly works: ReadonlyArray<string>
+  readonly works: ReadonlyArray<WorkWithTimestamp>
 }
+
+
 
 @injectable()
 export class WorkController {
