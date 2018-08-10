@@ -13,8 +13,8 @@ interface WorksFilters {
   readonly limit?: number
 }
 
-interface WorkWithTimestamp {
-  readonly Work: Work & { timestamp: PoetTimestamp }
+interface WorkWithTimestamp extends Work {
+  readonly timestamp: PoetTimestamp
 }
 
 interface WorksWithCount {
