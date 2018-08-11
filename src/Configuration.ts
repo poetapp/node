@@ -4,6 +4,8 @@ import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import * as path from 'path'
 
+import { keysToScreamingSnakeCase } from 'Helpers/Configuration'
+
 export interface Configuration extends LoggingConfiguration {
   readonly rabbitmqUrl: string
   readonly mongodbUrl: string
@@ -94,13 +96,7 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
 }
 
 function loadConfigurationFromEnv(): Partial<Configuration> {
-  // TODO: programmatically generate keys from values by applying camelCase to SCREAMING_SNAKE_CASE
-  const map: { [index: string]: string } = {
-    RABBITMQ_URL: 'rabbitmqUrl',
-    MONGODB_URL: 'mongodbUrl',
-    IPFS_URL: 'ipfsUrl',
-    INSIGHT_URL: 'insightUrl',
-  }
+  const map: { [index: string]: string } = keysToScreamingSnakeCase(defaultConfiguration)
 
   const configurationFromEnv = Object.entries(process.env)
     .filter(([key, value]) => map[key])
