@@ -41,13 +41,13 @@ export interface LoggingConfiguration {
 }
 
 const defaultConfiguration: Configuration = {
-  rabbitmqUrl: 'amqp://localhost',
-  mongodbUrl: 'mongodb://localhost:27017/poet',
-  ipfsUrl: 'http://localhost:5001',
-  insightUrl: 'https://test-insight.bitpay.com/api',
+  rabbitmqUrl: "amqp://localhost",
+  mongodbUrl: "mongodb://localhost:27017/poet",
+  ipfsUrl: "http://localhost:5001",
+  insightUrl: "https://test-insight.bitpay.com/api",
 
   apiPort: 18080,
-  poetNetwork: 'BARD',
+  poetNetwork: "BARD",
   poetVersion: [0, 0, 0, 3],
   minimumBlockHeight: 1279550, // Less than 24 hours before Feb 8th, 2018 - Frost's Release
   blockchainReaderIntervalInSeconds: 5,
@@ -60,13 +60,18 @@ const defaultConfiguration: Configuration = {
   downloadMaxAttempts: 20,
   downloadTimeoutInSeconds: 10,
 
-  loggingLevel: 'info',
+  loggingLevel: "info",
   loggingPretty: true,
 
   batchCreationIntervalInSeconds: 600,
 
   readDirectoryIntervalInSeconds: 30,
-}
+
+  s3Url: undefined,
+  forceBlockHeight: undefined,
+  bitcoinAddress: undefined,
+  bitcoinAddressPrivateKey: undefined, 
+};
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
