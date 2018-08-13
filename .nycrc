@@ -13,12 +13,12 @@
         "./coverage/**/*.*"
     ],
     "reporter": [
-        "lcov",
         "html",
         "text",
         "text-summary"
     ],
     "all": true,
+    "cache": false,
     "esModules": true,
     "staticType": "typescript",
     "plugins": ["classProperties", ["decorators", { "decoratorsBeforeExport": true }]]
