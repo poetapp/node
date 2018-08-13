@@ -1,5 +1,5 @@
 import { describe } from 'riteway'
-import { asyncPipe } from './asyncPipe'
+import { asyncPipe } from './AsyncPipe'
 
 describe('asyncPipe', async (should: any) => {
   const { assert } = should('')
