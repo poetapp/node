@@ -2,8 +2,8 @@ import { Claim, isValidClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
+import { pipeP } from 'ramda'
 
-import { asyncPipe } from 'Helpers/AsyncPipe'
 import { childWithFileName } from 'Helpers/Logging'
 import { ErrorCodes } from 'Helpers/MongoDB'
 import { minutesToMiliseconds } from 'Helpers/Time'
@@ -108,7 +108,7 @@ export class ClaimController {
         }
       )
 
-    const pipe = asyncPipe(
+    const pipe = pipeP(
       this.findEntryToDownload,
       this.updateEntryAttempts,
       this.downloadEntryClaim,
