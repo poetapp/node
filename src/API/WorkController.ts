@@ -50,7 +50,7 @@ export class WorkController {
       .skip(offset)
       .limit(limit || 10)
       .toArray()
-    const count = await this.collection.count(filters)
+    const count = await this.collection.find(filters, { projection: { _id: false } }).count()
     return { count, works }
   }
 
