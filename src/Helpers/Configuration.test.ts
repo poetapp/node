@@ -1,42 +1,29 @@
 import { describe } from 'riteway'
-import { createEnvToConfigurationKeyMap, ArrayKeyToScreamingSnakeCase } from './Configuration'
+import { createEnvToConfigurationKeyMap, toScreamingSnakeCase } from './Configuration'
 
-describe('ArrayKeyToScreamingSnakeCase()', async (should: any) => {
+describe('toScreamingSnakeCase()', async (should: any) => {
   const { assert } = should()
 
   assert({
     given: 'no arguments',
-    should: 'return an empty array',
-    actual: ArrayKeyToScreamingSnakeCase(),
-    expected: []
+    should: 'return an empty string',
+    actual: toScreamingSnakeCase(),
+    expected: ''
   })
-  {
-    const array = ['test', 'string']
-    assert({
-      given: 'array of key value pair with lowerCase key',
-      should: 'return array with capitalized key and original key',
-      actual: ArrayKeyToScreamingSnakeCase(array),
-      expected: ['TEST', 'test']
-    })
-  }
-  {
-    const array = ['testCase']
-    assert({
-      given: 'array with one camelCase element',
-      should: 'return array with SCREAMING_SNAKE_CASE element and original element',
-      actual: ArrayKeyToScreamingSnakeCase(array),
-      expected: ['TEST_CASE', 'testCase']
-    })
-  }
-  {
-    const array = ['testCase', 'string', 'extraString']
-    assert({
-      given: 'array cammelCase first element',
-      should: 'return array with SCREAMING_SNAKE_CASE first element and original first element',
-      actual: ArrayKeyToScreamingSnakeCase(array),
-      expected: ['TEST_CASE', 'testCase']
-    })
-  }
+
+  assert({
+    given: 'lowercase string',
+    should: 'return an UPPERCASE string',
+    actual: toScreamingSnakeCase('test'),
+    expected: 'TEST'
+  })
+
+  assert({
+    given: 'camelCase string',
+    should: 'return SCREAMING_SNAKE_CASE string',
+    actual: toScreamingSnakeCase('testCaseString'),
+    expected: 'TEST_CASE_STRING'
+  })
 })
 
 describe('createEnvToConfigurationKeyMap()', async (should: any) => {
