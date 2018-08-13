@@ -1,40 +1,9 @@
 import { describe } from 'riteway'
-import { createEnvToConfigurationKeyMap, toScreamingSnakeCase } from './Configuration'
+import { createEnvToConfigurationKeyMap } from './Configuration'
 
-describe('toScreamingSnakeCase()', async (should: any) => {
-  const { assert } = should()
-
-  assert({
-    given: 'no arguments',
-    should: 'return an empty string',
-    actual: toScreamingSnakeCase(),
-    expected: ''
-  })
-
-  assert({
-    given: 'lowercase string',
-    should: 'return an UPPERCASE string',
-    actual: toScreamingSnakeCase('test'),
-    expected: 'TEST'
-  })
-
-  assert({
-    given: 'camelCase string',
-    should: 'return SCREAMING_SNAKE_CASE string',
-    actual: toScreamingSnakeCase('testCaseString'),
-    expected: 'TEST_CASE_STRING'
-  })
-})
 
 describe('createEnvToConfigurationKeyMap()', async (should: any) => {
   const { assert } = should()
-
-  assert({
-    given: 'no arguments',
-    should: 'return empty object',
-    actual: createEnvToConfigurationKeyMap(),
-    expected: {}
-  })
 
   assert({
     given: 'empty object',

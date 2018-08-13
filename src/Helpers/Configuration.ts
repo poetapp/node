@@ -1,7 +1,11 @@
-import { fromPairs } from 'ramda'
+import { keys, fromPairs, map, pipe } from 'ramda'
 
-export const toScreamingSnakeCase = (camelCase: string = '') =>
-  camelCase.replace(/([A-Z])/g, capital => '_' + capital).toUpperCase()
+import { camelCaseToScreamingSnakeCase } from './camelCaseToScreamingSnakeCase'
 
-export const createEnvToConfigurationKeyMap = (object: object = {}): {} =>
-  fromPairs(Object.entries(object).map(([key]) => [toScreamingSnakeCase(key), key]))
+const toPair = (s: string) => [camelCaseToScreamingSnakeCase(s), s]
+
+export const createEnvToConfigurationKeyMap = pipe(
+  keys,
+  map(toPair),
+  fromPairs
+)
