@@ -65,7 +65,7 @@
     "@types/node-fetch": "1.6.9",
     "@types/pino": "4.16.1",
     "@types/sinon": "5.0.1",
-    "alsatian": "2.2.1",
+    "alsatian": "2.3.0",
     "babel-cli": "6.26.0",
     "babel-plugin-module-resolver": "3.1.1",
     "concurrently": "3.6.1",
