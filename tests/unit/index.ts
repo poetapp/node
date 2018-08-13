@@ -17,3 +17,6 @@ import '../../src/View/WorkController.test.ts'
 import '../../src/Extensions/Array.test.ts'
 import '../../src/Extensions/Error.test.ts'
 import '../../src/Extensions/Promise.test.ts'
+import '../../src/Helpers/Bitcoin.test'
+
+
