@@ -12,6 +12,13 @@ describe('camelCaseToScreamingSnakeCase()', async (should: any) => {
   })
 
   assert({
+    given: 'empty string',
+    should: 'return an empty string',
+    actual: camelCaseToScreamingSnakeCase(''),
+    expected: ''
+  })
+
+  assert({
     given: 'lowercase string',
     should: 'return an UPPERCASE string',
     actual: camelCaseToScreamingSnakeCase('test'),

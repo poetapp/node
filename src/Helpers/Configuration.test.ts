@@ -1,24 +1,5 @@
 import { describe } from 'riteway'
-import { createEnvToConfigurationKeyMap, toPair } from './Configuration'
-
-describe('toPair()', async (should: any) => {
-  const { assert } = should()
-
-  assert({
-    given: 'lowercase string',
-    should: 'Array with CAPITALIZED string and lowercase string',
-    actual: toPair('test'),
-    expected: ['TEST', 'test']
-  })
-
-  assert({
-    given: 'cammelCase string',
-    should: 'Array with SCREAMING_SNAKE_CASE string and original string',
-    actual: toPair('testStringCase'),
-    expected: ['TEST_STRING_CASE', 'testStringCase' ]
-  })
-})
-
+import { createEnvToConfigurationKeyMap } from './Configuration'
 
 describe('createEnvToConfigurationKeyMap()', async (should: any) => {
   const { assert } = should()
