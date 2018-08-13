@@ -5,7 +5,7 @@ describe('asyncPipe', async (should: any) => {
   const { assert } = should('')
 
   {
-    const inc = (number = 0) => Promise.resolve(number + 1)
+    const inc = (num = 0) => Promise.resolve(num + 1)
     const actual = await asyncPipe(inc)(0)
 
     assert({
