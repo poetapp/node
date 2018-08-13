@@ -6,12 +6,13 @@ import * as path from 'path'
 
 import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 
+// Provide default value in defaultConfiguration for any new configuration options
 export interface Configuration extends LoggingConfiguration {
   readonly rabbitmqUrl: string
   readonly mongodbUrl: string
   readonly ipfsUrl: string
   readonly insightUrl: string
-  readonly s3Url?: string
+  readonly s3Url: string
 
   readonly apiPort: number
   readonly poetNetwork: string
@@ -20,10 +21,10 @@ export interface Configuration extends LoggingConfiguration {
   readonly blockchainReaderIntervalInSeconds: number
   readonly forceBlockHeight?: number
 
-  readonly enableTimestamping?: boolean
-  readonly bitcoinAddress?: string
-  readonly bitcoinAddressPrivateKey?: string
-  readonly timestampIntervalInSeconds?: number
+  readonly enableTimestamping: boolean
+  readonly bitcoinAddress: string
+  readonly bitcoinAddressPrivateKey: string
+  readonly timestampIntervalInSeconds: number
 
   readonly downloadIntervalInSeconds: number
   readonly downloadRetryDelayInMinutes: number
