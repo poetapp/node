@@ -9,6 +9,7 @@ describe('Promise', async (should: any) => {
 
   const SUCCESS = true
   const ERROR = false
+  const TRANSLATION = 'TRANSLATION'
 
   const success = (_: any) => SUCCESS
   const error = (_: any) => ERROR
@@ -38,6 +39,20 @@ describe('Promise', async (should: any) => {
       should: 'reject',
       actual,
       expected: ERROR,
+    })
+  }
+
+  {
+    const actual = await Promise.reject(10)
+      .rethrow(error => error === 10 ? TRANSLATION : 'Something unexpected happened')
+      .then(success)
+      .catch(error => error)
+
+    assert({
+      given: 'Promise.reject(10).rethrow(10 => TRANSLATION)',
+      should: 'reject with translated error',
+      actual,
+      expected: TRANSLATION,
     })
   }
 })
