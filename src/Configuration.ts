@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import * as path from 'path'
 
-import { keysToScreamingSnakeCase } from 'Helpers/Configuration'
+import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 
 export interface Configuration extends LoggingConfiguration {
   readonly rabbitmqUrl: string
@@ -101,7 +101,7 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
 }
 
 function loadConfigurationFromEnv(): Partial<Configuration> {
-  const map: { [index: string]: string } = keysToScreamingSnakeCase(defaultConfiguration)
+  const map: { [index: string]: string } = createEnvToConfigurationKeyMap(defaultConfiguration)
 
   const configurationFromEnv = Object.entries(process.env)
     .filter(([key, value]) => map[key])
