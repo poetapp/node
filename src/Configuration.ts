@@ -3,6 +3,7 @@ import * as assert from 'assert'
 import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import * as path from 'path'
+import { keys } from 'ramda'
 
 import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 
@@ -102,7 +103,7 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
 }
 
 function loadConfigurationFromEnv(): Partial<Configuration> {
-  const map: { [index: string]: string } = createEnvToConfigurationKeyMap(defaultConfiguration)
+  const map = createEnvToConfigurationKeyMap(keys(defaultConfiguration))
 
   const configurationFromEnv = Object.entries(process.env)
     .filter(([key, value]) => map[key])

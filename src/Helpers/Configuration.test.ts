@@ -1,25 +1,22 @@
 import { describe } from 'riteway'
+
 import { createEnvToConfigurationKeyMap } from './Configuration'
 
 describe('createEnvToConfigurationKeyMap()', async (should: any) => {
   const { assert } = should()
 
   assert({
-    given: 'empty object',
+    given: 'empty array',
     should: 'return empty object',
-    actual: createEnvToConfigurationKeyMap({}),
+    actual: createEnvToConfigurationKeyMap([]),
     expected: {}
   })
 
   {
-    const defaultConfiguration = {
-      rabbitmqUrl: 'testRabbit',
-      mongodbUrl: 'testMongo',
-      otherTestKeyMultipleCapital: 'testOtherTestKeyMultipleCapital',
-    }
+    const defaultConfiguration = [ 'rabbitmqUrl', 'mongodbUrl', 'otherTestKeyMultipleCapital' ]
 
     assert({
-      given: 'object with cammelCase keys',
+      given: 'array with cammelCase values',
       should: 'return object with ScreamingSnakeCase keys and equal cammelCase values',
       actual: createEnvToConfigurationKeyMap(defaultConfiguration),
       expected: {
