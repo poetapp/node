@@ -1,4 +1,4 @@
-import { Work } from '@po.et/poet-js'
+import { Work, PoetTimestamp } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
@@ -11,6 +11,15 @@ interface WorksFilters {
   readonly publicKey?: string
   readonly offset?: number
   readonly limit?: number
+}
+
+interface WorkWithTimestamp extends Work {
+  readonly timestamp: PoetTimestamp
+}
+
+interface WorksWithCount {
+  readonly count: number
+  readonly works: ReadonlyArray<WorkWithTimestamp>
 }
 
 @injectable()
@@ -32,17 +41,17 @@ export class WorkController {
     return this.collection.findOne({ id }, { projection: { _id: false } })
   }
 
-  async getByFilters(worksFilters: WorksFilters = {}): Promise<ReadonlyArray<any>> {
+  async getByFilters(worksFilters: WorksFilters = {}): Promise<WorksWithCount> {
     this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
     const { offset, limit, ...filters } = worksFilters
-    return this.collection
+    const works = await this.collection
       .find(filters, { projection: { _id: false } })
-      .sort({
-        _id: -1,
-      })
+      .sort({ _id: -1 })
       .skip(offset)
       .limit(limit || 10)
       .toArray()
+    const count = await this.collection.find(filters, { projection: { _id: false } }).count()
+    return { count, works }
   }
 
   async create(work: Work): Promise<void> {

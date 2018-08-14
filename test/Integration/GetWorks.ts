@@ -67,6 +67,15 @@ export class GetWorks {
   }
 
   @AsyncTest()
+  @TestCase(ABraveAndStartlingTrugh.publicKey)
+  async getWorksShouldReturnCountInHeader(publicKey: string) {
+    const response = await this.client.getWorksByPublicKey(publicKey)
+    const totalCount = await response.headers.get('X-Total-Count')
+    const isEqualToClaimsAvailable = parseInt(totalCount, 10) === 10
+    Expect(isEqualToClaimsAvailable).toBeTruthy()
+  }
+
+  @AsyncTest()
   @TestCase('5', ABraveAndStartlingTrugh.publicKey)
   async getOffsetAngelouWorksShouldReturn5(offset: string, publicKey: string) {
     const response = await this.client.getOffsetPublicKeyWorks(offset, publicKey)
