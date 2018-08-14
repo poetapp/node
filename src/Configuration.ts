@@ -3,13 +3,17 @@ import * as assert from 'assert'
 import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import * as path from 'path'
+import { keys } from 'ramda'
 
+import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
+
+// Provide default value in defaultConfiguration for any new configuration options
 export interface Configuration extends LoggingConfiguration {
   readonly rabbitmqUrl: string
   readonly mongodbUrl: string
   readonly ipfsUrl: string
   readonly insightUrl: string
-  readonly s3Url?: string
+  readonly s3Url: string
 
   readonly apiPort: number
   readonly poetNetwork: string
@@ -18,10 +22,10 @@ export interface Configuration extends LoggingConfiguration {
   readonly blockchainReaderIntervalInSeconds: number
   readonly forceBlockHeight?: number
 
-  readonly enableTimestamping?: boolean
-  readonly bitcoinAddress?: string
-  readonly bitcoinAddressPrivateKey?: string
-  readonly timestampIntervalInSeconds?: number
+  readonly enableTimestamping: boolean
+  readonly bitcoinAddress: string
+  readonly bitcoinAddressPrivateKey: string
+  readonly timestampIntervalInSeconds: number
 
   readonly downloadIntervalInSeconds: number
   readonly downloadRetryDelayInMinutes: number
@@ -64,6 +68,11 @@ const defaultConfiguration: Configuration = {
   batchCreationIntervalInSeconds: 600,
 
   readDirectoryIntervalInSeconds: 30,
+
+  s3Url: undefined,
+  forceBlockHeight: undefined,
+  bitcoinAddress: undefined,
+  bitcoinAddressPrivateKey: undefined,
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
@@ -94,13 +103,7 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
 }
 
 function loadConfigurationFromEnv(): Partial<Configuration> {
-  // TODO: programmatically generate keys from values by applying camelCase to SCREAMING_SNAKE_CASE
-  const map: { [index: string]: string } = {
-    RABBITMQ_URL: 'rabbitmqUrl',
-    MONGODB_URL: 'mongodbUrl',
-    IPFS_URL: 'ipfsUrl',
-    INSIGHT_URL: 'insightUrl',
-  }
+  const map = createEnvToConfigurationKeyMap(keys(defaultConfiguration))
 
   const configurationFromEnv = Object.entries(process.env)
     .filter(([key, value]) => map[key])
