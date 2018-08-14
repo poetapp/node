@@ -14,6 +14,9 @@ const configuration = {
   loggingPretty: true,
 }
 
+const CustomPino = Object.create(Pino)
+CustomPino.child = spy()
+
 describe('Logging', async (should: any) => {
   const { assert } = should('')
 
@@ -27,10 +30,8 @@ describe('Logging', async (should: any) => {
       expected: true,
     })
   }
-  {
-    const CustomPino = Object.create(Pino)
-    CustomPino.child = spy()
 
+  {
     childWithModuleName(CustomPino, 'directory')
 
     assert({
@@ -42,9 +43,6 @@ describe('Logging', async (should: any) => {
   }
 
   {
-    const CustomPino = Object.create(Pino)
-    CustomPino.child = spy()
-
     childWithFileName(CustomPino, 'file.ts')
 
     assert({
