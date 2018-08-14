@@ -4,4 +4,7 @@ import { camelCaseToScreamingSnakeCase } from './camelCaseToScreamingSnakeCase'
 
 const toPair = (s: string) => [camelCaseToScreamingSnakeCase(s), s]
 
-export const createEnvToConfigurationKeyMap: (keys: ReadonlyArray<string>) => { [index: string]: string } = pipe(map(toPair), fromPairs );
+export const createEnvToConfigurationKeyMap: (keys: ReadonlyArray<string>) => { [index: string]: string } = pipe(
+  map(toPair),
+  fromPairs
+)
