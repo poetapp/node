@@ -114,14 +114,14 @@ export class GetWorksByPublicKey {
 
     const claims: ReadonlyArray<Claim> = json.map((_: any) => ({
       ..._,
-      dateCreated: new Date(_.dateCreated),
+      created: new Date(_.dateCreated),
     }))
 
     for (let i = 0; i < claims.length; i++) {
       Expect(claims[i].id).toBe(expectedClaims[i].id)
       Expect(claims[i].publicKey).toBe(expectedClaims[i].publicKey)
       Expect(claims[i].signature).toBe(expectedClaims[i].signature)
-      Expect(claims[i].dateCreated.toISOString()).toBe(expectedClaims[i].dateCreated.toISOString())
+      Expect(claims[i].created.toISOString()).toBe(expectedClaims[i].created.toISOString())
     }
   }
 

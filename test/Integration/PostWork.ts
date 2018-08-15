@@ -16,7 +16,7 @@ export class PostWork {
 
   @AsyncTest()
   async postWorkShouldSucceedWith202() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -28,7 +28,7 @@ export class PostWork {
 
   @AsyncTest()
   async postWorkShouldSucceedWithEmptyResponse() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -40,7 +40,7 @@ export class PostWork {
 
   @AsyncTest()
   async shouldBeAbleToGetPostedWork() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -55,7 +55,7 @@ export class PostWork {
 
   @AsyncTest()
   async gettingThePostedWorkShouldRetrieveTheSameId() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -72,7 +72,7 @@ export class PostWork {
 
   @AsyncTest()
   async gettingThePostedWorkShouldRetrieveTheSameAttributes() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -88,7 +88,7 @@ export class PostWork {
 
   @AsyncTest()
   async gettingThePostedWorkShouldRetrieveIPFSHash() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -107,7 +107,7 @@ export class PostWork {
 
   @AsyncTest()
   async shouldFailIfSignatureIsIncorrect() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 

@@ -110,14 +110,14 @@ export class GetWorks {
 
     const claims: ReadonlyArray<Claim> = json.map((_: any) => ({
       ..._,
-      dateCreated: new Date(_.dateCreated),
+      created: new Date(_.dateCreated),
     }))
 
     for (const claim of claims) {
       Expect(claim.id).toBeTruthy()
       Expect(claim.publicKey).toBeTruthy()
       Expect(claim.signature).toBeTruthy()
-      Expect(claim.dateCreated.toISOString()).toBeTruthy()
+      Expect(claim.created.toISOString()).toBeTruthy()
     }
   }
 
