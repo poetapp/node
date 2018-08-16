@@ -21,5 +21,6 @@ import '../../src/Extensions/Error.test.ts'
 import '../../src/Extensions/Promise.test.ts'
 import '../../src/Helpers/Bitcoin.test'
 import '../../src/Helpers/FetchError.test.ts'
+import '../../src/Helpers/Logging.test.ts'
 
 
