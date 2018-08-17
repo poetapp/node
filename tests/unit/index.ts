@@ -15,6 +15,7 @@ import '../../src/Health/HealthController.test'
 import '../../src/Helpers/Configuration.test'
 import '../../src/Helpers/FetchError.test.ts'
 import '../../src/Helpers/Logging.test.ts'
+<<<<<<< HEAD
 import '../../src/Helpers/Time.test.ts'
 import '../../src/Helpers/asyncPipe.test.ts'
 import '../../src/Helpers/camelCaseToScreamingSnakeCase.test'
@@ -26,3 +27,6 @@ import '../../src/Messaging/Messages.test'
 import '../../src/StorageWriter/DAOClaims.test.ts'
 import '../../src/StorageWriter/Exceptions.test.ts'
 import '../../src/StorageWriter/Router.test.ts'
+=======
+import '../../src/API/Middlewares/HttpExceptionsMiddleware.test.ts'
+>>>>>>> unit test HttpExceptionsMiddleware
