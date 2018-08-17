@@ -26,7 +26,7 @@ describe('HttpExceptionsMiddleware', async (should: any) => {
       await HttpExceptionsMiddleware(ctx, next).catch()
 
       assert({
-        given: 'no an error',
+        given: 'an error',
         should: 'return context with status 503 and the text Something happened!',
         actual: ctx.status === 503 && ctx.body === 'Something happened!',
         expected: true,
