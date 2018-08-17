@@ -25,11 +25,14 @@ describe('HttpExceptionsMiddleware', async (should: any) => {
 
       await HttpExceptionsMiddleware(ctx, next).catch()
 
+      const actual = { status: ctx.status, body: ctx.body }
+      const expected = { status: 503, body: 'Something happened!' }
+
       assert({
         given: 'an error',
         should: 'return context with status 503 and the text Something happened!',
-        actual: ctx.status === 503 && ctx.body === 'Something happened!',
-        expected: true,
+        actual,
+        expected,
       })
     }
   })
@@ -40,35 +43,38 @@ describe('HttpExceptionsMiddleware', async (should: any) => {
     {
       const illegalArgumentException = new IllegalArgumentException('IllegalArgumentException')
       const actual = getCodeError(illegalArgumentException)
+      const expected = { status: 422, body: 'IllegalArgumentException' }
 
       assert({
         given: 'a IllegalArgumentException error',
         should: 'return status with 422 and body with IllegalArgumentException',
-        actual: actual.status === 422 && actual.body === 'IllegalArgumentException',
-        expected: true,
+        actual,
+        expected,
       })
     }
 
     {
       const notFoundException = new NotFoundException('NotFoundException')
       const actual = getCodeError(notFoundException)
+      const expected = { status: 404, body: 'NotFoundException' }
 
       assert({
         given: 'a NotFoundException error',
         should: 'return status with 404 and body with NotFoundException',
-        actual: actual.status === 404 && actual.body === 'NotFoundException',
-        expected: true,
+        actual,
+        expected,
       })
     }
 
     {
       const actual = getCodeError(new Error('Error'))
+      const expected = { status: 503, body: 'Error' }
 
       assert({
         given: 'any kind of Error distinct to IllegalArgumentException or NotFoundException',
         should: 'return status with 503 and body with Error',
-        actual: actual.status === 503 && actual.body === 'Error',
-        expected: true,
+        actual,
+        expected,
       })
     }
   })
