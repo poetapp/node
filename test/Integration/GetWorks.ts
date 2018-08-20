@@ -110,7 +110,7 @@ export class GetWorks {
 
     const claims: ReadonlyArray<Claim> = json.map((_: any) => ({
       ..._,
-      created: new Date(_.dateCreated),
+      created: new Date(_.created),
     }))
 
     for (const claim of claims) {

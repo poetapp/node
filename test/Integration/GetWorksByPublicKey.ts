@@ -114,7 +114,7 @@ export class GetWorksByPublicKey {
 
     const claims: ReadonlyArray<Claim> = json.map((_: any) => ({
       ..._,
-      created: new Date(_.dateCreated),
+      created: new Date(_.created),
     }))
 
     for (let i = 0; i < claims.length; i++) {
