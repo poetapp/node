@@ -1,6 +1,6 @@
 /* tslint:disable:no-relative-imports */
 import { ClaimType, createClaim } from '@po.et/poet-js'
-import { AsyncTest, Expect, SetupFixture, TestFixture } from 'alsatian'
+import { AsyncTest, Expect, SetupFixture, TestFixture, Timeout } from 'alsatian'
 
 import { Key1 } from '../Keys'
 import { Client, waitForNode } from './Helper'
@@ -39,6 +39,7 @@ export class PostWork {
   }
 
   @AsyncTest()
+  @Timeout(1400)
   async shouldBeAbleToGetPostedWork() {
     const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
@@ -54,6 +55,7 @@ export class PostWork {
   }
 
   @AsyncTest()
+  @Timeout(1350)
   async gettingThePostedWorkShouldRetrieveTheSameId() {
     const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
@@ -71,6 +73,7 @@ export class PostWork {
   }
 
   @AsyncTest()
+  @Timeout(1350)
   async gettingThePostedWorkShouldRetrieveTheSameAttributes() {
     const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
@@ -87,6 +90,7 @@ export class PostWork {
   }
 
   @AsyncTest()
+  @Timeout(1350)
   async gettingThePostedWorkShouldRetrieveIPFSHash() {
     const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
