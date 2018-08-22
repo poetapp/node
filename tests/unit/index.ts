@@ -26,3 +26,6 @@ import '../../src/Messaging/Messages.test'
 import '../../src/StorageWriter/DAOClaims.test.ts'
 import '../../src/StorageWriter/Exceptions.test.ts'
 import '../../src/StorageWriter/Router.test.ts'
+import '../../src/Storage/Exceptions.test.ts'
+
+
