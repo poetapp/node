@@ -5,6 +5,7 @@ import { getCodeError, HttpExceptionsMiddleware, executeLogger } from './HttpExc
 
 describe('HttpExceptionsMiddleware middleware', async (should: any) => {
   const { assert } = should('')
+
   {
     const ctx = {}
     const next = spy()
@@ -15,6 +16,22 @@ describe('HttpExceptionsMiddleware middleware', async (should: any) => {
       should: 'call next once',
       actual: next.calledOnce,
       expected: true,
+    })
+  }
+
+  {
+    const ctx = {}
+    const next = spy()
+    await HttpExceptionsMiddleware(ctx, next)
+
+    const actual = ctx
+    const expected = ctx
+
+    assert({
+      given: 'no errors',
+      should: 'the ctx keep without changes',
+      actual,
+      expected,
     })
   }
 
