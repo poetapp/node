@@ -26,7 +26,7 @@ describe('Interfaces isClaimIPFSHashPair', async (should: any) => {
 
   {
     assert({
-      given: `isClaimIPFSHashPair({})`,
+      given: 'an input without the required object properties',
       should: 'return false',
       actual: isClaimIPFSHashPair({}),
       expected: false,
@@ -35,7 +35,7 @@ describe('Interfaces isClaimIPFSHashPair', async (should: any) => {
 
   {
     assert({
-      given: `isClaimIPFSHashPair('')`,
+      given: 'an input with empty string',
       should: 'return false',
       actual: isClaimIPFSHashPair(''),
       expected: false,
@@ -44,7 +44,7 @@ describe('Interfaces isClaimIPFSHashPair', async (should: any) => {
 
   {
     assert({
-      given: `isClaimIPFSHashPair({ claim })`,
+      given: 'an input object with just the valid claim',
       should: 'return false',
       actual: isClaimIPFSHashPair({ claim }),
       expected: false,
@@ -53,7 +53,7 @@ describe('Interfaces isClaimIPFSHashPair', async (should: any) => {
 
   {
     assert({
-      given: `isClaimIPFSHashPair({ ipfsFileHash })`,
+      given: 'an input object with just the ipfsFileHash',
       should: 'return false',
       actual: isClaimIPFSHashPair({ ipfsFileHash }),
       expected: false,
@@ -62,7 +62,7 @@ describe('Interfaces isClaimIPFSHashPair', async (should: any) => {
 
   {
     assert({
-      given: `isClaimIPFSHashPair({ claim, ipfsFileHash })`,
+      given: 'an input object with a valid claim and ipfsFileHash',
       should: 'return true',
       actual: isClaimIPFSHashPair({ claim, ipfsFileHash }),
       expected: true,
