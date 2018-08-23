@@ -1,7 +1,7 @@
 {
   "name": "@po.et/node",
   "version": "1.0.3",
-  "description": "",
+  "description": "The Po.et Node allows you to timestamp documents in a decentralized manner. It is built on top of the Bitcoin blockchain and IPFS.",
   "bin": {
     "poet-node": "dist/babel/src/index.js"
   },
@@ -29,9 +29,14 @@
   "files": [
     "dist/babel/src"
   ],
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/poetapp/node.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/poetapp/node/issues"
+  },
   "dependencies": {
     "@po.et/poet-js": "2.0.0",
     "amqplib": "0.5.2",
