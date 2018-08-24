@@ -16,7 +16,6 @@ describe('Storage Router', async (should: any) => {
   const server = new Server(host, port)
   const IPFSConfiguration: IPFSConfiguration = {
     ipfsUrl: '',
-    downloadTimeoutInSeconds: 1,
   }
 
   const claimController = new ClaimController(

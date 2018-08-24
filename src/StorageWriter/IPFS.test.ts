@@ -8,7 +8,6 @@ describe('IPFS', async (should: any) => {
 
   const IPFSConfiguration: IPFSConfiguration = {
     ipfsUrl: '',
-    downloadTimeoutInSeconds: 1,
   }
 
   {
