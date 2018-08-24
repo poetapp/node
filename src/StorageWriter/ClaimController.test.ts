@@ -15,7 +15,6 @@ describe('Storage ClaimController', async (should: any) => {
   const server = new Server(host, port)
   const IPFSConfiguration: IPFSConfiguration = {
     ipfsUrl: '',
-    downloadTimeoutInSeconds: 1,
   }
 
   {
