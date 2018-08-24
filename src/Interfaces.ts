@@ -1,13 +1,15 @@
 import { isClaim, Claim } from '@po.et/poet-js'
+import { has, allPass } from 'ramda'
 
 export interface ClaimIPFSHashPair {
   readonly claim: Claim
   readonly ipfsFileHash: string
 }
 
-export function isClaimIPFSHashPair(o: any): o is ClaimIPFSHashPair {
-  return o.claim && isClaim(o.claim) && o.ipfsFileHash
-}
+const hasClaim = has('claim')
+const hasIPFSFileHash = has('ipfsFileHash')
+const isValidClaim = (o: ClaimIPFSHashPair) => isClaim(o.claim)
+export const isClaimIPFSHashPair = allPass([hasClaim, hasIPFSFileHash, isValidClaim])
 
 export interface ClaimIdIPFSHashPair {
   readonly claimId: string
