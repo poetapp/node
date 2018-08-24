@@ -2,5 +2,4 @@
 
 export interface IPFSConfiguration {
   readonly ipfsUrl: string
-  readonly downloadTimeoutInSeconds: number
 }

@@ -92,7 +92,7 @@ async function main() {
     logger.error({ exception }, 'View was unable to start')
   }
 
-  const storageReader = new Storage({
+  const storage = new Storage({
     ...loggingConfiguration,
     dbUrl: configuration.mongodbUrl,
     ipfsUrl: configuration.ipfsUrl,
@@ -103,7 +103,7 @@ async function main() {
     downloadTimeoutInSeconds: configuration.downloadTimeoutInSeconds,
   })
   try {
-    await storageReader.start()
+    await storage.start()
   } catch (exception) {
     logger.error({ exception }, 'Storage was unable to start')
   }
