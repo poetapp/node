@@ -39,7 +39,9 @@ describe('HttpExceptionsMiddleware middleware', async (should: any) => {
     const ctx = { status: 0, body: '' }
     const next = () => Promise.reject(new Error('Something happened!'))
 
-    await HttpExceptionsMiddleware(ctx, next).catch()
+    const nextSpy = spy(next)
+
+    await HttpExceptionsMiddleware(ctx, nextSpy).catch()
 
     const actual = { status: ctx.status, body: ctx.body }
     const expected = { status: 503, body: 'Something happened!' }
@@ -49,6 +51,13 @@ describe('HttpExceptionsMiddleware middleware', async (should: any) => {
       should: 'return context with status 503 and the text Something happened!',
       actual,
       expected,
+    })
+
+    assert({
+      given: 'no errors',
+      should: 'call next once',
+      actual: nextSpy.calledOnce,
+      expected: true,
     })
   }
 })
