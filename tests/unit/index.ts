@@ -22,5 +22,7 @@ import '../../src/Extensions/Promise.test.ts'
 import '../../src/Helpers/Bitcoin.test'
 import '../../src/Helpers/FetchError.test.ts'
 import '../../src/Helpers/Logging.test.ts'
+import '../../src/Helpers/Time.test.ts'
+import '../../src/Interfaces.test.ts'
 
 
