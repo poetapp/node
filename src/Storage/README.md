@@ -1,6 +1,6 @@
 # Storage Module
 
-This module is responsible for interacting with ipfs - managing uploads and downloads.
+This module is responsible for interacting with ipfs - managing downloads.
 
 ## Configuration
 
@@ -90,11 +90,3 @@ docker exec -i poet-mongo mongo poet < ./queries/storage-errors.mongo
 Failure Type is stored in the `failureType` in the database. 
 
 This field affects the retry system. If can be SOFT or HARD. HARD failure types won't be retried.
-
-## Uploads
-
-Uploads come into the Storage module via the `NewClaim` RabbitMQ message
-which is handled in the Router by the `onNewClaim` function.
-
-`onNewClaim` calls the `create` function of the ClaimController, 
-which immediately adds the claim to IPFS and stores it in the database. 

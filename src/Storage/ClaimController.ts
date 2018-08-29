@@ -8,7 +8,6 @@ import { childWithFileName } from 'Helpers/Logging'
 import { ErrorCodes } from 'Helpers/MongoDB'
 import { minutesToMiliseconds } from 'Helpers/Time'
 import { ClaimIdIPFSHashPair } from 'Interfaces'
-import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
@@ -45,25 +44,6 @@ export class ClaimController {
     this.configuration = configuration
     this.messaging = messaging
     this.ipfs = ipfs
-  }
-
-  async create(claim: Claim): Promise<void> {
-    const logger = this.logger.child({ method: 'create' })
-
-    logger.trace({ claim }, 'Storing Claim')
-
-    const ipfsFileHash = await this.ipfs.addText(JSON.stringify(claim))
-
-    logger.info({ claim, ipfsFileHash }, 'Claim Stored')
-
-    await this.collection.insertOne({
-      claimId: claim.id,
-      ipfsFileHash,
-    })
-    await this.messaging.publish(Exchange.ClaimIPFSHash, {
-      claimId: claim.id,
-      ipfsFileHash,
-    })
   }
 
   async download(ipfsFileHashes: ReadonlyArray<string>) {
