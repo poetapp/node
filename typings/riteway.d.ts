@@ -8,9 +8,9 @@ declare module 'riteway' {
   type assert = (assertion: Assertion) => void
 
   interface Assertion {
-    given: string
-    should: string
-    actual: any
-    expected: any
+    readonly given: string
+    readonly should?: string
+    readonly actual: any
+    readonly expected: any
   }
 }
