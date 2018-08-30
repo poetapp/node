@@ -76,7 +76,7 @@
     "babel-cli": "6.26.0",
     "babel-plugin-module-resolver": "3.1.1",
     "concurrently": "4.0.1",
-    "nodemon": "1.18.3",
+    "nodemon": "1.18.4",
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "2.0.4",
     "sinon": "6.1.5",
