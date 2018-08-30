@@ -1,5 +1,4 @@
 import '../../src/API/Middlewares/RequestValidationMiddleware.test'
-import '../../src/canary.test'
 import '../../src/API/Middlewares/RequestValidationMiddleware.test.ts'
 import '../../src/API/Router.test.ts'
 import '../../src/API/WorkController.test.ts'
