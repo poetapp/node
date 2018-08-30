@@ -117,7 +117,7 @@ export class GetWorks {
       Expect(claim.id).toBeTruthy()
       Expect(claim.publicKey).toBeTruthy()
       Expect(claim.signature).toBeTruthy()
-      Expect(claim.created.toISOString()).toBeTruthy()
+      Expect(claim.created).toBeTruthy()
     }
   }
 
