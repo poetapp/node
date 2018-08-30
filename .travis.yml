@@ -10,11 +10,8 @@ services:
   - mongodb
   - rabbitmq
   - docker
-before_install:
-  - npm install -g greenkeeper-lockfile@1
 before_script:
   - sudo make ipfs
-  - greenkeeper-lockfile-update
   - npm run build
   - npm run test-prepare-db
   - sleep 5
@@ -23,8 +20,6 @@ before_script:
 script:
   - npm run lint
   - npm run coverage
-after_script:
-  - greenkeeper-lockfile-upload
 after_success:
   - export REPO=poetapp/node
   - export TAG=v-$(git log -1 --pretty=%h)-beta
