@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
-import { claimFromJSON } from 'Helpers/Claim'
 import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
@@ -25,32 +24,10 @@ export class Router {
   }
 
   async start() {
-    await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
     await this.messaging.consume(
       Exchange.BatchReaderReadNextDirectorySuccess,
       this.onBatchReaderReadNextDirectorySuccess
     )
-  }
-
-  onNewClaim = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onNewClaim' })
-
-    const messageContent = message.content.toString()
-
-    const claim = claimFromJSON(JSON.parse(messageContent))
-
-    if (claim === null) logger.error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
-
-    try {
-      await this.claimController.create(claim)
-    } catch (error) {
-      logger.error(
-        {
-          error,
-        },
-        'Uncaught Exception while Storing Claim'
-      )
-    }
   }
 
   onBatchReaderReadNextDirectorySuccess = async (message: any): Promise<void> => {

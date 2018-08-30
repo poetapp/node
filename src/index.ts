@@ -15,6 +15,7 @@ import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
 import { loadConfigurationWithDefaults } from 'Configuration'
 import { Storage } from 'Storage/Storage'
+import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
 
 async function main() {
@@ -105,6 +106,19 @@ async function main() {
     await storage.start()
   } catch (exception) {
     logger.error({ exception }, 'Storage was unable to start')
+  }
+
+  const storageWriter = new StorageWriter({
+    ...loggingConfiguration,
+    dbUrl: configuration.mongodbUrl,
+    ipfsUrl: configuration.ipfsUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
+  })
+
+  try {
+    await storageWriter.start()
+  } catch (exception) {
+    logger.error({ exception }, 'StorageWriter was unable to start')
   }
 
   if (configuration.enableTimestamping) {
