@@ -82,6 +82,6 @@
     "sinon": "6.1.5",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.5.0",
-    "typescript": "3.0.1"
+    "typescript": "3.0.3"
   }
 }
