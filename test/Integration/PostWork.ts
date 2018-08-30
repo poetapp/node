@@ -55,7 +55,7 @@ export class PostWork {
   }
 
   @AsyncTest()
-  @Timeout(1350)
+  @Timeout(1500)
   async gettingThePostedWorkShouldRetrieveTheSameId() {
     const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
@@ -73,7 +73,7 @@ export class PostWork {
   }
 
   @AsyncTest()
-  @Timeout(1350)
+  @Timeout(1500)
   async gettingThePostedWorkShouldRetrieveTheSameAttributes() {
     const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
