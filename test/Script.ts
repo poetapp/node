@@ -28,10 +28,10 @@ const setUpClaims = async () => {
   console.log(await createClaim(PrivateKeyMA, ClaimType.Work, SinginAndSwinginAndGettingMerryLikeChristmas.attributes))
   console.log(await createClaim(PrivateKeyMA, ClaimType.Work, TheHeartOfAWoman.attributes))
   console.log(await createClaim(PrivateKeyMA, ClaimType.Work, AllGodsChildrenNeedTravelingShoes.attributes))
-  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, ASongFlungUpToHeaven.attributes) )
-  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, MomAndMeAndMom.attributes) )
-  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, OnThePulseOfMorning.attributes) )
-  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, ABraveAndStartlingTrugh.attributes) )
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, ASongFlungUpToHeaven.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, MomAndMeAndMom.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, OnThePulseOfMorning.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, ABraveAndStartlingTrugh.attributes))
 }
 
 setUpClaims().catch(console.error)
