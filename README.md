@@ -177,7 +177,7 @@ For example, a claim could look like this:
   publicKey: '02badf4650ba545608242c2d303d587cf4f778ae3cf2b3ef99fbda37555a400fd2',
   signature: '304402201824b78d3703162eb7f240341968ebfecad1f002f988dbc9ec80c1317e49d6290220470124c7425a5d8024778991863f0a25931a7e45fb72223bea81728a08e30b50',
   type: ClaimType.Work,
-  created: new Date('2017-12-11T22:58:11.375Z'),
+  created: new Date('2017-12-11T22:58:11.375Z').toISOString(),
   attributes: {
     name: 'The Murders in the Rue Morgue',
     author: 'Edgar Allan Poe',
