@@ -39,7 +39,7 @@ export class PostWork {
   }
 
   @AsyncTest()
-  @Timeout(1400)
+  @Timeout(1500)
   async shouldBeAbleToGetPostedWork() {
     const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
@@ -90,7 +90,7 @@ export class PostWork {
   }
 
   @AsyncTest()
-  @Timeout(1350)
+  @Timeout(1500)
   async gettingThePostedWorkShouldRetrieveIPFSHash() {
     const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
