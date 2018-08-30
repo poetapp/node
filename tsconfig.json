@@ -4,6 +4,7 @@
     "target": "es2017",
     "noImplicitAny": true,
     "removeComments": true,
+    "resolveJsonModule": true,
     "preserveConstEnums": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
