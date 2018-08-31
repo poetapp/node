@@ -194,7 +194,7 @@ The `publicKey` field must be set to the public part of a key pair you own. You'
 
 The `signature` must be set to the result of cryptographically signing the `id` field with the private key you own using the elliptic curve DSA signature scheme. This signature is currently being validated with [bitcore.Crypto.ECDSA.verify](https://github.com/bitpay/bitcore-lib/blob/master/lib/crypto/ecdsa.js#L270), and we're using [bitcore.Crypto.ECDSA.sign](https://github.com/bitpay/bitcore-lib/blob/master/lib/crypto/ecdsa.js#L279) to sign our claims.
 
-The `id` field is the `sha256` of the claim, excluding the `id` and `signature` fields, so `getId(claim) == getId(getId(claim))`. We're using [decodeIO's implementation of](https://github.com/dcodeIO/protobuf.js) Google's [Protobuf library](https://github.com/google/protobuf) in order to serialize the claims to a byte buffer deterministically and hashing this byte buffer. The `.proto` file we're using can be found in [src/Serialization/PoetProto.json](./src/Serialization/PoetProto.json). There's a [poet.proto](./src/Serialization/poet.proto) file that you can use in any other programming language.
+The `id` field is the `sha256` of the claim, excluding the `id` and `signature` fields, so `getId(claim) == getId(getId(claim))`. We're using [DigitalBazaar's jsonld](https://github.com/digitalbazaar/jsonld.js) implementation of [JSON-LD](https://www.w3.org/2018/jsonld-cg-reports/json-ld/) in order to serialize the claims to a byte buffer deterministically and hashing this byte buffer.
 
 All this logic is abstracted away in [poet-js](https://github.com/poetapp/poet-js), so if you're working with JavaScript or TypeScript you can simply use the `createClaim(privateKey, claimType, attributes)` function like so:
 
