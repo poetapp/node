@@ -24,7 +24,8 @@
     "build-babel": "cp .babelrc dist/ts && babel dist/ts/ -d dist/babel --copy-files",
     "watch-babel": "cp .babelrc dist/ts && babel -w dist/ts/ -d dist/babel --copy-files",
     "test-prepare-db": "node dist/babel/test/PrepareDB.js",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build && npm test",
+    "semantic-release": "semantic-release"
   },
   "files": [
     "dist/babel/src"
@@ -79,6 +80,7 @@
     "nodemon": "1.18.4",
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "2.0.4",
+    "semantic-release": "15.9.9",
     "sinon": "6.1.5",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.5.0",
