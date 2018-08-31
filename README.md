@@ -1,7 +1,6 @@
 # The Po.et Node
 
 [![Build Status](https://travis-ci.org/poetapp/node.svg?branch=master)](https://travis-ci.org/poetapp/node)
-[![Greenkeeper badge](https://badges.greenkeeper.io/poetapp/node.svg)](https://greenkeeper.io/)
 [![Docker Automated build](https://img.shields.io/docker/automated/poetapp/node.svg?style=flat)](https://hub.docker.com/r/poetapp/node/)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
