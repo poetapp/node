@@ -25,7 +25,20 @@
     "watch-babel": "cp .babelrc dist/ts && babel -w dist/ts/ -d dist/babel --copy-files",
     "test-prepare-db": "node dist/babel/test/PrepareDB.js",
     "prepublishOnly": "npm run build && npm test",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "travis-deploy-once": "travis-deploy-once"
+  },
+  "release": {
+    "verifyConditions": [
+      "@semantic-release/github"
+    ],
+    "prepare": [
+      "@semantic-release/npm"
+    ],
+    "publish": [
+      "@semantic-release/github"
+    ],
+    "npmPublish": false
   },
   "files": [
     "dist/babel/src"
@@ -84,6 +97,7 @@
     "sinon": "6.1.5",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.5.0",
-    "typescript": "3.0.3"
+    "typescript": "3.0.3",
+    "travis-deploy-once": "5.0.4"
   }
 }
