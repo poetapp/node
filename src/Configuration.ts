@@ -8,12 +8,11 @@ import { keys } from 'ramda'
 import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 
 // Provide default value in defaultConfiguration for any new configuration options
-export interface Configuration extends LoggingConfiguration {
+export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration {
   readonly rabbitmqUrl: string
   readonly mongodbUrl: string
   readonly ipfsUrl: string
   readonly insightUrl: string
-  readonly s3Url: string
 
   readonly apiPort: number
   readonly poetNetwork: string
@@ -42,11 +41,24 @@ export interface LoggingConfiguration {
   readonly loggingPretty: boolean
 }
 
+export interface BitcoinRPCConfiguration {
+  readonly bitcoinUrl: string
+  readonly bitcoinPort: number
+  readonly bitcoinNetwork: string
+  readonly bitcoinUsername: string
+  readonly bitcoinPassword: string
+}
+
 const defaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://localhost',
   mongodbUrl: 'mongodb://localhost:27017/poet',
   ipfsUrl: 'http://localhost:5001',
   insightUrl: 'https://test-insight.bitpay.com/api',
+  bitcoinUrl: '127.0.0.1',
+  bitcoinPort: 18332,
+  bitcoinNetwork: 'testnet',
+  bitcoinUsername: 'bitcoinrpcuser',
+  bitcoinPassword: 'bitcoinrpcpassword',
 
   apiPort: 18080,
   poetNetwork: 'BARD',
@@ -69,7 +81,6 @@ const defaultConfiguration: Configuration = {
 
   readDirectoryIntervalInSeconds: 30,
 
-  s3Url: undefined,
   forceBlockHeight: undefined,
   bitcoinAddress: undefined,
   bitcoinAddressPrivateKey: undefined,

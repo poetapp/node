@@ -1,4 +1,4 @@
-import { BlockHeightOutOfRangeError, Interval } from '@po.et/poet-js'
+import { Interval } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
@@ -45,8 +45,7 @@ export class BlockchainReaderService {
       await this.claimController.scanBlock(blockHeight)
       this.lastBlockHeight = blockHeight
     } catch (error) {
-      if (error instanceof BlockHeightOutOfRangeError)
-        logger.warn({ blockHeight }, 'BlockHeightOutOfRangeError - Probably Reached Blockchain Tip')
+      if (error.message === 'Block height out of range') logger.warn({ blockHeight }, error.message)
       else
         logger.error(
           {

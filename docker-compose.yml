@@ -41,3 +41,22 @@ services:
         sleep 10;
         npm start;
       "
+  poet-bitcoind:
+    image: ruimarinho/bitcoin-core:0.16.0
+    volumes:
+      - bitcoind1:/home/bitcoin/.bitcoin
+    ports:
+      - "18332:18332"
+      - "18443:18443"
+      - "18444:18444"
+    command:
+      -printtoconsole
+      -server
+      -testnet=1
+      -rpcuser=bitcoinrpcuser
+      -rpcpassword=bitcoinrpcpassword
+      -rpcallowip=::/0
+
+volumes:
+  bitcoind1:
+    driver: local
