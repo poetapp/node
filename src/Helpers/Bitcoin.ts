@@ -1,30 +1,67 @@
-import { TransactionPoetTimestamp } from '@po.et/poet-js'
-import * as bitcore from 'bitcore-lib'
+export const PREFIX_POET = 'POET'
+export const PREFIX_BARD = 'BARD'
 
-export const PREFIX_POET = Buffer.from('POET')
-export const PREFIX_BARD = Buffer.from('BARD')
+// Interfaces and Enums used with Bitcoin Core's RPC.
 
-export function getPoetTimestamp(tx: bitcore.Transaction): TransactionPoetTimestamp {
-  const poetOutput = tx.outputs.filter(isOutputDataOut).find(isOutputCorrectNetwork)
-
-  const poetTimestampBuffer: Buffer = poetOutput && poetOutput.script.getData()
-
-  return (
-    poetTimestampBuffer && {
-      transactionId: tx.id,
-      outputIndex: tx.outputs.indexOf(poetOutput),
-      prefix: poetTimestampBuffer.slice(0, 4).toString(),
-      version: Array.from(poetTimestampBuffer.slice(4, 8)),
-      ipfsDirectoryHash: poetTimestampBuffer.slice(8).toString(),
-    }
-  )
+export enum GetBlockVerbosity {
+  Hex = 0,
+  Parsed = 1,
+  Transactions = 2,
 }
 
-function isOutputDataOut(output: bitcore.Output) {
-  return output.script.classify() === bitcore.Script.types.DATA_OUT
+export interface Block {
+  hash: string
+  confirmations: number
+  strippedsize: number
+  size: number
+  weight: number
+  height: number
+  version: number
+  versionHex: string
+  merkleroot: string
+  tx: ReadonlyArray<Transaction>
+  time: number
+  mediantime: number
+  nonce: number
+  bits: string
+  difficulty: string
+  chainwork: string
+  nTx: number
+  previousblockhash: string
+  nextblockhash: string
 }
 
-function isOutputCorrectNetwork(output: bitcore.Output) {
-  const data: Buffer = output.script.getData()
-  return data.indexOf(PREFIX_POET) === 0 || data.indexOf(PREFIX_BARD) === 0
+export interface Transaction {
+  txid: string
+  hash: string
+  version: number
+  size: number
+  vsize: number
+  locktime: number
+  vin: ReadonlyArray<VIn>
+  vout: ReadonlyArray<VOut>
+  hex: string
+}
+
+export interface VIn {
+  sequence: number
+  coinbase?: string
+  txid?: string
+  vout?: number
+  scriptSig?: {
+    asm: string
+    hex: string
+  }
+}
+
+export interface VOut {
+  value: number
+  n: number
+  scriptPubKey: {
+    asm: string
+    hex: string
+    type: string
+    reqSigs: number
+    addresses: ReadonlyArray<string>
+  }
 }

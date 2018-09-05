@@ -1,4 +1,4 @@
-import { InsightClient } from '@po.et/poet-js'
+import BitcoinCore = require('bitcoin-core')
 import { injectable, Container } from 'inversify'
 import { MongoClient, Db } from 'mongodb'
 import * as Pino from 'pino'
@@ -48,9 +48,15 @@ export class BlockchainReader {
     this.container.bind<BlockchainReaderService>('Cron').to(BlockchainReaderService)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container
-      .bind<InsightClient>('InsightHelper')
-      .toConstantValue(new InsightClient(this.configuration.insightUrl))
+    this.container.bind<BitcoinCore>('BitcoinCore').toConstantValue(
+      new BitcoinCore({
+        host: this.configuration.bitcoinUrl,
+        port: this.configuration.bitcoinPort,
+        network: this.configuration.bitcoinNetwork,
+        username: this.configuration.bitcoinUsername,
+        password: this.configuration.bitcoinPassword,
+      })
+    )
     this.container
       .bind<ClaimControllerConfiguration>('ClaimControllerConfiguration')
       .toConstantValue(this.configuration)

@@ -1,12 +1,14 @@
-import { InsightClient, PoetTimestamp } from '@po.et/poet-js'
+import BitcoinCore = require('bitcoin-core')
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
+import { filter, reject } from 'ramda'
 
-import { getPoetTimestamp } from 'Helpers/Bitcoin'
+import { Block, GetBlockVerbosity } from 'Helpers/Bitcoin'
 import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
+import { anchorPrefixAndVersionMatch, blockToPoetAnchors } from './Bitcoin'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 
 @injectable()
@@ -15,20 +17,20 @@ export class ClaimController {
   private readonly db: Db
   private readonly collection: Collection
   private readonly messaging: Messaging
-  private readonly insightHelper: InsightClient
+  private readonly bitcoinCore: BitcoinCore
   private readonly configuration: ClaimControllerConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
-    @inject('InsightHelper') insightHelper: InsightClient,
+    @inject('BitcoinCore') bitcoinCore: BitcoinCore,
     @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.messaging = messaging
-    this.insightHelper = insightHelper
+    this.bitcoinCore = bitcoinCore
     this.configuration = configuration
     this.collection = this.db.collection('blockchainReader')
   }
@@ -36,43 +38,38 @@ export class ClaimController {
   async scanBlock(blockHeight: number): Promise<void> {
     const logger = this.logger.child({ method: 'scanBlock' })
 
-    logger.trace({ blockHeight }, 'Retrieving Block Hash...')
+    logger.debug({ blockHeight }, 'Retrieving Block Hash')
 
-    const blockHash = await this.insightHelper.getBlockHash(blockHeight)
+    const blockHash = await this.bitcoinCore.getBlockHash(blockHeight)
 
     logger.trace(
       {
         blockHeight,
         blockHash,
       },
-      'Block Hash retrieved successfully. Retrieving Raw Block...'
+      'Block Hash retrieved successfully. Retrieving Raw Block'
     )
 
-    const block = await this.insightHelper.getBlock(blockHash)
-    const poetTimestamps: ReadonlyArray<PoetTimestamp> = block.transactions
-      .map(getPoetTimestamp)
-      .filter(_ => _)
-      .map(_ => ({
-        ..._,
-        blockHeight,
-        blockHash,
-      }))
-    const transactionIds = block.transactions.map(_ => _.id)
+    const block: Block = await this.bitcoinCore.getBlock(blockHash, GetBlockVerbosity.Transactions)
 
-    const matchingPoetTimestamps = poetTimestamps
-      .filter(this.poetTimestampNetworkMatches)
-      .filter(this.poetTimestampVersionMatches)
+    const anchors = blockToPoetAnchors(block)
 
-    const unmatchingPoetTimestamps = poetTimestamps.filter(_ => !matchingPoetTimestamps.includes(_))
+    const anchorPrefixAndVersionMatchConfiguration = anchorPrefixAndVersionMatch(
+      this.configuration.poetNetwork,
+      this.configuration.poetVersion
+    )
+
+    const matchingAnchors = filter(anchorPrefixAndVersionMatchConfiguration, anchors)
+    const unmatchingAnchors = reject(anchorPrefixAndVersionMatchConfiguration, anchors)
 
     logger.trace(
       {
         blockHeight,
         blockHash,
-        matchingPoetTimestamps,
-        unmatchingPoetTimestamps,
+        matchingAnchors,
+        unmatchingAnchors,
       },
-      'Raw Block retrieved and scanned successfully'
+      'Block retrieved and scanned successfully'
     )
 
     await this.collection.updateOne(
@@ -80,21 +77,17 @@ export class ClaimController {
       {
         $set: {
           blockHash,
-          transactionIds,
-          matchingPoetTimestamps,
-          unmatchingPoetTimestamps,
+          matchingAnchors,
+          unmatchingAnchors,
         },
       },
       { upsert: true }
     )
 
-    if (matchingPoetTimestamps.length) await this.messaging.publishPoetTimestampsDownloaded(matchingPoetTimestamps)
+    if (matchingAnchors.length) await this.messaging.publishPoetTimestampsDownloaded(matchingAnchors)
   }
 
-  /**
-   * @returns {Promise<number>} The highest block height from the database, or null if no block has been processed.
-   */
-  async findHighestBlockHeight(): Promise<number> {
+  async findHighestBlockHeight(): Promise<number | null> {
     const logger = this.logger.child({ method: 'findHighestBlockHeight' })
 
     const queryResults = await this.collection
@@ -107,16 +100,5 @@ export class ClaimController {
     logger.info({ highestBlockHeight }, 'Retrieved Height of Highest Block Scanned So Far')
 
     return highestBlockHeight
-  }
-
-  private poetTimestampNetworkMatches = (blockchainPoetMessage: PoetTimestamp) => {
-    return blockchainPoetMessage.prefix === this.configuration.poetNetwork
-  }
-
-  private poetTimestampVersionMatches = (blockchainPoetMessage: PoetTimestamp) => {
-    if (blockchainPoetMessage.version.length !== this.configuration.poetVersion.length) return false
-    for (let i = 0; i < blockchainPoetMessage.version.length; i++)
-      if (blockchainPoetMessage.version[i] !== this.configuration.poetVersion[i]) return false
-    return true
   }
 }
