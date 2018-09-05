@@ -93,9 +93,9 @@ The Po.et Node depends on RabbitMQ, IPFS, MongoDB and Bitcoin Core. By default, 
 
 For a quick startup, we provide `make` commands that build and run these dependencies in Docker containers. You will need to have Docker installed and running for this (see [How to Install Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce)).
 
-You only need to run `sudo make mongo rabbit ipfs` [TODO: add `bitcoind`] once to create the Docker images, and `sudo make start-all` to start them when they shut down.
+You only need to run `sudo make mongo rabbit ipfs` once to create the Docker images, and `sudo make start-all` to start them when they shut down.
 
-You can also `sudo make sh-mongo` and `sudo make sh-ipfs` to run the mongo shell or ssh into the IPFS container. [TODO: add `sh-bitcoind`]
+You can also `sudo make sh-mongo` and `sudo make sh-ipfs` to run the mongo shell or ssh into the IPFS container.
 
 In a production environment, you may want to run these applications natively installed on the OS rather than dockerized. If you choose to run IPFS dockerized, make sure it's able to communicate with other IPFS nodes outside your network.
 
@@ -181,7 +181,7 @@ A Po.et Claim is a JSON object that holds arbitrary information plus a few attri
 - has not been modified since its creation, and
 - contains a special field `type` which will allow more features in the future.
 
-[TODO: Remove the rest of this section on building claims and replace with a link to `documentation/blob/master/protocol/claims.md`]
+<!-- [TODO: Remove the rest of this section on building claims and replace with a link to `documentation/blob/master/protocol/claims.md`] -->
 
 For example, a claim could look like this:
 ```js
