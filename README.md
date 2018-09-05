@@ -107,11 +107,15 @@ No Docker image is provided for InsightAPI since Bitpay offers a usable InsightA
 In a production environment, you may want to run these applications natively installed on the OS rather than dockerized. If you choose to run IPFS dockerized, make sure it's able to communicate with other IPFS nodes outside your network.
 
 ### Configuration
-The Po.et Node comes with a default configuration that works out of the box.
+The Po.et Node comes with a default configuration that mostly works out of the box.
 
-By default, timestamping to the blockchain is disabled, and RabbitMQ, IPFS and MongoDB are expected to be running in localhost with their default ports.
+By default, timestamping to the blockchain is disabled, and Bitcoin Core, RabbitMQ, IPFS and MongoDB are expected to be running in localhost with their default ports.
 
 You can change any configuration by placing a json file in `~/.po.et/configuration.json`. Po.et will look for this file upon startup and, if found, merge its contents with the default configuration.
+
+Alternatively, you can pass configuration values via environment variables. The keys of these environment variables always take the form of the SCREAMING_SNAKE_CASE of the configuration options listed in the default configuration. 
+
+For example: the RabbitMQ URL can be set with a `rabbitmqUrl` entry in `.po.et/configuration.json` or with the `RABBITMQ_URL` environment variable.
 
 > **Note**: Po.et will NOT reload the configuration while it's running if you change it. You'll need to restart the Node for configuration changes to apply.
 
@@ -122,7 +126,11 @@ This is what the default configuration looks like:
   rabbitmqUrl: 'amqp://localhost',
   mongodbUrl: 'mongodb://localhost:27017/poet',
   ipfsUrl: 'http://localhost:5001',
-  insightUrl: 'https://test-insight.bitpay.com/api',
+  bitcoinUrl: '127.0.0.1',
+  bitcoinPort: 18332,
+  bitcoinNetwork: 'testnet',
+  bitcoinUsername: 'bitcoinrpcuser',
+  bitcoinPassword: 'bitcoinrpcpassword',
 
   apiPort: 18080,
   poetNetwork: 'BARD',
@@ -130,22 +138,26 @@ This is what the default configuration looks like:
   minimumBlockHeight: 1253828,
   blockchainReaderIntervalInSeconds: 5,
 
-  enableTimestamping: false,
+  insightUrl: 'https://test-insight.bitpay.com/api',
   bitcoinAddress: '',
   bitcoinAddressPrivateKey: '',
+  
+  enableTimestamping: false,
   timestampIntervalInSeconds: 30,
   batchCreationIntervalInSeconds: 600
   readNextDirectoryIntervalInSeconds: 30
 }
 ```
 
-To enable timestamping to the Bitcoin blockchain, you need to set `enableTimestamping` to `true` and provide a valid `bitcoinAddress` and the `bitcoinAddressPrivateKey` that owns it.
+The node works out-of-the-box with the default configuration as long as it's running with the MongoDB, IPFS, RabbitMQ and Bitcoin Core docker images provided in this repository.
 
-You can create a valid bitcoin address using [Ian Coleman's Mnemonic Code Converter](https://iancoleman.io/bip39/), creating and exporting the private keys and addresses from bitcoin-cli or wallets that support this or use any other means that work for you.
+Anchoring to the Bitcoin blockchain must always be enabled by hand. This is done by setting `enableTimestamping` to `true` and providing a valid `bitcoinAddress` and the corresponding `bitcoinAddressPrivateKey`.
 
-You'll also need some bitcoins in that address. In testnet, you can get some for free using a [testnet faucet](https://www.google.com.ar/search?q=testnet+faucet). We've found [flyingkiwi's one](https://testnet.manu.backend.hamburg/faucet) particularly nice.
+A valid bitcoin address can be created using [Ian Coleman's Mnemonic Code Converter](https://iancoleman.io/bip39/), creating and exporting the private keys and addresses from bitcoin-cli or wallets that support this, among other means.
 
-Right now, Po.et is timestamping to Testnet, so just make sure your address is a valid Testnet address.
+The configured bitcoin address must have enough bitcoins to afford transaction fees. One way to get free testnet coins is using a [testnet faucet](https://www.google.com.ar/search?q=testnet+faucet). We've found [flyingkiwi's one](https://testnet.manu.backend.hamburg/faucet) particularly nice.
+
+To use a custom instance of Bitcoin Core, the instance must be running with RPC enabled and `bitcoinUsername` and `bitcoinPassword` must be set to the Bitcoin RPC username and password, respectively. 
 
 ## API
 Currently, the Node exposes three endpoints.
