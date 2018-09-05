@@ -207,11 +207,7 @@ export class ClaimController {
     const downloadClaim = (ipfsFileHash: string) => this.ipfs.cat(ipfsFileHash).rethrow(errorToIPFSError(ipfsFileHash))
     const parseClaim = (ipfsFileHash: string, serialized: string) => {
       try {
-        const parsedJson = JSON.parse(serialized)
-        return {
-          ...parsedJson,
-          dateCreated: new Date(parsedJson.dateCreated),
-        }
+        return JSON.parse(serialized)
       } catch (error) {
         throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidJson)
       }
