@@ -41,12 +41,12 @@ services:
         sleep 10;
         npm start;
       "
-  poet-bitcoind:
+  bitcoin-testnet:
     image: ruimarinho/bitcoin-core:0.16.0
     volumes:
       - bitcoind1:/home/bitcoin/.bitcoin
     ports:
-      - "18443:18443"
+      - "18332:18332"
     command:
       -printtoconsole
       -server
