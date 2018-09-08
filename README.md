@@ -8,13 +8,13 @@
 
 The Po.et Node allows you to timestamp documents in a decentralized manner.
 
-It's built on top of the Bitcoin's blockchain and [IPFS](https://ipfs.io/).
+It's built on top of the [Bitcoin](https://github.com/bitcoin/bitcoin) blockchain and [IPFS](https://ipfs.io/).
 
 ## Index
 
 - [How to Run the Po.et Node](#how-to-run-the-poet-node)
     - [Install](#install)
-    - [Docker Compose](#docker-compose)
+    - [Docker](#docker)
     - [Makefile](#makefile)
     - [Dependencies](#dependencies)
     - [Configuration](#configuration)
@@ -30,17 +30,13 @@ It's built on top of the Bitcoin's blockchain and [IPFS](https://ipfs.io/).
     - [Code Style](#code-style)
 
 
-## Gitter
-For any questions about developing an application that integrates with the Po.et Node or contributing to Po.et that aren't answered here check out our Gitter community at https://gitter.im/poetapp.
-
 ## How to Run the Po.et Node
-To run the Po.et Node, you need to clone this repo, make sure you have NodeJS installed and just `npm start`.
-You also need to have RabbitMQ, IPFS and MongoDB installed. See [Dependencies](#dependencies) down below.
+To run the Po.et Node, clone this repo, make sure you have [Node.js](https://nodejs.org/) installed and then `npm start`. You also need to have [RabbitMQ](http://www.rabbitmq.com/), [IPFS](https://ipfs.io/), [Bitcoin Core](https://github.com/bitcoin/bitcoin) and [MongoDB](https://github.com/mongodb/mongo) installed (see [Dependencies](#dependencies) below).
 
 ### Install
 ```bash
 # Install NVM
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 
 # Activate NVM
 . ~/.nvm/nvm.sh
@@ -61,8 +57,8 @@ npm run build
 npm start
 ```
 
-### docker-compose
-You need to have [Docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/) installed
+### Docker
+You need to have [Docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/) installed.
 ```bash
 git clone https://github.com/poetapp/node.git
 cd node
@@ -85,43 +81,38 @@ make clean
 
 Make Commands available:
 ```bash
-make all # makes all dependancies
+make all # makes all dependencies
 make stop # stops the docker containers
 make clean # removes node_modules and all stopped containers
-make setup # setups the api nodejs deps
-make containers # creates the dependant docker containers for mongodb, rabbitmq and ipfs
+make setup # setup the nodejs dependencies
+make containers # creates the dependent docker containers for mongodb, rabbitmq, bitcoind and ipfs
 ```
 
 ### Dependencies
-The Po.et Node depends on RabbitMQ, IPFS, MongoDB and InsightAPI. By default, it looks for all these things in localhost, except for the InsightAPI, which defaults to https://test-insight.bitpay.com/.
+The Po.et Node depends on RabbitMQ, IPFS, MongoDB and Bitcoin Core. By default, it looks for all of them in localhost.
 
-For a quick startup, we provide `make` commands that build and run these dependencies in Docker containers.
-You just need to `sudo make mongo rabbit ipfs` once to create the Docker images, and `sudo make start-all` to start them when they shut down.
+For a quick startup, we provide `make` commands that build and run these dependencies in Docker containers. You will need to have Docker installed and running for this (see [How to Install Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce)).
+
+You only need to run `sudo make mongo rabbit ipfs` once to create the Docker images, and `sudo make start-all` to start them when they shut down.
 
 You can also `sudo make sh-mongo` and `sudo make sh-ipfs` to run the mongo shell or ssh into the IPFS container.
-
-You'll need to have Docker installed and running for this. See [How to Install Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce).
-
-No Docker image is provided for InsightAPI since Bitpay offers a usable InsightAPI publicly.
 
 In a production environment, you may want to run these applications natively installed on the OS rather than dockerized. If you choose to run IPFS dockerized, make sure it's able to communicate with other IPFS nodes outside your network.
 
 ### Configuration
 The Po.et Node comes with a default configuration that mostly works out of the box.
 
-By default, timestamping to the blockchain is disabled, and Bitcoin Core, RabbitMQ, IPFS and MongoDB are expected to be running in localhost with their default ports.
+By default, timestamping to the blockchain is disabled, and Bitcoin Core, RabbitMQ, IPFS and MongoDB are expected to be running on localhost with their default ports.
 
-You can change any configuration by placing a json file in `~/.po.et/configuration.json`. Po.et will look for this file upon startup and, if found, merge its contents with the default configuration.
+You can change any configuration by placing a JSON file in `~/.po.et/configuration.json`. Po.et will look for this file upon startup and, if found, merge its contents with the default configuration.
 
-Alternatively, you can pass configuration values via environment variables. The keys of these environment variables always take the form of the SCREAMING_SNAKE_CASE of the configuration options listed in the default configuration. 
+Alternatively, you can pass configuration values via environment variables. The keys of these environment variables are always the SCREAMING_SNAKE_CASE equivalent of the configuration options listed in the default configuration. For example, the RabbitMQ URL can be set with a `rabbitmqUrl` entry in `~/.po.et/configuration.json` or with the `RABBITMQ_URL` environment variable.
 
-For example: the RabbitMQ URL can be set with a `rabbitmqUrl` entry in `.po.et/configuration.json` or with the `RABBITMQ_URL` environment variable.
-
-> **Note**: Po.et will NOT reload the configuration while it's running if you change it. You'll need to restart the Node for configuration changes to apply.
+> **Note**: Po.et will NOT reload the configuration while it's running if you change it. You will need to restart the Node for configuration changes to apply.
 
 This is what the default configuration looks like:
 
-```
+```js
 {
   rabbitmqUrl: 'amqp://localhost',
   mongodbUrl: 'mongodb://localhost:27017/poet',
@@ -138,6 +129,7 @@ This is what the default configuration looks like:
   minimumBlockHeight: 1253828,
   blockchainReaderIntervalInSeconds: 5,
 
+  // insightUrl will soon be deprecated
   insightUrl: 'https://test-insight.bitpay.com/api',
   bitcoinAddress: '',
   bitcoinAddressPrivateKey: '',
@@ -149,41 +141,47 @@ This is what the default configuration looks like:
 }
 ```
 
-The node works out-of-the-box with the default configuration as long as it's running with the MongoDB, IPFS, RabbitMQ and Bitcoin Core docker images provided in this repository.
+The node works out-of-the-box with the default configuration as long as it's running with the MongoDB, IPFS, RabbitMQ and Bitcoin Core docker images provided in this repository (see [docker-compose.yml](./docker-compose.yml)).
 
-Anchoring to the Bitcoin blockchain must always be enabled by hand. This is done by setting `enableTimestamping` to `true` and providing a valid `bitcoinAddress` and the corresponding `bitcoinAddressPrivateKey`.
+Anchoring to the Bitcoin blockchain must always be enabled manually. This is done by setting `enableTimestamping` to `true` and providing a valid `bitcoinAddress` and the corresponding `bitcoinAddressPrivateKey`.
 
-A valid bitcoin address can be created using [Ian Coleman's Mnemonic Code Converter](https://iancoleman.io/bip39/), creating and exporting the private keys and addresses from bitcoin-cli or wallets that support this, among other means.
+A valid Bitcoin address can be created using [Ian Coleman's Mnemonic Code Converter](https://iancoleman.io/bip39/), or by creating and exporting the private keys and addresses from bitcoin-cli or wallets that support key exporting.
 
-The configured bitcoin address must have enough bitcoins to afford transaction fees. One way to get free testnet coins is using a [testnet faucet](https://www.google.com.ar/search?q=testnet+faucet). We've found [flyingkiwi's one](https://testnet.manu.backend.hamburg/faucet) particularly nice.
+The configured Bitcoin address must have enough Bitcoins to afford transaction fees. One way to get free testnet coins is using a [testnet faucet](https://www.google.com.ar/search?q=testnet+faucet). We've found [flyingkiwi's one](https://testnet.manu.backend.hamburg/faucet) particularly nice.
 
-To use a custom instance of Bitcoin Core, the instance must be running with RPC enabled and `bitcoinUsername` and `bitcoinPassword` must be set to the Bitcoin RPC username and password, respectively. 
+To use a custom instance of Bitcoin Core, the instance must be running with RPC enabled and `bitcoinUsername` and `bitcoinPassword` must be set to the Bitcoin RPC username and password, respectively.
 
 ## API
-Currently, the Node exposes three endpoints.
+Currently, the Node exposes four endpoints.
 
 ### `GET /works/:id`
 Returns a single claim by its Id.
 
-For simplicity, this endpoint adds a `.timestamp` in the response, which is not a real part of the claim, but provides valuable information such as the id of the transaction in which this claim has been timestamped, the IPFS hash by which it can be found, etc.
+For simplicity, this endpoint adds a `.timestamp` in the response, which is not a real part of the claim, but provides valuable information such as the ID of the transaction in which this claim has been timestamped, the IPFS directory hash in which it can be found, etc.
 
-Returns 404 if the claim isn't found in this Node's database. This doesn't strictly mean the claim doesn't exist in the Po.et network — it just doesn't exist in this Node.
+A 404 error is returned if the claim isn't found in this Node's database. This doesn't strictly mean the claim does not exist in the Po.et Network — it just doesn't exist in this Node.
 
 ### `GET /works?publicKey=...&limit=x&offset=x`
-Returns a paginated array of claims — all the claims belonging to the passed public key. Default limit per request is 10 claims. This is configurable with limit and offset paramaters where offset is the number of claims to skip and limit is the number of claims returned per request.
+Returns a paginated array of claims, with all of the claims belonging to the passed public key. Default limit per request is 10 claims. This is configurable with limit and offset paramaters where offset is the number of claims to skip and limit is the number of claims returned per request.
 
 ### `GET /works?offset=x&limit=x`
-Returns a paginated array of claims - defaulted to 10 per request. This is configurable with limit and offset paramaters where offset is the number of claims to skip and limit is the number of claims returned per request.
+Returns a paginated array of claims, which defaults to 10 per request. This is configurable with limit and offset parameters where offset is the number of claims to skip and limit is the number of claims returned per request.
 
 ### `POST /works`
 Publish a work.
 
-This endpoint is async — unless an immediate error can be detected (such as a malformed claim), the endpoint will return an ACK. There's no guarantee that the work has actually been processed, timestamped an sent to IPFS. To check that, you'll need to `GET /works/:id` and check the `.timestamp` attribute.
+This endpoint is async, unless an immediate error can be detected (e.g., a malformed claim), in which case the endpoint will return an ACK. There is no guarantee that the work has actually been processed, timestamped and sent to IPFS. To confirm that, you'll need to `GET /works/:id` and check the `.timestamp` attribute.
 
 This endpoint expects a fully constructed claim — with the correct `.id`, `.publicKey`, `.signature` and `.dateCreated`. See [Building Claims](#building-claims) for information on how to correctly create these attributes.
 
 ## Building Claims
-A Po.et Claim is a JSON object that holds arbitrary information plus a few attributes that allow the network to verify that the claim has actually been created by a certain person, that the claim has not been modified since its creation, and a special field `type` which will allow more features in the future.
+A Po.et Claim is a JSON object that holds arbitrary information plus a few attributes that allow the network to verify that the claim:
+
+- has actually been created by a specific person,
+- has not been modified since its creation, and
+- contains a special field `type` which will allow more features in the future.
+
+<!-- [TODO: Remove the rest of this section on building claims and replace with a link to `documentation/blob/master/protocol/claims.md`] -->
 
 For example, a claim could look like this:
 ```js
@@ -211,12 +209,13 @@ The `signature` must be set to the result of cryptographically signing the `id` 
 
 The `id` field is the `sha256` of the claim, excluding the `id` and `signature` fields, so `getId(claim) == getId(getId(claim))`. We're using [decodeIO's implementation of](https://github.com/dcodeIO/protobuf.js) Google's [Protobuf library](https://github.com/google/protobuf) in order to serialize the claims to a byte buffer deterministically and hashing this byte buffer. The `.proto` file we're using can be found in [src/Serialization/PoetProto.json](./src/Serialization/PoetProto.json). There's a [poet.proto](./src/Serialization/poet.proto) file that you can use in any other programming language.
 
-All this logic is abstracted away in [poet-js](https://github.com/poetapp/poet-js), so if you're working with JavaScript or TypeScript you can simply use the `createClaim(privateKey, claimType, attributes)` function like so:
+### Po.et JS
+All this logic is abstracted away in [Po.et JS](https://github.com/poetapp/poet-js), so if you're working with JavaScript or TypeScript you can simply use the `createClaim(privateKey, claimType, attributes)` function like so:
 
 ```ts
 import { ClaimType, createClaim } from '@po.et/poet-js'
 
-const privateKey = 'L1mptZyB6aWkiJU7dvAK4UUjLSaqzcRNYJn3KuAA7oEVyiNn3ZPF'
+const privateKey = <YOUR_PRIVATE_KEY>
 
 const claim = createClaim(privateKey, ClaimType.Work, {
   name: 'The Murders in the Rue Morgue',
@@ -240,7 +239,7 @@ Description=Po.et Node Daemon
 After=network.target
 
 [Service]
-ExecStart=/home/ubuntu/.nvm/versions/node/v9.3.0/bin/node /home/ubuntu/node/dist/babel/src/index.js daemon
+ExecStart=/home/ubuntu/.nvm/versions/node/v10.9.0/bin/node /home/ubuntu/node/dist/babel/src/index.js daemon
 WorkingDirectory=/home/ubuntu/node/dist/babel/src/
 Restart=always
 StandardOutput=syslog
@@ -251,7 +250,7 @@ SyslogIdentifier=poet-node
 WantedBy=default.target
 ```
 
-Make sure the paths to NodeJS and Po.et in the `ExecStart` and `WorkingDirectory` entries are correct.
+Make sure the paths to Node.js and Po.et in the `ExecStart` and `WorkingDirectory` entries are correct.
 
 You can then use the following commands to handle the daemon:
 ```
@@ -264,52 +263,37 @@ systemctl --user restart poet-node
 And `journalctl -f --user-unit poet-node` to tail the logs, or without the `-f` to just `less` them.
 
 ### Supported Platforms
-The Po.et Node has been tested in Ubuntu, Linux Mint and Mac OS.
+The Po.et Node has been tested on Ubuntu, Linux Mint and Mac OS X.
 
-The `npm run build` command depends on `npm run build-clear` and `npm run copy-json`, which use bash' `rm` and `cp`, so building under Windows may require some tweaking.
+The `npm run build` command depends on `npm run build-clear` and `npm run copy-json`, which use bash' `rm` and `cp`. Therefore building under Windows may require some tweaking.
 
 ## Contributing
 
 ### Compiling
-Run `npm run build` to compile the source. This will run TypeScript on the source files and place the output in `dist/ts`, and then it'll run Babel and place the output in `dist/babel`.
+Run `npm run build` to compile the source. This will run TypeScript on the source files and place the output in `dist/ts`, and will then run Babel and place the output in `dist/babel`.
 
 Currently, we're only using Babel to support [absolute import paths](https://github.com/tleunen/babel-plugin-module-resolver).
 
 During development, you can also run `npm run watch` to automatically watch for file changes, build the changed files and restart the application on the fly.
 
 ### Tests
-Both unit and integration tests live in this same repo. You can run both with `npm test` or separately with `npm run test:unit` and `npm run test:integration`.
+Unit and integration tests are located in this repo. You can run both with `npm test` or separately with `npm run test:unit` and `npm run test:integration`.
 
-The integration tests are hard-coded to hit the `http://localhost:18080`. In the future, this will be picked up from an environment variable and defaulted to that same url.
+The integration tests are hard-coded to hit `http://localhost:18080`. In the future, this will be picked up from an environment variable and defaulted to that same url.
 
 > **Warning:** Running the integration tests wipes out the entire `db.poet.works` collection and inserts testing data. This is done by the `test/integration/PrepareDB.ts` file. In the future, a less invasive mechanism will be developed. Meanwhile, make sure you're comfortable with this before running the integration tests!
 
 Currently, Po.et Node is lacking some tests. The most critical paths that aren't being tested right now are:
+
 - Broadcasting of transactions in a single Node (submit work, wait a bit, get work and expect transactionId to be set and valid)
 - Replication across nodes (submit WORK to Node A, get WORK in Node B)
 
-See issues [#21][i21], [#22][i22], [#25][i25] and [#27][i27] for more info on this topic.
+See issues [#22](poetapp/node#22), [#25](poetapp/node#25) and [#27](poetapp/node#27) for more info on this topic.
 
 ### Coverage
-Coverage is generated with [Istanbul](https://github.com/istanbuljs/nyc).
-A more complete report can be generated by running `npm run coverage`, this command will run the `npm run coverage:unit` and `npm run coverage:integration` together. Also you will be able to execute these commands separately.
+Coverage is generated with [Istanbul](https://github.com/istanbuljs/nyc). A more complete report can be generated by running `npm run coverage`, which will run `npm run coverage:unit` and `npm run coverage:integration` together. You may also execute these commands separately.
 
-Coverage for unit test
-
-`npm run coverage:unit`
-
-Coverage for integration test
-
-`npm run coverage:integration`
-
-> Note: we're using our own forks of [nyc](https://github.com/istanbuljs/nyc) and [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/tree/master/packages/istanbul-lib-instrument) that add better support for TypeScript. We intend to contribute our forks back to nyc and istanbul-lib-instrument in order to make our solution available for all the community.
-You can follow the issues in this [PR](https://github.com/poetapp/node/pull/230), and check the new PRs for [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/pull/204)
-
+> Note: We are using our own forks of [nyc](https://github.com/istanbuljs/nyc) and [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/tree/master/packages/istanbul-lib-instrument) in order to add better support for TypeScript. We intend to contribute our forks back to nyc and istanbul-lib-instrument in order to make our solution available to the entire community. You can follow the issues in this [PR](https://github.com/poetapp/node/pull/230), and check the new PRs for [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/pull/204).
 
 ### Branches and Pull Requests
-The master branch is blocked - no one can commit to it directly. To contribute changes, branch off from master and make a PR back to it.
-
-TravisCI will run all tests automatically for all pull requests submitted.
-
-### Code Style
-Please run `npm run lint`. The linting configuration still needs some tweaking, and it'll be added to Travis in the future.
+The master branch is blocked - no one can commit to it directly. To contribute changes, branch off of master and make a pull request back to it. Travis CI will run all tests automatically for all submitted pull requests, including linting (`npm run lint`). You can run `npm run lint:fix` for quick, automatic lint fixes.
