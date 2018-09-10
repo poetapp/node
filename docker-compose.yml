@@ -42,7 +42,7 @@ services:
         npm start;
       "
   poet-bitcoind:
-    image: ruimarinho/bitcoin-core:0.16.0
+    image: ruimarinho/bitcoin-core:0.16.2
     volumes:
       - bitcoind1:/home/bitcoin/.bitcoin
     ports:
