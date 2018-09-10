@@ -42,7 +42,7 @@ services:
         npm start;
       "
   bitcoin-testnet:
-    image: ruimarinho/bitcoin-core:0.16.0
+    image: ruimarinho/bitcoin-core:0.16.2
     volumes:
       - bitcoind1:/home/bitcoin/.bitcoin
     ports:
@@ -55,7 +55,7 @@ services:
       -rpcpassword=bitcoinrpcpassword
       -rpcallowip=::/0
   bitcoin-regtest:
-    image: ruimarinho/bitcoin-core:0.16.0
+    image: ruimarinho/bitcoin-core:0.16.2
     ports:
       - "18443:18443"
     command:
