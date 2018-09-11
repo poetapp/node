@@ -36,7 +36,7 @@ services:
       - poet-mongo
       - poet-rabbit
       - poet-ipfs
-      - bitcoin
+      - bitcoin-regtest
     command: >
       /bin/bash -c "
         sleep 10;
