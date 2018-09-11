@@ -14,7 +14,7 @@
     "pretest": "npm run test-prepare-db",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "ts-node -r tsconfig-paths/register -r reflect-metadata --files ./tests/unit/index.ts",
-    "test:integration": "alsatian './dist/babel/test/Integration/**/*.js'",
+    "test:integration": "alsatian './dist/babel/test/Integration/**/*.js' --tap",
     "coverage": "npm run coverage:unit && npm run coverage:integration",
     "coverage:unit": "nyc --report-dir ./.coverage-unit npm run test:unit",
     "coverage:integration": "nyc --report-dir ./.coverage-integration npm run test:integration",
