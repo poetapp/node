@@ -1,5 +1,4 @@
-import { InsightClient } from '@po.et/poet-js'
-import * as bitcore from 'bitcore-lib'
+import BitcoinCore = require('bitcoin-core')
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
@@ -8,6 +7,7 @@ import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
+import { getData } from './Bitcoin'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 
 @injectable()
@@ -16,29 +16,26 @@ export class ClaimController {
   private readonly db: Db
   private readonly collection: Collection
   private readonly messaging: Messaging
-  private readonly insightHelper: InsightClient
+  private readonly bitcoinCore: BitcoinCore
   private readonly configuration: ClaimControllerConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
-    @inject('InsightHelper') insightClient: InsightClient,
+    @inject('BitcoinCore') bitcoinCore: BitcoinCore,
     @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration
   ) {
-    if (!configuration.bitcoinAddress) throw new Error('configuration.bitcoinAddress is required.')
-    if (!configuration.bitcoinAddressPrivateKey) throw new Error('configuration.bitcoinAddressPrivateKey is required.')
-
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.messaging = messaging
-    this.insightHelper = insightClient
+    this.bitcoinCore = bitcoinCore
     this.configuration = configuration
     this.collection = this.db.collection('blockchainWriter')
   }
 
   async requestTimestamp(ipfsDirectoryHash: string): Promise<void> {
-    this.logger.trace({
+    this.logger.debug({
       method: 'timestampWithRetry',
       ipfsDirectoryHash,
     })
@@ -48,90 +45,89 @@ export class ClaimController {
     })
   }
 
-  async timestampNextHash() {
-    const logger = this.logger.child({ method: 'timestampNextHash' })
+  async anchorNextIPFSDirectoryHash() {
+    const logger = this.logger.child({ method: 'anchorNextHash' })
 
-    logger.trace('Retrieving Next Hash To Timestamp')
+    logger.trace('Retrieving Next Hash To Anchor')
 
     const entry = await this.collection.findOne({ txId: null })
     const ipfsDirectoryHash = entry && entry.ipfsDirectoryHash
 
-    this.logger.trace({ ipfsDirectoryHash }, 'Next Hash To Timestamp Retrieved')
+    this.logger.trace({ ipfsDirectoryHash }, 'Next IPFS Directory Hash To Anchor Retrieved')
 
     if (!ipfsDirectoryHash) return
 
     try {
-      await this.timestamp(ipfsDirectoryHash)
+      await this.anchorIPFSDirectoryHash(ipfsDirectoryHash)
     } catch (exception) {
       logger.warn(
         {
           ipfsDirectoryHash,
           exception,
         },
-        'Uncaught Exception While Timestamping Hash'
+        'Unexpected Exception While Anchoring IPFS Directory Hash'
       )
     }
   }
 
-  private async timestamp(ipfsDirectoryHash: string): Promise<void> {
-    const logger = this.logger.child({ method: 'timestamp' })
+  private async anchorIPFSDirectoryHash(ipfsDirectoryHash: string): Promise<void> {
+    const { configuration, collection, messaging, anchorData } = this
+    const logger = this.logger.child({ method: 'anchorIPFSDirectoryHash' })
 
-    logger.trace({ ipfsDirectoryHash }, 'Timestamping IPFS Hash')
+    logger.debug({ ipfsDirectoryHash }, 'Anchoring IPFS Hash')
 
-    const utxo = await this.insightHelper.getUtxo(this.configuration.bitcoinAddress)
+    const ipfsDirectoryHashToBitcoinData = getData(configuration.poetNetwork, configuration.poetVersion)
 
-    if (!utxo || !utxo.length)
-      throw new Error(`Wallet seems to be empty. Check funds for ${this.configuration.bitcoinAddress}`)
+    const data = ipfsDirectoryHashToBitcoinData(ipfsDirectoryHash)
+    const txId = await anchorData(data)
 
-    // Use only up to 5 unused outputs to avoid large transactions,
-    // picking the ones with the most satoshis to ensure enough fee.
-    const topUtxo = utxo
-      .slice()
-      .sort((a, b) => b.satoshis - a.satoshis)
-      .slice(0, 5)
-
-    logger.trace(
-      {
-        address: this.configuration.bitcoinAddress,
-        utxo,
-      },
-      'Got UTXO from Insight'
-    )
-
-    const data = Buffer.concat([
-      Buffer.from(this.configuration.poetNetwork),
-      Buffer.from([...this.configuration.poetVersion]),
-      Buffer.from(ipfsDirectoryHash),
-    ])
-    const tx = new bitcore.Transaction()
-      .from(topUtxo)
-      .change(this.configuration.bitcoinAddress)
-      .addData(data)
-      .sign(this.configuration.bitcoinAddressPrivateKey)
-
-    logger.trace(
-      {
-        address: this.configuration.bitcoinAddress,
-        txHash: tx.hash,
-      },
-      'Transaction Built'
-    )
-
-    const txPostResponse = await this.insightHelper.broadcastTx(tx)
-
-    logger.info(
-      {
-        txHash: tx.hash,
-        txId: tx.id,
-        txPostResponse,
-      },
-      'Transaction Broadcasted'
-    )
-
-    await this.collection.updateOne({ ipfsDirectoryHash }, { $set: { txId: tx.id } }, { upsert: true })
-    await this.messaging.publish(Exchange.IPFSHashTxId, {
+    await collection.updateOne({ ipfsDirectoryHash }, { $set: { txId } }, { upsert: true })
+    await messaging.publish(Exchange.IPFSHashTxId, {
       ipfsDirectoryHash,
-      txId: tx.id,
+      txId,
     })
+  }
+
+  private anchorData = async (data: string) => {
+    const { bitcoinCore } = this
+    const logger = this.logger.child({ method: 'anchorData' })
+
+    const rawTransaction = await bitcoinCore.createRawTransaction([], { data })
+
+    logger.trace(
+      {
+        rawTransaction,
+      },
+      'Got rawTransaction from Bitcoin Core'
+    )
+
+    const fundedTransaction = await bitcoinCore.fundRawTransaction(rawTransaction)
+
+    logger.trace(
+      {
+        fundedTransaction,
+      },
+      'Got fundedTransaction from Bitcoin Core'
+    )
+
+    const signedTransaction = await bitcoinCore.signRawTransaction(fundedTransaction.hex)
+
+    logger.trace(
+      {
+        signedTransaction,
+      },
+      'Got signedTransaction from Bitcoin Core'
+    )
+
+    const sentTransaction = await bitcoinCore.sendRawTransaction(signedTransaction.hex)
+
+    logger.trace(
+      {
+        sentTransaction,
+      },
+      'Got sentTransaction from Bitcoin Core'
+    )
+
+    return sentTransaction
   }
 }

@@ -65,3 +65,15 @@ export interface VOut {
     addresses: ReadonlyArray<string>
   }
 }
+
+export interface UnspentOutput {
+  readonly txid: string
+  readonly vout: number
+  readonly address: string
+  readonly scriptPubKey: string
+  readonly amount: number
+  readonly confirmations: number
+  readonly spendable: boolean
+  readonly solvable: boolean
+  readonly safe: boolean
+}

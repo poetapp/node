@@ -42,7 +42,6 @@
     "@po.et/poet-js": "2.0.0",
     "amqplib": "0.5.2",
     "bitcoin-core": "2.0.0",
-    "bitcore-lib": "0.15.0",
     "form-data": "2.3.2",
     "inversify": "4.13.0",
     "joi": "13.6.0",
@@ -62,7 +61,6 @@
   "devDependencies": {
     "@po.et/tslint-rules": "1.4.1",
     "@types/amqplib": "0.5.8",
-    "@types/bitcore-lib": "0.15.0",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
     "@types/joi": "13.4.4",
