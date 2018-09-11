@@ -37,7 +37,7 @@ export class Service {
     logger.trace('Requesting Timestamping of Next Hash')
 
     try {
-      await this.claimController.timestampNextHash()
+      await this.claimController.anchorNextIPFSDirectoryHash()
     } catch (error) {
       logger.error(
         {
