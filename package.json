@@ -42,7 +42,6 @@
     "@po.et/poet-js": "2.0.0",
     "amqplib": "0.5.2",
     "bitcoin-core": "2.0.0",
-    "bitcore-lib": "0.15.0",
     "form-data": "2.3.2",
     "inversify": "4.13.0",
     "joi": "13.6.0",
@@ -62,14 +61,13 @@
   "devDependencies": {
     "@po.et/tslint-rules": "1.4.1",
     "@types/amqplib": "0.5.8",
-    "@types/bitcore-lib": "0.15.0",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
     "@types/joi": "13.4.4",
     "@types/koa": "2.0.46",
     "@types/koa-helmet": "3.1.2",
     "@types/koa-router": "7.0.31",
-    "@types/mongodb": "3.1.4",
+    "@types/mongodb": "3.1.6",
     "@types/node-fetch": "1.6.9",
     "@types/pino": "4.16.1",
     "@types/sinon": "5.0.2",
@@ -79,11 +77,11 @@
     "concurrently": "4.0.1",
     "nodemon": "1.18.4",
     "nyc": "poetapp/nyc#fbc2ed1",
-    "riteway": "2.0.4",
-    "semantic-release": "15.9.12",
+    "riteway": "2.0.7",
+    "semantic-release": "15.9.14",
     "sinon": "6.2.0",
     "ts-node": "7.0.1",
-    "tsconfig-paths": "3.5.0",
+    "tsconfig-paths": "3.6.0",
     "typescript": "3.0.3"
   }
 }

@@ -126,12 +126,14 @@ async function main() {
       ...loggingConfiguration,
       dbUrl: configuration.mongodbUrl,
       rabbitmqUrl: configuration.rabbitmqUrl,
-      insightUrl: configuration.insightUrl,
-      bitcoinAddress: configuration.bitcoinAddress,
-      bitcoinAddressPrivateKey: configuration.bitcoinAddressPrivateKey,
       poetNetwork: configuration.poetNetwork,
       poetVersion: configuration.poetVersion,
       timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
+      bitcoinUrl: configuration.bitcoinUrl,
+      bitcoinPort: configuration.bitcoinPort,
+      bitcoinNetwork: configuration.bitcoinNetwork,
+      bitcoinUsername: configuration.bitcoinUsername,
+      bitcoinPassword: configuration.bitcoinPassword,
     })
     try {
       await blockchainWriter.start()
