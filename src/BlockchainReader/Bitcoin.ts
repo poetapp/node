@@ -30,6 +30,7 @@ const transactionToOutputs = (transaction: Transaction): ReadonlyArray<VOutWithT
 const outputIsDataOutput = (output: VOut) => output.scriptPubKey.type === 'nulldata'
 
 const dataOutputToPoetAnchor = (dataOutput: VOutWithTxId): TransactionPoetTimestamp => {
+  // TODO: split method in two. see https://github.com/poetapp/node/issues/418
   const { asm } = dataOutput.scriptPubKey
   const data = asm.split(' ')[1]
   const buffer = Buffer.from(data, 'hex')
