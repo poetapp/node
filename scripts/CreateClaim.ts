@@ -1,8 +1,8 @@
 /* tslint:disable:no-console */
 import { createClaim, ClaimType } from '@po.et/poet-js'
 
-import { PrivateKeyACD } from './Claims'
-import { Client } from './Integration/Helper'
+import { PrivateKeyACD } from '../test/Claims'
+import { Client } from '../test/Integration/Helper'
 
 const main = async () => {
   console.log(process.argv[1], process.argv[2], process.argv[3], process.argv[4])
