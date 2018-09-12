@@ -106,12 +106,7 @@ export class GetWorks {
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
 
-    const json = await response.json()
-
-    const claims: ReadonlyArray<Claim> = json.map((_: any) => ({
-      ..._,
-      created: new Date(_.created),
-    }))
+    const claims: ReadonlyArray<Claim> = await response.json()
 
     for (const claim of claims) {
       Expect(claim.id).toBeTruthy()
