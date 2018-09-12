@@ -92,6 +92,7 @@ export class ClaimController {
       this.findEntryToDownload,
       this.updateEntryAttempts,
       this.downloadEntryClaim,
+      this.setEntryDownloadSuccessTime,
       this.updateEntryPairs,
       this.publishEntryDownload
     )
@@ -226,6 +227,28 @@ export class ClaimController {
     return {
       entry,
       claim,
+      ...rest,
+    }
+  }
+
+  private setEntryDownloadSuccessTimeById = (entryId: string, downloadSuccessTime: number) =>
+    this.collection.updateOne(
+      {
+        _id: entryId,
+      },
+      { $set: { downloadSuccessTime } }
+    )
+
+  private setEntryDownloadSuccessTime = async ({ entry, ...rest }: { entry: Entry }) => {
+    const logger = this.logger.child({ method: 'setEntryDownloadSuccessTime' })
+    logger.trace('setting download success time')
+
+    await this.setEntryDownloadSuccessTimeById(entry._id, new Date().getTime())
+
+    logger.trace('finished setting download success time')
+
+    return {
+      entry,
       ...rest,
     }
   }
