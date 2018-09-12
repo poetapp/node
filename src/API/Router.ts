@@ -1,4 +1,11 @@
-import { ClaimType, isWork, isValidSignature, IllegalArgumentException, NotFoundException } from '@po.et/poet-js'
+import {
+  ClaimType,
+  isWork,
+  isValidSignature,
+  IllegalArgumentException,
+  NotFoundException,
+  isClaim,
+} from '@po.et/poet-js'
 import { injectable, inject } from 'inversify'
 import * as Joi from 'joi'
 import * as Koa from 'koa'
@@ -8,7 +15,6 @@ import * as helmet from 'koa-helmet'
 import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
 
-import { claimFromJSON } from 'Helpers/Claim'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
@@ -93,15 +99,13 @@ export class Router {
 
     this.logger.trace({ body }, 'POST /works')
 
-    const work = claimFromJSON(body)
+    if (!isClaim(body)) throw new IllegalArgumentException('Request Body must be a Claim.')
 
-    if (work === null) throw new IllegalArgumentException('Request Body must be a Claim.')
+    if (!isWork(body)) throw new IllegalArgumentException(`Claim's type must be ${ClaimType.Work}, not ${body.type}`)
 
-    if (!isWork(work)) throw new IllegalArgumentException(`Claim's type must be ${ClaimType.Work}, not ${work.type}`)
+    if (!isValidSignature(body)) throw new IllegalArgumentException("Claim's signature is incorrect.")
 
-    if (!isValidSignature(work)) throw new IllegalArgumentException("Claim's signature is incorrect.")
-
-    await this.workController.create(work)
+    await this.workController.create(body)
 
     context.body = ''
     context.status = 202

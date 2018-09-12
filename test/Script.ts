@@ -19,15 +19,19 @@ import {
   ABraveAndStartlingTrugh,
 } from './Claims'
 
-console.log(createClaim(PrivateKeyACD, ClaimType.Work, AStudyInScarlet.attributes))
-console.log(createClaim(PrivateKeyEAP, ClaimType.Work, TheMurdersInTheRueMorgue.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, TheWeekOfDiana.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, KnowWhyTheCagedBirdSings.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, GatherTogetherInMyName.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, SinginAndSwinginAndGettingMerryLikeChristmas.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, TheHeartOfAWoman.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, AllGodsChildrenNeedTravelingShoes.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, ASongFlungUpToHeaven.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, MomAndMeAndMom.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, OnThePulseOfMorning.attributes))
-console.log(createClaim(PrivateKeyMA, ClaimType.Work, ABraveAndStartlingTrugh.attributes))
+const setUpClaims = async () => {
+  console.log(await createClaim(PrivateKeyACD, ClaimType.Work, AStudyInScarlet.attributes))
+  console.log(await createClaim(PrivateKeyEAP, ClaimType.Work, TheMurdersInTheRueMorgue.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, TheWeekOfDiana.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, KnowWhyTheCagedBirdSings.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, GatherTogetherInMyName.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, SinginAndSwinginAndGettingMerryLikeChristmas.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, TheHeartOfAWoman.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, AllGodsChildrenNeedTravelingShoes.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, ASongFlungUpToHeaven.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, MomAndMeAndMom.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, OnThePulseOfMorning.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, ABraveAndStartlingTrugh.attributes))
+}
+
+setUpClaims().catch(console.error)

@@ -54,5 +54,5 @@ export class Client {
  *  tests cause such big delays.
  */
 export function waitForNode() {
-  return delay(300)
+  return delay(1300)
 }

@@ -1,7 +1,7 @@
+import { isClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
-import { claimFromJSON } from 'Helpers/Claim'
 import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
@@ -33,9 +33,9 @@ export class Router {
 
     const messageContent = message.content.toString()
 
-    const claim = claimFromJSON(JSON.parse(messageContent))
+    const claim = JSON.parse(messageContent)
 
-    if (claim === null) logger.error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
+    if (!isClaim(claim)) logger.error(`Received a ${Exchange.NewClaim} message, but the content isn't a claim.`)
 
     try {
       await this.claimController.create(claim)
