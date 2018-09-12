@@ -1,8 +1,7 @@
 /* tslint:disable:no-relative-imports */
 import { Claim, isClaim } from '@po.et/poet-js'
 import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
-
-import { claimFromJSON } from 'Helpers/Claim'
+import { pipe, not } from 'ramda'
 
 import { TheRaven, ABraveAndStartlingTrugh } from '../Claims'
 import { Client } from './Helper'
@@ -93,7 +92,12 @@ export class GetWorks {
     Expect(response.ok).toBeTruthy()
 
     const claims = await response.json()
-    const allElementsAreClaims = !claims.find((claim: any) => !isClaim(claimFromJSON(claim)))
+    const allElementsAreClaims = !claims.some(
+      pipe(
+        isClaim,
+        not
+      )
+    )
 
     Expect(allElementsAreClaims).toBeTruthy()
   }
