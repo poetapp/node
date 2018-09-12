@@ -25,7 +25,8 @@
     "watch-babel": "cp .babelrc dist/ts && babel -w dist/ts/ -d dist/babel --copy-files",
     "test-prepare-db": "node dist/babel/test/PrepareDB.js",
     "prepublishOnly": "npm run build && npm test",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "create-claim": "ts-node scripts/CreateClaim"
   },
   "files": [
     "dist/babel/src"
