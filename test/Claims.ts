@@ -7,14 +7,14 @@ export const TheRaven: Work = {
   signature:
     '3045022100e020a7ffeffa5d40ffde618c6c861678e38de69fd377028ec57ad93893883b3702201f085284a9064bab7e1cd39349e65d136d8f67e4b6b897c3e7db6b400ed91034',
   type: ClaimType.Work,
-  dateCreated: new Date('2017-11-13T15:00:00.000Z'),
+  created: '2017-11-13T15:00:00.000Z',
   attributes: {
     name: 'The Raven',
     author: 'Edgar Allan Poe',
     tags: 'poem',
     dateCreated: '',
     datePublished: '1845-01-29T03:00:00.000Z',
-    content: 'Once upon a midnight dreary...',
+    text: 'Once upon a midnight dreary...',
   },
 }
 
@@ -24,14 +24,14 @@ export const TheMurdersInTheRueMorgue: Work = {
   signature:
     '304402201824b78d3703162eb7f240341968ebfecad1f002f988dbc9ec80c1317e49d6290220470124c7425a5d8024778991863f0a25931a7e45fb72223bea81728a08e30b50',
   type: ClaimType.Work,
-  dateCreated: new Date('2017-12-11T22:58:11.375Z'),
+  created: '2017-12-11T22:58:11.375Z',
   attributes: {
     name: 'The Murders in the Rue Morgue',
     author: 'Edgar Allan Poe',
     tags: 'short story, detective story, detective',
     dateCreated: '1841-01-01T00:00:00.000Z',
     datePublished: '1841-01-01T00:00:00.000Z',
-    content:
+    text:
       'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...',
   },
 }
@@ -42,14 +42,14 @@ export const AStudyInScarlet: Work = {
   signature:
     '3045022100df2034f6e8dd277cbbddfff3652d50ec0b7a59f385e3f68df188e290be77a88302201856b5d8cc07c7726afc41cc0f6f67eabd5ea23a413dcbbbdc1047285f1a2150',
   type: ClaimType.Work,
-  dateCreated: new Date('2017-12-11T22:58:11.327Z'),
+  created: '2017-12-11T22:58:11.327Z',
   attributes: {
     name: 'A Study in Scarlet',
     author: 'Arthur Conan Doyle',
     tags: 'detective novel, detective',
     dateCreated: '1886-01-01T00:00:00.000Z',
     datePublished: '1887-01-01T00:00:00.000Z',
-    content: 'In the year 1878 I took my degree of Doctor of Medicine of the University of London...',
+    text: 'In the year 1878 I took my degree of Doctor of Medicine of the University of London...',
   },
 }
 
@@ -59,14 +59,14 @@ export const TheWeekOfDiana: Work = {
   signature:
     '3045022100d596962bf22dde012e0ef8329b411404719d033d21015fadb2e57c773ee872b40220286a424908588cac3a8792f72ed076aa171332ec6bb02bb96454f14254bd7d72',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:13.909Z'),
+  created: '2018-07-31T22:29:13.909Z',
   attributes: {
     name: 'The Week of Diana',
     author: 'Maya Angelou',
     tags: 'poem',
     dateCreated: '1997-09-06T00:00:00.000Z',
     datePublished: '1997-09-06T00:00:00.000Z',
-    content: 'The dark lantern of world sadness has cast its shadow upon the land....',
+    text: 'The dark lantern of world sadness has cast its shadow upon the land....',
   },
 }
 
@@ -76,14 +76,14 @@ export const KnowWhyTheCagedBirdSings: Work = {
   signature:
     '304402201b4464b320d4f3c65d21395e05724ac011f4a6016241ff63b6a56d9d451676670220447a62cbddc1e41775e5486a26223bccc660ff6ce112b42002a8878312831a8c',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:13.940Z'),
+  created: '2018-07-31T22:29:13.940Z',
   attributes: {
     name: 'Know Why the Caged Bird Sings',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1969-01-01T00:00:00.000Z',
     datePublished: '1969-01-01T00:00:00.000Z',
-    content:
+    text:
       'I know why the caged bird sings, ah me, When his wing is bruised and his bosom sore, When he beats his bars and would be free; It is not a carol of joy or glee,....',
   },
 }
@@ -94,14 +94,14 @@ export const GatherTogetherInMyName: Work = {
   signature:
     '304402201b60c02d2c490b6c037a2b38d51eb2f448e32619b00d91ef08acabf25c42fb160220714b3f859d1a483d088c4c5c8f48f9a856a26f2e3ffb785e0278476803649b4a',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:13.950Z'),
+  created: '2018-07-31T22:29:13.950Z',
   attributes: {
     name: 'Gather Together in My Name',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1974-01-01T00:00:00.000Z',
     datePublished: '1974-01-01T00:00:00.000Z',
-    content:
+    text:
       'I was mortified. A silly white woman who probably counted on her toes looked me in the face and said I had not passed. ....',
   },
 }
@@ -112,14 +112,14 @@ export const SinginAndSwinginAndGettingMerryLikeChristmas: Work = {
   signature:
     '304502210098fba1efdca83e2a725bbb96cfcf0841bee42379319d441931f12975891e65f50220204cc1d8d69bc6753b3f1e1d24bd66b586e4a532a4ae97126da05e49ca8aa1c4',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:13.962Z'),
+  created: '2018-07-31T22:29:13.962Z',
   attributes: {
     name: "Singin' and Swingin' and Gettin' Merry Like Christmas",
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1976-01-01T00:00:00.000Z',
     datePublished: '1976-01-01T00:00:00.000Z',
-    content:
+    text:
       'Don’t the moon look lonesome shining through the trees? Ah, don’t the moon look lonesome shining through the trees? Don’t your house look lonesome when your baby pack up to leave?....',
   },
 }
@@ -130,14 +130,14 @@ export const TheHeartOfAWoman: Work = {
   signature:
     '3045022100f859137cee38039aa2ae04ec039be36ab7714eaea904e2a23d99400d3d7d7f7a02201b85d506f9120cd3004be75688ef4da266f747fee2139472315463246e466ce3',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:13.970Z'),
+  created: '2018-07-31T22:29:13.970Z',
   attributes: {
     name: 'The Heart of a Woman',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1981-01-01T00:00:00.000Z',
     datePublished: '1981-01-01T00:00:00.000Z',
-    content:
+    text:
       "The Harlem Writer's Guild was meeting at John's house, and my palms were sweating and my tongue was thick....",
   },
 }
@@ -148,14 +148,14 @@ export const AllGodsChildrenNeedTravelingShoes: Work = {
   signature:
     '3044022034ae8666cb1362e6f1d405cf3ea35a6c92734356c978a57e0c604f8ba3369ef8022041604d498785ce9646b1179f1287fd55aa1935d89829c2942830d6dbca409adc',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:13.978Z'),
+  created: '2018-07-31T22:29:13.978Z',
   attributes: {
     name: "All God's Children Need Traveling Shoes",
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1986-01-01T00:00:00.000Z',
     datePublished: '1986-01-01T00:00:00.000Z',
-    content:
+    text:
       'The breezes of the West African night were intimate and shy, licking the hair, sweeping through cotton dresses with unseemly intimacy....',
   },
 }
@@ -166,14 +166,14 @@ export const ASongFlungUpToHeaven: Work = {
   signature:
     '3045022100cc731a99514e9aade4ddbd728f203934231a10a0f66e9fbeebdd7e9569fbcf4b02202a2dfb538cc3695e412cdc03a712643dd5c7b17f22f9d687ebdd84cf22086183',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:13.991Z'),
+  created: '2018-07-31T22:29:13.991Z',
   attributes: {
     name: 'A Song Flung Up to Heaven',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '2002-01-01T00:00:00.000Z',
     datePublished: '2002-01-01T00:00:00.000Z',
-    content:
+    text:
       "One The old ark's a-movering a-movering a-movering the old ark's a-movering and I'm going home. Nineteenth - century American spiritual....",
   },
 }
@@ -184,14 +184,14 @@ export const MomAndMeAndMom: Work = {
   signature:
     '304402202bc198e9a381e5ec7c2f41ab7019ffe7a0eaed928a6f5ab44fc321a8a85d952502203403e03a319d7ecd6b9b6ea76012889e36e2b964d704441c0ddef13e6af19bfe',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:14.002Z'),
+  created: '2018-07-31T22:29:14.002Z',
   attributes: {
     name: 'Mom & Me & Mom',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '2013-01-01T00:00:00.000Z',
     datePublished: '2013-01-01T00:00:00.000Z',
-    content:
+    text:
       'The first decade of the twentieth century was not a great time to be born black and poor and female in St. Louis, Missouri, but Vivian Baxter was born black and poor, to black and poor parents....',
   },
 }
@@ -202,14 +202,14 @@ export const OnThePulseOfMorning: Work = {
   signature:
     '3045022100fd7cd78372ef8ded1d69100fc4a5993d0f37afe907ae4de6e04d66fd24facf83022009e00d0ae1b4d6bdd861b55a8f53a31cd8d989b95683ee0d755e1226434cc5bc',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:14.010Z'),
+  created: '2018-07-31T22:29:14.010Z',
   attributes: {
     name: 'On the Pulse of Morning',
     author: 'Maya Angelou',
     tags: 'poem',
     dateCreated: '1993-01-01T00:00:00.000Z',
     datePublished: '1993-01-01T00:00:00.000Z',
-    content: 'A Rock, A River, A Tree; Hosts to species long since departed, Marked the mastodon....',
+    text: 'A Rock, A River, A Tree; Hosts to species long since departed, Marked the mastodon....',
   },
 }
 
@@ -219,14 +219,14 @@ export const ABraveAndStartlingTrugh: Work = {
   signature:
     '3045022100cd36fe5eaa4a268ed98618edae844378ab31bf33bfe3a5b5f1eb2dca9beff9e602201f39910795af3e373960ea3258669df439471f946359d82238fea3d100ba0ca7',
   type: ClaimType.Work,
-  dateCreated: new Date('2018-07-31T22:29:14.019Z'),
+  created: '2018-07-31T22:29:14.019Z',
   attributes: {
     name: 'A Brave and Startling Truth',
     author: 'Maya Angelou',
     tags: 'poem',
     dateCreated: '1995-01-01T00:00:00.000Z',
     datePublished: '1995-01-01T00:00:00.000Z',
-    content: 'We, this people, on this small and drifting planet Whose hands can strike with such abandon....',
+    text: 'We, this people, on this small and drifting planet Whose hands can strike with such abandon....',
   },
 }
 
@@ -238,12 +238,12 @@ export const PrivateKeyACD = 'cPtZVYmMDT4aLm9inqXG9N8HQhAD5GgM8LuXZUbbFcqZTTcvQS
 export const PrivateKeyMA = 'cNF7epKBWa4HD9rk6mVqckT6WS5QddCQZ1xQ2qoynXiVg15dKJZL'
 
 export function makeClaim(attributes: ClaimAttributes) {
-  const dateCreated = new Date('2017-12-11T22:54:40.261Z')
+  const created = '2017-12-11T22:54:40.261Z'
   const publicKey = '02db393ae2d566ceddd95a97fd88bc2897a0818528158261cec45087a58786f09d'
   const type = ClaimType.Work
   return {
     publicKey,
-    dateCreated,
+    created,
     type,
     attributes,
   }

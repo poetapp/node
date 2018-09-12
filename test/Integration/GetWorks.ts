@@ -1,8 +1,7 @@
 /* tslint:disable:no-relative-imports */
 import { Claim, isClaim } from '@po.et/poet-js'
 import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
-
-import { claimFromJSON } from 'Helpers/Claim'
+import { pipe, not } from 'ramda'
 
 import { TheRaven, ABraveAndStartlingTrugh } from '../Claims'
 import { Client } from './Helper'
@@ -93,7 +92,12 @@ export class GetWorks {
     Expect(response.ok).toBeTruthy()
 
     const claims = await response.json()
-    const allElementsAreClaims = !claims.find((claim: any) => !isClaim(claimFromJSON(claim)))
+    const allElementsAreClaims = !claims.some(
+      pipe(
+        isClaim,
+        not
+      )
+    )
 
     Expect(allElementsAreClaims).toBeTruthy()
   }
@@ -106,18 +110,13 @@ export class GetWorks {
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
 
-    const json = await response.json()
-
-    const claims: ReadonlyArray<Claim> = json.map((_: any) => ({
-      ..._,
-      dateCreated: new Date(_.dateCreated),
-    }))
+    const claims: ReadonlyArray<Claim> = await response.json()
 
     for (const claim of claims) {
       Expect(claim.id).toBeTruthy()
       Expect(claim.publicKey).toBeTruthy()
       Expect(claim.signature).toBeTruthy()
-      Expect(claim.dateCreated.toISOString()).toBeTruthy()
+      Expect(claim.created).toBeTruthy()
     }
   }
 

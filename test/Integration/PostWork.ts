@@ -1,6 +1,6 @@
 /* tslint:disable:no-relative-imports */
 import { ClaimType, createClaim } from '@po.et/poet-js'
-import { AsyncTest, Expect, SetupFixture, TestFixture } from 'alsatian'
+import { AsyncTest, Expect, SetupFixture, TestFixture, Timeout } from 'alsatian'
 
 import { Key1 } from '../Keys'
 import { Client, waitForNode } from './Helper'
@@ -16,7 +16,7 @@ export class PostWork {
 
   @AsyncTest()
   async postWorkShouldSucceedWith202() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -28,7 +28,7 @@ export class PostWork {
 
   @AsyncTest()
   async postWorkShouldSucceedWithEmptyResponse() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -39,8 +39,9 @@ export class PostWork {
   }
 
   @AsyncTest()
+  @Timeout(1500)
   async shouldBeAbleToGetPostedWork() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -54,8 +55,9 @@ export class PostWork {
   }
 
   @AsyncTest()
+  @Timeout(1500)
   async gettingThePostedWorkShouldRetrieveTheSameId() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -71,8 +73,9 @@ export class PostWork {
   }
 
   @AsyncTest()
+  @Timeout(1500)
   async gettingThePostedWorkShouldRetrieveTheSameAttributes() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -87,8 +90,9 @@ export class PostWork {
   }
 
   @AsyncTest()
+  @Timeout(1500)
   async gettingThePostedWorkShouldRetrieveIPFSHash() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 
@@ -107,7 +111,7 @@ export class PostWork {
 
   @AsyncTest()
   async shouldFailIfSignatureIsIncorrect() {
-    const claim = createClaim(Key1.privateKey, ClaimType.Work, {
+    const claim = await createClaim(Key1.privateKey, ClaimType.Work, {
       name: 'Name',
     })
 

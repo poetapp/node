@@ -190,14 +190,14 @@ For example, a claim could look like this:
   publicKey: '02badf4650ba545608242c2d303d587cf4f778ae3cf2b3ef99fbda37555a400fd2',
   signature: '304402201824b78d3703162eb7f240341968ebfecad1f002f988dbc9ec80c1317e49d6290220470124c7425a5d8024778991863f0a25931a7e45fb72223bea81728a08e30b50',
   type: ClaimType.Work,
-  dateCreated: new Date('2017-12-11T22:58:11.375Z'),
+  created: new Date('2017-12-11T22:58:11.375Z').toISOString(),
   attributes: {
     name: 'The Murders in the Rue Morgue',
     author: 'Edgar Allan Poe',
     tags: 'short story, detective story, detective',
     dateCreated: '1841-01-01T00:00:00.000Z',
     datePublished: '1841-01-01T00:00:00.000Z',
-    content: 'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...'
+    text: 'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...'
   }
 }
 
@@ -207,7 +207,7 @@ The `publicKey` field must be set to the public part of a key pair you own. You'
 
 The `signature` must be set to the result of cryptographically signing the `id` field with the private key you own using the elliptic curve DSA signature scheme. This signature is currently being validated with [bitcore.Crypto.ECDSA.verify](https://github.com/bitpay/bitcore-lib/blob/master/lib/crypto/ecdsa.js#L270), and we're using [bitcore.Crypto.ECDSA.sign](https://github.com/bitpay/bitcore-lib/blob/master/lib/crypto/ecdsa.js#L279) to sign our claims.
 
-The `id` field is the `sha256` of the claim, excluding the `id` and `signature` fields, so `getId(claim) == getId(getId(claim))`. We're using [decodeIO's implementation of](https://github.com/dcodeIO/protobuf.js) Google's [Protobuf library](https://github.com/google/protobuf) in order to serialize the claims to a byte buffer deterministically and hashing this byte buffer. The `.proto` file we're using can be found in [src/Serialization/PoetProto.json](./src/Serialization/PoetProto.json). There's a [poet.proto](./src/Serialization/poet.proto) file that you can use in any other programming language.
+The `id` field is the `sha256` of the claim, excluding the `id` and `signature` fields, so `getId(claim) == getId(getId(claim))`. We're using [DigitalBazaar's jsonld](https://github.com/digitalbazaar/jsonld.js) implementation of [JSON-LD](https://www.w3.org/2018/jsonld-cg-reports/json-ld/) in order to serialize the claims to a byte buffer deterministically and hashing this byte buffer.
 
 ### Po.et JS
 All this logic is abstracted away in [Po.et JS](https://github.com/poetapp/poet-js), so if you're working with JavaScript or TypeScript you can simply use the `createClaim(privateKey, claimType, attributes)` function like so:
@@ -217,13 +217,13 @@ import { ClaimType, createClaim } from '@po.et/poet-js'
 
 const privateKey = <YOUR_PRIVATE_KEY>
 
-const claim = createClaim(privateKey, ClaimType.Work, {
+const claim = await createClaim(privateKey, ClaimType.Work, {
   name: 'The Murders in the Rue Morgue',
   author: 'Edgar Allan Poe',
   tags: 'short story, detective story, detective',
   dateCreated: '1841-01-01T00:00:00.000Z',
   datePublished: '1841-01-01T00:00:00.000Z',
-  content: 'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...'
+  text: 'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...'
 })
 
 ```

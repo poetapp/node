@@ -1,8 +1,7 @@
 /* tslint:disable:no-relative-imports */
-import { Claim, Work } from '@po.et/poet-js'
+import { Claim, isClaim, Work } from '@po.et/poet-js'
 import { AsyncTest, Expect, SetupFixture, TestCase, TestFixture } from 'alsatian'
-
-import { claimFromJSON } from 'Helpers/Claim'
+import { pipe, not } from 'ramda'
 
 import { AStudyInScarlet, TheMurdersInTheRueMorgue, TheRaven } from '../Claims'
 import { Client } from './Helper'
@@ -80,7 +79,12 @@ export class GetWorksByPublicKey {
     Expect(response.ok).toBeTruthy()
 
     const claims = await response.json()
-    const allElementsAreClaims = !claims.find((claim: Claim) => claimFromJSON(claim) === null)
+    const allElementsAreClaims = !claims.find(
+      pipe(
+        isClaim,
+        not
+      )
+    )
 
     Expect(allElementsAreClaims).toBeTruthy()
   }
@@ -110,18 +114,13 @@ export class GetWorksByPublicKey {
     Expect(response.status).toBe(200)
     Expect(response.ok).toBeTruthy()
 
-    const json = await response.json()
-
-    const claims: ReadonlyArray<Claim> = json.map((_: any) => ({
-      ..._,
-      dateCreated: new Date(_.dateCreated),
-    }))
+    const claims: ReadonlyArray<Claim> = await response.json()
 
     for (let i = 0; i < claims.length; i++) {
       Expect(claims[i].id).toBe(expectedClaims[i].id)
       Expect(claims[i].publicKey).toBe(expectedClaims[i].publicKey)
       Expect(claims[i].signature).toBe(expectedClaims[i].signature)
-      Expect(claims[i].dateCreated.toISOString()).toBe(expectedClaims[i].dateCreated.toISOString())
+      Expect(claims[i].created).toBe(expectedClaims[i].created)
     }
   }
 

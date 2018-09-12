@@ -39,7 +39,7 @@
     "url": "https://github.com/poetapp/node/issues"
   },
   "dependencies": {
-    "@po.et/poet-js": "2.0.0",
+    "@po.et/poet-js": "3.0.5",
     "amqplib": "0.5.2",
     "bitcoin-core": "2.0.0",
     "form-data": "2.3.2",
