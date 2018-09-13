@@ -42,7 +42,7 @@ export class Router {
     const logger = this.logger.child({ method: 'onNewClaim' })
 
     const messageContent = message.content.toString()
-    logger.info({ messageContent }, 'Setting message content on works')
+    logger.trace({ messageContent }, 'Setting message content on works')
 
     try {
       await this.workController.createWork(JSON.parse(messageContent))
@@ -98,7 +98,7 @@ export class Router {
   onIPFSHashTxId = async (message: any) => {
     const logger = this.logger.child({ method: 'onIPFSHashTxId' })
 
-    logger.info({ message }, 'Message')
+    logger.trace({ message }, 'Message')
     const messageContent = message.content.toString()
     const { ipfsDirectoryHash, txId } = JSON.parse(messageContent)
     try {
