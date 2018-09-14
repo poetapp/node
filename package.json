@@ -51,7 +51,7 @@
     "koa-cors": "0.0.16",
     "koa-helmet": "4.0.0",
     "koa-router": "7.4.0",
-    "mongodb": "3.1.4",
+    "mongodb": "3.1.5",
     "node-fetch": "1.7.3",
     "pino": "4.17.6",
     "protobufjs": "6.8.8",
