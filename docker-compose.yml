@@ -27,6 +27,7 @@ services:
       - poet-mongo
       - poet-rabbit
       - poet-ipfs
+      - bitcoin-regtest
     environment:
       - RABBITMQ_URL=amqp://poet-rabbit
       - MONGODB_URL=mongodb://poet-mongo:27017/poet
