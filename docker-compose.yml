@@ -27,10 +27,14 @@ services:
       - poet-mongo
       - poet-rabbit
       - poet-ipfs
+      - bitcoin-regtest
     environment:
       - RABBITMQ_URL=amqp://poet-rabbit
       - MONGODB_URL=mongodb://poet-mongo:27017/poet
       - IPFS_URL=http://poet-ipfs:5001
+      - BITCOIN_URL=bitcoin-regtest
+      - INTEGRATION_TEST_MONGODB_URL=mongodb://poet-mongo:27017/poet
+      - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
     hostname: poet-node
     links:
       - poet-mongo
