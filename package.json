@@ -60,7 +60,7 @@
     "string-to-stream": "1.1.1"
   },
   "devDependencies": {
-    "@po.et/tslint-rules": "1.4.1",
+    "@po.et/tslint-rules": "1.4.2",
     "@types/amqplib": "0.5.8",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
