@@ -84,13 +84,15 @@ const defaultConfiguration: Configuration = {
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
-export function loadConfigurationWithDefaults(): Configuration {
+export const mergeConfigs = (envVars: any = {}) => {
   return {
     ...defaultConfiguration,
-    ...loadConfigurationFromEnv(),
+    ...loadConfigurationFromEnv(envVars),
     ...loadConfigurationFromFile(configurationPath()),
   }
 }
+
+export const loadConfigurationWithDefaults = () => mergeConfigs(process.env)
 
 function loadConfigurationFromFile(configPath: string): Configuration | {} {
   if (!existsSync(configPath)) {
@@ -109,12 +111,18 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
   return configuration
 }
 
-function loadConfigurationFromEnv(): Partial<Configuration> {
+function loadConfigurationFromEnv(env: any): Partial<Configuration> {
   const map = createEnvToConfigurationKeyMap(keys(defaultConfiguration))
 
-  const configurationFromEnv = Object.entries(process.env)
+  const configurationFromEnv = Object.entries(env)
     .filter(([key, value]) => map[key])
-    .reduce((previousValue, [key, value]) => ({ ...previousValue, [map[key]]: value }), {})
+    .reduce(
+      (previousValue, [key, value]: [string, any]) => ({
+        ...previousValue,
+        [map[key]]: isNaN(value) ? value : parseInt(value, 10),
+      }),
+      {}
+    )
 
   return configurationFromEnv
 }
