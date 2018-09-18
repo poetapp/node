@@ -7,9 +7,16 @@ import { keys } from 'ramda'
 
 import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 
+const defaultMongodbUrl = 'mongodb://localhost:27017/poet'
+
 // Provide default value in defaultConfiguration for any new configuration options
 export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration {
   readonly rabbitmqUrl: string
+  readonly mongodbUser: string
+  readonly mongodbPassword: string
+  readonly mongodbHost: string
+  readonly mongodbPort: number
+  readonly mongodbDatabase: string
   readonly mongodbUrl: string
   readonly ipfsUrl: string
 
@@ -50,7 +57,12 @@ export interface BitcoinRPCConfiguration {
 
 const defaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://localhost',
-  mongodbUrl: 'mongodb://localhost:27017/poet',
+  mongodbUser: '',
+  mongodbPassword: '',
+  mongodbHost: 'localhost',
+  mongodbPort: 27017,
+  mongodbDatabase: 'poet',
+  mongodbUrl: defaultMongodbUrl,
   ipfsUrl: 'http://localhost:5001',
   bitcoinUrl: '127.0.0.1',
   bitcoinPort: 18443,
@@ -85,11 +97,19 @@ const defaultConfiguration: Configuration = {
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
 export const mergeConfigs = (envVars: any = {}) => {
-  return {
+  const config = {
     ...defaultConfiguration,
     ...loadConfigurationFromEnv(envVars),
     ...loadConfigurationFromFile(configurationPath()),
   }
+  // TODO: This is here to support using either MONGODB_URL or MONGO_HOST, MONGO_PORT, etc.
+  // Remove this once local-dev switches over to using the individual env vars.
+  if (config.mongodbUrl === defaultMongodbUrl) {
+    const mongoAuth = config.mongodbUser !== '' ? `${config.mongodbUser}:${config.mongodbPassword}@` : ''
+    config.mongodbUrl = `mongo://${mongoAuth}${config.mongodbHost}:${config.mongodbPort}/${config.mongodbDatabase}`
+  }
+
+  return config
 }
 
 export const loadConfigurationWithDefaults = () => mergeConfigs(process.env)
