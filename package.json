@@ -80,7 +80,7 @@
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "2.0.7",
     "semantic-release": "15.9.15",
-    "sinon": "6.3.3",
+    "sinon": "6.3.4",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.6.0",
     "typescript": "3.0.3"
