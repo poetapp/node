@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  poet-node:
+    environment:
+      - BITCOIN_URL=bitcoin-regtest
+      - INTEGRATION_TEST_MONGODB_URL=mongodb://poet-mongo:27017/poet
+      - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
+      - FUNCTIONAL_TEST_NODE_A=http://poet-node:18080
+      - MINIMUM_BLOCK_HEIGHT=100
+      - ENABLE_TIMESTAMPING=true
+      - TIMESTAMP_INTERVAL_IN_SECONDS=10
+      - BATCH_CREATION_INTERVAL_IN_SECONDS=5
+      - READ_DIRECTORY_INTERVAL_IN_SECONDS=5
+    # volumes:
+    #   - .:/usr/src/app
+    # command: sleep infinity
