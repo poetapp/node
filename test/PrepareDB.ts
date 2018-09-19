@@ -1,6 +1,8 @@
 /* tslint:disable:no-console */
+/* tslint:disable:no-relative-imports */
 import { Db, MongoClient } from 'mongodb'
 
+import { loadConfigurationWithDefaults } from '../src/Configuration'
 import {
   AStudyInScarlet,
   TheMurdersInTheRueMorgue,
@@ -18,13 +20,13 @@ import {
 } from './Claims'
 import { waitForNode } from './Integration/Helper'
 
+const configuration = loadConfigurationWithDefaults()
 const collectionNames: ReadonlyArray<string> = ['works', 'blockchainReader', 'blockchainWriter', 'storage']
-const MONGO_URL = process.env.INTEGRATION_TEST_MONGODB_URL || 'mongodb://localhost:27017/poet'
 
 async function main() {
-  console.log('Preparing DB for Integration Tests.')
+  console.log(`Preparing DB for Integration Tests (${configuration.mongodbUrl}).`)
 
-  const mongoClient = await MongoClient.connect(MONGO_URL)
+  const mongoClient = await MongoClient.connect(configuration.mongodbUrl)
   const db = await mongoClient.db()
 
   console.log(`Cleaning collections ${collectionNames}...`)
