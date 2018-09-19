@@ -39,20 +39,35 @@ export class Router {
   }
 
   onNewClaim = async (message: any) => {
-    const messageContent = message.content.toString()
+    const logger = this.logger.child({ method: 'onNewClaim' })
 
-    await this.workController.createWork(JSON.parse(messageContent))
+    const messageContent = message.content.toString()
+    logger.trace({ messageContent }, 'Setting message content on works')
+
+    try {
+      await this.workController.createWork(JSON.parse(messageContent))
+    } catch (error) {
+      logger.error({ error }, 'Failed to create on works')
+    }
   }
 
   onClaimIPFSHash = async (message: any) => {
+    const logger = this.logger.child({ method: 'onClaimIPFSHash' })
+
     const messageContent = message.content.toString()
     const { claimId, ipfsFileHash } = JSON.parse(messageContent)
 
-    await this.workController.setIPFSHash(claimId, ipfsFileHash)
+    logger.info({ claimId, ipfsFileHash }, 'Setting IPFSHash on works')
+
+    try {
+      await this.workController.setIPFSHash(claimId, ipfsFileHash)
+    } catch (error) {
+      logger.error({ error }, 'Failed to set claimId and ipfsFileHash on works')
+    }
   }
 
   onBatchWriterCreateNextBatchSuccess = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onBlockchainWriterRequestTimestampRequest' })
+    const logger = this.logger.child({ method: 'onBatchWriterCreateNextBatchSuccess' })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
@@ -81,22 +96,32 @@ export class Router {
   }
 
   onIPFSHashTxId = async (message: any) => {
+    const logger = this.logger.child({ method: 'onIPFSHashTxId' })
+
+    logger.trace({ message }, 'Message')
     const messageContent = message.content.toString()
     const { ipfsDirectoryHash, txId } = JSON.parse(messageContent)
-
-    await this.workController.setTxId(ipfsDirectoryHash, txId)
+    try {
+      await this.workController.setTxId(ipfsDirectoryHash, txId)
+    } catch (error) {
+      logger.error({ error }, 'Failed to set txId on works')
+    }
   }
 
   onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
     const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
 
     logger.trace({ poetTimestamps }, 'Downloaded Po.et Timestamp')
-
-    await this.workController.upsertTimestamps(poetTimestamps)
+    try {
+      await this.workController.upsertTimestamps(poetTimestamps)
+    } catch (error) {
+      logger.error({ error }, 'Failed to upsert poetTimestamps on works')
+    }
   }
 
   onBatchReaderReadNextDirectorySuccess = async (message: any) => {
     const logger = this.logger.child({ method: 'onBatchReaderReadNextDirectorySuccess' })
+
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
     logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Setting ipfsDirectoryHash on works')
@@ -111,7 +136,10 @@ export class Router {
     const logger = this.logger.child({ method: 'onClaimsDownloaded' })
 
     logger.trace({ claimIPFSHashPairs }, 'Downloaded a (IPFS Hash, Claim Id) Pair')
-
-    await this.workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
+    try {
+      await this.workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
+    } catch (error) {
+      logger.error({ error }, 'Failed to upsert claimIPFSHashPairs on works')
+    }
   }
 }
