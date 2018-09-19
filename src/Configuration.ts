@@ -106,7 +106,7 @@ export const mergeConfigs = (envVars: any = {}) => {
   // Remove this once local-dev switches over to using the individual env vars.
   if (config.mongodbUrl === defaultMongodbUrl) {
     const mongoAuth = config.mongodbUser !== '' ? `${config.mongodbUser}:${config.mongodbPassword}@` : ''
-    config.mongodbUrl = `mongo://${mongoAuth}${config.mongodbHost}:${config.mongodbPort}/${config.mongodbDatabase}`
+    config.mongodbUrl = `mongodb://${mongoAuth}${config.mongodbHost}:${config.mongodbPort}/${config.mongodbDatabase}`
   }
 
   return config
