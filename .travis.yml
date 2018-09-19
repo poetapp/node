@@ -1,15 +1,18 @@
 language: node_js
 notifications:
   slack:
-    secure: YIQTNvY6Yvrq4LOE63ZeyaeXY5nQHctXkOTa1In0KQmmMrUGcQZI6eFfkiUDEG9bEjiVmmRqvYWnbH8fJrTSWjdQKrDduLuPY/ivE6M79isxsB2gc+bYgQhuh7H+g7vZfGNkcNKQEgDyWol5YGjyMwNFB8JzMzVj1kgnEZ7c4hqpQfXQ+WFCEOnNledWdmuyNX4wP0lWsuD6VuIH8GYtWD6iyYQUj82tFnh+l2RJCAUMFdG3IYg4VWZsweI7u9l1oH8fbxKVl5hNWW49087vGE4wHWcG6ZtRs510ioHlYqgcQpsFE5HejmdfMoAocGaTSq4+drsIDwUsuH0WmyFWa3q2sAwLKv7XRhzAHPcrPaYooWhlCP24zlDWXUAgE7VAtCjgfMTV2osIU70VUxfOxtGtuaMTI265Ws42UF1PV98ZcVfs4Vlt/P76MBb6ECzphKhVMVI7fBOWTYj5a0ovgFA2hJuwQ/VJ/jLhoM1s1MzV2H1l+n9CKanfmnXnXIUphoWoNROQJ2FPYzeGSUZpJbtKxut4W1OfT5MS96U227wJurOG5pjS+MCfJZXVZCeGUsSfSQDEZeyBU6IYyF5G1vnZAqBL38VwPgIX5q+RdYGRtZzNUbVFvo+6J334Jv5U1vJQoapW98chTPNVY8dWlR2Blgf/UGmzR/zWT8/3WGQ=
     on_success: change
     on_failure: always
     on_error: always
     on_cancel: always
+    rooms:
+      secure: uFHb/4trdoMHdeO1kTkY+lBh+pU70CW69mBLnBv8Z6IclNkh8C5fA+/BvzhRMAanZbT+eSIaZE2lb7soLm0J4aXsG1xyEMhAzsa7UgbzXiWYc8suhE2Xf2mR1jR4YyVqFc4P+3WKhIEQdDSTkt/L3Y7unCE6NsipF2IUmUoFAjZO6Ykr1kXkw1y1DGeV8abI4ET5DTCe/KWazQMnePqShndRpPR70YOze0NzzJBqb4zRnC8G0qMp7c04G7byxi5VLC+IqcKcQIXT3TowlWGF8V3nruNcihZVjU5TXOEvedJMXWdqiif6jhymBD4rUh8pQeYuXCGEdUq78DgcbswtkbDgT5P8Jz85dF432prMgXvsnRb0EqKE+NFmkwTytpa6C/07fkbP0z08WaHu4BUb+JCLcao4c0sB1MhrQWqChDT+fSErZ1PqubXzw+PVTZMo4inONwrbiDMQnmJnJXLxOW+LWuUQh3r6Ue7Vry2wNVLL05VoRAZdXOiCvs0cfo4VImcSkgTaUTlrVwdF8nnaCB9TlqGqQcGEZDY0Fm+ZSD30fSu8Oy0JV04+F3rW2GQLbOlHi3X2FOJKoBXi6hQ5U6DkOkC65V/Vij7q0x508pi0wjDcTcDrQq9XunLBZz6zSuMG1VGuWmvRKLYhdGkIoA47zrfHMq1kzjL5AWxfbPs=
 services:
   - mongodb
   - rabbitmq
   - docker
+env:
+  - REPO=poetapp/node
 before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update
@@ -26,17 +29,14 @@ before_script:
 script:
   - npm run lint
   - npm run coverage
-after_success:
-  - export REPO=poetapp/node
-  - export TAG=v-$(git log -1 --pretty=%h)-beta
-  - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - docker build -t $REPO:${TAG} .
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then docker tag $REPO:${TAG} $REPO:latest; fi
-  - if [ -n "$TRAVIS_TAG" ]; then docker tag $REPO:${TAG} $REPO:${TRAVIS_TAG}; fi
-  - docker push $REPO
-  - '[[ $TRAVIS_BRANCH = "master" && $TRAVIS_PULL_REQUEST_BRANCH = "" ]] &&
-    (npm install -g travis-deploy-once && travis-deploy-once "npm run semantic-release")'
-env:
-  global:
-  - secure: NudOlo07P3/C715cS8YODRqTuc041wHBBrVUiBY3HjRRWt9yRYNXDrH0NhFkEv8A/+LT5onKmzexr2F8ClfP1ZTcWOGhEkOUXkU4Me2x706DKlOrFYL3UQyNmAoeW+9+amOAG5rIpY+R/pn4A7YQhY813G5/Hmi23DEiLft7C55Wg+ULM7dwSCRJNYttgtbjh7oDyekVNtGdOmp0rRiUVMQMb3+N8jcTg6AQmYHaTElLD2oez60Ne7Htvcc8VMGuTUn2BANkeSCeBuJ8bhGrPuvAkvFbzxM0W3Zlub4jAC0skoTXaI0D0TEyX21HeHQoYxvi1iorgOMzPGCHfKNbALmkhs5aqcD5EJDyq4O4Yy0XAUkjfR1cwmSxdyEkxdxHCKU9OJYHfGHxbi3LLmjOiLXfqbaKrcI9EPN0iMkaDOuCxh2tNE3T/8Xlm7Z2Jf3FLmvdZ6pPttMVUuEfuj9MWvxG9oqlj0oJfTNI+8Ylhy1qFbahuApFd3Fl9bgKqDeU1e1rOUlKXKVlmpf686Xzm54Xe/QikwnR/Jth6mpSnNIg1dnIfLu9/tFB4yaTu/ONQGbz+nj1FBx+nr2JVnsMlzRei11d985z/LrRVFufFrawh3Y5ig9x2hB4DwaZGLIx5CVWPre+WfvvgMbd0Ov+SoxY+tCX3g204bZhIGO+Amw=
-  - secure: sZAPkJRGlfVKd9PodHMY2lSXUDfRBFJOs4ZZjKA/gHZpEsx+ExoNrRLoatlm5NHZjb8IyRPRdnFv1GINjNekdn5jT18Kug8+sndG0NiZdXXpXUHHtbY1fvP9wriL3BomS++UAigN+lw38uow0zcHZSCfGjORqj9bscRUZFw5c8Os3dKfoFAdXx6kSTVPQQTsJ0LlZqrDsPzLC+vwBWa3ZmyFxX1g+2/rM/fFt+e1C3qOPt5Uw7xgxElUS7YCgOWgIkfa8MKn2rlsGf4CQiQf7Dsb1tgQqt6/6tCGx9f66lg4OrbFshrE6XKWOnmryXE9K85M9muqsrNsIQRbzjUhxqCp9X74FEPso277u1qCtarjQc8tySVWBPHDHIMcfdzvUr3ba703oQZMgBb7TxDWoW1xJc3i1REH66cbSkNbyqUSYx+Aiuxh7OY0b26/lmKf842fW5WrEVNihLwITPIAj6QtzkpZ2YpsCmbRb40RzjGgwozFzWKs/doRwb6CW6Sc6VmZfkESsgaN5w7aviFNUZPRxJwMQTYqo5JDIscLmSOgpyoHU5Q8sB4mQVBXF23huqq4lzuMu6CCdgWTSllItJIgibTyo6OtZA12ZjskR+NgCctWYBL+hYsWTGpYz1Ycp2OQB4K2lhzcJGda66FBPOmUxb7vFp2tw1oGg/aYVcU=
+before_deploy:
+  - bash ./scripts/docker-build.sh
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script:
+    - bash ./scripts/docker-push.sh
+    on:
+      all_branches: true
+after_deploy:
+  - npm run travis-deploy-once "npm run semantic-release"
