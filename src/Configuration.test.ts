@@ -23,7 +23,7 @@ describe('src/Configuration', async (should: any) => {
       expected: {
         ...defaultConfig,
         mongodbHost: 'one',
-        mongodbUrl: 'mongo://one:27017/poet',
+        mongodbUrl: 'mongodb://one:27017/poet',
       },
     })
   }
@@ -58,7 +58,7 @@ describe('src/Configuration', async (should: any) => {
           mongodbUser: 'dylan',
           mongodbPassword: 'p1960s',
           mongodbDatabase: 'poet-test-integration',
-          mongodbUrl: 'mongo://dylan:p1960s@localhost:27017/poet-test-integration',
+          mongodbUrl: 'mongodb://dylan:p1960s@localhost:27017/poet-test-integration',
         },
       })
     }
