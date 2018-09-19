@@ -5,7 +5,8 @@ RUN echo "deb http://ftp.us.debian.org/debian unstable main contrib non-free" >>
 RUN apt-get update && apt-get install -y rsync \
                        gcc-5 \
                        g++-5 \
-                       && rm -rf /var/lib/apt/lists/*
+                       && rm -rf /var/lib/apt/lists/* \
+                       && rm /etc/apt/sources.list.d/unstable.list
 
 RUN rm /usr/bin/g++ && ln -s /usr/bin/g++-5 /usr/bin/g++
 
