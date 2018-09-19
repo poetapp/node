@@ -1,6 +1,14 @@
 FROM node:10.10.0
 
-RUN apt-get update && apt-get install -y rsync
+RUN echo "deb http://ftp.us.debian.org/debian unstable main contrib non-free" >> /etc/apt/sources.list.d/unstable.list
+
+RUN apt-get update && apt-get install -y rsync \
+                       gcc-5 \
+                       g++-5 \
+                       && rm -rf /var/lib/apt/lists/* \
+                       && rm /etc/apt/sources.list.d/unstable.list
+
+RUN rm /usr/bin/g++ && ln -s /usr/bin/g++-5 /usr/bin/g++
 
 RUN echo 'PS1="\u@${POET_SERVICE:-noService}:\w# "' >> ~/.bashrc
 
