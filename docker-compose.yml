@@ -47,7 +47,7 @@ services:
         npm start;
       "
   bitcoin-regtest:
-    image: ruimarinho/bitcoin-core:0.16.2
+    image: ruimarinho/bitcoin-core:0.16.3
     ports:
       - "18443:18443"
     command:
