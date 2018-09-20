@@ -31,7 +31,7 @@ services:
     environment:
       - BITCOIN_URL=bitcoin-regtest
       - RABBITMQ_URL=amqp://poet-rabbit
-      - MONGODB_HOST=poet-mongo
+      - MONGODB_URL=mongodb://poet-mongo:27017/poet
       - IPFS_URL=http://poet-ipfs:5001
       - INTEGRATION_TEST_MONGODB_URL=mongodb://poet-mongo:27017/poet
       - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
