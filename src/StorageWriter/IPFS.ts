@@ -20,7 +20,7 @@ export class IPFS {
     const formData = new FormData() // { maxDataSize: 20971520 }
 
     formData.append('file', str(text), {
-      knownLength: text.length,
+      knownLength: Buffer.from(text).length,
       filename: 'file',
       contentType: 'plain/text',
     })
