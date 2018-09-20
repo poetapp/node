@@ -17,9 +17,9 @@ The following configuration properties affect the StorageReader Module:
 
 ## Database
 
-The StorageReader module uses the `storage` collection.
+The StorageReader module uses the `storageReader` collection.
 
-Entries in the `storage` collection look like this:
+Entries in the `storageReader` collection look like this:
 
 ```js
 {
