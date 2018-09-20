@@ -9,11 +9,11 @@ describe('createEnvToConfigurationKeyMap()', async (should: any) => {
     given: 'empty array',
     should: 'return empty object',
     actual: createEnvToConfigurationKeyMap([]),
-    expected: {}
+    expected: {},
   })
 
   {
-    const defaultConfiguration = [ 'rabbitmqUrl', 'mongodbUrl', 'otherTestKeyMultipleCapital' ]
+    const defaultConfiguration = ['rabbitmqUrl', 'mongodbHost', 'otherTestKeyMultipleCapital']
 
     assert({
       given: 'array with cammelCase values',
@@ -21,9 +21,9 @@ describe('createEnvToConfigurationKeyMap()', async (should: any) => {
       actual: createEnvToConfigurationKeyMap(defaultConfiguration),
       expected: {
         RABBITMQ_URL: 'rabbitmqUrl',
-        MONGODB_URL: 'mongodbUrl',
-        OTHER_TEST_KEY_MULTIPLE_CAPITAL: 'otherTestKeyMultipleCapital'
-      }
+        MONGODB_HOST: 'mongodbHost',
+        OTHER_TEST_KEY_MULTIPLE_CAPITAL: 'otherTestKeyMultipleCapital',
+      },
     })
   }
 })
