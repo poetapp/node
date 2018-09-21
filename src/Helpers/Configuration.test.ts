@@ -1,6 +1,6 @@
 import { describe } from 'riteway'
 
-import { createEnvToConfigurationKeyMap } from './Configuration'
+import { bitcoinRPCConfigurationToBitcoinCoreArguments, createEnvToConfigurationKeyMap } from './Configuration'
 
 describe('createEnvToConfigurationKeyMap()', async (should: any) => {
   const { assert } = should()
@@ -26,4 +26,31 @@ describe('createEnvToConfigurationKeyMap()', async (should: any) => {
       },
     })
   }
+})
+
+describe('bitcoinRPCConfigurationToBitcoinCoreArguments()', async (should: any) => {
+  const { assert } = should()
+
+  const defaultConfiguration = {
+    bitcoinUrl: '127.0.0.1',
+    bitcoinPort: 18443,
+    bitcoinNetwork: 'regtest',
+    bitcoinUsername: 'bitcoinrpcuser',
+    bitcoinPassword: 'bitcoinrpcpassword',
+  }
+
+  const expected = {
+    host: defaultConfiguration.bitcoinUrl,
+    port: defaultConfiguration.bitcoinPort,
+    network: defaultConfiguration.bitcoinNetwork,
+    username: defaultConfiguration.bitcoinUsername,
+    password: defaultConfiguration.bitcoinPassword,
+  }
+
+  assert({
+    given: 'defualt configuration',
+    should: 'return bitcoin-core library compatible arguments',
+    actual: bitcoinRPCConfigurationToBitcoinCoreArguments(defaultConfiguration),
+    expected,
+  })
 })

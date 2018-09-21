@@ -1,14 +1,16 @@
 import BitcoinCore = require('bitcoin-core')
 import { injectable, Container } from 'inversify'
-import { Db, MongoClient } from 'mongodb'
+import { Collection, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 
+import { bitcoinRPCConfigurationToBitcoinCoreArguments } from 'Helpers/Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { BlockchainWriterConfiguration } from './BlockchainWriterConfiguration'
-import { ClaimController } from './ClaimController'
-import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { Controller } from './Controller'
+import { ControllerConfiguration } from './ControllerConfiguration'
+import { DAO } from './DAO'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
@@ -17,11 +19,6 @@ import { ServiceConfiguration } from './ServiceConfiguration'
 export class BlockchainWriter {
   private readonly logger: Pino.Logger
   private readonly configuration: BlockchainWriterConfiguration
-  private readonly container = new Container()
-  private dbConnection: Db
-  private router: Router
-  private messaging: Messaging
-  private service: Service
 
   constructor(configuration: BlockchainWriterConfiguration) {
     this.configuration = configuration
@@ -30,51 +27,52 @@ export class BlockchainWriter {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'BlockchainWriter Starting')
+
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    const db = await mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
-    await this.messaging.start()
+    const blockchainWriterCollection = db.collection('blockchainWriter')
 
-    this.initializeContainer()
+    const container = createContainer(this.configuration, this.logger, blockchainWriterCollection)
 
-    this.router = this.container.get('Router')
-    await this.router.start()
+    const messaging = container.get('Messaging') as Messaging
+    await messaging.start()
 
-    this.service = this.container.get('Service')
-    await this.service.start()
+    const router = container.get('Router') as Router
+    await router.start()
 
-    await this.createIndices()
+    const service = container.get('Service') as Service
+    await service.start()
+
+    const dao = container.get('DAO') as DAO
+    await dao.start()
 
     this.logger.info('BlockchainWriter Started')
   }
+}
 
-  initializeContainer() {
-    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
-    this.container.bind<Router>('Router').to(Router)
-    this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<BitcoinCore>('BitcoinCore').toConstantValue(
-      new BitcoinCore({
-        host: this.configuration.bitcoinUrl,
-        port: this.configuration.bitcoinPort,
-        network: this.configuration.bitcoinNetwork,
-        username: this.configuration.bitcoinUsername,
-        password: this.configuration.bitcoinPassword,
-      })
-    )
-    this.container
-      .bind<ClaimControllerConfiguration>('ClaimControllerConfiguration')
-      .toConstantValue(this.configuration)
-    this.container.bind<Service>('Service').to(Service)
-    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
-      timestampIntervalInSeconds: this.configuration.timestampIntervalInSeconds,
-    })
-  }
+const createContainer = (
+  configuration: BlockchainWriterConfiguration,
+  logger: Pino.Logger,
+  blockchainWriterCollection: Collection
+) => {
+  const container = new Container()
 
-  private async createIndices() {
-    const collection = this.dbConnection.collection('blockchainWriter')
-    await collection.createIndex({ ipfsDirectoryHash: 1 }, { unique: true })
-  }
+  container.bind<Router>('Router').to(Router)
+  container.bind<Controller>('Controller').to(Controller)
+  container.bind<Service>('Service').to(Service)
+  container.bind<DAO>('DAO').to(DAO)
+
+  container.bind<Pino.Logger>('Logger').toConstantValue(logger)
+  container.bind<Collection>('BlockchainWriterCollection').toConstantValue(blockchainWriterCollection)
+  container.bind<Messaging>('Messaging').toConstantValue(new Messaging(configuration.rabbitmqUrl))
+  container
+    .bind<BitcoinCore>('BitcoinCore')
+    .toConstantValue(new BitcoinCore(bitcoinRPCConfigurationToBitcoinCoreArguments(configuration)))
+  container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
+    timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
+  })
+  container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(configuration)
+
+  return container
 }

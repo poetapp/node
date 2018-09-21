@@ -1,11 +1,11 @@
 import { BitcoinRPCConfiguration, LoggingConfiguration } from 'Configuration'
 
-import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ControllerConfiguration } from './ControllerConfiguration'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
 export interface BlockchainWriterConfiguration
   extends LoggingConfiguration,
-    ClaimControllerConfiguration,
+    ControllerConfiguration,
     ServiceConfiguration,
     BitcoinRPCConfiguration {
   readonly dbUrl: string

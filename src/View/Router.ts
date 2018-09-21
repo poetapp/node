@@ -98,9 +98,11 @@ export class Router {
   onIPFSHashTxId = async (message: any) => {
     const logger = this.logger.child({ method: 'onIPFSHashTxId' })
 
-    logger.trace({ message }, 'Message')
     const messageContent = message.content.toString()
     const { ipfsDirectoryHash, txId } = JSON.parse(messageContent)
+
+    logger.trace({ ipfsDirectoryHash, txId }, 'Setting TransactionID for IPFS Directory Hash')
+
     try {
       await this.workController.setTxId(ipfsDirectoryHash, txId)
     } catch (error) {

@@ -4,18 +4,18 @@ import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import { ClaimController } from './ClaimController'
+import { Controller } from './Controller'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
 @injectable()
 export class Service {
   private readonly logger: Pino.Logger
-  private readonly claimController: ClaimController
+  private readonly claimController: Controller
   private readonly interval: Interval
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
-    @inject('ClaimController') claimController: ClaimController,
+    @inject('Controller') claimController: Controller,
     @inject('ServiceConfiguration') configuration: ServiceConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
