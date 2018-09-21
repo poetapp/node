@@ -2,9 +2,9 @@ import { describe, Try } from 'riteway'
 import { Claim } from '@po.et/poet-js'
 import { FindAndModifyWriteOpResultObject } from 'mongodb';
 
-import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DatabaseMongo';
+import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './Database';
 
-describe('getClaimFromFindAndUpdateResponse', async should => {
+describe('Database.getClaimFromFindAndUpdateResponse', async should => {
   const { assert } = should('return the correct value')
   {
     const response: FindAndModifyWriteOpResultObject = {}
@@ -35,7 +35,7 @@ describe('getClaimFromFindAndUpdateResponse', async should => {
   }
 })
 
-describe('throwIfClaimNotFound', async should => {
+describe('Database.throwIfClaimNotFound', async should => {
   const { assert } = should()
 
   assert({

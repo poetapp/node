@@ -7,8 +7,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { Database } from './Database'
-import { DatabaseMongo } from './DatabaseMongo'
-import { DatabaseMongoConfiguration } from './DatabaseMongoConfiguration'
+import { DatabaseConfiguration } from './DatabaseConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
@@ -68,8 +67,8 @@ export class StorageWriter {
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       uploadClaimIntervalInSeconds: this.configuration.uploadClaimIntervalInSeconds,
     })
-    this.container.bind<Database>('Database').to(DatabaseMongo)
-    this.container.bind<DatabaseMongoConfiguration>('DatabaseMongoConfiguration').toConstantValue({
+    this.container.bind<Database>('Database').to(Database)
+    this.container.bind<DatabaseConfiguration>('DatabaseConfiguration').toConstantValue({
       maxStorageAttempts: this.configuration.maxStorageAttempts,
     })
   }
