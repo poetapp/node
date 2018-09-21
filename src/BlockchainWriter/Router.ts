@@ -5,18 +5,18 @@ import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
-import { ClaimController } from './ClaimController'
+import { Controller } from './Controller'
 
 @injectable()
 export class Router {
   private readonly logger: Pino.Logger
   private readonly messaging: Messaging
-  private readonly claimController: ClaimController
+  private readonly claimController: Controller
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
-    @inject('ClaimController') claimController: ClaimController
+    @inject('Controller') claimController: Controller
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging

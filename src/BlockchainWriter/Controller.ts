@@ -1,6 +1,5 @@
 import BitcoinCore = require('bitcoin-core')
 import { inject, injectable } from 'inversify'
-import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
@@ -8,30 +7,29 @@ import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { getData } from './Bitcoin'
-import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ControllerConfiguration } from './ControllerConfiguration'
+import { DAO } from './DAO'
 
 @injectable()
-export class ClaimController {
+export class Controller {
   private readonly logger: Pino.Logger
-  private readonly db: Db
-  private readonly collection: Collection
+  private readonly dao: DAO
   private readonly messaging: Messaging
   private readonly bitcoinCore: BitcoinCore
-  private readonly configuration: ClaimControllerConfiguration
+  private readonly configuration: ControllerConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
-    @inject('DB') db: Db,
+    @inject('DAO') dao: DAO,
     @inject('Messaging') messaging: Messaging,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
-    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration
+    @inject('ClaimControllerConfiguration') configuration: ControllerConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
-    this.db = db
     this.messaging = messaging
     this.bitcoinCore = bitcoinCore
     this.configuration = configuration
-    this.collection = this.db.collection('blockchainWriter')
+    this.dao = dao
   }
 
   async requestTimestamp(ipfsDirectoryHash: string): Promise<void> {
@@ -39,10 +37,7 @@ export class ClaimController {
       method: 'timestampWithRetry',
       ipfsDirectoryHash,
     })
-    await this.collection.insertOne({
-      ipfsDirectoryHash,
-      txId: null,
-    })
+    await this.dao.insertIpfsDirectoryHash(ipfsDirectoryHash)
   }
 
   async anchorNextIPFSDirectoryHash() {
@@ -50,7 +45,7 @@ export class ClaimController {
 
     logger.trace('Retrieving Next Hash To Anchor')
 
-    const entry = await this.collection.findOne({ txId: null })
+    const entry = await this.dao.findTransactionlessEntry()
     const ipfsDirectoryHash = entry && entry.ipfsDirectoryHash
 
     this.logger.trace({ ipfsDirectoryHash }, 'Next IPFS Directory Hash To Anchor Retrieved')
@@ -71,7 +66,7 @@ export class ClaimController {
   }
 
   private async anchorIPFSDirectoryHash(ipfsDirectoryHash: string): Promise<void> {
-    const { configuration, collection, messaging, anchorData } = this
+    const { configuration, dao, messaging, anchorData } = this
     const logger = this.logger.child({ method: 'anchorIPFSDirectoryHash' })
 
     logger.debug({ ipfsDirectoryHash }, 'Anchoring IPFS Hash')
@@ -81,7 +76,8 @@ export class ClaimController {
     const data = ipfsDirectoryHashToBitcoinData(ipfsDirectoryHash)
     const txId = await anchorData(data)
 
-    await collection.updateOne({ ipfsDirectoryHash }, { $set: { txId } }, { upsert: true })
+    await dao.setTransactionId(ipfsDirectoryHash, txId)
+
     await messaging.publish(Exchange.IPFSHashTxId, {
       ipfsDirectoryHash,
       txId,
