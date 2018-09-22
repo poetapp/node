@@ -1,5 +1,5 @@
 /* tslint:disable:no-console */
-import { isClaim, PoetTimestamp } from '@po.et/poet-js'
+import { isClaim, PoetBlockAnchor } from '@po.et/poet-js'
 import { Connection, connect, Channel } from 'amqplib'
 
 import { ClaimIPFSHashPair, isClaimIPFSHashPair } from 'Interfaces'
@@ -50,34 +50,34 @@ export class Messaging {
   }
 
   // TODO: move these business-specific functions to a different file
-  publishPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
-    return this.publish(Exchange.PoetTimestampDownloaded, poetTimestamps)
+  publishPoetTimestampsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
+    return this.publish(Exchange.PoetTimestampDownloaded, poetBlockAnchors)
   }
 
-  consumePoetTimestampsDownloaded = async (consume: (poetTimestamps: ReadonlyArray<PoetTimestamp>) => void) => {
+  consumePoetTimestampsDownloaded = async (consume: (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => void) => {
     await this.consume(Exchange.PoetTimestampDownloaded, (message: any) => {
       const messageContent = message.content.toString()
-      const poetTimestamps = JSON.parse(messageContent)
+      const poetBlockAnchors = JSON.parse(messageContent)
 
-      if (!Array.isArray(poetTimestamps)) {
+      if (!Array.isArray(poetBlockAnchors)) {
         console.log({
           action: 'consumePoetTimestampsDownloaded',
-          message: 'Expected poetTimestamps to be an Array.',
-          poetTimestamps,
+          message: 'Expected poetBlockAnchors to be an Array.',
+          poetBlockAnchors,
         })
         return
       }
 
-      if (poetTimestamps.map(isClaim).find(_ => !_)) {
+      if (poetBlockAnchors.map(isClaim).find(_ => !_)) {
         console.log({
           action: 'consumePoetTimestampsDownloaded',
           message: 'Expected poetTimestamps to be an Array<Claim>.',
-          offendingElements: poetTimestamps.map(isClaim).filter(_ => !_),
+          offendingElements: poetBlockAnchors.map(isClaim).filter(_ => !_),
         })
         return
       }
 
-      consume(poetTimestamps)
+      consume(poetBlockAnchors)
     })
   }
 

@@ -1,4 +1,4 @@
-import { Work, PoetTimestamp } from '@po.et/poet-js'
+import { Work, PoetBlockAnchor } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
@@ -63,7 +63,7 @@ export class WorkController {
     )
   }
 
-  async upsertTimestamps(poetTimestamps: ReadonlyArray<PoetTimestamp>) {
+  async upsertTimestamps(poetTimestamps: ReadonlyArray<PoetBlockAnchor>) {
     this.logger.trace({ poetTimestamps }, 'Upserting Po.et Timestamps')
 
     await Promise.all(

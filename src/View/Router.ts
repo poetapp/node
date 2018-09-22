@@ -1,4 +1,4 @@
-import { PoetTimestamp } from '@po.et/poet-js'
+import { PoetBlockAnchor } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
@@ -110,12 +110,12 @@ export class Router {
     }
   }
 
-  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
+  onPoetTimestampsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
     const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
 
-    logger.trace({ poetTimestamps }, 'Downloaded Po.et Timestamp')
+    logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Timestamp')
     try {
-      await this.workController.upsertTimestamps(poetTimestamps)
+      await this.workController.upsertTimestamps(poetBlockAnchors)
     } catch (error) {
       logger.error({ error }, 'Failed to upsert poetTimestamps on works')
     }

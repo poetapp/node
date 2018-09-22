@@ -1,4 +1,4 @@
-import { PoetTimestamp } from '@po.et/poet-js'
+import { PoetBlockAnchor } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
@@ -25,27 +25,27 @@ export class Router {
   }
 
   async start() {
-    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetTimestampsDownloaded)
+    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetBlockAnchorsDownloaded)
     await this.messaging.consume(
       Exchange.BatchReaderReadNextDirectoryRequest,
       this.onBatchReaderReadNextDirectoryRequest
     )
   }
 
-  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>): Promise<void> => {
+  onPoetBlockAnchorsDownloaded = async (poetAnchors: ReadonlyArray<PoetBlockAnchor>): Promise<void> => {
     const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
 
     logger.trace(
       {
-        poetTimestamps,
+        poetAnchors,
       },
       'Storing directory hashes from timestamps'
     )
 
     try {
-      await this.claimController.addEntries(poetTimestamps)
+      await this.claimController.addEntries(poetAnchors)
     } catch (error) {
-      logger.error({ error, poetTimestamps }, 'Failed to store directory hashes to DB collection')
+      logger.error({ error, poetAnchors }, 'Failed to store directory hashes to DB collection')
     }
   }
 
