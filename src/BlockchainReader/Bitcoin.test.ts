@@ -1,4 +1,4 @@
-import { PoetTimestamp } from '@po.et/poet-js'
+import { PoetBlockAnchor } from '@po.et/poet-js'
 import { allPass, equals } from 'ramda'
 import { describe } from 'riteway'
 
@@ -29,11 +29,11 @@ describe('Bitcoin.blockToPoetAnchors', async should => {
   {
     const poetAnchors = blockToPoetAnchors(TestBlock as any) // as any: see footer note
 
-    const isBardAnchor = (poetAnchor: PoetTimestamp) => poetAnchor.prefix === PREFIX_BARD
-    const anchorIsVersion0003 = (poetAnchor: PoetTimestamp) => equals(poetAnchor.version, [0, 0, 0, 3])
-    const anchorIsBlockHash = (poetAnchor: PoetTimestamp) => poetAnchor.blockHash === TestBlock.hash
-    const anchorIsBlockHeight = (poetAnchor: PoetTimestamp) => poetAnchor.blockHeight === TestBlock.height
-    const anchorHasUnexpectedIpfsHash = (poetAnchor: PoetTimestamp) =>
+    const isBardAnchor = (poetAnchor: PoetBlockAnchor) => poetAnchor.prefix === PREFIX_BARD
+    const anchorIsVersion0003 = (poetAnchor: PoetBlockAnchor) => equals(poetAnchor.version, [0, 0, 0, 3])
+    const anchorIsBlockHash = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHash === TestBlock.hash
+    const anchorIsBlockHeight = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHeight === TestBlock.height
+    const anchorHasUnexpectedIpfsHash = (poetAnchor: PoetBlockAnchor) =>
       !ipfsDirectoryHashes.includes(poetAnchor.ipfsDirectoryHash)
 
     const anchorsIpfsHashes = poetAnchors.map(poetAnchor => poetAnchor.ipfsDirectoryHash)
@@ -94,9 +94,9 @@ describe('Bitcoin.blockToPoetAnchors', async should => {
 describe('Bitcoin.getMatchingAnchors', async should => {
   const { assert } = should('return only the ones matching prefix and version')
 
-  const anchorPoet0001 = {
+  const anchorPoet0001: PoetBlockAnchor = {
     transactionId: '0b801f8cc7bec11048b18d9591d35eb747cfcbd1945ad4a72d6baf8f74c7da2e',
-    outputIndex: 0,
+    storageProtocol: 0,
     prefix: PREFIX_POET,
     version: [0, 0, 0, 1],
     ipfsDirectoryHash: 'QmWC8kTX1G75txRTFNaPhFukk222rxGgEjh2wKCKesj7Gw',
@@ -104,27 +104,27 @@ describe('Bitcoin.getMatchingAnchors', async should => {
     blockHash: '0000000000000011c35856348a9deb2a066facd71efb594a8429284022a99bdc',
   }
 
-  const anchorPoet0002 = {
+  const anchorPoet0002: PoetBlockAnchor = {
     ...anchorPoet0001,
     version: [0, 0, 0, 2],
   }
 
-  const anchorBard0001 = {
+  const anchorBard0001: PoetBlockAnchor = {
     ...anchorPoet0001,
     prefix: PREFIX_BARD,
   }
 
-  const anchorBard0002 = {
+  const anchorBard0002: PoetBlockAnchor = {
     ...anchorBard0001,
     version: [0, 0, 0, 2],
   }
 
-  const anchorPoet0001b = {
+  const anchorPoet0001b: PoetBlockAnchor = {
     ...anchorPoet0001,
     ipfsDirectoryHash: 'asdxx',
   }
 
-  const anchors: ReadonlyArray<PoetTimestamp> = [
+  const anchors: ReadonlyArray<PoetBlockAnchor> = [
     anchorPoet0001,
     anchorPoet0002,
     anchorBard0001,
