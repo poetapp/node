@@ -5,10 +5,7 @@ describe('Array', async () => {
   describe('Array.toObject', async (should: any) => {
     const { assert } = should('')
 
-    const arrayWithObject = [
-      ['key1', 'value1'],
-      ['key2', 'value2']
-    ]
+    const arrayWithObject = [['key1', 'value1'], ['key2', 'value2']]
 
     const result = arrayWithObject.toObject()
 
@@ -16,21 +13,21 @@ describe('Array', async () => {
       given: 'array with two pairs of key values',
       should: 'transform to an object',
       actual: typeof result === 'object',
-      expected: true
+      expected: true,
     })
 
     assert({
       given: 'array with two pairs of key values',
       should: 'get the keys of new object transformed',
       actual: Object.keys(result),
-      expected: ['key1', 'key2']
+      expected: ['key1', 'key2'],
     })
 
     assert({
       given: 'array with two pairs of key values',
       should: 'get the values of new object transformed',
       actual: Object.values(result),
-      expected: ['value1', 'value2']
+      expected: ['value1', 'value2'],
     })
   })
 })

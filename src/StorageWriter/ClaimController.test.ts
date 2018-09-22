@@ -22,7 +22,7 @@ describe('Storage ClaimController', async (should: any) => {
       Pino(),
       new Db('poet', server),
       new Messaging(),
-      new IPFS(IPFSConfiguration),
+      new IPFS(IPFSConfiguration)
     )
 
     assert({
