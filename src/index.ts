@@ -18,7 +18,7 @@ import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
 
-async function main() {
+export async function main() {
   console.log('Running Po.et Node')
   console.log('')
   console.log('Loading Configuration...')
@@ -47,25 +47,27 @@ async function main() {
     dbUrl: configuration.mongodbUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
   })
+
   try {
     await api.start()
   } catch (exception) {
     logger.error({ exception }, 'API was unable to start')
   }
 
-  if (configuration.enableTimestamping) {
-    const batchWriter = new BatchWriter({
-      ...loggingConfiguration,
-      batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
-      dbUrl: configuration.mongodbUrl,
-      ipfsUrl: configuration.ipfsUrl,
-      rabbitmqUrl: configuration.rabbitmqUrl,
-    })
-    try {
-      await batchWriter.start()
-    } catch (exception) {
-      logger.error({ exception }, 'BatchWriter was unable to start')
-    }
+  const batchWriter = configuration.enableTimestamping
+    ? new BatchWriter({
+        ...loggingConfiguration,
+        batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
+        dbUrl: configuration.mongodbUrl,
+        ipfsUrl: configuration.ipfsUrl,
+        rabbitmqUrl: configuration.rabbitmqUrl,
+      })
+    : { start: () => Promise.resolve(), stop: () => Promise.resolve() }
+
+  try {
+    await batchWriter.start()
+  } catch (exception) {
+    logger.error({ exception }, 'BatchWriter was unable to start')
   }
 
   const batchReader = new BatchReader({
@@ -121,25 +123,26 @@ async function main() {
     logger.error({ exception }, 'StorageWriter was unable to start')
   }
 
-  if (configuration.enableTimestamping) {
-    const blockchainWriter = new BlockchainWriter({
-      ...loggingConfiguration,
-      dbUrl: configuration.mongodbUrl,
-      rabbitmqUrl: configuration.rabbitmqUrl,
-      poetNetwork: configuration.poetNetwork,
-      poetVersion: configuration.poetVersion,
-      timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
-      bitcoinUrl: configuration.bitcoinUrl,
-      bitcoinPort: configuration.bitcoinPort,
-      bitcoinNetwork: configuration.bitcoinNetwork,
-      bitcoinUsername: configuration.bitcoinUsername,
-      bitcoinPassword: configuration.bitcoinPassword,
-    })
-    try {
-      await blockchainWriter.start()
-    } catch (exception) {
-      logger.error({ exception }, 'BlockchainWriter was unable to start')
-    }
+  const blockchainWriter = configuration.enableTimestamping
+    ? new BlockchainWriter({
+        ...loggingConfiguration,
+        dbUrl: configuration.mongodbUrl,
+        rabbitmqUrl: configuration.rabbitmqUrl,
+        poetNetwork: configuration.poetNetwork,
+        poetVersion: configuration.poetVersion,
+        timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
+        bitcoinUrl: configuration.bitcoinUrl,
+        bitcoinPort: configuration.bitcoinPort,
+        bitcoinNetwork: configuration.bitcoinNetwork,
+        bitcoinUsername: configuration.bitcoinUsername,
+        bitcoinPassword: configuration.bitcoinPassword,
+      })
+    : { start: () => Promise.resolve(), stop: () => Promise.resolve() }
+
+  try {
+    await blockchainWriter.start()
+  } catch (exception) {
+    logger.error({ exception }, 'BlockchainWriter was unable to start')
   }
 
   const blockchainReader = new BlockchainReader({
@@ -162,6 +165,28 @@ async function main() {
   } catch (exception) {
     logger.error({ exception }, 'BlockchainReader was unable to start')
   }
+
+  return {
+    stop: async () => {
+      logger.info('po.et node terminating...')
+
+      await api.stop()
+      await blockchainReader.stop()
+      await batchReader.stop()
+      await view.stop()
+      await batchWriter.stop()
+      await blockchainWriter.stop()
+      await storageWriter.stop()
+      await storage.stop()
+
+      logger.info('po.et node terminated')
+      return true
+    },
+  }
 }
 
-main().catch(console.error)
+/* istanbul ignore if */
+if (!module.parent)
+  main()
+    .then(server => process.on('SIGINT', () => server.stop()))
+    .catch(console.error)

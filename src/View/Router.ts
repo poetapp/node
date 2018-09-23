@@ -38,6 +38,12 @@ export class Router {
     await this.messaging.consume(Exchange.BatchWriterCreateNextBatchSuccess, this.onBatchWriterCreateNextBatchSuccess)
   }
 
+  async stop() {
+    this.logger.info('Stopping View Router...')
+    this.logger.info('Stopping View Messaging...')
+    await this.messaging.stop()
+  }
+
   onNewClaim = async (message: any) => {
     const logger = this.logger.child({ method: 'onNewClaim' })
 
@@ -67,7 +73,9 @@ export class Router {
   }
 
   onBatchWriterCreateNextBatchSuccess = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onBatchWriterCreateNextBatchSuccess' })
+    const logger = this.logger.child({
+      method: 'onBatchWriterCreateNextBatchSuccess',
+    })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
@@ -81,7 +89,10 @@ export class Router {
     )
 
     try {
-      await this.workController.setDirectoryHashOnEntries({ ipfsDirectoryHash, ipfsFileHashes })
+      await this.workController.setDirectoryHashOnEntries({
+        ipfsDirectoryHash,
+        ipfsFileHashes,
+      })
       logger.trace({ ipfsDirectoryHash, ipfsFileHashes }, 'IPFS Directory Hash set successfully')
     } catch (error) {
       logger.error(
@@ -122,13 +133,18 @@ export class Router {
   }
 
   onBatchReaderReadNextDirectorySuccess = async (message: any) => {
-    const logger = this.logger.child({ method: 'onBatchReaderReadNextDirectorySuccess' })
+    const logger = this.logger.child({
+      method: 'onBatchReaderReadNextDirectorySuccess',
+    })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
     logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Setting ipfsDirectoryHash on works')
     try {
-      await this.workController.setFileHashesForDirectoryHash({ ipfsFileHashes, ipfsDirectoryHash })
+      await this.workController.setFileHashesForDirectoryHash({
+        ipfsFileHashes,
+        ipfsDirectoryHash,
+      })
     } catch (error) {
       logger.error({ error, ipfsFileHashes, ipfsDirectoryHash }, 'Failed to set ipfsDirectoryHash on works')
     }
