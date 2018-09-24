@@ -32,8 +32,8 @@ export class StorageReader {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'StorageReader Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
