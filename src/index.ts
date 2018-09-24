@@ -14,7 +14,7 @@ import { BatchWriter } from 'BatchWriter/BatchWriter'
 import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
 import { loadConfigurationWithDefaults } from 'Configuration'
-import { Storage } from 'Storage/Storage'
+import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
 
@@ -92,7 +92,7 @@ async function main() {
     logger.error({ exception }, 'View was unable to start')
   }
 
-  const storage = new Storage({
+  const storage = new StorageReader({
     ...loggingConfiguration,
     dbUrl: configuration.mongodbUrl,
     ipfsUrl: configuration.ipfsUrl,
@@ -105,7 +105,7 @@ async function main() {
   try {
     await storage.start()
   } catch (exception) {
-    logger.error({ exception }, 'Storage was unable to start')
+    logger.error({ exception }, 'StorageReader was unable to start')
   }
 
   const storageWriter = new StorageWriter({

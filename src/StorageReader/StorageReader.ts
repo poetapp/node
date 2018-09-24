@@ -12,25 +12,25 @@ import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
-import { StorageConfiguration } from './StorageConfiguration'
+import { StorageReaderConfiguration } from './StorageReaderConfiguration'
 
 @injectable()
-export class Storage {
+export class StorageReader {
   private readonly logger: Pino.Logger
-  private readonly configuration: StorageConfiguration
+  private readonly configuration: StorageReaderConfiguration
   private readonly container = new Container()
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
   private service: Service
 
-  constructor(configuration: StorageConfiguration) {
+  constructor(configuration: StorageReaderConfiguration) {
     this.configuration = configuration
     this.logger = createModuleLogger(configuration, __dirname)
   }
 
   async start() {
-    this.logger.info({ configuration: this.configuration }, 'Storage Starting')
+    this.logger.info({ configuration: this.configuration }, 'StorageReader Starting')
     const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await mongoClient.db()
 
@@ -47,7 +47,7 @@ export class Storage {
 
     await this.createIndices()
 
-    this.logger.info('Storage Started')
+    this.logger.info('StorageReader Started')
   }
 
   initializeContainer() {
