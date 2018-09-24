@@ -32,7 +32,7 @@ export class Router {
   async start() {
     await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
     await this.messaging.consume(
-      configuration.batchReaderReadNextDirectoryRequest,
+      this.configuration.batchReaderReadNextDirectoryRequest,
       this.onBatchReaderReadNextDirectoryRequest
     )
   }

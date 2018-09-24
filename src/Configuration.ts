@@ -106,7 +106,7 @@ const defaultConfiguration: Configuration = {
 
   batchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
   batchReaderReadNextDirectorySuccess: 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
-  batchWriterCreateNextBatchRequest:'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
+  batchWriterCreateNextBatchRequest: 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
   batchWriterCreateNextBatchSuccess: 'BATCH_WRITER::CREATE_NEXT_BATCH_SUCCESS',
   newClaim: 'NEW_CLAIM',
   claimIPFSHash: 'CLAIM_IPFS_HASH',
