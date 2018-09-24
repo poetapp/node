@@ -17,7 +17,7 @@ export class BlockchainReader {
   private readonly logger: Pino.Logger
   private readonly configuration: BlockchainReaderConfiguration
   private readonly container = new Container()
-  private mongoClient: any
+  private mongoClient: MongoClient
   private dbConnection: Db
   private messaging: Messaging
   private cron: BlockchainReaderService

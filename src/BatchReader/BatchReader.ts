@@ -18,7 +18,7 @@ export class BatchReader {
   private readonly logger: Pino.Logger
   private readonly configuration: BatchReaderConfiguration
   private readonly container = new Container()
-  private mongoClient: any
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging

@@ -14,7 +14,7 @@ export class View {
   private readonly logger: Pino.Logger
   private readonly configuration: ViewConfiguration
   private readonly container = new Container()
-  private mongoClient: any
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging

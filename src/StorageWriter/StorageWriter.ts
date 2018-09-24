@@ -16,7 +16,7 @@ export class StorageWriter {
   private readonly logger: Pino.Logger
   private readonly configuration: StorageWriterConfiguration
   private readonly container = new Container()
-  private mongoClient: any
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging

@@ -19,7 +19,7 @@ import { ServiceConfiguration } from './ServiceConfiguration'
 export class BlockchainWriter {
   private readonly logger: Pino.Logger
   private readonly configuration: BlockchainWriterConfiguration
-  private mongoClient: any
+  private mongoClient: MongoClient
   private messaging: Messaging
   private service: Service
 
