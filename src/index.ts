@@ -18,6 +18,11 @@ import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
 
+const startStopNoop = {
+  start: () => Promise.resolve(),
+  stop: () => Promise.resolve(),
+}
+
 export async function app() {
   console.log('Running Po.et Node')
   console.log('')
@@ -62,7 +67,7 @@ export async function app() {
         ipfsUrl: configuration.ipfsUrl,
         rabbitmqUrl: configuration.rabbitmqUrl,
       })
-    : { start: () => Promise.resolve(), stop: () => Promise.resolve() }
+    : startStopNoop
 
   try {
     await batchWriter.start()
@@ -137,7 +142,7 @@ export async function app() {
         bitcoinUsername: configuration.bitcoinUsername,
         bitcoinPassword: configuration.bitcoinPassword,
       })
-    : { start: () => Promise.resolve(), stop: () => Promise.resolve() }
+    : startStopNoop
 
   try {
     await blockchainWriter.start()
