@@ -1,3 +1,4 @@
+/* tslint:disable:no-relative-imports */
 import '../../src/API/Middlewares/RequestValidationMiddleware.test'
 import '../../src/API/Middlewares/RequestValidationMiddleware.test.ts'
 import '../../src/API/Router.test.ts'

@@ -2,9 +2,6 @@
   "extends": [
     "@po.et/tslint-rules"
   ],
-  "rules": {
-    "no-relative-imports": false
-  },
   "linterOptions": {
     "exclude": [
       "**/*.json"

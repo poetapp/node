@@ -1,3 +1,4 @@
+/* tslint:disable:no-relative-imports */
 import fetch from 'node-fetch'
 import { describe } from 'riteway'
 
