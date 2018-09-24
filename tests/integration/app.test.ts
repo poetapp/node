@@ -4,7 +4,7 @@
 // process (which would kill the test runner)?
 
 import { describe } from 'riteway'
-import { main as app } from '../../src'
+import { app } from '../../src'
 
 process.env.API_PORT = '28080'
 const asyncTimeout = (delay: number = 1) =>

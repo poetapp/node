@@ -18,7 +18,7 @@ import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
 
-export async function main() {
+export async function app() {
   console.log('Running Po.et Node')
   console.log('')
   console.log('Loading Configuration...')
@@ -168,7 +168,7 @@ export async function main() {
 
   return {
     stop: async () => {
-      logger.info('po.et node terminating...')
+      logger.info('Po.et node terminating...')
 
       await api.stop()
       await blockchainReader.stop()
@@ -179,7 +179,7 @@ export async function main() {
       await storageWriter.stop()
       await storage.stop()
 
-      logger.info('po.et node terminated')
+      logger.info('Po.et node terminated')
       return true
     },
   }
@@ -187,6 +187,6 @@ export async function main() {
 
 /* istanbul ignore if */
 if (!module.parent)
-  main()
+  app()
     .then(server => process.on('SIGINT', () => server.stop()))
     .catch(console.error)
