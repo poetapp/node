@@ -4,7 +4,7 @@ import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
-export interface StorageConfiguration
+export interface StorageReaderConfiguration
   extends LoggingConfiguration,
     ServiceConfiguration,
     ClaimControllerConfiguration,

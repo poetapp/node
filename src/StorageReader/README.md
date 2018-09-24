@@ -1,10 +1,10 @@
-# Storage Module
+# StorageReader Module
 
 This module is responsible for interacting with ipfs - managing downloads.
 
 ## Configuration
 
-The following configuration properties affect the Storage Module:
+The following configuration properties affect the StorageReader Module:
 
 ```js
 {
@@ -17,9 +17,9 @@ The following configuration properties affect the Storage Module:
 
 ## Database
 
-The Storage module uses the `storage` collection.
+The StorageReader module uses the `storageReader` collection.
 
-Entries in the `storage` collection look like this:
+Entries in the `storageReader` collection look like this:
 
 ```js
 {
@@ -46,7 +46,7 @@ They can also look like this:
 
 ## Downloads
 
-Download Requests come into the Storage module via the `PoetTimestampDownloaded` RabbitMQ message 
+Download Requests come into the StorageReader module via the `PoetTimestampDownloaded` RabbitMQ message 
 which is handled in the Router by the `onPoetTimestampsDownloaded` function.
 
 This function calls the `download` function of the ClaimController, which simply inserts a new entry into the database, 

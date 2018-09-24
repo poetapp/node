@@ -7,10 +7,8 @@ import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
-import { Service } from './Service'
-import { ServiceConfiguration } from './ServiceConfiguration'
 
-describe('Storage Router', async (should: any) => {
+describe('StorageReader ClaimController', async (should: any) => {
   const { assert } = should('')
 
   const host = 'http://localhost'
@@ -26,25 +24,19 @@ describe('Storage Router', async (should: any) => {
     downloadMaxAttempts: 1,
   }
 
-  const claimController = new ClaimController(
-    Pino(),
-    new Db('poet', server),
-    new Messaging(),
-    new IPFS(IPFSConfiguration),
-    claimControllerConfiguration
-  )
-
-  const serviceConfiguration: ServiceConfiguration = {
-    downloadIntervalInSeconds: 1,
-  }
-
   {
-    const service = new Service(Pino(), claimController, serviceConfiguration)
+    const claimController = new ClaimController(
+      Pino(),
+      new Db('poet', server),
+      new Messaging(),
+      new IPFS(IPFSConfiguration),
+      claimControllerConfiguration
+    )
 
     assert({
-      given: 'the new instance of Service',
-      should: 'be an instance of Service',
-      actual: service instanceof Service,
+      given: 'the new instance of ClaimController',
+      should: 'be an instance of ClaimController',
+      actual: claimController instanceof ClaimController,
       expected: true,
     })
   }

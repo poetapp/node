@@ -40,7 +40,7 @@ export class ClaimController {
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
-    this.collection = this.db.collection('storage')
+    this.collection = this.db.collection('storageReader')
     this.configuration = configuration
     this.messaging = messaging
     this.ipfs = ipfs
