@@ -41,6 +41,16 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly batchCreationIntervalInSeconds: number
 
   readonly readDirectoryIntervalInSeconds: number
+
+  readonly batchReaderReadNextDirectoryRequest: string
+  readonly batchReaderReadNextDirectorySuccess: string
+  readonly batchWriterCreateNextBatchRequest: string
+  readonly batchWriterCreateNextBatchSuccess: string
+  readonly newClaim: string
+  readonly claimIPFSHash: string
+  readonly iPFSHashTxId: string
+  readonly poetTimestampDownloaded: string
+  readonly claimsDownloaded: string
 }
 
 export interface LoggingConfiguration {
@@ -93,6 +103,16 @@ const defaultConfiguration: Configuration = {
   readDirectoryIntervalInSeconds: 30,
 
   forceBlockHeight: undefined,
+
+  batchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
+  batchReaderReadNextDirectorySuccess: 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
+  batchWriterCreateNextBatchRequest:'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
+  batchWriterCreateNextBatchSuccess: 'BATCH_WRITER::CREATE_NEXT_BATCH_SUCCESS',
+  newClaim: 'NEW_CLAIM',
+  claimIPFSHash: 'CLAIM_IPFS_HASH',
+  iPFSHashTxId: 'IPFS_HASH_TX_ID',
+  poetTimestampDownloaded: 'POET_TIMESTAMP_DOWNLOADED',
+  claimsDownloaded: 'CLAIMS_DOWNLOADED',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')

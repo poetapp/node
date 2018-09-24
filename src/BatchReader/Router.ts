@@ -8,11 +8,15 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 
+import { loadConfigurationWithDefaults, Configuration } from 'Configuration'
+const configuration = loadConfigurationWithDefaults()
+
 @injectable()
 export class Router {
   private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly claimController: ClaimController
+  private readonly configuration: Configuration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
@@ -22,12 +26,13 @@ export class Router {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.claimController = claimController
+    this.configuration = configuration
   }
 
   async start() {
     await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
     await this.messaging.consume(
-      Exchange.BatchReaderReadNextDirectoryRequest,
+      configuration.batchReaderReadNextDirectoryRequest,
       this.onBatchReaderReadNextDirectoryRequest
     )
   }
