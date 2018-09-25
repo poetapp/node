@@ -36,6 +36,7 @@ const dataOutputToPoetTransactionAnchor = (output: VOutWithTxId): PoetTransactio
     transactionId: output.transactionId,
   }
 }
+
 const dataOutputToData = (dataOutput: VOutWithTxId): string => {
   const { asm } = dataOutput.scriptPubKey
   return asm.split(' ')[1]
