@@ -44,7 +44,7 @@ describe('Promise', async (should: any) => {
 
   {
     const actual = await Promise.reject(10)
-      .rethrow(error => error === 10 ? TRANSLATION : 'Something unexpected happened')
+      .rethrow(error => (error === 10 ? TRANSLATION : 'Something unexpected happened'))
       .then(success)
       .catch(error => error)
 

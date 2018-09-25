@@ -1,3 +1,4 @@
+/* tslint:disable:no-relative-imports */
 /* tslint:disable:no-console */
 import * as assert from 'assert'
 import { readFileSync, existsSync } from 'fs'

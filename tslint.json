@@ -1,5 +1,10 @@
 {
   "extends": [
     "@po.et/tslint-rules"
-  ]
+  ],
+  "linterOptions": {
+    "exclude": [
+      "**/*.json"
+    ]
+  }
 }

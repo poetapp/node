@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 import { describe } from 'riteway'
 import { isFetchError, isFetchTimeoutError } from './FetchError'
 

@@ -8,8 +8,8 @@
   "scripts": {
     "start": "node dist/babel/src",
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
-    "lint": "tslint -p ./tsconfig.json",
-    "lint:fix": "tslint -p ./tsconfig.json --fix",
+    "lint": "tslint -p ./tsconfig.with-tests.json",
+    "lint:fix": "tslint -p ./tsconfig.with-tests.json --fix",
     "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon --delay 10 dist/babel/src\"",
     "pretest": "npm run test-prepare-db",
     "test": "npm run test:unit && npm run test:integration && npm run test:integration:riteway",
