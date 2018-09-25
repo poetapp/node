@@ -1,4 +1,4 @@
-import { PoetTimestamp } from '@po.et/poet-js'
+import { PoetBlockAnchor } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
@@ -29,7 +29,7 @@ export class Router {
     await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
     await this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
     await this.messaging.consume(Exchange.IPFSHashTxId, this.onIPFSHashTxId)
-    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetTimestampsDownloaded)
+    await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
     await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
     await this.messaging.consume(
       Exchange.BatchReaderReadNextDirectorySuccess,
@@ -121,14 +121,14 @@ export class Router {
     }
   }
 
-  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
-    const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
+  onPoetBlockAnchorsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
+    const logger = this.logger.child({ method: 'onPoetBlockAnchorsDownloaded' })
 
-    logger.trace({ poetTimestamps }, 'Downloaded Po.et Timestamp')
+    logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Anchor')
     try {
-      await this.workController.upsertTimestamps(poetTimestamps)
+      await this.workController.upsertAnchors(poetBlockAnchors)
     } catch (error) {
-      logger.error({ error }, 'Failed to upsert poetTimestamps on works')
+      logger.error({ error }, 'Failed to upsert poetBlockAnchors on works')
     }
   }
 

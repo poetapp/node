@@ -11,6 +11,6 @@ export enum Exchange {
   // Event, the ID of the blockchain transaction in which this IPFS hash
   // was stored has been discovered
   IPFSHashTxId = 'IPFS_HASH_TX_ID',
-  PoetTimestampDownloaded = 'POET_TIMESTAMP_DOWNLOADED',
+  PoetAnchorDownloaded = 'POET_ANCHOR_DOWNLOADED',
   ClaimsDownloaded = 'CLAIMS_DOWNLOADED',
 }
