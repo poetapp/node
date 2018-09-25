@@ -97,10 +97,10 @@ const defaultConfiguration: Configuration = {
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
-export const mergeConfigs = (envVars: any = {}) => {
+export const mergeConfigs = (localVars: any = {}) => {
   const config = {
     ...defaultConfiguration,
-    ...loadConfigurationFromEnv(envVars),
+    ...loadConfigurationFromEnv(localVars),
     ...loadConfigurationFromFile(configurationPath()),
   }
   // TODO: This is here to support using either MONGODB_URL or MONGO_HOST, MONGO_PORT, etc.
@@ -113,7 +113,7 @@ export const mergeConfigs = (envVars: any = {}) => {
   return config
 }
 
-export const loadConfigurationWithDefaults = () => mergeConfigs(process.env)
+export const loadConfigurationWithDefaults = (localVars: any = {}) => mergeConfigs({ ...process.env, ...localVars })
 
 function loadConfigurationFromFile(configPath: string): Configuration | {} {
   if (!existsSync(configPath)) {

@@ -1,6 +1,6 @@
 /* tslint:disable:no-relative-imports */
 import { describe } from 'riteway'
-import { mergeConfigs } from './Configuration'
+import { loadConfigurationWithDefaults, mergeConfigs } from './Configuration'
 
 const defaultConfig = mergeConfigs()
 
@@ -80,4 +80,21 @@ describe('src/Configuration', async (should: any) => {
       })
     }
   }
+})
+
+describe('loadConfigurationWithDefaults', async (should: any) => {
+  const { assert } = should()
+  const mongodbOverrides = {
+    API_PORT: '4321',
+  }
+
+  assert({
+    given: 'a local configuration override',
+    should: 'return a config using the local override',
+    actual: loadConfigurationWithDefaults(mongodbOverrides),
+    expected: {
+      ...defaultConfig,
+      apiPort: 4321,
+    },
+  })
 })
