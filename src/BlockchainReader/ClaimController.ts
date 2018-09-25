@@ -84,7 +84,7 @@ export class ClaimController {
       { upsert: true }
     )
 
-    if (matchingAnchors.length) await this.messaging.publishPoetTimestampsDownloaded(matchingAnchors)
+    if (matchingAnchors.length) await this.messaging.publishPoetBlockAnchorsDownloaded(matchingAnchors)
   }
 
   async findHighestBlockHeight(): Promise<number | null> {

@@ -25,21 +25,27 @@ export class Router {
   }
 
   async start() {
-    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetBlockAnchorsDownloaded)
+    await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
     await this.messaging.consume(
       Exchange.BatchReaderReadNextDirectoryRequest,
       this.onBatchReaderReadNextDirectoryRequest
     )
   }
 
+  async stop() {
+    this.logger.info('Stopping BatchReader Router...')
+    this.logger.info('Stopping BatchReader Messaging...')
+    await this.messaging.stop()
+  }
+
   onPoetBlockAnchorsDownloaded = async (poetAnchors: ReadonlyArray<PoetBlockAnchor>): Promise<void> => {
-    const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
+    const logger = this.logger.child({ method: 'onPoetBlockAnchorsDownloaded' })
 
     logger.trace(
       {
         poetAnchors,
       },
-      'Storing directory hashes from timestamps'
+      'Storing directory hashes from PoetBlockAnchors'
     )
 
     try {
@@ -50,7 +56,9 @@ export class Router {
   }
 
   onBatchReaderReadNextDirectoryRequest = async () => {
-    const logger = this.logger.child({ method: 'onBatchReaderReadNextDirectoryRequest' })
+    const logger = this.logger.child({
+      method: 'onBatchReaderReadNextDirectoryRequest',
+    })
     logger.trace('Read next directory request')
     try {
       const result = await this.claimController.readNextDirectory()

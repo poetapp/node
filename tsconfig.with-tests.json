@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2017",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "preserveConstEnums": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "outDir": "./dist/ts",
+    "baseUrl": "./src/"
+  },
+  "include": [
+    "./src/**/*",
+    "./test/**/*",
+    "./tests/**/*",
+    "./typings/**/*"
+  ]
+}

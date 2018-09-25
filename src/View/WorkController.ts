@@ -63,8 +63,8 @@ export class WorkController {
     )
   }
 
-  async upsertTimestamps(poetTimestamps: ReadonlyArray<PoetBlockAnchor>) {
-    this.logger.trace({ poetTimestamps }, 'Upserting Po.et Timestamps')
+  async upsertAnchors(poetTimestamps: ReadonlyArray<PoetBlockAnchor>) {
+    this.logger.trace({ poetTimestamps }, 'Upserting Po.et Anchors')
 
     await Promise.all(
       poetTimestamps.map(timestamp =>

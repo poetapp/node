@@ -31,7 +31,7 @@ export class Router {
   }
 
   onBatchReaderReadNextDirectorySuccess = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
+    const logger = this.logger.child({ method: 'onBatchReaderReadNextDirectorySuccess' })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes } = JSON.parse(messageContent)

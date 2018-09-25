@@ -1,3 +1,4 @@
+/* tslint:disable:no-relative-imports */
 import { describe } from 'riteway'
 import { mergeConfigs } from './Configuration'
 

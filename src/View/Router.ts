@@ -29,13 +29,19 @@ export class Router {
     await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
     await this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
     await this.messaging.consume(Exchange.IPFSHashTxId, this.onIPFSHashTxId)
-    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetTimestampsDownloaded)
+    await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
     await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
     await this.messaging.consume(
       Exchange.BatchReaderReadNextDirectorySuccess,
       this.onBatchReaderReadNextDirectorySuccess
     )
     await this.messaging.consume(Exchange.BatchWriterCreateNextBatchSuccess, this.onBatchWriterCreateNextBatchSuccess)
+  }
+
+  async stop() {
+    this.logger.info('Stopping View Router...')
+    this.logger.info('Stopping View Messaging...')
+    await this.messaging.stop()
   }
 
   onNewClaim = async (message: any) => {
@@ -67,7 +73,9 @@ export class Router {
   }
 
   onBatchWriterCreateNextBatchSuccess = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onBatchWriterCreateNextBatchSuccess' })
+    const logger = this.logger.child({
+      method: 'onBatchWriterCreateNextBatchSuccess',
+    })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
@@ -81,7 +89,10 @@ export class Router {
     )
 
     try {
-      await this.workController.setDirectoryHashOnEntries({ ipfsDirectoryHash, ipfsFileHashes })
+      await this.workController.setDirectoryHashOnEntries({
+        ipfsDirectoryHash,
+        ipfsFileHashes,
+      })
       logger.trace({ ipfsDirectoryHash, ipfsFileHashes }, 'IPFS Directory Hash set successfully')
     } catch (error) {
       logger.error(
@@ -110,25 +121,30 @@ export class Router {
     }
   }
 
-  onPoetTimestampsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
-    const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
+  onPoetBlockAnchorsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
+    const logger = this.logger.child({ method: 'onPoetBlockAnchorsDownloaded' })
 
-    logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Timestamp')
+    logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Anchor')
     try {
-      await this.workController.upsertTimestamps(poetBlockAnchors)
+      await this.workController.upsertAnchors(poetBlockAnchors)
     } catch (error) {
-      logger.error({ error }, 'Failed to upsert poetTimestamps on works')
+      logger.error({ error }, 'Failed to upsert poetBlockAnchors on works')
     }
   }
 
   onBatchReaderReadNextDirectorySuccess = async (message: any) => {
-    const logger = this.logger.child({ method: 'onBatchReaderReadNextDirectorySuccess' })
+    const logger = this.logger.child({
+      method: 'onBatchReaderReadNextDirectorySuccess',
+    })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
     logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Setting ipfsDirectoryHash on works')
     try {
-      await this.workController.setFileHashesForDirectoryHash({ ipfsFileHashes, ipfsDirectoryHash })
+      await this.workController.setFileHashesForDirectoryHash({
+        ipfsFileHashes,
+        ipfsDirectoryHash,
+      })
     } catch (error) {
       logger.error({ error, ipfsFileHashes, ipfsDirectoryHash }, 'Failed to set ipfsDirectoryHash on works')
     }

@@ -29,6 +29,12 @@ export class Router {
     await this.messaging.consume(Exchange.BatchWriterCreateNextBatchRequest, this.onBatchWriterCreateNextBatchRequest)
   }
 
+  async stop() {
+    this.logger.info('BatchWriter Router Stopping')
+    this.logger.info('BatchWriter Router Messaging Stopping')
+    await this.messaging.stop()
+  }
+
   onClaimIPFSHash = async (message: any): Promise<void> => {
     const logger = this.logger.child({ method: 'onClaimIPFSHash' })
     const messageContent = message.content.toString()
@@ -49,11 +55,16 @@ export class Router {
   }
 
   onBatchWriterCreateNextBatchRequest = async () => {
-    const logger = this.logger.child({ method: 'onBatchWriterCreateNextBatchRequest' })
+    const logger = this.logger.child({
+      method: 'onBatchWriterCreateNextBatchRequest',
+    })
     logger.trace('Create next batch request')
     try {
       const { ipfsFileHashes, ipfsDirectoryHash } = await this.claimController.createNextBatch()
-      await this.messaging.publish(Exchange.BatchWriterCreateNextBatchSuccess, { ipfsFileHashes, ipfsDirectoryHash })
+      await this.messaging.publish(Exchange.BatchWriterCreateNextBatchSuccess, {
+        ipfsFileHashes,
+        ipfsDirectoryHash,
+      })
       logger.info({ ipfsDirectoryHash }, 'Create next batch success')
     } catch (error) {
       if (error instanceof NoMoreEntriesException) logger.trace(error.message)

@@ -85,5 +85,4 @@ describe('Bitcoin.getData', async should => {
       expected: false,
     })
   }
-
 })
