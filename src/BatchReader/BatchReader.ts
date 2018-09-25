@@ -18,6 +18,7 @@ export class BatchReader {
   private readonly logger: Pino.Logger
   private readonly configuration: BatchReaderConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
@@ -30,8 +31,8 @@ export class BatchReader {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'BatchReader Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
@@ -47,6 +48,14 @@ export class BatchReader {
     await directoryDAO.start()
 
     this.logger.info('BatchReader Started')
+  }
+
+  async stop() {
+    this.logger.info('Stopping BatchReader...')
+    this.logger.info('Stopping BatchReader Database...')
+    await this.mongoClient.close()
+    await this.router.stop()
+    await this.service.stop()
   }
 
   initializeContainer() {

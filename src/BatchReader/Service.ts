@@ -33,6 +33,7 @@ export class Service {
   }
 
   stop() {
+    this.logger.info('BatchReader Service stopping')
     this.interval.stop()
   }
 

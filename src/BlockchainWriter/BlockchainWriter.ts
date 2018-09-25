@@ -19,6 +19,9 @@ import { ServiceConfiguration } from './ServiceConfiguration'
 export class BlockchainWriter {
   private readonly logger: Pino.Logger
   private readonly configuration: BlockchainWriterConfiguration
+  private mongoClient: MongoClient
+  private messaging: Messaging
+  private service: Service
 
   constructor(configuration: BlockchainWriterConfiguration) {
     this.configuration = configuration
@@ -28,26 +31,35 @@ export class BlockchainWriter {
   async start() {
     this.logger.info({ configuration: this.configuration }, 'BlockchainWriter Starting')
 
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    const db = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    const db = await this.mongoClient.db()
 
     const blockchainWriterCollection = db.collection('blockchainWriter')
 
     const container = createContainer(this.configuration, this.logger, blockchainWriterCollection)
 
-    const messaging = container.get('Messaging') as Messaging
-    await messaging.start()
+    this.messaging = container.get('Messaging') as Messaging
+    await this.messaging.start()
 
     const router = container.get('Router') as Router
     await router.start()
 
-    const service = container.get('Service') as Service
-    await service.start()
+    this.service = container.get('Service') as Service
+    await this.service.start()
 
     const dao = container.get('DAO') as DAO
     await dao.start()
 
     this.logger.info('BlockchainWriter Started')
+  }
+
+  async stop() {
+    this.logger.info('BlockchainWriter stopping...')
+    this.logger.info('BlockchainWriter Database stopping...')
+    await this.mongoClient.close()
+    await this.service.stop()
+    this.logger.info('BlockchainWriter Messaging stopping...')
+    await this.messaging.stop()
   }
 }
 

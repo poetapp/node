@@ -19,6 +19,7 @@ export class StorageReader {
   private readonly logger: Pino.Logger
   private readonly configuration: StorageReaderConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
@@ -31,8 +32,8 @@ export class StorageReader {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'StorageReader Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
@@ -48,6 +49,15 @@ export class StorageReader {
     await this.createIndices()
 
     this.logger.info('StorageReader Started')
+  }
+
+  async stop() {
+    this.logger.info('Stopping Storage...')
+    await this.service.stop()
+    this.logger.info('Stopping Storage Database...')
+    await this.mongoClient.close()
+    this.logger.info('Stopping Storage Messaging...')
+    await this.messaging.stop()
   }
 
   initializeContainer() {

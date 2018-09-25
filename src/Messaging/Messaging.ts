@@ -32,6 +32,10 @@ export class Messaging {
     this.channel = await this.connection.createChannel()
   }
 
+  stop = async () => {
+    await this.connection.close()
+  }
+
   publish = async (exchange: Exchange, message: string | object): Promise<void> => {
     if (!this.channel) throw new Error('Cannot publish before calling start()')
 

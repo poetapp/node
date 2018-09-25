@@ -28,6 +28,11 @@ export class Router {
     await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
   }
 
+  async stop() {
+    this.logger.info('Stopping StorageWriter Router...')
+    await this.messaging.stop()
+  }
+
   onNewClaim = async (message: any): Promise<void> => {
     const logger = this.logger.child({ method: 'onNewClaim' })
 

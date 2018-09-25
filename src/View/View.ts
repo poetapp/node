@@ -14,6 +14,7 @@ export class View {
   private readonly logger: Pino.Logger
   private readonly configuration: ViewConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
@@ -25,8 +26,8 @@ export class View {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'View Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
@@ -37,6 +38,13 @@ export class View {
     await this.router.start()
 
     this.logger.info('View Started')
+  }
+
+  async stop() {
+    this.logger.info('Stopping View...')
+    await this.router.stop()
+    this.logger.info('Stopping View Database...')
+    await this.mongoClient.close()
   }
 
   initializeContainer() {
