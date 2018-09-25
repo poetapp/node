@@ -16,6 +16,7 @@ export class StorageWriter {
   private readonly logger: Pino.Logger
   private readonly configuration: StorageWriterConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
@@ -27,8 +28,8 @@ export class StorageWriter {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'StorageWriter Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
@@ -41,6 +42,13 @@ export class StorageWriter {
     await this.createIndices()
 
     this.logger.info('StorageWriter Started')
+  }
+
+  async stop() {
+    this.logger.info('Stopping StorageWriter...')
+    await this.router.stop()
+    this.logger.info('Stopping StorageWriter Database...')
+    await this.mongoClient.close()
   }
 
   initializeContainer() {

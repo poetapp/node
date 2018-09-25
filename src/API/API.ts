@@ -15,6 +15,7 @@ export class API {
   private readonly logger: Pino.Logger
   private readonly configuration: APIConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
@@ -26,8 +27,8 @@ export class API {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'API Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
@@ -38,6 +39,15 @@ export class API {
     await this.router.start()
 
     this.logger.info('API Started')
+  }
+
+  async stop() {
+    this.logger.info('Stopping API...')
+    this.logger.info('Stopping API Database...')
+    await this.mongoClient.close()
+    await this.router.stop()
+    this.logger.info('Stopping API Messaging...')
+    await this.messaging.stop()
   }
 
   initializeContainer() {
