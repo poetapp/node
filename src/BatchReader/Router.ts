@@ -38,7 +38,7 @@ export class Router {
     await this.messaging.stop()
   }
 
-  onPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>): Promise<void> => {
+  onPoetBlockAnchorsDownloaded = async (poetAnchors: ReadonlyArray<PoetBlockAnchor>): Promise<void> => {
     const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
 
     logger.trace(
