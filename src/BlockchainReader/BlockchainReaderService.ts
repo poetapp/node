@@ -34,6 +34,7 @@ export class BlockchainReaderService {
   }
 
   stop() {
+    this.logger.info('BlockchainReader Cron Stopping...')
     this.interval.stop()
   }
 

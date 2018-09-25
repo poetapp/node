@@ -8,27 +8,27 @@ describe('camelCaseToScreamingSnakeCase()', async (should: any) => {
     given: 'no arguments',
     should: 'return an empty string',
     actual: camelCaseToScreamingSnakeCase(),
-    expected: ''
+    expected: '',
   })
 
   assert({
     given: 'empty string',
     should: 'return an empty string',
     actual: camelCaseToScreamingSnakeCase(''),
-    expected: ''
+    expected: '',
   })
 
   assert({
     given: 'lowercase string',
     should: 'return an UPPERCASE string',
     actual: camelCaseToScreamingSnakeCase('test'),
-    expected: 'TEST'
+    expected: 'TEST',
   })
 
   assert({
     given: 'camelCase string',
     should: 'return SCREAMING_SNAKE_CASE string',
     actual: camelCaseToScreamingSnakeCase('testCaseString'),
-    expected: 'TEST_CASE_STRING'
+    expected: 'TEST_CASE_STRING',
   })
 })

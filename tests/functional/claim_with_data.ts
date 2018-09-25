@@ -1,9 +1,7 @@
 import { Claim, ClaimType, createClaim, isValidClaim } from '@po.et/poet-js'
-import { compose, isNil, not, path } from 'ramda'
-const url = require('url')
 import fetch from 'node-fetch'
+import { path } from 'ramda'
 import { describe } from 'riteway'
-const ipfsAPI = require('ipfs-api')
 const Client = require('bitcoin-core')
 
 const bitcoindClientA = new Client({
@@ -14,21 +12,7 @@ const bitcoindClientA = new Client({
   username: 'bitcoinrpcuser',
 })
 
-const ipfsUrl = () => {
-  const { hostname, port } = url.parse(process.env.IPFS_URL)
-  return [hostname, port]
-}
-
-const ipfs = ipfsAPI(ipfsUrl()[0], ipfsUrl()[1], { protocol: 'http' })
-
-const getIPFSFileContents = async (hash: string) => {
-  const file = await ipfs.files.cat(hash)
-  return JSON.parse(file.toString('utf8'))
-}
-
 const privateKey = 'L1mptZyB6aWkiJU7dvAK4UUjLSaqzcRNYJn3KuAA7oEVyiNn3ZPF'
-const publicKey = '02cab54b227f16dd4866310799842cdd239f2adb56d0a3789519c6f43a892a61f6'
-
 const fullUrl = (host: string = 'http://MISSING_HOST:PORT') => (rest: any) => `${host}${rest}`
 
 const postWork = (host: string, claim: Claim) => {

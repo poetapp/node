@@ -19,6 +19,7 @@ export class BatchWriter {
   private readonly logger: Pino.Logger
   private readonly configuration: BatchWriterConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
@@ -31,8 +32,8 @@ export class BatchWriter {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'BatchWriter Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl)
     await this.messaging.start()
@@ -48,6 +49,14 @@ export class BatchWriter {
     await fileDAO.start()
 
     this.logger.info('Batcher Writer Started')
+  }
+
+  async stop() {
+    this.logger.info('BatchWriter Stopping')
+    await this.service.stop()
+    this.logger.info('BatchWriter Database Stopping')
+    await this.mongoClient.close()
+    await this.router.stop()
   }
 
   initializeContainer() {
