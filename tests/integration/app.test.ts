@@ -1,3 +1,4 @@
+/* tslint:disable:no-relative-imports */
 // IMPORTANT: If this fails due to the app not being able to flush it's
 // event queue, this test will hang forever.
 // Can we force the app to flush it's queue without killing the entire
