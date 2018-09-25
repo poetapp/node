@@ -53,19 +53,19 @@ export class Messaging {
     this.channel.consume(assertQueue.queue, consume, { noAck: true })
   }
 
-  // TODO: move these business-specific functions to a different file
-  publishPoetTimestampsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
-    return this.publish(Exchange.PoetTimestampDownloaded, poetBlockAnchors)
+  // TODO: move these business-specific functions to a different file. See https://github.com/poetapp/node/issues/66
+  publishPoetBlockAnchorsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
+    return this.publish(Exchange.PoetAnchorDownloaded, poetBlockAnchors)
   }
 
-  consumePoetTimestampsDownloaded = async (consume: (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => void) => {
-    await this.consume(Exchange.PoetTimestampDownloaded, (message: any) => {
+  consumeBlockAnchorsDownloaded = async (consume: (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => void) => {
+    await this.consume(Exchange.PoetAnchorDownloaded, (message: any) => {
       const messageContent = message.content.toString()
       const poetBlockAnchors = JSON.parse(messageContent)
 
       if (!Array.isArray(poetBlockAnchors)) {
         console.log({
-          action: 'consumePoetTimestampsDownloaded',
+          action: 'consumeBlockAnchorsDownloaded',
           message: 'Expected poetBlockAnchors to be an Array.',
           poetBlockAnchors,
         })
@@ -74,8 +74,8 @@ export class Messaging {
 
       if (poetBlockAnchors.map(isClaim).find(_ => !_)) {
         console.log({
-          action: 'consumePoetTimestampsDownloaded',
-          message: 'Expected poetTimestamps to be an Array<Claim>.',
+          action: 'consumeBlockAnchorsDownloaded',
+          message: 'Expected poetBlockAnchors to be an Array<Claim>.',
           offendingElements: poetBlockAnchors.map(isClaim).filter(_ => !_),
         })
         return
@@ -105,8 +105,8 @@ export class Messaging {
 
       if (claimIPFSHashPairs.map(isClaimIPFSHashPair).find(_ => !_)) {
         console.log({
-          action: 'consumePoetTimestampsDownloaded',
-          message: 'Expected poetTimestamps to be an Array<ClaimIPFSHashPair>.',
+          action: 'consumeClaimsDownloaded',
+          message: 'Expected claimIPFSHashPairs to be an Array<ClaimIPFSHashPair>.',
           offendingElements: claimIPFSHashPairs.map(isClaimIPFSHashPair).filter(_ => !_),
         })
         return

@@ -25,7 +25,7 @@ export class Router {
   }
 
   async start() {
-    await this.messaging.consumePoetTimestampsDownloaded(this.onPoetBlockAnchorsDownloaded)
+    await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
     await this.messaging.consume(
       Exchange.BatchReaderReadNextDirectoryRequest,
       this.onBatchReaderReadNextDirectoryRequest
@@ -39,13 +39,13 @@ export class Router {
   }
 
   onPoetBlockAnchorsDownloaded = async (poetAnchors: ReadonlyArray<PoetBlockAnchor>): Promise<void> => {
-    const logger = this.logger.child({ method: 'onPoetTimestampsDownloaded' })
+    const logger = this.logger.child({ method: 'onPoetBlockAnchorsDownloaded' })
 
     logger.trace(
       {
         poetAnchors,
       },
-      'Storing directory hashes from timestamps'
+      'Storing directory hashes from PoetBlockAnchors'
     )
 
     try {
