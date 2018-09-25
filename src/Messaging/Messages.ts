@@ -10,10 +10,10 @@ export const Exchange = {
   // Event, a new claim has been submitted by a client
   NewClaim: configuration.newClaim,
   // Event, the IPFS hash of a claim has been discovered
-  ClaimIPFSHash: configuration.claimIPFSHash,
+  ClaimIPFSHash: configuration.claimIpfsHash,
   // Event, the ID of the blockchain transaction in which this IPFS hash
   // was stored has been discovered
-  IPFSHashTxId: configuration.iPFSHashTxId,
+  IPFSHashTxId: configuration.ipfsHashTxId,
   PoetAnchorDownloaded: configuration.poetAnchorDownloaded,
   ClaimsDownloaded: configuration.claimsDownloaded,
 }

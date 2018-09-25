@@ -62,8 +62,8 @@ export interface RabbitmqExchangeMessages {
   readonly batchWriterCreateNextBatchRequest: string
   readonly batchWriterCreateNextBatchSuccess: string
   readonly newClaim: string
-  readonly claimIPFSHash: string
-  readonly iPFSHashTxId: string
+  readonly claimIpfsHash: string
+  readonly ipfsHashTxId: string
   readonly poetAnchorDownloaded: string
   readonly claimsDownloaded: string
 }
@@ -111,9 +111,10 @@ const defaultConfiguration: Configuration = {
   batchWriterCreateNextBatchRequest: 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
   batchWriterCreateNextBatchSuccess: 'BATCH_WRITER::CREATE_NEXT_BATCH_SUCCESS',
   newClaim: 'NEW_CLAIM',
-  claimIPFSHash: 'CLAIM_IPFS_HASH',
-  iPFSHashTxId: 'IPFS_HASH_TX_ID',
+  claimIpfsHash: 'CLAIM_IPFS_HASH',
+  ipfsHashTxId: 'IPFS_HASH_TX_ID',
   poetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
+
   claimsDownloaded: 'CLAIMS_DOWNLOADED',
 }
 
