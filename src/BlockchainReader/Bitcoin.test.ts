@@ -1,4 +1,4 @@
-import { PoetAnchor, PoetBlockAnchor} from '@po.et/poet-js'
+import { PoetAnchor, PoetBlockAnchor } from '@po.et/poet-js'
 import { allPass, equals } from 'ramda'
 import { describe } from 'riteway'
 
