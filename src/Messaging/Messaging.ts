@@ -36,7 +36,7 @@ export class Messaging {
     await this.connection.close()
   }
 
-  publish = async (exchange: Exchange, message: string | object): Promise<void> => {
+  publish = async (exchange: string, message: string | object): Promise<void> => {
     if (!this.channel) throw new Error('Cannot publish before calling start()')
 
     await this.channel.assertExchange(exchange, 'fanout', { durable: false })

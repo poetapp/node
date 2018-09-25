@@ -11,7 +11,7 @@ import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 const defaultMongodbUrl = 'mongodb://localhost:27017/poet'
 
 // Provide default value in defaultConfiguration for any new configuration options
-export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration {
+export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration, RabbitmqExchangeMessages {
   readonly rabbitmqUrl: string
   readonly mongodbUser: string
   readonly mongodbPassword: string
@@ -41,16 +41,6 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly batchCreationIntervalInSeconds: number
 
   readonly readDirectoryIntervalInSeconds: number
-
-  readonly batchReaderReadNextDirectoryRequest: string
-  readonly batchReaderReadNextDirectorySuccess: string
-  readonly batchWriterCreateNextBatchRequest: string
-  readonly batchWriterCreateNextBatchSuccess: string
-  readonly newClaim: string
-  readonly claimIPFSHash: string
-  readonly iPFSHashTxId: string
-  readonly poetTimestampDownloaded: string
-  readonly claimsDownloaded: string
 }
 
 export interface LoggingConfiguration {
@@ -64,6 +54,18 @@ export interface BitcoinRPCConfiguration {
   readonly bitcoinNetwork: string
   readonly bitcoinUsername: string
   readonly bitcoinPassword: string
+}
+
+export interface RabbitmqExchangeMessages {
+  readonly batchReaderReadNextDirectoryRequest: string
+  readonly batchReaderReadNextDirectorySuccess: string
+  readonly batchWriterCreateNextBatchRequest: string
+  readonly batchWriterCreateNextBatchSuccess: string
+  readonly newClaim: string
+  readonly claimIPFSHash: string
+  readonly iPFSHashTxId: string
+  readonly poetAnchorDownloaded: string
+  readonly claimsDownloaded: string
 }
 
 const defaultConfiguration: Configuration = {
@@ -111,7 +113,7 @@ const defaultConfiguration: Configuration = {
   newClaim: 'NEW_CLAIM',
   claimIPFSHash: 'CLAIM_IPFS_HASH',
   iPFSHashTxId: 'IPFS_HASH_TX_ID',
-  poetTimestampDownloaded: 'POET_TIMESTAMP_DOWNLOADED',
+  poetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
   claimsDownloaded: 'CLAIMS_DOWNLOADED',
 }
 
