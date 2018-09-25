@@ -157,8 +157,8 @@ describe('src/Configuration RabbitmqExchangeMessages', async (should: any) => {
     const actual = pick(keys, mergeConfigs(overrideValues))
 
     assert({
-      given: 'no arguments',
-      should: 'return the default config',
+      given: 'override default values',
+      should: 'return the new config',
       actual,
       expected,
     })
