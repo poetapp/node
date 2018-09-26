@@ -13,6 +13,7 @@ import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
+import { Exchange } from './Exchange'
 
 export class BatchReader {
   private readonly logger: Pino.Logger
@@ -25,6 +26,7 @@ export class BatchReader {
   private service: Service
 
   constructor(configuration: BatchReaderConfiguration) {
+    console.log("configuration ",configuration)
     this.configuration = configuration
     this.logger = createModuleLogger(configuration, __dirname)
   }
@@ -73,6 +75,11 @@ export class BatchReader {
     this.container.bind<Service>('Service').to(Service)
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       readNextDirectoryIntervalInSeconds: this.configuration.readNextDirectoryIntervalInSeconds,
+    })
+
+    this.container.bind<Exchange>('Exchange').toConstantValue({
+      batchReaderReadNextDirectoryRequest: this.configuration.batchReaderReadNextDirectoryRequest,
+      batchReaderReadNextDirectorySuccess: this.configuration.batchReaderReadNextDirectorySuccess,
     })
   }
 }
