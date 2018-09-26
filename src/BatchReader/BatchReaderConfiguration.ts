@@ -1,6 +1,6 @@
 import { LoggingConfiguration } from 'Configuration'
 
-import { Exchange } from './Exchange'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
@@ -8,7 +8,7 @@ export interface BatchReaderConfiguration
   extends LoggingConfiguration,
     ServiceConfiguration,
     IPFSConfiguration,
-    Exchange {
+    ExchangeConfiguration {
   readonly dbUrl: string
   readonly rabbitmqUrl: string
 }

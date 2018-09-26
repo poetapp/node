@@ -8,7 +8,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { BatchReaderConfiguration } from './BatchReaderConfiguration'
 import { ClaimController } from './ClaimController'
 import { DirectoryDAO } from './DirectoryDAO'
-import { Exchange } from './Exchange'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
@@ -74,9 +74,10 @@ export class BatchReader {
     this.container.bind<Service>('Service').to(Service)
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       readNextDirectoryIntervalInSeconds: this.configuration.readNextDirectoryIntervalInSeconds,
+      batchReaderReadNextDirectoryRequest: this.configuration.batchReaderReadNextDirectoryRequest,
     })
 
-    this.container.bind<Exchange>('Exchange').toConstantValue({
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue({
       batchReaderReadNextDirectoryRequest: this.configuration.batchReaderReadNextDirectoryRequest,
       batchReaderReadNextDirectorySuccess: this.configuration.batchReaderReadNextDirectorySuccess,
     })
