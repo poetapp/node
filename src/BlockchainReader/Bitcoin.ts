@@ -15,10 +15,10 @@ export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor>
     .filter(poetAnchorHasCorrectPrefix)
     .map(poetAnchorWithBlockData(block))
 
-function transactionToPoetAnchor(transaction: Transaction): PoetTransactionAnchor | undefined {
+const transactionToPoetAnchor = (transaction: Transaction): PoetTransactionAnchor | undefined => {
   const outputs = transactionToOutputs(transaction)
   const dataOutput = outputs.find(outputIsDataOutput)
-  return dataOutput && dataOutputToPoetAnchor(dataOutput)
+  return dataOutput && dataOutputToPoetTransactionAnchor(dataOutput)
 }
 
 const transactionToOutputs = (transaction: Transaction): ReadonlyArray<VOutWithTxId> =>
@@ -29,16 +29,25 @@ const transactionToOutputs = (transaction: Transaction): ReadonlyArray<VOutWithT
 
 const outputIsDataOutput = (output: VOut) => output.scriptPubKey.type === 'nulldata'
 
-const dataOutputToPoetAnchor = (dataOutput: VOutWithTxId): PoetTransactionAnchor => {
-  // TODO: split method in two. see https://github.com/poetapp/node/issues/418
+const dataOutputToPoetTransactionAnchor = (output: VOutWithTxId): PoetTransactionAnchor => {
+  const anchor = dataToPoetAnchor(dataOutputToData(output))
+  return {
+    ...anchor,
+    transactionId: output.transactionId,
+  }
+}
+
+const dataOutputToData = (dataOutput: VOutWithTxId): string => {
   const { asm } = dataOutput.scriptPubKey
-  const data = asm.split(' ')[1]
+  return asm.split(' ')[1]
+}
+
+export const dataToPoetAnchor = (data: string): PoetAnchor => {
   const buffer = Buffer.from(data, 'hex')
   const prefix = buffer.slice(0, 4).toString()
   const version = Array.from(buffer.slice(4, 8))
   const ipfsDirectoryHash = buffer.slice(8).toString()
   return {
-    transactionId: dataOutput.transactionId,
     storageProtocol: null,
     prefix,
     version,
