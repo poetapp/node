@@ -1,10 +1,11 @@
-import { PoetBlockAnchor } from '@po.et/poet-js'
+import { PoetAnchor, PoetBlockAnchor } from '@po.et/poet-js'
 import { allPass, equals } from 'ramda'
 import { describe } from 'riteway'
 
+import { getData } from 'BlockchainWriter/Bitcoin'
 import { PREFIX_POET, PREFIX_BARD } from 'Helpers/Bitcoin'
 
-import { anchorPrefixAndVersionMatch, blockToPoetAnchors } from './Bitcoin'
+import { anchorPrefixAndVersionMatch, blockToPoetAnchors, dataToPoetAnchor } from './Bitcoin'
 
 import * as TestBlock from './TestData/block-00000000000151360aad32397ff1cf7dd303bed163b0ef425e71a53ccdec7312.json'
 
@@ -163,6 +164,33 @@ describe('Bitcoin.getMatchingAnchors', async should => {
     actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, [0, 0, 0, 3])),
     expected: [],
   })
+})
+
+describe('Bitcoin.dataToPoetAnchor', async should => {
+  const { assert } = should()
+
+  function assertSample(prefix: string, version: number[], ipfsDirectoryHash: string) {
+    const data = getData(prefix, version)(ipfsDirectoryHash)
+
+    const expected: PoetAnchor = {
+      storageProtocol: null,
+      prefix,
+      version,
+      ipfsDirectoryHash,
+    }
+
+    assert({
+      given: 'a hex string of a Po.et anchor',
+      should: 'return the anchor correctly parsed',
+      actual: dataToPoetAnchor(data),
+      expected,
+    })
+  }
+
+  assertSample('POET', [0, 1, 2, 3], 'Jim')
+  assertSample('BARD', [0, 1, 2, 3], 'Robert')
+  assertSample('POET', [3, 2, 1, 0], 'Roger')
+  assertSample('BARD', [3, 2, 1, 0], 'Syd')
 })
 
 // Would be way better to validate the block's hash
