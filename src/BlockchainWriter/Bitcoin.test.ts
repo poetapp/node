@@ -2,7 +2,7 @@ import { StorageProtocol } from '@po.et/poet-js'
 import { equals } from 'ramda'
 import { describe, Try } from 'riteway'
 
-import { getData } from './Bitcoin'
+import { poetAnchorToData } from './Bitcoin'
 
 import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
@@ -10,7 +10,7 @@ describe('Bitcoin.getData', async should => {
   const { assert } = should()
 
   const testGetData = (prefix: string, version: ReadonlyArray<number>, protocol: StorageProtocol, message: string) => {
-    const data = getData(prefix, version)(StorageProtocol.IPFS, message)
+    const data = poetAnchorToData(prefix, version)(StorageProtocol.IPFS, message)
     const buffer = Buffer.from(data, 'hex')
 
     const given = 'a bitcoin-encoded Po.et data buffer'
@@ -53,14 +53,14 @@ describe('Bitcoin.getData', async should => {
     assert({
       given: 'a bitcoin-encoded Po.et data buffer with incorrect prefix length',
       should: 'fail with error',
-      actual: Try(() => getData('TOO_LONG', [2, 3])(StorageProtocol.IPFS, 'message')),
+      actual: Try(() => poetAnchorToData('TOO_LONG', [2, 3])(StorageProtocol.IPFS, 'message')),
       expected: new Error(''),
     })
 
     assert({
       given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
       should: 'fail with error',
-      actual: Try(() => getData(PREFIX_POET, [2, 3, 4])(StorageProtocol.IPFS, 'message')),
+      actual: Try(() => poetAnchorToData(PREFIX_POET, [2, 3, 4])(StorageProtocol.IPFS, 'message')),
       expected: new Error(''),
     })
   }

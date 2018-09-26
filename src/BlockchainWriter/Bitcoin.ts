@@ -1,6 +1,6 @@
 import { StorageProtocol } from '@po.et/poet-js'
 
-export const getData = (prefix: string, version: ReadonlyArray<number>) => (
+export const poetAnchorToData = (prefix: string, version: ReadonlyArray<number>) => (
   protocol: StorageProtocol,
   message: string
 ) => {

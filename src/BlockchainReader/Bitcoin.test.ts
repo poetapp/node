@@ -2,7 +2,7 @@ import { PoetAnchor, PoetBlockAnchor, StorageProtocol } from '@po.et/poet-js'
 import { allPass, equals } from 'ramda'
 import { describe } from 'riteway'
 
-import { getData } from 'BlockchainWriter/Bitcoin'
+import { poetAnchorToData } from 'BlockchainWriter/Bitcoin'
 import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
 import { anchorPrefixAndVersionMatch, blockToPoetAnchors, dataToPoetAnchor } from './Bitcoin'
@@ -175,7 +175,7 @@ describe('Bitcoin.dataToPoetAnchor', async should => {
     storageProtocol: StorageProtocol,
     ipfsDirectoryHash: string
   ) {
-    const data = getData(prefix, version)(storageProtocol, ipfsDirectoryHash)
+    const data = poetAnchorToData(prefix, version)(storageProtocol, ipfsDirectoryHash)
 
     const expected: PoetAnchor = {
       prefix,

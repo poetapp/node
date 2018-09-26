@@ -6,7 +6,7 @@ import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
-import { getData } from './Bitcoin'
+import { poetAnchorToData } from './Bitcoin'
 import { ControllerConfiguration } from './ControllerConfiguration'
 import { DAO } from './DAO'
 
@@ -71,7 +71,7 @@ export class Controller {
 
     logger.debug({ ipfsDirectoryHash }, 'Anchoring IPFS Hash')
 
-    const ipfsDirectoryHashToBitcoinData = getData(configuration.poetNetwork, configuration.poetVersion)
+    const ipfsDirectoryHashToBitcoinData = poetAnchorToData(configuration.poetNetwork, configuration.poetVersion)
 
     const data = ipfsDirectoryHashToBitcoinData(ipfsDirectoryHash)
     const txId = await anchorData(data)
