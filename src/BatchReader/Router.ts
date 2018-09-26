@@ -4,7 +4,7 @@ import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
-import { Exchange } from './Exchange'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 import { ClaimController } from './ClaimController'
 
@@ -13,13 +13,13 @@ export class Router {
   private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly claimController: ClaimController
-  private readonly exchange: Exchange
+  private readonly exchange: ExchangeConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('ClaimController') claimController: ClaimController,
-    @inject('Exchange') exchange: Exchange
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
