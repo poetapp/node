@@ -1,11 +1,10 @@
 import { PoetBlockAnchor } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
-import { Exchange } from './Exchange'
 
 import { childWithFileName } from 'Helpers/Logging'
-// import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
+import { Exchange } from './Exchange'
 
 import { ClaimController } from './ClaimController'
 
@@ -20,7 +19,7 @@ export class Router {
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('ClaimController') claimController: ClaimController,
-    @inject('Exchange') exchange: Exchange,
+    @inject('Exchange') exchange: Exchange
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
@@ -69,7 +68,10 @@ export class Router {
       const result = await this.claimController.readNextDirectory()
       if (!result) return
       const { ipfsFileHashes, ipfsDirectoryHash } = result
-      await this.messaging.publish(this.exchange.batchReaderReadNextDirectorySuccess, { ipfsDirectoryHash, ipfsFileHashes })
+      await this.messaging.publish(this.exchange.batchReaderReadNextDirectorySuccess, {
+        ipfsDirectoryHash,
+        ipfsFileHashes,
+      })
       logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Read next directory success')
     } catch (error) {
       logger.error({ error }, 'Read next directory failure')
