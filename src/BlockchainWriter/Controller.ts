@@ -9,6 +9,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { poetAnchorToData } from './Bitcoin'
 import { ControllerConfiguration } from './ControllerConfiguration'
 import { DAO } from './DAO'
+import { StorageProtocol } from '@po.et/poet-js'
 
 @injectable()
 export class Controller {
@@ -73,7 +74,7 @@ export class Controller {
 
     const ipfsDirectoryHashToBitcoinData = poetAnchorToData(configuration.poetNetwork, configuration.poetVersion)
 
-    const data = ipfsDirectoryHashToBitcoinData(ipfsDirectoryHash)
+    const data = ipfsDirectoryHashToBitcoinData(StorageProtocol.IPFS, ipfsDirectoryHash)
     const txId = await anchorData(data)
 
     await dao.setTransactionId(ipfsDirectoryHash, txId)
