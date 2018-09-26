@@ -1,6 +1,7 @@
 /* tslint:disable:no-relative-imports */
+import { pick } from 'ramda'
 import { describe } from 'riteway'
-import { mergeConfigs } from './Configuration'
+import { loadConfigurationWithDefaults, mergeConfigs } from './Configuration'
 
 const defaultConfig = mergeConfigs()
 
@@ -79,5 +80,87 @@ describe('src/Configuration', async (should: any) => {
         },
       })
     }
+  }
+})
+
+describe('loadConfigurationWithDefaults', async (should: any) => {
+  const { assert } = should()
+  const mongodbOverrides = {
+    API_PORT: '4321',
+  }
+
+  assert({
+    given: 'a local configuration override',
+    should: 'return a config using the local override',
+    actual: loadConfigurationWithDefaults(mongodbOverrides),
+    expected: {
+      ...defaultConfig,
+      apiPort: 4321,
+    },
+  })
+})
+
+describe('src/Configuration RabbitmqExchangeMessages', async (should: any) => {
+  const { assert } = should()
+
+  {
+    const defaultValues = {
+      batchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
+      batchReaderReadNextDirectorySuccess: 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
+      batchWriterCreateNextBatchRequest: 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
+      batchWriterCreateNextBatchSuccess: 'BATCH_WRITER::CREATE_NEXT_BATCH_SUCCESS',
+      newClaim: 'NEW_CLAIM',
+      claimIpfsHash: 'CLAIM_IPFS_HASH',
+      ipfsHashTxId: 'IPFS_HASH_TX_ID',
+      poetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
+      claimsDownloaded: 'CLAIMS_DOWNLOADED',
+    }
+
+    const keys = Object.keys(defaultValues)
+    const actual = pick(keys, defaultConfig)
+    const expected = defaultValues
+
+    assert({
+      given: 'no arguments',
+      should: 'return the default config',
+      actual,
+      expected,
+    })
+  }
+
+  {
+    const overrideValues = {
+      BATCH_READER_READ_NEXT_DIRECTORY_REQUEST: 'override',
+      BATCH_READER_READ_NEXT_DIRECTORY_SUCCESS: 'override',
+      BATCH_WRITER_CREATE_NEXT_BATCH_REQUEST: 'override',
+      BATCH_WRITER_CREATE_NEXT_BATCH_SUCCESS: 'override',
+      NEW_CLAIM: 'override',
+      CLAIM_IPFS_HASH: 'override',
+      IPFS_HASH_TX_ID: 'override',
+      POET_ANCHOR_DOWNLOADED: 'override',
+      CLAIMS_DOWNLOADED: 'override',
+    }
+
+    const expected = {
+      batchReaderReadNextDirectoryRequest: 'override',
+      batchReaderReadNextDirectorySuccess: 'override',
+      batchWriterCreateNextBatchRequest: 'override',
+      batchWriterCreateNextBatchSuccess: 'override',
+      newClaim: 'override',
+      claimIpfsHash: 'override',
+      ipfsHashTxId: 'override',
+      poetAnchorDownloaded: 'override',
+      claimsDownloaded: 'override',
+    }
+
+    const keys = Object.keys(expected)
+    const actual = pick(keys, mergeConfigs(overrideValues))
+
+    assert({
+      given: 'override default values',
+      should: 'return the new config',
+      actual,
+      expected,
+    })
   }
 })

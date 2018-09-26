@@ -21,12 +21,12 @@ const startStopNoop = {
   stop: () => Promise.resolve(),
 }
 
-export async function app() {
+export async function app(localVars: any = {}) {
   console.log('Running Po.et Node')
   console.log('')
   console.log('Loading Configuration...')
 
-  const configuration = loadConfigurationWithDefaults()
+  const configuration = loadConfigurationWithDefaults(localVars)
 
   console.log('Switching to Structured Logging')
   console.log('Logging Level:', configuration.loggingLevel)
