@@ -1,9 +1,11 @@
 version: '3'
+
 services:
   mongo:
     image: mongo:3.4
     ports:
     - "27017:27017"
+    
   rabbit:
     image: rabbitmq:3
     ports:
@@ -11,6 +13,7 @@ services:
     - "5672:5672"
     - "15672:15672"
     hostname: my-rabbit
+    
   ipfs:
     image: ipfs/go-ipfs:v0.4.17
     ports:
@@ -19,6 +22,7 @@ services:
     - "5001:5001"
     volumes:
     - .ipfs-docker:/data/ipfs
+    
   bitcoin-regtest:
     image: ruimarinho/bitcoin-core:0.16.3
     ports:
