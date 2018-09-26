@@ -1,15 +1,16 @@
+import { StorageProtocol } from '@po.et/poet-js'
 import { equals } from 'ramda'
-import { describe } from 'riteway'
+import { describe, Try } from 'riteway'
 
 import { getData } from './Bitcoin'
 
-import { PREFIX_POET, PREFIX_BARD } from 'Helpers/Bitcoin'
+import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
 describe('Bitcoin.getData', async should => {
   const { assert } = should()
 
-  const testGetData = (prefix: string, version: ReadonlyArray<number>, message: string) => {
-    const data = getData(prefix, version)(message)
+  const testGetData = (prefix: string, version: ReadonlyArray<number>, protocol: StorageProtocol, message: string) => {
+    const data = getData(prefix, version)(StorageProtocol.IPFS, message)
     const buffer = Buffer.from(data, 'hex')
 
     const given = 'a bitcoin-encoded Po.et data buffer'
@@ -24,65 +25,44 @@ describe('Bitcoin.getData', async should => {
     assert({
       given,
       should: 'match the version',
-      actual: Array.from(buffer.slice(4, 8)),
+      actual: Array.from(buffer.slice(4, 6)),
       expected: version,
     })
 
     assert({
       given,
+      should: 'match the storage protocol',
+      actual: buffer.readInt8(6),
+      expected: protocol,
+    })
+
+    assert({
+      given,
       should: 'match the message',
-      actual: buffer.slice(8).toString(),
+      actual: buffer.slice(7).toString(),
       expected: message,
     })
   }
 
-  testGetData(PREFIX_POET, [0, 0, 0, 2], 'hello world')
-  testGetData(PREFIX_BARD, [0, 0, 0, 3], 'hello world 2')
-  testGetData(PREFIX_BARD, [0, 0, 2, 1], 'hello world')
-  testGetData(PREFIX_BARD, [0, 0, 0, 2], 'hello world 42')
+  testGetData(PREFIX_POET, [0, 2], StorageProtocol.IPFS, 'hello world')
+  testGetData(PREFIX_BARD, [0, 3], StorageProtocol.IPFS, 'hello world 2')
+  testGetData(PREFIX_BARD, [2, 1], StorageProtocol.IPFS, 'hello world')
+  testGetData(PREFIX_BARD, [0, 2], StorageProtocol.IPFS, 'hello world 42')
 
   {
-    const buffer = Buffer.from(getData(PREFIX_POET, [0, 1, 2, 3, 4])('message'), 'hex')
-
-    assert({
-      given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
-      should: 'succeed to parse prefix',
-      actual: buffer.slice(0, 4).toString(),
-      expected: PREFIX_POET,
-    })
-    assert({
-      given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
-      should: 'fail to parse version',
-      actual: equals(Array.from(buffer.slice(4, 8)), [0, 1, 2, 3, 4]),
-      expected: false,
-    })
-    assert({
-      given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
-      should: 'fail to parse message',
-      actual: equals(buffer.slice(8).toString(), 'message'),
-      expected: false,
-    })
-  }
-  {
-    const buffer = Buffer.from(getData('POE', [0, 1, 2, 3])('message'), 'hex')
-
     assert({
       given: 'a bitcoin-encoded Po.et data buffer with incorrect prefix length',
-      should: 'fail to parse prefix',
-      actual: equals(buffer.slice(0, 4).toString(), PREFIX_POET),
-      expected: false,
+      should: 'fail with error',
+      actual: Try(() => getData('TOO_LONG', [2, 3])(StorageProtocol.IPFS, 'message')),
+      expected: new Error(''),
     })
+
     assert({
       given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
-      should: 'fail to parse version',
-      actual: equals(Array.from(buffer.slice(4, 8)), [0, 1, 2, 3]),
-      expected: false,
-    })
-    assert({
-      given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
-      should: 'fail to parse message',
-      actual: equals(buffer.slice(8).toString(), 'message'),
-      expected: false,
+      should: 'fail with error',
+      actual: Try(() => getData(PREFIX_POET, [2, 3, 4])(StorageProtocol.IPFS, 'message')),
+      expected: new Error(''),
     })
   }
+
 })
