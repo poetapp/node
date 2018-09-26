@@ -8,12 +8,12 @@ import { Messaging } from 'Messaging/Messaging'
 import { BatchReaderConfiguration } from './BatchReaderConfiguration'
 import { ClaimController } from './ClaimController'
 import { DirectoryDAO } from './DirectoryDAO'
+import { Exchange } from './Exchange'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
-import { Exchange } from './Exchange'
 
 export class BatchReader {
   private readonly logger: Pino.Logger
@@ -26,7 +26,6 @@ export class BatchReader {
   private service: Service
 
   constructor(configuration: BatchReaderConfiguration) {
-    console.log("configuration ",configuration)
     this.configuration = configuration
     this.logger = createModuleLogger(configuration, __dirname)
   }
