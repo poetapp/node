@@ -175,14 +175,13 @@ describe('Bitcoin.dataToPoetAnchor', async should => {
     storageProtocol: StorageProtocol,
     ipfsDirectoryHash: string
   ) {
-    const data = poetAnchorToData(prefix, version)(storageProtocol, ipfsDirectoryHash)
-
     const expected: PoetAnchor = {
       prefix,
       version,
       storageProtocol,
       ipfsDirectoryHash,
     }
+    const data = poetAnchorToData(expected)
 
     assert({
       given: 'a hex string of a Po.et anchor',
