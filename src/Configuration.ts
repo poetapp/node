@@ -11,7 +11,7 @@ import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 const defaultMongodbUrl = 'mongodb://localhost:27017/poet'
 
 // Provide default value in defaultConfiguration for any new configuration options
-export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration {
+export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration, RabbitmqExchangeMessages {
   readonly rabbitmqUrl: string
   readonly mongodbUser: string
   readonly mongodbPassword: string
@@ -56,6 +56,18 @@ export interface BitcoinRPCConfiguration {
   readonly bitcoinPassword: string
 }
 
+export interface RabbitmqExchangeMessages {
+  readonly batchReaderReadNextDirectoryRequest: string
+  readonly batchReaderReadNextDirectorySuccess: string
+  readonly batchWriterCreateNextBatchRequest: string
+  readonly batchWriterCreateNextBatchSuccess: string
+  readonly newClaim: string
+  readonly claimIpfsHash: string
+  readonly ipfsHashTxId: string
+  readonly poetAnchorDownloaded: string
+  readonly claimsDownloaded: string
+}
+
 const defaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://localhost',
   mongodbUser: '',
@@ -93,6 +105,17 @@ const defaultConfiguration: Configuration = {
   readDirectoryIntervalInSeconds: 30,
 
   forceBlockHeight: undefined,
+
+  batchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
+  batchReaderReadNextDirectorySuccess: 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
+  batchWriterCreateNextBatchRequest: 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
+  batchWriterCreateNextBatchSuccess: 'BATCH_WRITER::CREATE_NEXT_BATCH_SUCCESS',
+  newClaim: 'NEW_CLAIM',
+  claimIpfsHash: 'CLAIM_IPFS_HASH',
+  ipfsHashTxId: 'IPFS_HASH_TX_ID',
+  poetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
+
+  claimsDownloaded: 'CLAIMS_DOWNLOADED',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
