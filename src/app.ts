@@ -15,6 +15,7 @@ import { loadConfigurationWithDefaults } from 'Configuration'
 import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
+import { Configuration } from './Configuration'
 
 const startStopNoop = {
   start: () => Promise.resolve(),
@@ -26,7 +27,7 @@ export async function app(localVars: any = {}) {
   console.log('')
   console.log('Loading Configuration...')
 
-  const configuration = loadConfigurationWithDefaults(localVars)
+  const configuration: Configuration = loadConfigurationWithDefaults(localVars)
 
   console.log('Switching to Structured Logging')
   console.log('Logging Level:', configuration.loggingLevel)
@@ -79,8 +80,10 @@ export async function app(localVars: any = {}) {
     dbUrl: configuration.mongodbUrl,
     ipfsUrl: configuration.ipfsUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
-    batchReaderReadNextDirectoryRequest: configuration.batchReaderReadNextDirectoryRequest,
-    batchReaderReadNextDirectorySuccess: configuration.batchReaderReadNextDirectorySuccess,
+    exchanges: {
+      batchReaderReadNextDirectoryRequest: configuration.exchangeBatchReaderReadNextDirectoryRequest,
+      batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
+    }
   })
   try {
     await batchReader.start()
