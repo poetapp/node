@@ -77,9 +77,6 @@ export class BatchReader {
       batchReaderReadNextDirectoryRequest: this.configuration.batchReaderReadNextDirectoryRequest,
     })
 
-    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue({
-      batchReaderReadNextDirectoryRequest: this.configuration.batchReaderReadNextDirectoryRequest,
-      batchReaderReadNextDirectorySuccess: this.configuration.batchReaderReadNextDirectorySuccess,
-    })
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }
