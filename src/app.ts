@@ -79,6 +79,8 @@ export async function app(localVars: any = {}) {
     dbUrl: configuration.mongodbUrl,
     ipfsUrl: configuration.ipfsUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
+    batchReaderReadNextDirectoryRequest: configuration.batchReaderReadNextDirectoryRequest,
+    batchReaderReadNextDirectorySuccess: configuration.batchReaderReadNextDirectorySuccess,
   })
   try {
     await batchReader.start()

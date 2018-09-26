@@ -1,9 +1,10 @@
 import { PoetBlockAnchor } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
+import { Exchange } from './Exchange'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { Exchange } from 'Messaging/Messages'
+// import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
@@ -13,21 +14,25 @@ export class Router {
   private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly claimController: ClaimController
+  private readonly exchange: Exchange
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
-    @inject('ClaimController') claimController: ClaimController
+    @inject('ClaimController') claimController: ClaimController,
+    @inject('Exchange') exchange: Exchange,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.claimController = claimController
+    this.exchange = exchange
   }
 
   async start() {
     await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
+
     await this.messaging.consume(
-      Exchange.BatchReaderReadNextDirectoryRequest,
+      this.exchange.batchReaderReadNextDirectoryRequest,
       this.onBatchReaderReadNextDirectoryRequest
     )
   }
@@ -64,7 +69,7 @@ export class Router {
       const result = await this.claimController.readNextDirectory()
       if (!result) return
       const { ipfsFileHashes, ipfsDirectoryHash } = result
-      await this.messaging.publish(Exchange.BatchReaderReadNextDirectorySuccess, { ipfsDirectoryHash, ipfsFileHashes })
+      await this.messaging.publish(this.exchange.batchReaderReadNextDirectorySuccess, { ipfsDirectoryHash, ipfsFileHashes })
       logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Read next directory success')
     } catch (error) {
       logger.error({ error }, 'Read next directory failure')
