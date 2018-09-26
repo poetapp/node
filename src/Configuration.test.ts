@@ -112,7 +112,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (should: any) => {
       newClaim: 'NEW_CLAIM',
       claimIpfsHash: 'CLAIM_IPFS_HASH',
       ipfsHashTxId: 'IPFS_HASH_TX_ID',
-      poetTimestampDownloaded: 'POET_TIMESTAMP_DOWNLOADED',
+      poetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
       claimsDownloaded: 'CLAIMS_DOWNLOADED',
     }
 
@@ -137,7 +137,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (should: any) => {
       NEW_CLAIM: 'override',
       CLAIM_IPFS_HASH: 'override',
       IPFS_HASH_TX_ID: 'override',
-      POET_TIMESTAMP_DOWNLOADED: 'override',
+      POET_ANCHOR_DOWNLOADED: 'override',
       CLAIMS_DOWNLOADED: 'override',
     }
 
@@ -149,7 +149,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (should: any) => {
       newClaim: 'override',
       claimIpfsHash: 'override',
       ipfsHashTxId: 'override',
-      poetTimestampDownloaded: 'override',
+      poetAnchorDownloaded: 'override',
       claimsDownloaded: 'override',
     }
 
