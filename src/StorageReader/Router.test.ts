@@ -30,16 +30,26 @@ describe('StorageReader Router', async (should: any) => {
     batchReaderReadNextDirectorySuccess: '',
   }
 
+  const exchangeConfigurationMessaging: ExchangeConfiguration = {
+    poetAnchorDownloaded: '',
+    claimsDownloaded: '',
+  }
+
   const claimController = new ClaimController(
     Pino(),
     new Db('poet', server),
-    new Messaging(),
+    new Messaging('', exchangeConfigurationMessaging),
     new IPFS(IPFSConfiguration),
     claimControllerConfiguration
   )
 
   {
-    const router = new Router(Pino(), new Messaging(), claimController, exchangeConfiguration)
+    const router = new Router(
+      Pino(),
+      new Messaging('', exchangeConfigurationMessaging),
+      claimController,
+      exchangeConfiguration
+    )
 
     assert({
       given: 'the new instance of Router',
