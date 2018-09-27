@@ -87,7 +87,7 @@
     "sinon": "6.3.4",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.6.0",
-    "travis-deploy-once": "5.0.8",
+    "travis-deploy-once": "5.0.9",
     "typescript": "3.0.3"
   }
 }
