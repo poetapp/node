@@ -19,7 +19,17 @@ describe('API Router', async (should: any) => {
     poetAnchorDownloaded: '',
     claimsDownloaded: '',
   }
-  const workController = new WorkController(Pino(), new Db('poet', server), new Messaging('', exchangeConfiguration))
+  const exchangeConfigurationMessaging: ExchangeConfiguration = {
+    poetAnchorDownloaded: '',
+    claimsDownloaded: '',
+    newClaim: '',
+  }
+  const workController = new WorkController(
+    Pino(),
+    new Db('poet', server),
+    new Messaging('', exchangeConfigurationMessaging),
+    exchangeConfiguration
+  )
 
   {
     const router = new Router(Pino(), configuration, workController)
