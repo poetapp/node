@@ -24,16 +24,26 @@ describe('Storage Router', async (should: any) => {
     newClaim: '',
   }
 
+  const exchangeConfigurationMessaging: ExchangeConfiguration = {
+    poetAnchorDownloaded: '',
+    claimsDownloaded: '',
+  }
+
   const claimController = new ClaimController(
     Pino(),
     new Db('poet', server),
-    new Messaging(),
+    new Messaging('', exchangeConfigurationMessaging),
     new IPFS(IPFSConfiguration),
     exchangeConfiguration
   )
 
   {
-    const router = new Router(Pino(), new Messaging(), claimController, exchangeConfiguration)
+    const router = new Router(
+      Pino(),
+      new Messaging('', exchangeConfigurationMessaging),
+      claimController,
+      exchangeConfiguration
+    )
 
     assert({
       given: 'the new instance of Router',

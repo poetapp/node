@@ -22,8 +22,18 @@ describe('View Router', async (should: any) => {
     batchWriterCreateNextBatchSuccess: '',
   }
 
+  const exchangeConfigurationMessaging: ExchangeConfiguration = {
+    poetAnchorDownloaded: '',
+    claimsDownloaded: '',
+  }
+
   {
-    const router = new Router(Pino(), new Messaging(), workController, exchangeConfiguration)
+    const router = new Router(
+      Pino(),
+      new Messaging('', exchangeConfigurationMessaging),
+      workController,
+      exchangeConfiguration
+    )
 
     assert({
       given: 'the new instance of Router',

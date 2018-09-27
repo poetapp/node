@@ -49,6 +49,11 @@ export async function app(localVars: any = {}) {
     port: configuration.apiPort,
     dbUrl: configuration.mongodbUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
+    exchanges: {
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
+      newClaim: configuration.exchangeNewClaim,
+    },
   })
 
   try {
@@ -68,6 +73,8 @@ export async function app(localVars: any = {}) {
           claimIpfsHash: configuration.exchangeClaimIpfsHash,
           batchWriterCreateNextBatchRequest: configuration.exchangeBatchWriterCreateNextBatchRequest,
           batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+          poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+          claimsDownloaded: configuration.exchangeClaimsDownloaded,
         },
       })
     : startStopNoop
@@ -87,6 +94,8 @@ export async function app(localVars: any = {}) {
     exchanges: {
       batchReaderReadNextDirectoryRequest: configuration.exchangeBatchReaderReadNextDirectoryRequest,
       batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
     },
   })
   try {
@@ -105,6 +114,8 @@ export async function app(localVars: any = {}) {
       ipfsHashTxId: configuration.exchangeIpfsHashTxId,
       batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
       batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
     },
   })
   try {
@@ -124,6 +135,8 @@ export async function app(localVars: any = {}) {
     downloadTimeoutInSeconds: configuration.downloadTimeoutInSeconds,
     exchanges: {
       batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
     },
   })
   try {
@@ -140,6 +153,8 @@ export async function app(localVars: any = {}) {
     exchanges: {
       claimIpfsHash: configuration.exchangeClaimIpfsHash,
       newClaim: configuration.exchangeNewClaim,
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
     },
   })
 
@@ -165,6 +180,8 @@ export async function app(localVars: any = {}) {
         exchanges: {
           ipfsHashTxId: configuration.exchangeIpfsHashTxId,
           batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+          poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+          claimsDownloaded: configuration.exchangeClaimsDownloaded,
         },
       })
     : startStopNoop
@@ -189,6 +206,10 @@ export async function app(localVars: any = {}) {
     minimumBlockHeight: configuration.minimumBlockHeight,
     forceBlockHeight: configuration.forceBlockHeight,
     blockchainReaderIntervalInSeconds: configuration.blockchainReaderIntervalInSeconds,
+    exchanges: {
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
+    },
   })
   try {
     await blockchainReader.start()

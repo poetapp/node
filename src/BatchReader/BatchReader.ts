@@ -1,6 +1,7 @@
 import { Container } from 'inversify'
 import { Db, MongoClient, Collection } from 'mongodb'
 import * as Pino from 'pino'
+import { pick } from 'ramda'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
@@ -35,7 +36,8 @@ export class BatchReader {
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await this.mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
     this.initializeContainer()
