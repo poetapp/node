@@ -1,5 +1,4 @@
 import { PoetAnchor, StorageProtocol } from '@po.et/poet-js'
-import { equals } from 'ramda'
 import { describe, Try } from 'riteway'
 
 import { poetAnchorToData } from './Bitcoin'
