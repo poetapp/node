@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "reviewers": ["poetapp/quality-engineering"],
+  "schedule": [
+    "after 2am",
+    "before 4am"
+  ],
+  "patch": {
+    "automerge": true
+  },
+  "devDependencies": {
+    "minor": {
+      "automerge": true
+    }
+  }
+}
