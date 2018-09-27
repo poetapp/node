@@ -69,14 +69,14 @@ describe('Bitcoin.getData', async should => {
       given: 'a bitcoin-encoded Po.et data buffer with incorrect prefix length',
       should: 'fail with error',
       actual: Try(() => poetAnchorToData({ ...poetAnchor, prefix: 'TOO_LONG' })),
-      expected: new Error(''),
+      expected: new Error('Prefix should be a string of length 4'),
     })
 
     assert({
       given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
       should: 'fail with error',
       actual: Try(() => poetAnchorToData({ ...poetAnchor, version: [2, 3, 4] })),
-      expected: new Error(''),
+      expected: new Error('Version should be an array of length 2'),
     })
   }
 })
