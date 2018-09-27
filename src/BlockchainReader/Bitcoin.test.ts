@@ -7,90 +7,86 @@ import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
 import { anchorPrefixAndVersionMatch, blockToPoetAnchors, dataToPoetAnchor } from './Bitcoin'
 
-import * as TestBlock from './TestData/block-00000000000151360aad32397ff1cf7dd303bed163b0ef425e71a53ccdec7312.json'
+import * as TestBlock from './TestData/block-0000000070746b06bbec07a7cd35e0c6d47bfa4e2544a6a1d2aa6efc49d47679.json'
 
-// describe('Bitcoin.blockToPoetAnchors', async should => {
-//   const { assert } = should()
-//
-//   assert({
-//     given: 'testnet block 1356137',
-//     should: 'satisfy basic integrity checks',
-//     actual: validateTestBlockIntegrity(TestBlock),
-//     expected: true,
-//   })
-//
-//   const ipfsDirectoryHashes = [
-//     'QmSGQKnfG98KrpxNpZMhNyAKkvxudGqKhGeGv13zSXLQwz',
-//     'QmSicKkyyb5NJqSJ9EaaMJWQvqa4e3CX7psjjnRxvgfodv',
-//     'QmTrtzm1fvysZgsGhJicTrdJ1vSbi3UuLWBiHAMYBkcQfL',
-//     'QmaXCvSA4noYsJruubE8cYUtu3gPAmgL9aosFzDdrsviWJ',
-//     'QmYMHmt9H37gqwDMd4yYrt99cDRJxHpwVATKWYGbYNWncp',
-//   ]
-//
-//   {
-//     const poetAnchors = blockToPoetAnchors(TestBlock as any) // as any: see footer note
-//
-//     const isBardAnchor = (poetAnchor: PoetBlockAnchor) => poetAnchor.prefix === PREFIX_BARD
-//     const anchorIsVersion0003 = (poetAnchor: PoetBlockAnchor) => equals(poetAnchor.version, [0, 0, 0, 3])
-//     const anchorIsBlockHash = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHash === TestBlock.hash
-//     const anchorIsBlockHeight = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHeight === TestBlock.height
-//     const anchorHasUnexpectedIpfsHash = (poetAnchor: PoetBlockAnchor) =>
-//       !ipfsDirectoryHashes.includes(poetAnchor.ipfsDirectoryHash)
-//
-//     const anchorsIpfsHashes = poetAnchors.map(poetAnchor => poetAnchor.ipfsDirectoryHash)
-//
-//     const given = 'a test block with Po.et anchors'
-//
-//     assert({
-//       given,
-//       should: 'return 5 Po.et Anchors',
-//       actual: poetAnchors.length,
-//       expected: 5,
-//     })
-//
-//     assert({
-//       given,
-//       should: 'return prefix BARD anchors only',
-//       actual: poetAnchors.filter(isBardAnchor).length,
-//       expected: poetAnchors.length,
-//     })
-//
-//     assert({
-//       given,
-//       should: 'return version 0.0.0.3 anchors only',
-//       actual: poetAnchors.filter(anchorIsVersion0003).length,
-//       expected: poetAnchors.length,
-//     })
-//
-//     assert({
-//       given,
-//       should: 'all returned elements should have the blockHash set correctly',
-//       actual: poetAnchors.filter(anchorIsBlockHash).length,
-//       expected: poetAnchors.length,
-//     })
-//
-//     assert({
-//       given,
-//       should: 'all returned elements should have the blockHeight set correctly',
-//       actual: poetAnchors.filter(anchorIsBlockHeight).length,
-//       expected: poetAnchors.length,
-//     })
-//
-//     assert({
-//       given,
-//       should: 'all returned elements should have an expected IPFS Directory Hash',
-//       actual: poetAnchors.find(anchorHasUnexpectedIpfsHash),
-//       expected: undefined,
-//     })
-//
-//     assert({
-//       given,
-//       should: 'all expected IPFS Directory hashes should be in the returned anchors',
-//       actual: equals(anchorsIpfsHashes.sort(localeCompare), ipfsDirectoryHashes.sort(localeCompare)),
-//       expected: true,
-//     })
-//   }
-// })
+describe('Bitcoin.blockToPoetAnchors', async should => {
+  const { assert } = should()
+
+  assert({
+    given: 'testnet block 1356137',
+    should: 'satisfy basic integrity checks',
+    actual: validateTestBlockIntegrity(TestBlock),
+    expected: true,
+  })
+
+  const ipfsDirectoryHashes = [
+    'QmaKtaPqfWvss2ndhGdcLRc9uGcLvUUyuZeGcrDZWN58Zi',
+  ]
+
+  {
+    const poetAnchors = blockToPoetAnchors(TestBlock as any) // as any: see footer note
+
+    const isBardAnchor = (poetAnchor: PoetBlockAnchor) => poetAnchor.prefix === PREFIX_BARD
+    const anchorIsVersion03 = (poetAnchor: PoetBlockAnchor) => equals(poetAnchor.version, [0, 3])
+    const anchorIsBlockHash = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHash === TestBlock.hash
+    const anchorIsBlockHeight = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHeight === TestBlock.height
+    const anchorHasUnexpectedIpfsHash = (poetAnchor: PoetBlockAnchor) =>
+      !ipfsDirectoryHashes.includes(poetAnchor.ipfsDirectoryHash)
+
+    const anchorsIpfsHashes = poetAnchors.map(poetAnchor => poetAnchor.ipfsDirectoryHash)
+
+    const given = 'a test block with Po.et anchors'
+
+    assert({
+      given,
+      should: 'return 1 Po.et Anchor',
+      actual: poetAnchors.length,
+      expected: 1,
+    })
+
+    assert({
+      given,
+      should: 'return prefix BARD anchors only',
+      actual: poetAnchors.filter(isBardAnchor).length,
+      expected: poetAnchors.length,
+    })
+
+    assert({
+      given,
+      should: 'return version 0.3 anchors only',
+      actual: poetAnchors.filter(anchorIsVersion03).length,
+      expected: poetAnchors.length,
+    })
+
+    assert({
+      given,
+      should: 'all returned elements should have the blockHash set correctly',
+      actual: poetAnchors.filter(anchorIsBlockHash).length,
+      expected: poetAnchors.length,
+    })
+
+    assert({
+      given,
+      should: 'all returned elements should have the blockHeight set correctly',
+      actual: poetAnchors.filter(anchorIsBlockHeight).length,
+      expected: poetAnchors.length,
+    })
+
+    assert({
+      given,
+      should: 'all returned elements should have an expected IPFS Directory Hash',
+      actual: poetAnchors.find(anchorHasUnexpectedIpfsHash),
+      expected: undefined,
+    })
+
+    assert({
+      given,
+      should: 'all expected IPFS Directory hashes should be in the returned anchors',
+      actual: equals(anchorsIpfsHashes.sort(localeCompare), ipfsDirectoryHashes.sort(localeCompare)),
+      expected: true,
+    })
+  }
+})
 
 describe('Bitcoin.getMatchingAnchors', async should => {
   const { assert } = should('return only the ones matching prefix and version')
@@ -201,7 +197,7 @@ describe('Bitcoin.dataToPoetAnchor', async should => {
 const validateTestBlockIntegrity = allPass([
   (block: any) => block.tx,
   (block: any) => Array.isArray(block.tx),
-  (block: any) => block.tx.length === 3517,
+  (block: any) => block.tx.length === 146,
 ])
 
 const localeCompare = (a: string, b: string) => a.localeCompare(b)
