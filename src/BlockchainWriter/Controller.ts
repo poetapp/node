@@ -56,7 +56,7 @@ export class Controller {
     try {
       await this.anchorIPFSDirectoryHash(ipfsDirectoryHash)
     } catch (exception) {
-      logger.warn(
+      logger.error(
         {
           ipfsDirectoryHash,
           exception,
@@ -73,6 +73,9 @@ export class Controller {
     logger.debug({ ipfsDirectoryHash }, 'Anchoring IPFS Hash')
 
     const poetAnchor = ipfsDirectoryHashToPoetAnchor(ipfsDirectoryHash)
+
+    logger.trace({ ipfsDirectoryHash, poetAnchor }, 'Anchoring IPFS Hash')
+
     const data = poetAnchorToData(poetAnchor)
     const txId = await anchorData(data)
 
