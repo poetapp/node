@@ -12,7 +12,7 @@ export class Messaging {
   private channel: Channel
   private readonly exchanges: ExchangeConfiguration
 
-  constructor(connectionUrl = 'amqp://localhost', exchanges: ExchangeConfiguration) {
+  constructor(connectionUrl: string, exchanges: ExchangeConfiguration) {
     this.connectionUrl = connectionUrl
     this.exchanges = exchanges
   }
