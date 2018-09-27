@@ -11,6 +11,7 @@ import { BlockchainWriterConfiguration } from './BlockchainWriterConfiguration'
 import { Controller } from './Controller'
 import { ControllerConfiguration } from './ControllerConfiguration'
 import { DAO } from './DAO'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
@@ -85,6 +86,7 @@ const createContainer = (
     timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
   })
   container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(configuration)
+  container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(configuration.exchanges)
 
   return container
 }

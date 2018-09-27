@@ -7,6 +7,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
@@ -79,6 +80,8 @@ export class StorageReader {
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds,
     })
+
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 
   private async createIndices() {

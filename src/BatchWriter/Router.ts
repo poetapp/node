@@ -3,8 +3,8 @@ import * as Pino from 'pino'
 
 import { NoMoreEntriesException } from 'Exceptions'
 import { childWithFileName } from 'Helpers/Logging'
-import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 import { ClaimController } from './ClaimController'
 
@@ -13,20 +13,26 @@ export class Router {
   private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly claimController: ClaimController
+  private readonly exchange: ExchangeConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
-    @inject('ClaimController') claimController: ClaimController
+    @inject('ClaimController') claimController: ClaimController,
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.claimController = claimController
+    this.exchange = exchange
   }
 
   async start() {
-    await this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
-    await this.messaging.consume(Exchange.BatchWriterCreateNextBatchRequest, this.onBatchWriterCreateNextBatchRequest)
+    await this.messaging.consume(this.exchange.claimIpfsHash, this.onClaimIPFSHash)
+    await this.messaging.consume(
+      this.exchange.batchWriterCreateNextBatchRequest,
+      this.onBatchWriterCreateNextBatchRequest
+    )
   }
 
   async stop() {
@@ -61,7 +67,7 @@ export class Router {
     logger.trace('Create next batch request')
     try {
       const { ipfsFileHashes, ipfsDirectoryHash } = await this.claimController.createNextBatch()
-      await this.messaging.publish(Exchange.BatchWriterCreateNextBatchSuccess, {
+      await this.messaging.publish(this.exchange.batchWriterCreateNextBatchSuccess, {
         ipfsFileHashes,
         ipfsDirectoryHash,
       })

@@ -5,6 +5,7 @@ import * as Pino from 'pino'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { ViewConfiguration } from './ViewConfiguration'
 import { WorkController } from './WorkController'
@@ -53,5 +54,6 @@ export class View {
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<WorkController>('WorkController').to(WorkController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }

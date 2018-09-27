@@ -4,8 +4,8 @@ import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { secondsToMiliseconds } from 'Helpers/Time'
-import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Messaging } from 'Messaging/Messaging'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 import { ServiceConfiguration } from './ServiceConfiguration'
 
