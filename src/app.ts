@@ -11,11 +11,10 @@ import { BatchReader } from 'BatchReader/BatchReader'
 import { BatchWriter } from 'BatchWriter/BatchWriter'
 import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
-import { loadConfigurationWithDefaults } from 'Configuration'
+import { loadConfigurationWithDefaults, Configuration } from 'Configuration'
 import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
-import { Configuration } from './Configuration'
 
 const startStopNoop = {
   start: () => Promise.resolve(),
@@ -65,6 +64,11 @@ export async function app(localVars: any = {}) {
         dbUrl: configuration.mongodbUrl,
         ipfsUrl: configuration.ipfsUrl,
         rabbitmqUrl: configuration.rabbitmqUrl,
+        exchanges: {
+          claimIpfsHash: configuration.exchangeClaimIpfsHash,
+          batchWriterCreateNextBatchRequest: configuration.exchangeBatchWriterCreateNextBatchRequest,
+          batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+        },
       })
     : startStopNoop
 
@@ -83,7 +87,7 @@ export async function app(localVars: any = {}) {
     exchanges: {
       batchReaderReadNextDirectoryRequest: configuration.exchangeBatchReaderReadNextDirectoryRequest,
       batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
-    }
+    },
   })
   try {
     await batchReader.start()
@@ -95,6 +99,13 @@ export async function app(localVars: any = {}) {
     ...loggingConfiguration,
     dbUrl: configuration.mongodbUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
+    exchanges: {
+      newClaim: configuration.exchangeNewClaim,
+      claimIpfsHash: configuration.exchangeClaimIpfsHash,
+      ipfsHashTxId: configuration.exchangeIpfsHashTxId,
+      batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
+      batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+    },
   })
   try {
     await view.start()
@@ -111,6 +122,9 @@ export async function app(localVars: any = {}) {
     downloadRetryDelayInMinutes: configuration.downloadRetryDelayInMinutes,
     downloadMaxAttempts: configuration.downloadMaxAttempts,
     downloadTimeoutInSeconds: configuration.downloadTimeoutInSeconds,
+    exchanges: {
+      batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
+    },
   })
   try {
     await storage.start()
@@ -123,6 +137,10 @@ export async function app(localVars: any = {}) {
     dbUrl: configuration.mongodbUrl,
     ipfsUrl: configuration.ipfsUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
+    exchanges: {
+      claimIpfsHash: configuration.exchangeClaimIpfsHash,
+      newClaim: configuration.exchangeNewClaim,
+    },
   })
 
   try {
@@ -144,6 +162,10 @@ export async function app(localVars: any = {}) {
         bitcoinNetwork: configuration.bitcoinNetwork,
         bitcoinUsername: configuration.bitcoinUsername,
         bitcoinPassword: configuration.bitcoinPassword,
+        exchanges: {
+          ipfsHashTxId: configuration.exchangeIpfsHashTxId,
+          batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+        },
       })
     : startStopNoop
 

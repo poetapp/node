@@ -7,6 +7,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { BatchWriterConfiguration } from './BatchWriterConfiguration'
 import { ClaimController } from './ClaimController'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileDAO } from './FileDAO'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
@@ -75,5 +76,7 @@ export class BatchWriter {
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       batchCreationIntervalInSeconds: this.configuration.batchCreationIntervalInSeconds,
     })
+
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }

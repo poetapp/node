@@ -3,8 +3,8 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Messaging } from 'Messaging/Messaging'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 import { ClaimController } from './ClaimController'
 
