@@ -1,7 +1,7 @@
 import { PoetAnchor, StorageProtocol } from '@po.et/poet-js'
 import { describe, Try } from 'riteway'
 
-import { poetAnchorToData } from './Bitcoin'
+import { IllegalPrefixLength, IllegalVersionLength, poetAnchorToData } from './Bitcoin'
 
 import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
@@ -65,18 +65,34 @@ describe('Bitcoin.getData', async should => {
       ipfsDirectoryHash: 'ipfsDirectoryHash',
     }
 
+    const tryPrefix = Try(poetAnchorToData, { ...poetAnchor, prefix: 'TOO_LONG' })
+
     assert({
       given: 'a bitcoin-encoded Po.et data buffer with incorrect prefix length',
-      should: 'fail with error',
-      actual: Try(() => poetAnchorToData({ ...poetAnchor, prefix: 'TOO_LONG' })),
-      expected: new Error('Prefix should be a string of length 4'),
+      should: 'fail with IllegalPrefixLength',
+      actual: tryPrefix instanceof Error,
+      expected: true,
+    })
+
+    assert({
+      given: 'a bitcoin-encoded Po.et data buffer with incorrect prefix length',
+      should: 'fail with IllegalPrefixLength',
+      actual: tryPrefix instanceof IllegalPrefixLength,
+      expected: true,
+    })
+
+    assert({
+      given: 'a bitcoin-encoded Po.et data buffer with incorrect prefix length',
+      should: 'fail with IllegalPrefixLength',
+      actual: tryPrefix instanceof IllegalVersionLength,
+      expected: false,
     })
 
     assert({
       given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
-      should: 'fail with error',
-      actual: Try(() => poetAnchorToData({ ...poetAnchor, version: [2, 3, 4] })),
-      expected: new Error('Version should be an array of length 2'),
+      should: 'fail with IllegalVersionLength',
+      actual: Try(poetAnchorToData, { ...poetAnchor, version: [2, 3, 4] }) instanceof IllegalVersionLength,
+      expected: true,
     })
   }
 })
