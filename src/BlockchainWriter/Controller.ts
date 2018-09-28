@@ -1,3 +1,4 @@
+import { PoetAnchor, StorageProtocol } from '@po.et/poet-js'
 import BitcoinCore = require('bitcoin-core')
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
@@ -6,7 +7,7 @@ import { childWithFileName } from 'Helpers/Logging'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
-import { getData } from './Bitcoin'
+import { poetAnchorToData } from './Bitcoin'
 import { ControllerConfiguration } from './ControllerConfiguration'
 import { DAO } from './DAO'
 
@@ -55,7 +56,7 @@ export class Controller {
     try {
       await this.anchorIPFSDirectoryHash(ipfsDirectoryHash)
     } catch (exception) {
-      logger.warn(
+      logger.error(
         {
           ipfsDirectoryHash,
           exception,
@@ -66,14 +67,16 @@ export class Controller {
   }
 
   private async anchorIPFSDirectoryHash(ipfsDirectoryHash: string): Promise<void> {
-    const { configuration, dao, messaging, anchorData } = this
+    const { dao, messaging, anchorData, ipfsDirectoryHashToPoetAnchor } = this
     const logger = this.logger.child({ method: 'anchorIPFSDirectoryHash' })
 
     logger.debug({ ipfsDirectoryHash }, 'Anchoring IPFS Hash')
 
-    const ipfsDirectoryHashToBitcoinData = getData(configuration.poetNetwork, configuration.poetVersion)
+    const poetAnchor = ipfsDirectoryHashToPoetAnchor(ipfsDirectoryHash)
 
-    const data = ipfsDirectoryHashToBitcoinData(ipfsDirectoryHash)
+    logger.trace({ ipfsDirectoryHash, poetAnchor }, 'Anchoring IPFS Hash')
+
+    const data = poetAnchorToData(poetAnchor)
     const txId = await anchorData(data)
 
     await dao.setTransactionId(ipfsDirectoryHash, txId)
@@ -126,4 +129,11 @@ export class Controller {
 
     return sentTransaction
   }
+
+  private ipfsDirectoryHashToPoetAnchor = (ipfsDirectoryHash: string): PoetAnchor => ({
+    prefix: this.configuration.poetNetwork,
+    version: this.configuration.poetVersion,
+    storageProtocol: StorageProtocol.IPFS,
+    ipfsDirectoryHash,
+  })
 }
