@@ -4,9 +4,9 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 
 @injectable()
@@ -16,18 +16,21 @@ export class ClaimController {
   private readonly collection: Collection
   private readonly messaging: Messaging
   private readonly ipfs: IPFS
+  private readonly exchange: ExchangeConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
-    @inject('IPFS') ipfs: IPFS
+    @inject('IPFS') ipfs: IPFS,
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('storageWriter')
     this.messaging = messaging
     this.ipfs = ipfs
+    this.exchange = exchange
   }
 
   async create(claim: Claim): Promise<void> {
@@ -43,7 +46,7 @@ export class ClaimController {
       claimId: claim.id,
       ipfsFileHash,
     })
-    await this.messaging.publish(Exchange.ClaimIPFSHash, {
+    await this.messaging.publish(this.exchange.claimIpfsHash, {
       claimId: claim.id,
       ipfsFileHash,
     })

@@ -4,8 +4,9 @@ import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
+
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 interface WorksFilters {
   readonly publicKey?: string
@@ -28,12 +29,19 @@ export class WorkController {
   private readonly db: Db
   private readonly collection: Collection
   private readonly messaging: Messaging
+  private readonly exchange: ExchangeConfiguration
 
-  constructor(@inject('Logger') logger: Pino.Logger, @inject('DB') db: Db, @inject('Messaging') messaging: Messaging) {
+  constructor(
+    @inject('Logger') logger: Pino.Logger,
+    @inject('DB') db: Db,
+    @inject('Messaging') messaging: Messaging,
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+  ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('works')
     this.messaging = messaging
+    this.exchange = exchange
   }
 
   async getById(id: string): Promise<any> {
@@ -57,6 +65,6 @@ export class WorkController {
   async create(work: Work): Promise<void> {
     this.logger.trace({ method: 'create', work }, 'Creating Work')
     // TODO: verify id, publicKey, signature and createdDate
-    await this.messaging.publish(Exchange.NewClaim, work)
+    await this.messaging.publish(this.exchange.newClaim, work)
   }
 }

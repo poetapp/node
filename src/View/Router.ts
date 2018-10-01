@@ -4,9 +4,9 @@ import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { ClaimIPFSHashPair } from 'Interfaces'
-import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { WorkController } from './WorkController'
 
 @injectable()
@@ -14,28 +14,34 @@ export class Router {
   private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly workController: WorkController
+  private readonly exchange: ExchangeConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
-    @inject('WorkController') workController: WorkController
+    @inject('WorkController') workController: WorkController,
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.workController = workController
+    this.exchange = exchange
   }
 
   async start() {
-    await this.messaging.consume(Exchange.NewClaim, this.onNewClaim)
-    await this.messaging.consume(Exchange.ClaimIPFSHash, this.onClaimIPFSHash)
-    await this.messaging.consume(Exchange.IPFSHashTxId, this.onIPFSHashTxId)
+    await this.messaging.consume(this.exchange.newClaim, this.onNewClaim)
+    await this.messaging.consume(this.exchange.claimIpfsHash, this.onClaimIPFSHash)
+    await this.messaging.consume(this.exchange.ipfsHashTxId, this.onIPFSHashTxId)
     await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
     await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
     await this.messaging.consume(
-      Exchange.BatchReaderReadNextDirectorySuccess,
+      this.exchange.batchReaderReadNextDirectorySuccess,
       this.onBatchReaderReadNextDirectorySuccess
     )
-    await this.messaging.consume(Exchange.BatchWriterCreateNextBatchSuccess, this.onBatchWriterCreateNextBatchSuccess)
+    await this.messaging.consume(
+      this.exchange.batchWriterCreateNextBatchSuccess,
+      this.onBatchWriterCreateNextBatchSuccess
+    )
   }
 
   async stop() {

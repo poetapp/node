@@ -4,15 +4,17 @@ import { Connection, connect, Channel } from 'amqplib'
 
 import { ClaimIPFSHashPair, isClaimIPFSHashPair } from 'Interfaces'
 
-import { Exchange } from './Messages'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export class Messaging {
   private readonly connectionUrl: string
   private connection: Connection
   private channel: Channel
+  private readonly exchanges: ExchangeConfiguration
 
-  constructor(connectionUrl?: string) {
-    this.connectionUrl = connectionUrl || 'amqp://localhost'
+  constructor(connectionUrl: string, exchanges: ExchangeConfiguration) {
+    this.connectionUrl = connectionUrl
+    this.exchanges = exchanges
   }
 
   start = async () => {
@@ -55,11 +57,11 @@ export class Messaging {
 
   // TODO: move these business-specific functions to a different file. See https://github.com/poetapp/node/issues/66
   publishPoetBlockAnchorsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
-    return this.publish(Exchange.PoetAnchorDownloaded, poetBlockAnchors)
+    return this.publish(this.exchanges.poetAnchorDownloaded, poetBlockAnchors)
   }
 
   consumeBlockAnchorsDownloaded = async (consume: (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => void) => {
-    await this.consume(Exchange.PoetAnchorDownloaded, (message: any) => {
+    await this.consume(this.exchanges.poetAnchorDownloaded, (message: any) => {
       const messageContent = message.content.toString()
       const poetBlockAnchors = JSON.parse(messageContent)
 
@@ -86,11 +88,11 @@ export class Messaging {
   }
 
   publishClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    return this.publish(Exchange.ClaimsDownloaded, claimIPFSHashPairs)
+    return this.publish(this.exchanges.claimsDownloaded, claimIPFSHashPairs)
   }
 
   consumeClaimsDownloaded = async (consume: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => void) => {
-    await this.consume(Exchange.ClaimsDownloaded, (message: any) => {
+    await this.consume(this.exchanges.claimsDownloaded, (message: any) => {
       const messageContent = message.content.toString()
       const claimIPFSHashPairs = JSON.parse(messageContent)
 

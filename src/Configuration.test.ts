@@ -105,15 +105,15 @@ describe('src/Configuration RabbitmqExchangeMessages', async (should: any) => {
 
   {
     const defaultValues = {
-      batchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
-      batchReaderReadNextDirectorySuccess: 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
-      batchWriterCreateNextBatchRequest: 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
-      batchWriterCreateNextBatchSuccess: 'BATCH_WRITER::CREATE_NEXT_BATCH_SUCCESS',
-      newClaim: 'NEW_CLAIM',
-      claimIpfsHash: 'CLAIM_IPFS_HASH',
-      ipfsHashTxId: 'IPFS_HASH_TX_ID',
-      poetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
-      claimsDownloaded: 'CLAIMS_DOWNLOADED',
+      exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
+      exchangeBatchReaderReadNextDirectorySuccess: 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
+      exchangeBatchWriterCreateNextBatchRequest: 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
+      exchangeBatchWriterCreateNextBatchSuccess: 'BATCH_WRITER::CREATE_NEXT_BATCH_SUCCESS',
+      exchangeNewClaim: 'NEW_CLAIM',
+      exchangeClaimIpfsHash: 'CLAIM_IPFS_HASH',
+      exchangeIpfsHashTxId: 'IPFS_HASH_TX_ID',
+      exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
+      exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
     }
 
     const keys = Object.keys(defaultValues)
@@ -130,27 +130,27 @@ describe('src/Configuration RabbitmqExchangeMessages', async (should: any) => {
 
   {
     const overrideValues = {
-      BATCH_READER_READ_NEXT_DIRECTORY_REQUEST: 'override',
-      BATCH_READER_READ_NEXT_DIRECTORY_SUCCESS: 'override',
-      BATCH_WRITER_CREATE_NEXT_BATCH_REQUEST: 'override',
-      BATCH_WRITER_CREATE_NEXT_BATCH_SUCCESS: 'override',
-      NEW_CLAIM: 'override',
-      CLAIM_IPFS_HASH: 'override',
-      IPFS_HASH_TX_ID: 'override',
-      POET_ANCHOR_DOWNLOADED: 'override',
-      CLAIMS_DOWNLOADED: 'override',
+      EXCHANGE_BATCH_READER_READ_NEXT_DIRECTORY_REQUEST: 'override',
+      EXCHANGE_BATCH_READER_READ_NEXT_DIRECTORY_SUCCESS: 'override',
+      EXCHANGE_BATCH_WRITER_CREATE_NEXT_BATCH_REQUEST: 'override',
+      EXCHANGE_BATCH_WRITER_CREATE_NEXT_BATCH_SUCCESS: 'override',
+      EXCHANGE_NEW_CLAIM: 'override',
+      EXCHANGE_CLAIM_IPFS_HASH: 'override',
+      EXCHANGE_IPFS_HASH_TX_ID: 'override',
+      EXCHANGE_POET_ANCHOR_DOWNLOADED: 'override',
+      EXCHANGE_CLAIMS_DOWNLOADED: 'override',
     }
 
     const expected = {
-      batchReaderReadNextDirectoryRequest: 'override',
-      batchReaderReadNextDirectorySuccess: 'override',
-      batchWriterCreateNextBatchRequest: 'override',
-      batchWriterCreateNextBatchSuccess: 'override',
-      newClaim: 'override',
-      claimIpfsHash: 'override',
-      ipfsHashTxId: 'override',
-      poetAnchorDownloaded: 'override',
-      claimsDownloaded: 'override',
+      exchangeBatchReaderReadNextDirectoryRequest: 'override',
+      exchangeBatchReaderReadNextDirectorySuccess: 'override',
+      exchangeBatchWriterCreateNextBatchRequest: 'override',
+      exchangeBatchWriterCreateNextBatchSuccess: 'override',
+      exchangeNewClaim: 'override',
+      exchangeClaimIpfsHash: 'override',
+      exchangeIpfsHashTxId: 'override',
+      exchangePoetAnchorDownloaded: 'override',
+      exchangeClaimsDownloaded: 'override',
     }
 
     const keys = Object.keys(expected)

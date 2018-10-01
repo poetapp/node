@@ -5,6 +5,7 @@ import { describe } from 'riteway'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
@@ -25,16 +26,30 @@ describe('StorageReader Router', async (should: any) => {
     downloadMaxAttempts: 1,
   }
 
+  const exchangeConfiguration: ExchangeConfiguration = {
+    batchReaderReadNextDirectorySuccess: '',
+  }
+
+  const exchangeConfigurationMessaging: ExchangeConfiguration = {
+    poetAnchorDownloaded: '',
+    claimsDownloaded: '',
+  }
+
   const claimController = new ClaimController(
     Pino(),
     new Db('poet', server),
-    new Messaging(),
+    new Messaging('', exchangeConfigurationMessaging),
     new IPFS(IPFSConfiguration),
     claimControllerConfiguration
   )
 
   {
-    const router = new Router(Pino(), new Messaging(), claimController)
+    const router = new Router(
+      Pino(),
+      new Messaging('', exchangeConfigurationMessaging),
+      claimController,
+      exchangeConfiguration
+    )
 
     assert({
       given: 'the new instance of Router',

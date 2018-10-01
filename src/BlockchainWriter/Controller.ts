@@ -4,12 +4,12 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { poetAnchorToData } from './Bitcoin'
 import { ControllerConfiguration } from './ControllerConfiguration'
 import { DAO } from './DAO'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 @injectable()
 export class Controller {
@@ -18,19 +18,22 @@ export class Controller {
   private readonly messaging: Messaging
   private readonly bitcoinCore: BitcoinCore
   private readonly configuration: ControllerConfiguration
+  private readonly exchange: ExchangeConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DAO') dao: DAO,
     @inject('Messaging') messaging: Messaging,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
-    @inject('ClaimControllerConfiguration') configuration: ControllerConfiguration
+    @inject('ClaimControllerConfiguration') configuration: ControllerConfiguration,
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.bitcoinCore = bitcoinCore
     this.configuration = configuration
     this.dao = dao
+    this.exchange = exchange
   }
 
   async requestTimestamp(ipfsDirectoryHash: string): Promise<void> {
@@ -81,7 +84,7 @@ export class Controller {
 
     await dao.setTransactionId(ipfsDirectoryHash, txId)
 
-    await messaging.publish(Exchange.IPFSHashTxId, {
+    await messaging.publish(this.exchange.ipfsHashTxId, {
       ipfsDirectoryHash,
       txId,
     })

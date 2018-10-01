@@ -5,6 +5,7 @@ import { describe } from 'riteway'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Service } from './Service'
@@ -26,10 +27,15 @@ describe('StorageReader Router', async (should: any) => {
     downloadMaxAttempts: 1,
   }
 
+  const exchangeConfigurationMessaging: ExchangeConfiguration = {
+    poetAnchorDownloaded: '',
+    claimsDownloaded: '',
+  }
+
   const claimController = new ClaimController(
     Pino(),
     new Db('poet', server),
-    new Messaging(),
+    new Messaging('', exchangeConfigurationMessaging),
     new IPFS(IPFSConfiguration),
     claimControllerConfiguration
   )

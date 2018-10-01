@@ -2,6 +2,7 @@ import BitcoinCore = require('bitcoin-core')
 import { injectable, Container } from 'inversify'
 import { Collection, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
+import { pick } from 'ramda'
 
 import { bitcoinRPCConfigurationToBitcoinCoreArguments } from 'Helpers/Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
@@ -11,6 +12,7 @@ import { BlockchainWriterConfiguration } from './BlockchainWriterConfiguration'
 import { Controller } from './Controller'
 import { ControllerConfiguration } from './ControllerConfiguration'
 import { DAO } from './DAO'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
@@ -77,7 +79,9 @@ const createContainer = (
 
   container.bind<Pino.Logger>('Logger').toConstantValue(logger)
   container.bind<Collection>('BlockchainWriterCollection').toConstantValue(blockchainWriterCollection)
-  container.bind<Messaging>('Messaging').toConstantValue(new Messaging(configuration.rabbitmqUrl))
+
+  const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
+  container.bind<Messaging>('Messaging').toConstantValue(new Messaging(configuration.rabbitmqUrl, exchangesMessaging))
   container
     .bind<BitcoinCore>('BitcoinCore')
     .toConstantValue(new BitcoinCore(bitcoinRPCConfigurationToBitcoinCoreArguments(configuration)))
@@ -85,6 +89,7 @@ const createContainer = (
     timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
   })
   container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(configuration)
+  container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(configuration.exchanges)
 
   return container
 }

@@ -1,6 +1,7 @@
 import { Container } from 'inversify'
 import { Db, MongoClient, Collection } from 'mongodb'
 import * as Pino from 'pino'
+import { pick } from 'ramda'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
@@ -8,6 +9,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { BatchReaderConfiguration } from './BatchReaderConfiguration'
 import { ClaimController } from './ClaimController'
 import { DirectoryDAO } from './DirectoryDAO'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
@@ -34,7 +36,8 @@ export class BatchReader {
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await this.mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
     this.initializeContainer()
@@ -74,5 +77,7 @@ export class BatchReader {
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       readNextDirectoryIntervalInSeconds: this.configuration.readNextDirectoryIntervalInSeconds,
     })
+
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }
