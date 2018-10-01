@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  rabbitmq:
+  rabbit:
     image: rabbitmq:3-management
     ports:
       - "15672:15672" # Allows access to the UI for this management image
