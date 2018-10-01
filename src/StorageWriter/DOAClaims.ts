@@ -22,12 +22,10 @@ export const throwIfClaimNotFound = (claim: Claim): Claim => {
 @injectable()
 export class DOAClaims {
   private readonly claims: Collection
-  private readonly errors: Collection
   private readonly maxStorageAttempts: number
 
   constructor(@inject('DB') db: Db, @inject('DOAClaims') configuration: DOAClaimsConfiguration) {
     this.claims = db.collection('storageWriterClaims')
-    this.errors = db.collection('storageWriterErrors')
     this.maxStorageAttempts = configuration.maxStorageAttempts
   }
 

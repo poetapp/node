@@ -15,6 +15,7 @@ import { loadConfigurationWithDefaults, Configuration } from 'Configuration'
 import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
+import { config } from 'bluebird';
 
 const startStopNoop = {
   start: () => Promise.resolve(),
@@ -150,11 +151,14 @@ export async function app(localVars: any = {}) {
     dbUrl: configuration.mongodbUrl,
     ipfsUrl: configuration.ipfsUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
+    uploadClaimIntervalInSeconds: configuration.uploadClaimIntervalInSeconds,
+    maxStorageAttempts: configuration.uploadClaimMaxAttempts,
     exchanges: {
       claimIpfsHash: configuration.exchangeClaimIpfsHash,
       newClaim: configuration.exchangeNewClaim,
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
+      storageWriterStoreNextClaim: configuration.exchangeStorageWriterStoreNextClaim
     },
   })
 
