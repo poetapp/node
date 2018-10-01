@@ -6,6 +6,7 @@ import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { APIConfiguration } from './APIConfiguration'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
@@ -30,7 +31,7 @@ export class API {
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await this.mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, this.configuration.exchanges)
     await this.messaging.start()
 
     this.initializeContainer()
@@ -57,5 +58,6 @@ export class API {
     this.container.bind<RouterConfiguration>('RouterConfiguration').toConstantValue({ port: this.configuration.port })
     this.container.bind<WorkController>('WorkController').to(WorkController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }

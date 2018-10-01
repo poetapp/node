@@ -1,12 +1,14 @@
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
+import { pick } from 'ramda'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
@@ -35,7 +37,8 @@ export class StorageReader {
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await this.mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
     this.initializeContainer()
@@ -79,6 +82,8 @@ export class StorageReader {
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds,
     })
+
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 
   private async createIndices() {
