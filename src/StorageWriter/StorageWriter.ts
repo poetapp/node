@@ -5,15 +5,25 @@ import { pick } from 'ramda'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
+import { LoggingConfiguration } from 'Configuration'
 
 import { ClaimController } from './ClaimController'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { IPFS } from './IPFS'
-import { IPFSConfiguration } from './IPFSConfiguration'
+import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
-import { Service } from './Service'
-import { ServiceConfiguration } from './ServiceConfiguration'
-import { StorageWriterConfiguration } from './StorageWriterConfiguration'
+import { Service, ServiceConfiguration } from './Service'
+import { DOAClaims, DOAClaimsConfiguration } from './DOAClaims';
+
+export interface StorageWriterConfiguration
+  extends LoggingConfiguration,
+    IPFSConfiguration,
+    ServiceConfiguration,
+    DOAClaimsConfiguration {
+  readonly ipfsUrl: string
+  readonly dbUrl: string
+  readonly rabbitmqUrl: string
+  readonly exchanges: ExchangeConfiguration
+}
 
 @injectable()
 export class StorageWriter {
@@ -25,7 +35,7 @@ export class StorageWriter {
   private router: Router
   private messaging: Messaging
   private service: Service
-  private database: Database
+  private doaClaims: DOAClaims
 
   constructor(configuration: StorageWriterConfiguration) {
     this.configuration = configuration
@@ -49,8 +59,8 @@ export class StorageWriter {
     this.service = this.container.get('Service')
     await this.service.start()
 
-    this.database = this.container.get('Database')
-    await this.database.start()
+    this.doaClaims = this.container.get('DOAClaims')
+    await this.doaClaims.start()
 
     this.logger.info('StorageWriter Started')
   }
@@ -58,7 +68,7 @@ export class StorageWriter {
   async stop() {
     this.logger.info('Stopping StorageWriter...')
     await this.router.stop()
-    this.logger.info('Stopping StorageWriter Database...')
+    this.logger.info('Stopping StorageWriter DOAClaims...')
     await this.mongoClient.close()
   }
 

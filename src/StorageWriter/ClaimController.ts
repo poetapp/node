@@ -8,6 +8,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
+import { DOAClaims } from './DOAClaims'
 
 enum LogTypes {
   info = 'info',
@@ -23,13 +24,13 @@ interface StoreNextClaimData {
 @injectable()
 export class ClaimController {
   private readonly logger: Pino.Logger
-  private readonly db: Database
+  private readonly db: DOAClaims
   private readonly ipfs: IPFS
   private readonly exchange: ExchangeConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
-    @inject('DB') db: Db,
+    @inject('DB') db: DOAClaims,
     @inject('Messaging') messaging: Messaging,
     @inject('IPFS') ipfs: IPFS,
     @inject('ExchangeConfiguration') exchange: ExchangeConfiguration

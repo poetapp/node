@@ -7,7 +7,9 @@ import { secondsToMiliseconds } from 'Helpers/Time'
 import { Exchange } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
-import { ServiceConfiguration } from './ServiceConfiguration'
+export interface ServiceConfiguration {
+  readonly uploadClaimIntervalInSeconds: number
+}
 
 @injectable()
 export class Service {

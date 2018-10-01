@@ -3,7 +3,9 @@ import { inject, injectable } from 'inversify'
 import { Collection, Db, FindAndModifyWriteOpResultObject } from 'mongodb'
 import { isNil, pipeP, lensPath, view } from 'ramda'
 
-import { DatabaseConfiguration } from './DatabaseConfiguration'
+export interface DOAClaimsConfiguration {
+  readonly maxStorageAttempts: number
+}
 
 const L = {
   valueClaim: lensPath(['value', 'claim']),
@@ -18,12 +20,12 @@ export const throwIfClaimNotFound = (claim: Claim): Claim => {
 }
 
 @injectable()
-export class Database {
+export class DOAClaims {
   private readonly claims: Collection
   private readonly errors: Collection
   private readonly maxStorageAttempts: number
 
-  constructor(@inject('DB') db: Db, @inject('DatabaseConfiguration') configuration: DatabaseConfiguration) {
+  constructor(@inject('DB') db: Db, @inject('DOAClaims') configuration: DOAClaimsConfiguration) {
     this.claims = db.collection('storageWriterClaims')
     this.errors = db.collection('storageWriterErrors')
     this.maxStorageAttempts = configuration.maxStorageAttempts

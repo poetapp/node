@@ -2,7 +2,7 @@ import { describe, Try } from 'riteway'
 import { Claim } from '@po.et/poet-js'
 import { FindAndModifyWriteOpResultObject } from 'mongodb';
 
-import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './Database';
+import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DOAClaims';
 
 describe('Database.getClaimFromFindAndUpdateResponse', async should => {
   const { assert } = should('return the correct value')

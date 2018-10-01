@@ -3,7 +3,9 @@ import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 import * as str from 'string-to-stream'
 
-import { IPFSConfiguration } from './IPFSConfiguration'
+export interface IPFSConfiguration {
+  readonly ipfsUrl: string
+}
 
 /**
  * Wrapper around IPFS' RPC
