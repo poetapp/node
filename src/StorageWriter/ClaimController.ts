@@ -4,9 +4,7 @@ import * as Pino from 'pino'
 import { pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { Messaging } from 'Messaging/Messaging'
 
-import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { DOAClaims } from './DOAClaims'
 
@@ -26,19 +24,15 @@ export class ClaimController {
   private readonly logger: Pino.Logger
   private readonly db: DOAClaims
   private readonly ipfs: IPFS
-  private readonly exchange: ExchangeConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: DOAClaims,
-    @inject('Messaging') messaging: Messaging,
     @inject('IPFS') ipfs: IPFS,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.ipfs = ipfs
-    this.exchange = exchange
   }
 
   private readonly log = (level: LogTypes) => (message: string) => async (value: any) => {
@@ -54,15 +48,6 @@ export class ClaimController {
     logger.trace({ claim }, 'Adding Claim')
 
     await this.db.addClaim(claim)
-
-    await this.collection.insertOne({
-      claimId: claim.id,
-      ipfsFileHash,
-    })
-    await this.messaging.publish(this.exchange.claimIpfsHash, {
-      claimId: claim.id,
-      ipfsFileHash,
-    })
   }
 
   private readonly findNextClaim = async (): Promise<StoreNextClaimData> => {
@@ -73,7 +58,6 @@ export class ClaimController {
   private readonly uploadClaim = (claim: Claim) => this.ipfs.addText(JSON.stringify(claim))
 
   private readonly handleStoreClaimError = async (error: Error, claim: Claim) => {
-    await this.db.addError(uploadClaimError(error.message, claim))
     throw new Error('Failed to store claim')
   }
 
@@ -91,7 +75,6 @@ export class ClaimController {
   }
 
   private readonly handleAddIPFSHashToClaimError = async (error: Error, claim: Claim, hash: string) => {
-    await this.db.addError(updateClaimHashError(error.message, claim, hash))
     throw new Error('Failed to update claim hash')
   }
 

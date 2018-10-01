@@ -62,7 +62,7 @@ export class Router {
     logger.trace('Upload next claim request')
     try {
       const { ipfsFileHash, claim } = await this.claimController.storeNextClaim()
-      await this.messaging.publish(Exchange.ClaimIPFSHash, {
+      await this.messaging.publish(this.exchange.claimIpfsHash, {
         claimId: claim.id,
         ipfsFileHash,
       })

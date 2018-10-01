@@ -35,10 +35,6 @@ export class DOAClaims {
     await this.claims.createIndex({ claimId: 1 }, { unique: true })
   }
 
-  public readonly addError = async (error: object) => {
-    await this.errors.insertOne(error)
-  }
-
   public readonly addClaim = async (claim: Claim) => {
     await this.claims.insertOne({ claimId: claim.id, claim, storageAttempts: 0, ipfsFileHash: null })
   }
