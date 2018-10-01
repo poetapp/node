@@ -5,8 +5,8 @@ import * as Pino from 'pino'
 import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { ClaimController } from './ClaimController'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 @injectable()
 export class Router {
