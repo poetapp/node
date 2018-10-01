@@ -45,10 +45,11 @@ const dataOutputToData = (dataOutput: VOutWithTxId): string => {
 export const dataToPoetAnchor = (data: string): PoetAnchor => {
   const buffer = Buffer.from(data, 'hex')
   const prefix = buffer.slice(0, 4).toString()
-  const version = Array.from(buffer.slice(4, 8))
-  const ipfsDirectoryHash = buffer.slice(8).toString()
+  const version = Array.from(buffer.slice(4, 6))
+  const storageProtocol = buffer.readInt8(6)
+  const ipfsDirectoryHash = buffer.slice(7).toString()
   return {
-    storageProtocol: null,
+    storageProtocol,
     prefix,
     version,
     ipfsDirectoryHash,
