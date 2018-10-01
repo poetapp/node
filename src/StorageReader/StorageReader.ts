@@ -1,40 +1,44 @@
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
+import { pick } from 'ramda'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
-import { StorageConfiguration } from './StorageConfiguration'
+import { StorageReaderConfiguration } from './StorageReaderConfiguration'
 
 @injectable()
-export class Storage {
+export class StorageReader {
   private readonly logger: Pino.Logger
-  private readonly configuration: StorageConfiguration
+  private readonly configuration: StorageReaderConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
   private service: Service
 
-  constructor(configuration: StorageConfiguration) {
+  constructor(configuration: StorageReaderConfiguration) {
     this.configuration = configuration
     this.logger = createModuleLogger(configuration, __dirname)
   }
 
   async start() {
-    this.logger.info({ configuration: this.configuration }, 'Storage Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.logger.info({ configuration: this.configuration }, 'StorageReader Starting')
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
     this.initializeContainer()
@@ -47,7 +51,16 @@ export class Storage {
 
     await this.createIndices()
 
-    this.logger.info('Storage Started')
+    this.logger.info('StorageReader Started')
+  }
+
+  async stop() {
+    this.logger.info('Stopping Storage...')
+    await this.service.stop()
+    this.logger.info('Stopping Storage Database...')
+    await this.mongoClient.close()
+    this.logger.info('Stopping Storage Messaging...')
+    await this.messaging.stop()
   }
 
   initializeContainer() {
@@ -69,6 +82,8 @@ export class Storage {
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds,
     })
+
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 
   private async createIndices() {

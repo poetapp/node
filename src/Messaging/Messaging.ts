@@ -1,18 +1,20 @@
 /* tslint:disable:no-console */
-import { isClaim, PoetTimestamp } from '@po.et/poet-js'
+import { isClaim, PoetBlockAnchor } from '@po.et/poet-js'
 import { Connection, connect, Channel } from 'amqplib'
 
 import { ClaimIPFSHashPair, isClaimIPFSHashPair } from 'Interfaces'
 
-import { Exchange } from './Messages'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export class Messaging {
   private readonly connectionUrl: string
   private connection: Connection
   private channel: Channel
+  private readonly exchanges: ExchangeConfiguration
 
-  constructor(connectionUrl?: string) {
-    this.connectionUrl = connectionUrl || 'amqp://localhost'
+  constructor(connectionUrl: string, exchanges: ExchangeConfiguration) {
+    this.connectionUrl = connectionUrl
+    this.exchanges = exchanges
   }
 
   start = async () => {
@@ -32,7 +34,11 @@ export class Messaging {
     this.channel = await this.connection.createChannel()
   }
 
-  publish = async (exchange: Exchange, message: string | object): Promise<void> => {
+  stop = async () => {
+    await this.connection.close()
+  }
+
+  publish = async (exchange: string, message: string | object): Promise<void> => {
     if (!this.channel) throw new Error('Cannot publish before calling start()')
 
     await this.channel.assertExchange(exchange, 'fanout', { durable: false })
@@ -42,51 +48,51 @@ export class Messaging {
     this.channel.publish(exchange, '', Buffer.from(messageString))
   }
 
-  consume = async (exchange: Exchange, consume: (message: any) => void): Promise<void> => {
+  consume = async (exchange: string, consume: (message: any) => void): Promise<void> => {
     await this.channel.assertExchange(exchange, 'fanout', { durable: false })
     const assertQueue = await this.channel.assertQueue('', { exclusive: true })
     this.channel.bindQueue(assertQueue.queue, exchange, '')
     this.channel.consume(assertQueue.queue, consume, { noAck: true })
   }
 
-  // TODO: move these business-specific functions to a different file
-  publishPoetTimestampsDownloaded = async (poetTimestamps: ReadonlyArray<PoetTimestamp>) => {
-    return this.publish(Exchange.PoetTimestampDownloaded, poetTimestamps)
+  // TODO: move these business-specific functions to a different file. See https://github.com/poetapp/node/issues/66
+  publishPoetBlockAnchorsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
+    return this.publish(this.exchanges.poetAnchorDownloaded, poetBlockAnchors)
   }
 
-  consumePoetTimestampsDownloaded = async (consume: (poetTimestamps: ReadonlyArray<PoetTimestamp>) => void) => {
-    await this.consume(Exchange.PoetTimestampDownloaded, (message: any) => {
+  consumeBlockAnchorsDownloaded = async (consume: (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => void) => {
+    await this.consume(this.exchanges.poetAnchorDownloaded, (message: any) => {
       const messageContent = message.content.toString()
-      const poetTimestamps = JSON.parse(messageContent)
+      const poetBlockAnchors = JSON.parse(messageContent)
 
-      if (!Array.isArray(poetTimestamps)) {
+      if (!Array.isArray(poetBlockAnchors)) {
         console.log({
-          action: 'consumePoetTimestampsDownloaded',
-          message: 'Expected poetTimestamps to be an Array.',
-          poetTimestamps,
+          action: 'consumeBlockAnchorsDownloaded',
+          message: 'Expected poetBlockAnchors to be an Array.',
+          poetBlockAnchors,
         })
         return
       }
 
-      if (poetTimestamps.map(isClaim).find(_ => !_)) {
+      if (poetBlockAnchors.map(isClaim).find(_ => !_)) {
         console.log({
-          action: 'consumePoetTimestampsDownloaded',
-          message: 'Expected poetTimestamps to be an Array<Claim>.',
-          offendingElements: poetTimestamps.map(isClaim).filter(_ => !_),
+          action: 'consumeBlockAnchorsDownloaded',
+          message: 'Expected poetBlockAnchors to be an Array<Claim>.',
+          offendingElements: poetBlockAnchors.map(isClaim).filter(_ => !_),
         })
         return
       }
 
-      consume(poetTimestamps)
+      consume(poetBlockAnchors)
     })
   }
 
   publishClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    return this.publish(Exchange.ClaimsDownloaded, claimIPFSHashPairs)
+    return this.publish(this.exchanges.claimsDownloaded, claimIPFSHashPairs)
   }
 
   consumeClaimsDownloaded = async (consume: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => void) => {
-    await this.consume(Exchange.ClaimsDownloaded, (message: any) => {
+    await this.consume(this.exchanges.claimsDownloaded, (message: any) => {
       const messageContent = message.content.toString()
       const claimIPFSHashPairs = JSON.parse(messageContent)
 
@@ -101,8 +107,8 @@ export class Messaging {
 
       if (claimIPFSHashPairs.map(isClaimIPFSHashPair).find(_ => !_)) {
         console.log({
-          action: 'consumePoetTimestampsDownloaded',
-          message: 'Expected poetTimestamps to be an Array<ClaimIPFSHashPair>.',
+          action: 'consumeClaimsDownloaded',
+          message: 'Expected claimIPFSHashPairs to be an Array<ClaimIPFSHashPair>.',
           offendingElements: claimIPFSHashPairs.map(isClaimIPFSHashPair).filter(_ => !_),
         })
         return

@@ -12,35 +12,35 @@ describe('Extensions Error', async (should: any) => {
       given: 'a new Error',
       should: 'transform to an valid object',
       actual: typeof actual === 'object',
-      expected: true
+      expected: true,
     })
 
     assert({
       given: 'a new Error',
       should: 'get the keys of the new Error',
       actual: Object.keys(actual),
-      expected: ['stack', 'message', 'type']
+      expected: ['stack', 'message', 'type'],
     })
 
     assert({
       given: 'a new Error',
       should: 'be the type property a string with the value Error',
       actual: actual.type === 'Error',
-      expected: true
+      expected: true,
     })
 
     assert({
       given: 'a new Error',
       should: 'be the stack property a array',
       actual: Array.isArray(actual.stack),
-      expected: true
+      expected: true,
     })
 
     assert({
       given: 'a new Error',
       should: 'be the stack property a array with strings inside',
       actual: typeof actual.stack[0] === 'string',
-      expected: true
+      expected: true,
     })
   }
 
@@ -61,7 +61,7 @@ describe('Extensions Error', async (should: any) => {
       given: 'a custom Error with type CustomType',
       should: 'be the type property CustomType',
       actual: actual.type === 'CustomType',
-      expected: true
+      expected: true,
     })
   }
 })

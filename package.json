@@ -8,8 +8,8 @@
   "scripts": {
     "start": "node dist/babel/src",
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
-    "lint": "tslint -p ./tsconfig.json",
-    "lint:fix": "tslint -p ./tsconfig.json --fix",
+    "lint": "tslint -p ./tsconfig.with-tests.json",
+    "lint:fix": "tslint -p ./tsconfig.with-tests.json --fix",
     "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon --delay 10 dist/babel/src\"",
     "pretest": "npm run test-prepare-db",
     "test": "npm run test:unit && npm run test:integration && npm run test:integration:riteway",
@@ -43,12 +43,12 @@
     "url": "https://github.com/poetapp/node/issues"
   },
   "dependencies": {
-    "@po.et/poet-js": "3.1.0",
+    "@po.et/poet-js": "4.0.0",
     "amqplib": "0.5.2",
     "bitcoin-core": "2.0.0",
     "form-data": "2.3.2",
     "inversify": "4.13.0",
-    "joi": "13.6.0",
+    "joi": "13.7.0",
     "koa": "2.5.3",
     "koa-body": "4.0.4",
     "koa-cors": "0.0.16",
@@ -63,15 +63,15 @@
     "string-to-stream": "1.1.1"
   },
   "devDependencies": {
-    "@po.et/tslint-rules": "1.4.3",
+    "@po.et/tslint-rules": "1.4.4",
     "@types/amqplib": "0.5.8",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
-    "@types/joi": "13.4.5",
+    "@types/joi": "13.6.0",
     "@types/koa": "2.0.46",
     "@types/koa-helmet": "3.1.2",
     "@types/koa-router": "7.0.32",
-    "@types/mongodb": "3.1.8",
+    "@types/mongodb": "3.1.9",
     "@types/node-fetch": "1.6.9",
     "@types/pino": "4.16.1",
     "@types/sinon": "5.0.2",
@@ -87,7 +87,7 @@
     "sinon": "6.3.4",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.6.0",
-    "travis-deploy-once": "5.0.8",
-    "typescript": "3.0.3"
+    "travis-deploy-once": "5.0.9",
+    "typescript": "3.1.1"
   }
 }

@@ -1,12 +1,14 @@
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient, Collection } from 'mongodb'
 import * as Pino from 'pino'
+import { pick } from 'ramda'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { BatchWriterConfiguration } from './BatchWriterConfiguration'
 import { ClaimController } from './ClaimController'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileDAO } from './FileDAO'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
@@ -19,6 +21,7 @@ export class BatchWriter {
   private readonly logger: Pino.Logger
   private readonly configuration: BatchWriterConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
@@ -31,10 +34,11 @@ export class BatchWriter {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'BatchWriter Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
     this.initializeContainer()
@@ -48,6 +52,14 @@ export class BatchWriter {
     await fileDAO.start()
 
     this.logger.info('Batcher Writer Started')
+  }
+
+  async stop() {
+    this.logger.info('BatchWriter Stopping')
+    await this.service.stop()
+    this.logger.info('BatchWriter Database Stopping')
+    await this.mongoClient.close()
+    await this.router.stop()
   }
 
   initializeContainer() {
@@ -66,5 +78,7 @@ export class BatchWriter {
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       batchCreationIntervalInSeconds: this.configuration.batchCreationIntervalInSeconds,
     })
+
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }

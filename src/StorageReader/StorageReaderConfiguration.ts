@@ -1,10 +1,11 @@
 import { LoggingConfiguration } from 'Configuration'
 
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
-export interface StorageConfiguration
+export interface StorageReaderConfiguration
   extends LoggingConfiguration,
     ServiceConfiguration,
     ClaimControllerConfiguration,
@@ -12,4 +13,5 @@ export interface StorageConfiguration
   readonly ipfsUrl: string
   readonly dbUrl: string
   readonly rabbitmqUrl: string
+  readonly exchanges: ExchangeConfiguration
 }

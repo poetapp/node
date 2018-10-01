@@ -4,9 +4,9 @@ import * as Pino from 'pino'
 import { pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { Messaging } from 'Messaging/Messaging'
 
-import { Database } from './Database'
-import { uploadClaimError, updateClaimHashError } from './Errors'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 
 enum LogTypes {
@@ -25,11 +25,19 @@ export class ClaimController {
   private readonly logger: Pino.Logger
   private readonly db: Database
   private readonly ipfs: IPFS
+  private readonly exchange: ExchangeConfiguration
 
-  constructor(@inject('Logger') logger: Pino.Logger, @inject('Database') db: Database, @inject('IPFS') ipfs: IPFS) {
+  constructor(
+    @inject('Logger') logger: Pino.Logger,
+    @inject('DB') db: Db,
+    @inject('Messaging') messaging: Messaging,
+    @inject('IPFS') ipfs: IPFS,
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+  ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.ipfs = ipfs
+    this.exchange = exchange
   }
 
   private readonly log = (level: LogTypes) => (message: string) => async (value: any) => {
@@ -46,7 +54,14 @@ export class ClaimController {
 
     await this.db.addClaim(claim)
 
-    logger.info({ claim }, 'Claim Added')
+    await this.collection.insertOne({
+      claimId: claim.id,
+      ipfsFileHash,
+    })
+    await this.messaging.publish(this.exchange.claimIpfsHash, {
+      claimId: claim.id,
+      ipfsFileHash,
+    })
   }
 
   private readonly findNextClaim = async (): Promise<StoreNextClaimData> => {

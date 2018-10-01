@@ -6,6 +6,7 @@ import {
   NotFoundException,
   isClaim,
 } from '@po.et/poet-js'
+import * as http from 'http'
 import { injectable, inject } from 'inversify'
 import * as Joi from 'joi'
 import * as Koa from 'koa'
@@ -31,6 +32,7 @@ export class Router {
   private readonly koa = new Koa()
   private readonly koaRouter = new KoaRouter()
   private readonly workController: WorkController
+  private server: http.Server
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
@@ -69,7 +71,12 @@ export class Router {
   }
 
   async start() {
-    this.koa.listen(this.configuration.port, '0.0.0.0')
+    this.server = this.koa.listen(this.configuration.port, '0.0.0.0')
+  }
+
+  async stop() {
+    this.logger.info('Stopping API Router...')
+    await this.server.close()
   }
 
   private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {

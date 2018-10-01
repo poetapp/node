@@ -5,11 +5,13 @@ import { describe } from 'riteway'
 
 import { ClaimController } from './ClaimController'
 import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
-import { Router } from './Router'
+import { Service } from './Service'
+import { ServiceConfiguration } from './ServiceConfiguration'
 
-describe('Storage Router', async (should: any) => {
+describe('StorageReader Router', async (should: any) => {
   const { assert } = should('')
 
   const host = 'http://localhost'
@@ -25,21 +27,30 @@ describe('Storage Router', async (should: any) => {
     downloadMaxAttempts: 1,
   }
 
+  const exchangeConfigurationMessaging: ExchangeConfiguration = {
+    poetAnchorDownloaded: '',
+    claimsDownloaded: '',
+  }
+
   const claimController = new ClaimController(
     Pino(),
     new Db('poet', server),
-    new Messaging(),
+    new Messaging('', exchangeConfigurationMessaging),
     new IPFS(IPFSConfiguration),
     claimControllerConfiguration
   )
 
+  const serviceConfiguration: ServiceConfiguration = {
+    downloadIntervalInSeconds: 1,
+  }
+
   {
-    const router = new Router(Pino(), new Messaging(), claimController)
+    const service = new Service(Pino(), claimController, serviceConfiguration)
 
     assert({
-      given: 'the new instance of Router',
-      should: 'be an instance of Router',
-      actual: router instanceof Router,
+      given: 'the new instance of Service',
+      should: 'be an instance of Service',
+      actual: service instanceof Service,
       expected: true,
     })
   }

@@ -2,6 +2,7 @@ import BitcoinCore = require('bitcoin-core')
 import { injectable, Container } from 'inversify'
 import { MongoClient, Db } from 'mongodb'
 import * as Pino from 'pino'
+import { pick } from 'ramda'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
@@ -17,6 +18,7 @@ export class BlockchainReader {
   private readonly logger: Pino.Logger
   private readonly configuration: BlockchainReaderConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private messaging: Messaging
   private cron: BlockchainReaderService
@@ -28,10 +30,11 @@ export class BlockchainReader {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'BlockchainReader Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
     this.initializeContainer()
@@ -40,6 +43,15 @@ export class BlockchainReader {
     await this.cron.start()
 
     this.logger.info('BlockchainReader Started')
+  }
+
+  async stop() {
+    this.logger.info('BlockchainReader Stopping...')
+    this.logger.info('BlockchainReader Database Stopping...')
+    await this.mongoClient.close()
+    this.cron.stop()
+    this.logger.info('BlockchainReader Messaging Stopping...')
+    await this.messaging.stop()
   }
 
   initializeContainer() {

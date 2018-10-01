@@ -6,6 +6,7 @@ import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { APIConfiguration } from './APIConfiguration'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
@@ -15,6 +16,7 @@ export class API {
   private readonly logger: Pino.Logger
   private readonly configuration: APIConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
@@ -26,10 +28,10 @@ export class API {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'API Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, this.configuration.exchanges)
     await this.messaging.start()
 
     this.initializeContainer()
@@ -40,6 +42,15 @@ export class API {
     this.logger.info('API Started')
   }
 
+  async stop() {
+    this.logger.info('Stopping API...')
+    this.logger.info('Stopping API Database...')
+    await this.mongoClient.close()
+    await this.router.stop()
+    this.logger.info('Stopping API Messaging...')
+    await this.messaging.stop()
+  }
+
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
@@ -47,5 +58,6 @@ export class API {
     this.container.bind<RouterConfiguration>('RouterConfiguration').toConstantValue({ port: this.configuration.port })
     this.container.bind<WorkController>('WorkController').to(WorkController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }

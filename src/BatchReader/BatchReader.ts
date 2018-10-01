@@ -1,6 +1,7 @@
 import { Container } from 'inversify'
 import { Db, MongoClient, Collection } from 'mongodb'
 import * as Pino from 'pino'
+import { pick } from 'ramda'
 
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
@@ -8,6 +9,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { BatchReaderConfiguration } from './BatchReaderConfiguration'
 import { ClaimController } from './ClaimController'
 import { DirectoryDAO } from './DirectoryDAO'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
@@ -18,6 +20,7 @@ export class BatchReader {
   private readonly logger: Pino.Logger
   private readonly configuration: BatchReaderConfiguration
   private readonly container = new Container()
+  private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
@@ -30,10 +33,11 @@ export class BatchReader {
 
   async start() {
     this.logger.info({ configuration: this.configuration }, 'BatchReader Starting')
-    const mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await mongoClient.db()
+    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
+    this.dbConnection = await this.mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl)
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
     this.initializeContainer()
@@ -47,6 +51,14 @@ export class BatchReader {
     await directoryDAO.start()
 
     this.logger.info('BatchReader Started')
+  }
+
+  async stop() {
+    this.logger.info('Stopping BatchReader...')
+    this.logger.info('Stopping BatchReader Database...')
+    await this.mongoClient.close()
+    await this.router.stop()
+    await this.service.stop()
   }
 
   initializeContainer() {
@@ -65,5 +77,7 @@ export class BatchReader {
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       readNextDirectoryIntervalInSeconds: this.configuration.readNextDirectoryIntervalInSeconds,
     })
+
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }

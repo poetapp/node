@@ -1,3 +1,4 @@
+/* tslint:disable:no-relative-imports */
 /* tslint:disable:no-console */
 import * as assert from 'assert'
 import { readFileSync, existsSync } from 'fs'
@@ -10,7 +11,7 @@ import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 const defaultMongodbUrl = 'mongodb://localhost:27017/poet'
 
 // Provide default value in defaultConfiguration for any new configuration options
-export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration {
+export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration, ExchangeConfiguration {
   readonly rabbitmqUrl: string
   readonly mongodbUser: string
   readonly mongodbPassword: string
@@ -58,6 +59,18 @@ export interface BitcoinRPCConfiguration {
   readonly bitcoinPassword: string
 }
 
+export interface ExchangeConfiguration {
+  readonly exchangeBatchReaderReadNextDirectoryRequest: string
+  readonly exchangeBatchReaderReadNextDirectorySuccess: string
+  readonly exchangeBatchWriterCreateNextBatchRequest: string
+  readonly exchangeBatchWriterCreateNextBatchSuccess: string
+  readonly exchangeNewClaim: string
+  readonly exchangeClaimIpfsHash: string
+  readonly exchangeIpfsHashTxId: string
+  readonly exchangePoetAnchorDownloaded: string
+  readonly exchangeClaimsDownloaded: string
+}
+
 const defaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://localhost',
   mongodbUser: '',
@@ -75,7 +88,7 @@ const defaultConfiguration: Configuration = {
 
   apiPort: 18080,
   poetNetwork: 'BARD',
-  poetVersion: [0, 0, 0, 3],
+  poetVersion: [0, 3],
   minimumBlockHeight: 1279550, // Less than 24 hours before Feb 8th, 2018 - Frost's Release
   blockchainReaderIntervalInSeconds: 5,
 
@@ -98,14 +111,24 @@ const defaultConfiguration: Configuration = {
   uploadClaimMaxAttempts: 10,
 
   forceBlockHeight: undefined,
+
+  exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
+  exchangeBatchReaderReadNextDirectorySuccess: 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
+  exchangeBatchWriterCreateNextBatchRequest: 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
+  exchangeBatchWriterCreateNextBatchSuccess: 'BATCH_WRITER::CREATE_NEXT_BATCH_SUCCESS',
+  exchangeNewClaim: 'NEW_CLAIM',
+  exchangeClaimIpfsHash: 'CLAIM_IPFS_HASH',
+  exchangeIpfsHashTxId: 'IPFS_HASH_TX_ID',
+  exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
+  exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
-export const mergeConfigs = (envVars: any = {}) => {
+export const mergeConfigs = (localVars: any = {}) => {
   const config = {
     ...defaultConfiguration,
-    ...loadConfigurationFromEnv(envVars),
+    ...loadConfigurationFromEnv(localVars),
     ...loadConfigurationFromFile(configurationPath()),
   }
   // TODO: This is here to support using either MONGODB_URL or MONGO_HOST, MONGO_PORT, etc.
@@ -118,7 +141,7 @@ export const mergeConfigs = (envVars: any = {}) => {
   return config
 }
 
-export const loadConfigurationWithDefaults = () => mergeConfigs(process.env)
+export const loadConfigurationWithDefaults = (localVars: any = {}) => mergeConfigs({ ...process.env, ...localVars })
 
 function loadConfigurationFromFile(configPath: string): Configuration | {} {
   if (!existsSync(configPath)) {
