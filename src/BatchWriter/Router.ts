@@ -4,8 +4,8 @@ import * as Pino from 'pino'
 import { NoMoreEntriesException } from 'Exceptions'
 import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
-import { ExchangeConfiguration } from './ExchangeConfiguration'
 
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { ClaimController } from './ClaimController'
 
 @injectable()

@@ -1,5 +1,3 @@
-import { ExchangeConfiguration } from './ExchangeConfiguration'
-
-export interface ServiceConfiguration extends ExchangeConfiguration {
+export interface ServiceConfiguration {
   readonly readNextDirectoryIntervalInSeconds: number
 }

@@ -76,7 +76,6 @@ export class BatchReader {
     this.container.bind<Service>('Service').to(Service)
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       readNextDirectoryIntervalInSeconds: this.configuration.readNextDirectoryIntervalInSeconds,
-      batchReaderReadNextDirectoryRequest: this.configuration.batchReaderReadNextDirectoryRequest,
     })
 
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)

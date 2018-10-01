@@ -5,8 +5,8 @@ import * as Pino from 'pino'
 import { childWithFileName } from 'Helpers/Logging'
 import { secondsToMiliseconds } from 'Helpers/Time'
 import { Messaging } from 'Messaging/Messaging'
-import { ExchangeConfiguration } from './ExchangeConfiguration'
 
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
 @injectable()
