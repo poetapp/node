@@ -19,3 +19,4 @@ rules
 screenshots
 temp.text
 vault.json
+docker-compose.override.yml
