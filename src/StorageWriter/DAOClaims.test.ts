@@ -6,6 +6,7 @@ import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DAOCl
 
 describe('Database.getClaimFromFindAndUpdateResponse', async should => {
   const { assert } = should('return the correct value')
+  
   {
     const response: FindAndModifyWriteOpResultObject = {}
     assert({
@@ -14,6 +15,7 @@ describe('Database.getClaimFromFindAndUpdateResponse', async should => {
       expected: undefined,
     })
   }
+
   {
     const response: FindAndModifyWriteOpResultObject = { value: {} }
     assert({
@@ -22,6 +24,7 @@ describe('Database.getClaimFromFindAndUpdateResponse', async should => {
       expected: undefined,
     })
   }
+
   {
     const claim = { id: 'bar' } as Claim
     const response: FindAndModifyWriteOpResultObject = {
