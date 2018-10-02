@@ -5,8 +5,8 @@ import { pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import { IPFS } from './IPFS'
 import { DOAClaims } from './DOAClaims'
+import { IPFS } from './IPFS'
 
 enum LogTypes {
   info = 'info',
@@ -25,11 +25,7 @@ export class ClaimController {
   private readonly db: DOAClaims
   private readonly ipfs: IPFS
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('DB') db: DOAClaims,
-    @inject('IPFS') ipfs: IPFS,
-  ) {
+  constructor(@inject('Logger') logger: Pino.Logger, @inject('DB') db: DOAClaims, @inject('IPFS') ipfs: IPFS) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.ipfs = ipfs

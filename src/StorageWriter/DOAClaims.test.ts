@@ -1,8 +1,8 @@
-import { describe, Try } from 'riteway'
 import { Claim } from '@po.et/poet-js'
-import { FindAndModifyWriteOpResultObject } from 'mongodb';
+import { FindAndModifyWriteOpResultObject } from 'mongodb'
+import { describe, Try } from 'riteway'
 
-import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DOAClaims';
+import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DOAClaims'
 
 describe('Database.getClaimFromFindAndUpdateResponse', async should => {
   const { assert } = should('return the correct value')
@@ -11,7 +11,7 @@ describe('Database.getClaimFromFindAndUpdateResponse', async should => {
     assert({
       given: 'a response that does not contain a value',
       actual: getClaimFromFindAndUpdateResponse(response),
-      expected: undefined
+      expected: undefined,
     })
   }
   {
@@ -19,18 +19,20 @@ describe('Database.getClaimFromFindAndUpdateResponse', async should => {
     assert({
       given: 'a response that does not contain a claim',
       actual: getClaimFromFindAndUpdateResponse(response),
-      expected: undefined
+      expected: undefined,
     })
   }
   {
     const claim = { id: 'bar' } as Claim
-    const response: FindAndModifyWriteOpResultObject = { value: {
-      claim
-    } }
+    const response: FindAndModifyWriteOpResultObject = {
+      value: {
+        claim,
+      },
+    }
     assert({
       given: 'a response that contians a claim',
       actual: getClaimFromFindAndUpdateResponse(response),
-      expected: claim
+      expected: claim,
     })
   }
 })
@@ -42,14 +44,14 @@ describe('Database.throwIfClaimNotFound', async should => {
     given: 'null',
     should: 'throw',
     actual: Try(throwIfClaimNotFound, null),
-    expected: new Error()
+    expected: new Error(),
   })
 
   assert({
     given: 'undefined',
     should: 'throw',
     actual: Try(throwIfClaimNotFound, undefined),
-    expected: new Error()
+    expected: new Error(),
   })
 
   {
@@ -58,7 +60,7 @@ describe('Database.throwIfClaimNotFound', async should => {
       given: 'a claim',
       should: 'return the claim',
       actual: throwIfClaimNotFound(claim),
-      expected: claim
+      expected: claim,
     })
   }
 })

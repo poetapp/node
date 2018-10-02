@@ -122,7 +122,7 @@ const defaultConfiguration: Configuration = {
   exchangeIpfsHashTxId: 'IPFS_HASH_TX_ID',
   exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
   exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
-  exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM'
+  exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')

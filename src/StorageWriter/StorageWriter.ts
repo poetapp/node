@@ -3,16 +3,16 @@ import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
+import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
-import { LoggingConfiguration } from 'Configuration'
 
 import { ClaimController } from './ClaimController'
+import { DOAClaims, DOAClaimsConfiguration } from './DOAClaims'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
 import { Service, ServiceConfiguration } from './Service'
-import { DOAClaims, DOAClaimsConfiguration } from './DOAClaims';
 
 export interface StorageWriterConfiguration
   extends LoggingConfiguration,
@@ -83,11 +83,5 @@ export class StorageWriter {
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
-  }
-
-  private async createIndices() {
-    const collection = this.dbConnection.collection('storage')
-    await collection.createIndex({ ipfsFileHash: 1 }, { unique: true, name: 'ipfsFileHash-unique' })
-    await collection.createIndex({ attempts: 1 }, { name: 'attempts' })
   }
 }

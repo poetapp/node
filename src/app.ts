@@ -157,7 +157,7 @@ export async function app(localVars: any = {}) {
       newClaim: configuration.exchangeNewClaim,
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
-      storageWriterStoreNextClaim: configuration.exchangeStorageWriterStoreNextClaim
+      storageWriterStoreNextClaim: configuration.exchangeStorageWriterStoreNextClaim,
     },
   })
 
