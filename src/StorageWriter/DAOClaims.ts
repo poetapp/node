@@ -30,7 +30,6 @@ export class DAOClaims {
   }
 
   public readonly start = async () => {
-    console.log('dao start')
     await this.collection.createIndex({ 'claim.id': 1 }, { unique: true })
   }
 
