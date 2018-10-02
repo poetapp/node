@@ -30,7 +30,7 @@ export class DOAClaims {
   }
 
   public readonly start = async () => {
-    await this.claims.createIndex({ "claim.id": 1 }, { unique: true })
+    await this.claims.createIndex({ 'claim.id': 1 }, { unique: true })
   }
 
   public readonly addClaim = async (claim: Claim) => {
@@ -38,7 +38,7 @@ export class DOAClaims {
   }
 
   public readonly addClaimHash = async (claimId: string, ipfsFileHash: string) => {
-    await this.claims.updateOne({ "claim:id" : claimId }, { $set: { ipfsFileHash } })
+    await this.claims.updateOne({ 'claim:id': claimId }, { $set: { ipfsFileHash } })
   }
 
   private readonly findClaimToStore = () =>
