@@ -8,7 +8,7 @@ import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
-import { DOAClaims, DOAClaimsConfiguration } from './DOAClaims'
+import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
@@ -18,7 +18,7 @@ export interface StorageWriterConfiguration
   extends LoggingConfiguration,
     IPFSConfiguration,
     ServiceConfiguration,
-    DOAClaimsConfiguration {
+    DAOClaimsConfiguration {
   readonly ipfsUrl: string
   readonly dbUrl: string
   readonly rabbitmqUrl: string
@@ -35,7 +35,7 @@ export class StorageWriter {
   private router: Router
   private messaging: Messaging
   private service: Service
-  private doaClaims: DOAClaims
+  private daoClaims: DAOClaims
 
   constructor(configuration: StorageWriterConfiguration) {
     this.configuration = configuration
@@ -59,8 +59,8 @@ export class StorageWriter {
     this.service = this.container.get('Service')
     await this.service.start()
 
-    this.doaClaims = this.container.get('DOAClaims')
-    await this.doaClaims.start()
+    this.daoClaims = this.container.get('DAOClaims')
+    await this.daoClaims.start()
 
     this.logger.info('StorageWriter Started')
   }
@@ -70,16 +70,16 @@ export class StorageWriter {
     await this.service.stop()
     this.logger.info('Stopping StorageWriter...')
     await this.router.stop()
-    this.logger.info('Stopping StorageWriter DOAClaims...')
+    this.logger.info('Stopping StorageWriter DAOClaims...')
     await this.mongoClient.close()
   }
 
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
-    this.container.bind<DOAClaims>('DOAClaims').to(DOAClaims)
-    this.container.bind<DOAClaimsConfiguration>('DOAClaimsConfiguration').toConstantValue({
-      maxStorageAttempts: this.configuration.maxStorageAttempts
+    this.container.bind<DAOClaims>('DAOClaims').to(DAOClaims)
+    this.container.bind<DAOClaimsConfiguration>('DAOClaimsConfiguration').toConstantValue({
+      maxStorageAttempts: this.configuration.maxStorageAttempts,
     })
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<IPFS>('IPFS').to(IPFS)

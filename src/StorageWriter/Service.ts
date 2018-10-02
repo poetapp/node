@@ -43,7 +43,7 @@ export class Service {
   }
 
   private uploadNextClaim = async () => {
-    const logger = this.logger.child({ method: 'readNextDirectory' })
+    const logger = this.logger.child({ method: 'uploadNextClaim' })
     try {
       await this.messaging.publish(this.exchange.storageWriterStoreNextClaim, '')
     } catch (error) {

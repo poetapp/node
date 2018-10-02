@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import { Collection, Db, FindAndModifyWriteOpResultObject } from 'mongodb'
 import { isNil, pipeP, lensPath, view } from 'ramda'
 
-export interface DOAClaimsConfiguration {
+export interface DAOClaimsConfiguration {
   readonly maxStorageAttempts: number
 }
 
@@ -20,16 +20,17 @@ export const throwIfClaimNotFound = (claim: Claim): Claim => {
 }
 
 @injectable()
-export class DOAClaims {
+export class DAOClaims {
   private readonly collection: Collection
   private readonly maxStorageAttempts: number
 
-  constructor(@inject('DB') db: Db, @inject('DOAClaimsConfiguration') configuration: DOAClaimsConfiguration) {
+  constructor(@inject('DB') db: Db, @inject('DAOClaimsConfiguration') configuration: DAOClaimsConfiguration) {
     this.collection = db.collection('storageWriterClaims')
     this.maxStorageAttempts = configuration.maxStorageAttempts
   }
 
   public readonly start = async () => {
+    console.log('dao start')
     await this.collection.createIndex({ 'claim.id': 1 }, { unique: true })
   }
 
@@ -38,7 +39,7 @@ export class DOAClaims {
   }
 
   public readonly addClaimHash = async (claimId: string, ipfsFileHash: string) => {
-    await this.collection.updateOne({ 'claim:id': claimId }, { $set: { ipfsFileHash } })
+    await this.collection.updateOne({ 'claim.id': claimId }, { $set: { ipfsFileHash } })
   }
 
   private readonly findClaimToStore = () =>

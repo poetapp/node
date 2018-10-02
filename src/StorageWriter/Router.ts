@@ -29,6 +29,7 @@ export class Router {
 
   async start() {
     await this.messaging.consume(this.exchange.newClaim, this.onNewClaim)
+    await this.messaging.consume(this.exchange.storageWriterStoreNextClaim, this.onStorageWriterStoreNextClaim)
   }
 
   async stop() {
@@ -59,7 +60,7 @@ export class Router {
 
   onStorageWriterStoreNextClaim = async () => {
     const logger = this.logger.child({ method: 'onStorageWriterStoreNextClaim' })
-    logger.trace('Upload next claim request')
+    logger.info('Upload next claim request')
     try {
       const { ipfsFileHash, claim } = await this.claimController.storeNextClaim()
       await this.messaging.publish(this.exchange.claimIpfsHash, {

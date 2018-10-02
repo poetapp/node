@@ -5,7 +5,7 @@ import { pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import { DOAClaims } from './DOAClaims'
+import { DAOClaims } from './DAOClaims'
 import { IPFS } from './IPFS'
 
 enum LogTypes {
@@ -22,12 +22,16 @@ interface StoreNextClaimData {
 @injectable()
 export class ClaimController {
   private readonly logger: Pino.Logger
-  private readonly doaClaims: DOAClaims
+  private readonly daoClaims: DAOClaims
   private readonly ipfs: IPFS
 
-  constructor(@inject('Logger') logger: Pino.Logger, @inject('DOAClaims') doaClaims: DOAClaims, @inject('IPFS') ipfs: IPFS) {
+  constructor(
+    @inject('Logger') logger: Pino.Logger,
+    @inject('DAOClaims') daoClaims: DAOClaims,
+    @inject('IPFS') ipfs: IPFS
+  ) {
     this.logger = childWithFileName(logger, __filename)
-    this.doaClaims = doaClaims
+    this.daoClaims = daoClaims
     this.ipfs = ipfs
   }
 
@@ -43,11 +47,11 @@ export class ClaimController {
 
     logger.trace({ claim }, 'Adding Claim')
 
-    await this.doaClaims.addClaim(claim)
+    await this.daoClaims.addClaim(claim)
   }
 
   private readonly findNextClaim = async (): Promise<StoreNextClaimData> => {
-    const claim = await this.doaClaims.findNextClaim()
+    const claim = await this.daoClaims.findNextClaim()
     return { claim }
   }
 
@@ -64,7 +68,7 @@ export class ClaimController {
 
   private readonly addIPFSHashToClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {
     const { claim, ipfsFileHash } = data
-    await this.doaClaims.addClaimHash(claim.id, ipfsFileHash)
+    await this.daoClaims.addClaimHash(claim.id, ipfsFileHash)
     return data
   }
 
