@@ -22,12 +22,12 @@ interface StoreNextClaimData {
 @injectable()
 export class ClaimController {
   private readonly logger: Pino.Logger
-  private readonly db: DOAClaims
+  private readonly doaClaims: DOAClaims
   private readonly ipfs: IPFS
 
-  constructor(@inject('Logger') logger: Pino.Logger, @inject('DB') db: DOAClaims, @inject('IPFS') ipfs: IPFS) {
+  constructor(@inject('Logger') logger: Pino.Logger, @inject('DOAClaims') doaClaims: DOAClaims, @inject('IPFS') ipfs: IPFS) {
     this.logger = childWithFileName(logger, __filename)
-    this.db = db
+    this.doaClaims = doaClaims
     this.ipfs = ipfs
   }
 
@@ -43,11 +43,11 @@ export class ClaimController {
 
     logger.trace({ claim }, 'Adding Claim')
 
-    await this.db.addClaim(claim)
+    await this.doaClaims.addClaim(claim)
   }
 
   private readonly findNextClaim = async (): Promise<StoreNextClaimData> => {
-    const claim = await this.db.findNextClaim()
+    const claim = await this.doaClaims.findNextClaim()
     return { claim }
   }
 
@@ -64,7 +64,7 @@ export class ClaimController {
 
   private readonly addIPFSHashToClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {
     const { claim, ipfsFileHash } = data
-    await this.db.addClaimHash(claim.id, ipfsFileHash)
+    await this.doaClaims.addClaimHash(claim.id, ipfsFileHash)
     return data
   }
 

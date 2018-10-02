@@ -66,6 +66,8 @@ export class StorageWriter {
   }
 
   async stop() {
+    this.logger.info('Stopping StorageWriter Service')
+    await this.service.stop()
     this.logger.info('Stopping StorageWriter...')
     await this.router.stop()
     this.logger.info('Stopping StorageWriter DOAClaims...')
@@ -75,6 +77,10 @@ export class StorageWriter {
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
+    this.container.bind<DOAClaims>('DOAClaims').to(DOAClaims)
+    this.container.bind<DOAClaimsConfiguration>('DOAClaimsConfiguration').toConstantValue({
+      maxStorageAttempts: this.configuration.maxStorageAttempts
+    })
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<IPFS>('IPFS').to(IPFS)
     this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
@@ -83,5 +89,9 @@ export class StorageWriter {
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
+    this.container.bind<Service>('Service').to(Service)
+    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
+      uploadClaimIntervalInSeconds: this.configuration.uploadClaimIntervalInSeconds,
+    })
   }
 }

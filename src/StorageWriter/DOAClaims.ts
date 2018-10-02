@@ -21,28 +21,28 @@ export const throwIfClaimNotFound = (claim: Claim): Claim => {
 
 @injectable()
 export class DOAClaims {
-  private readonly claims: Collection
+  private readonly collection: Collection
   private readonly maxStorageAttempts: number
 
-  constructor(@inject('DB') db: Db, @inject('DOAClaims') configuration: DOAClaimsConfiguration) {
-    this.claims = db.collection('storageWriterClaims')
+  constructor(@inject('DB') db: Db, @inject('DOAClaimsConfiguration') configuration: DOAClaimsConfiguration) {
+    this.collection = db.collection('storageWriterClaims')
     this.maxStorageAttempts = configuration.maxStorageAttempts
   }
 
   public readonly start = async () => {
-    await this.claims.createIndex({ 'claim.id': 1 }, { unique: true })
+    await this.collection.createIndex({ 'claim.id': 1 }, { unique: true })
   }
 
   public readonly addClaim = async (claim: Claim) => {
-    await this.claims.insertOne({ claim, storageAttempts: 0, ipfsFileHash: null })
+    await this.collection.insertOne({ claim, storageAttempts: 0, ipfsFileHash: null })
   }
 
   public readonly addClaimHash = async (claimId: string, ipfsFileHash: string) => {
-    await this.claims.updateOne({ 'claim:id': claimId }, { $set: { ipfsFileHash } })
+    await this.collection.updateOne({ 'claim:id': claimId }, { $set: { ipfsFileHash } })
   }
 
   private readonly findClaimToStore = () =>
-    this.claims.findOneAndUpdate(
+    this.collection.findOneAndUpdate(
       {
         $and: [{ ipfsFileHash: null }, { storageAttempts: { $lt: this.maxStorageAttempts } }],
       },
