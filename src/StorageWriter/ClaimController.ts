@@ -53,35 +53,19 @@ export class ClaimController {
 
   private readonly uploadClaim = (claim: Claim) => this.ipfs.addText(JSON.stringify(claim))
 
-  private readonly handleStoreClaimError = async (error: Error, claim: Claim) => {
-    throw new Error('Failed to store claim')
-  }
-
   private readonly storeClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {
     const { claim } = data
-    try {
-      const ipfsFileHash = await this.uploadClaim(claim)
-      return {
-        ...data,
-        ipfsFileHash,
-      }
-    } catch (error) {
-      await this.handleStoreClaimError(error, claim)
+    const ipfsFileHash = await this.uploadClaim(claim)
+    return {
+      ...data,
+      ipfsFileHash,
     }
-  }
-
-  private readonly handleAddIPFSHashToClaimError = async (error: Error, claim: Claim, hash: string) => {
-    throw new Error('Failed to update claim hash')
   }
 
   private readonly addIPFSHashToClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {
     const { claim, ipfsFileHash } = data
-    try {
-      await this.db.addClaimHash(claim.id, ipfsFileHash)
-      return data
-    } catch (error) {
-      await this.handleAddIPFSHashToClaimError(error, claim, ipfsFileHash)
-    }
+    await this.db.addClaimHash(claim.id, ipfsFileHash)
+    return data
   }
 
   // tslint:disable-next-line
