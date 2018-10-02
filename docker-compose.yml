@@ -52,7 +52,6 @@ services:
       - RABBITMQ_URL=amqp://rabbit
       - MONGODB_HOST=mongo
       - IPFS_URL=http://ipfs:5001
-      - INTEGRATION_TEST_MONGODB_URL=mongodb://poet-mongo:27017/poet
       - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
     links:
       - mongo

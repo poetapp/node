@@ -33,7 +33,6 @@ services:
   poet-node:
     environment:
       - BITCOIN_URL=bitcoind-1
-      - INTEGRATION_TEST_MONGODB_URL=mongodb://poet-mongo:27017/poet
       - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
       - MINIMUM_BLOCK_HEIGHT=100
       - ENABLE_TIMESTAMPING=true
