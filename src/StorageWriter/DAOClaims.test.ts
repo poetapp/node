@@ -6,7 +6,7 @@ import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DAOCl
 
 describe('Database.getClaimFromFindAndUpdateResponse', async should => {
   const { assert } = should('return the correct value')
-  
+
   {
     const response: FindAndModifyWriteOpResultObject = {}
     assert({
