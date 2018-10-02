@@ -89,12 +89,14 @@ describe('loadConfigurationWithDefaults', async (should: any) => {
     API_PORT: '4321',
   }
 
+  const withoutLocalOverrides = loadConfigurationWithDefaults()
+
   assert({
     given: 'a local configuration override',
     should: 'return a config using the local override',
     actual: loadConfigurationWithDefaults(mongodbOverrides),
     expected: {
-      ...defaultConfig,
+      ...withoutLocalOverrides,
       apiPort: 4321,
     },
   })

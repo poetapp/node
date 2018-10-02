@@ -62,7 +62,7 @@ You need to have [Docker](https://docs.docker.com/install/) and [docker-compose]
 ```bash
 git clone https://github.com/poetapp/node.git
 cd node
-docker-compose up
+docker-compose up --build
 ```
 
 ### Makefile
@@ -133,7 +133,7 @@ This is what the default configuration looks like:
   insightUrl: 'https://test-insight.bitpay.com/api',
   bitcoinAddress: '',
   bitcoinAddressPrivateKey: '',
-  
+
   enableTimestamping: false,
   timestampIntervalInSeconds: 30,
   batchCreationIntervalInSeconds: 600

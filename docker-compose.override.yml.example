@@ -1,12 +1,39 @@
 version: '3'
 
 services:
+  rabbit:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672" # Allows access to the UI for this management image
+
+  # bitcoind-1:
+  #   volumes:
+  #     - bitcoind1:/home/bitcoin/.bitcoin
+
+  # bitcoind-2:
+  #   image: ruimarinho/bitcoin-core:0.16.3
+  #   volumes:
+  #     - bitcoind2:/home/bitcoin/.bitcoin
+  #   ports:
+  #     - "18444:18443"
+  #   command:
+  #     -printtoconsole
+  #     -testnet=${USE_BTC_TESTNET:-0}
+  #     -regtest=${USE_BTC_REGTEST:-1}
+  #     -rpcuser=bitcoinrpcuser
+  #     -rpcpassword=bitcoinrpcpassword
+  #     -rpcallowip=::/0
+  #     -server
+  #     -connect=bitcoind-1
+  #   depends_on:
+  #     - bitcoind-1
+  #   links:
+  #     - bitcoind-1:bitcoind-1
+
   poet-node:
     environment:
-      - BITCOIN_URL=bitcoin-regtest
-      - INTEGRATION_TEST_MONGODB_URL=mongodb://poet-mongo:27017/poet
+      - BITCOIN_URL=bitcoind-1
       - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
-      - FUNCTIONAL_TEST_NODE_A=http://poet-node:18080
       - MINIMUM_BLOCK_HEIGHT=100
       - ENABLE_TIMESTAMPING=true
       - TIMESTAMP_INTERVAL_IN_SECONDS=10
@@ -15,3 +42,10 @@ services:
     # volumes:
     #   - .:/usr/src/app
     # command: sleep infinity
+
+# volumes:
+#   bitcoind1:
+#     driver: local
+#
+#   bitcoind2:
+#     driver: local

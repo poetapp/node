@@ -1,5 +1,42 @@
 version: '3'
+
 services:
+  mongo:
+    image: mongo:3.4
+    ports:
+    - "27017:27017"
+    volumes:
+      - db:/data/db
+      - ./mongodb:/docker-entrypoint-initdb.d
+
+  rabbit:
+    image: rabbitmq:3
+    ports:
+    - "5671:5671"
+    - "5672:5672"
+
+  ipfs:
+    image: ipfs/go-ipfs:v0.4.17
+    ports:
+    - "8080:8080"
+    - "4001:4001"
+    - "5001:5001"
+    volumes:
+    - data:/data/ipfs
+
+  bitcoind-1:
+    image: ruimarinho/bitcoin-core:0.16.3
+    ports:
+    - "18443:18443"
+    command:
+      -printtoconsole
+      -server
+      -testnet=${USE_BTC_TESTNET:-0}
+      -regtest=${USE_BTC_REGTEST:-1}
+      -rpcuser=bitcoinrpcuser
+      -rpcpassword=bitcoinrpcpassword
+      -rpcallowip=::/0
+
   poet-node:
     build: .
     ports:
@@ -8,22 +45,28 @@ services:
       - mongo
       - rabbit
       - ipfs
-      - bitcoin-regtest
+      - bitcoind-1
     environment:
-      - BITCOIN_URL=bitcoin-regtest
-      - RABBITMQ_URL=amqp://poet-rabbit
-      - MONGODB_URL=mongodb://poet-mongo:27017/poet
-      - IPFS_URL=http://poet-ipfs:5001
-      - INTEGRATION_TEST_MONGODB_URL=mongodb://poet-mongo:27017/poet
+      - POET_SERVICE=node
+      - BITCOIN_URL=bitcoind-1
+      - RABBITMQ_URL=amqp://rabbit
+      - MONGODB_HOST=mongo
+      - IPFS_URL=http://ipfs:5001
       - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
-    hostname: poet-node
     links:
       - mongo
       - rabbit
       - ipfs
-      - bitcoin-regtest
+      - bitcoind-1
     command: >
       /bin/bash -c "
         sleep 10;
         npm start;
-      "
+        "
+
+volumes:
+  db:
+    driver: local
+
+  data:
+    driver: local
