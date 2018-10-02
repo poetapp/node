@@ -42,8 +42,8 @@ export class ClaimController {
   }
 
   // tslint:disable-next-line
-  public readonly addClaim = async (claim: Claim): Promise<void> => {
-    const logger = this.logger.child({ method: 'addClaim' })
+  public readonly create = async (claim: Claim): Promise<void> => {
+    const logger = this.logger.child({ method: 'create' })
 
     logger.trace({ claim }, 'Adding Claim')
 

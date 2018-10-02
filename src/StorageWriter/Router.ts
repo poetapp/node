@@ -46,7 +46,7 @@ export class Router {
     if (!isClaim(claim)) logger.error(`Received a ${this.exchange.newClaim} message, but the content isn't a claim.`)
 
     try {
-      await this.claimController.addClaim(claim)
+      await this.claimController.create(claim)
     } catch (error) {
       logger.error(
         {

@@ -15,7 +15,6 @@ import { loadConfigurationWithDefaults, Configuration } from 'Configuration'
 import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
-import { config } from 'bluebird';
 
 const startStopNoop = {
   start: () => Promise.resolve(),
