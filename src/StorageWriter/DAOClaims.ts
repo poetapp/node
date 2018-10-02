@@ -3,6 +3,8 @@ import { inject, injectable } from 'inversify'
 import { Collection, Db, FindAndModifyWriteOpResultObject } from 'mongodb'
 import { isNil, pipeP, lensPath, view } from 'ramda'
 
+import { NoMoreEntriesException } from './Exceptions'
+
 export interface DAOClaimsConfiguration {
   readonly maxStorageAttempts: number
 }
@@ -15,7 +17,7 @@ export const getClaimFromFindAndUpdateResponse = (response: FindAndModifyWriteOp
   view(L.valueClaim, response)
 
 export const throwIfClaimNotFound = (claim: Claim): Claim => {
-  if (isNil(claim)) throw new Error('No claims found')
+  if (isNil(claim)) throw new NoMoreEntriesException('No claims found')
   return claim
 }
 
