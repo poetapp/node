@@ -154,6 +154,16 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
   return configuration
 }
 
+const extractValue = (value: any) => {
+  const coercedValue = value === 'true' ? true : value === 'false' ? false : value
+
+  return isNaN(coercedValue)
+    ? coercedValue
+    : typeof coercedValue === 'boolean'
+      ? coercedValue
+      : parseInt(coercedValue, 10)
+}
+
 function loadConfigurationFromEnv(env: any): Partial<Configuration> {
   const map = createEnvToConfigurationKeyMap(keys(defaultConfiguration))
 
@@ -162,7 +172,7 @@ function loadConfigurationFromEnv(env: any): Partial<Configuration> {
     .reduce(
       (previousValue, [key, value]: [string, any]) => ({
         ...previousValue,
-        [map[key]]: isNaN(value) ? value : parseInt(value, 10),
+        [map[key]]: extractValue(value),
       }),
       {}
     )
