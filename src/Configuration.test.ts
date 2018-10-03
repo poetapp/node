@@ -87,6 +87,8 @@ describe('loadConfigurationWithDefaults', async (should: any) => {
   const { assert } = should()
   const mongodbOverrides = {
     API_PORT: '4321',
+    ENABLE_TIMESTAMPING: 'true',
+    RABBITMQ_URL: 'foo',
   }
 
   const withoutLocalOverrides = loadConfigurationWithDefaults()
@@ -98,6 +100,8 @@ describe('loadConfigurationWithDefaults', async (should: any) => {
     expected: {
       ...withoutLocalOverrides,
       apiPort: 4321,
+      enableTimestamping: true,
+      rabbitmqUrl: 'foo',
     },
   })
 })
