@@ -41,7 +41,6 @@ export class ClaimController {
     return value
   }
 
-  // tslint:disable-next-line
   public readonly create = async (claim: Claim): Promise<void> => {
     const logger = this.logger.child({ method: 'create' })
 
@@ -72,7 +71,6 @@ export class ClaimController {
     return data
   }
 
-  // tslint:disable-next-line
   public storeNextClaim = pipeP(
     this.log(LogTypes.trace)('Finding Claim'),
     this.findNextClaim,

@@ -54,7 +54,6 @@ export class DAOClaims {
       }
     )
 
-  // tslint:disable-next-line
   public readonly findNextClaim = pipeP(
     this.findClaimToStore,
     getClaimFromFindAndUpdateResponse,

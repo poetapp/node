@@ -10,7 +10,7 @@ import { ClaimController } from './ClaimController'
 import { isNoMoreEntriesException } from './Exceptions'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
-const isTraceError = anyPass([isNoMoreEntriesException])
+export const isTraceError = anyPass([isNoMoreEntriesException])
 
 @injectable()
 export class Router {
