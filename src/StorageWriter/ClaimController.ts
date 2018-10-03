@@ -47,6 +47,8 @@ export class ClaimController {
     logger.trace({ claim }, 'Adding Claim')
 
     await this.daoClaims.addClaim(claim)
+
+    logger.trace({ claim }, 'Added Claim')
   }
 
   private readonly findNextClaim = async (): Promise<StoreNextClaimData> => {
