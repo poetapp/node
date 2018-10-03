@@ -84,7 +84,7 @@
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "2.0.7",
     "semantic-release": "15.9.16",
-    "sinon": "6.3.4",
+    "sinon": "6.3.5",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.6.0",
     "travis-deploy-once": "5.0.9",
