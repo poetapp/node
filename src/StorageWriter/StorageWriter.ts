@@ -68,8 +68,10 @@ export class StorageWriter {
   async stop() {
     this.logger.info('Stopping StorageWriter Service')
     await this.service.stop()
+
     this.logger.info('Stopping StorageWriter...')
     await this.router.stop()
+    
     this.logger.info('Stopping StorageWriter DAOClaims...')
     await this.mongoClient.close()
   }
