@@ -137,6 +137,11 @@ export const mergeConfigs = (localVars: any = {}) => {
   return config
 }
 
+const prependPrefix = (prefix: string, configVars: any) => (acc: any, k: string) => ({
+  ...acc,
+  [k]: `${prefix}.${configVars[k]}`,
+})
+
 const applyExchangePrefix = (configVars: any) => {
   if (configVars.exchangePrefix === '') return configVars
 
@@ -154,13 +159,7 @@ const applyExchangePrefix = (configVars: any) => {
 
   return {
     ...configVars,
-    ...exchangeNames.reduce(
-      (acc: any, k: string) => ({
-        ...acc,
-        [k]: `${configVars.exchangePrefix}.${configVars[k]}`,
-      }),
-      {}
-    ),
+    ...exchangeNames.reduce(prependPrefix(configVars.exchangePrefix, configVars), {}),
   }
 }
 
