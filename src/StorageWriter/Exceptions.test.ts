@@ -2,8 +2,8 @@ import { describe } from 'riteway'
 
 import { NoMoreEntriesException, isNoMoreEntriesException } from './Exceptions'
 
-describe('isNoMoreEntriesException', async should => {
-  const { assert } = should('return the correct bool')
+describe('Exceptions.isNoMoreEntriesException', async should => {
+  const { assert } = should('return the correct boolean')
   assert({
     given: 'a normal error',
     actual: isNoMoreEntriesException(new Error()),

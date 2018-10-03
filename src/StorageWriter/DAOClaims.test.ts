@@ -4,7 +4,7 @@ import { describe, Try } from 'riteway'
 
 import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DAOClaims'
 
-describe('Database.getClaimFromFindAndUpdateResponse', async should => {
+describe('DOAClaims.getClaimFromFindAndUpdateResponse', async should => {
   const { assert } = should('return the correct value')
 
   {
@@ -40,7 +40,7 @@ describe('Database.getClaimFromFindAndUpdateResponse', async should => {
   }
 })
 
-describe('Database.throwIfClaimNotFound', async should => {
+describe('DOAClaims.throwIfClaimNotFound', async should => {
   const { assert } = should()
 
   assert({

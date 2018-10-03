@@ -3,7 +3,7 @@ import { describe } from 'riteway'
 import { NoMoreEntriesException } from './Exceptions'
 import { isTraceError } from './Router'
 
-describe('isTraceError', async should => {
+describe('Router.isTraceError', async should => {
   const { assert } = should('return the correct boolean')
 
   assert({
