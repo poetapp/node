@@ -2,7 +2,7 @@ version: '3'
 
 services:
   bitcoin-testnet:
-    image: ruimarinho/bitcoin-core:0.16.3
+    image: ruimarinho/bitcoin-core:0.17.0
     ports:
       - "18332:18332"
     command:
