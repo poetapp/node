@@ -4,7 +4,7 @@ import * as assert from 'assert'
 import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import * as path from 'path'
-import { keys } from 'ramda'
+import { keys, pipe } from 'ramda'
 
 import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 
@@ -13,6 +13,7 @@ const defaultMongodbUrl = 'mongodb://localhost:27017/poet'
 // Provide default value in defaultConfiguration for any new configuration options
 export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration, ExchangeConfiguration {
   readonly rabbitmqUrl: string
+  readonly exchangePrefix: string
   readonly mongodbUser: string
   readonly mongodbPassword: string
   readonly mongodbHost: string
@@ -70,6 +71,7 @@ export interface ExchangeConfiguration {
 
 const defaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://localhost',
+  exchangePrefix: '',
   mongodbUser: '',
   mongodbPassword: '',
   mongodbHost: 'localhost',
@@ -135,7 +137,37 @@ export const mergeConfigs = (localVars: any = {}) => {
   return config
 }
 
-export const loadConfigurationWithDefaults = (localVars: any = {}) => mergeConfigs({ ...process.env, ...localVars })
+const prependPrefix = (prefix: string, configVars: any) => (acc: any, k: string) => ({
+  ...acc,
+  [k]: `${prefix}.${configVars[k]}`,
+})
+
+const applyExchangePrefix = (configVars: any) => {
+  if (configVars.exchangePrefix === '') return configVars
+
+  const exchangeNames = [
+    'exchangeBatchReaderReadNextDirectoryRequest',
+    'exchangeBatchReaderReadNextDirectorySuccess',
+    'exchangeBatchWriterCreateNextBatchRequest',
+    'exchangeBatchWriterCreateNextBatchSuccess',
+    'exchangeNewClaim',
+    'exchangeClaimIpfsHash',
+    'exchangeIpfsHashTxId',
+    'exchangePoetAnchorDownloaded',
+    'exchangeClaimsDownloaded',
+  ]
+
+  return {
+    ...configVars,
+    ...exchangeNames.reduce(prependPrefix(configVars.exchangePrefix, configVars), {}),
+  }
+}
+
+export const loadConfigurationWithDefaults = (localVars: any = {}) =>
+  pipe(
+    mergeConfigs,
+    applyExchangePrefix
+  )({ ...process.env, ...localVars })
 
 function loadConfigurationFromFile(configPath: string): Configuration | {} {
   if (!existsSync(configPath)) {
