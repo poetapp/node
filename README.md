@@ -290,6 +290,7 @@ Functional tests are run as follows:
   $ cp docker-compose.override.yml.example docker-compose.override.yml
 ```
   - Edit the new file and uncomment the 'bitcoind-2' service
+      - DO NOT uncomment the `volumes` section. It is only used for debugging.
   - Build and run the functional tests
 ```bash
   $ docker-compose build
