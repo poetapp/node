@@ -283,10 +283,20 @@ The integration tests are hard-coded to hit `http://localhost:18080`. In the fut
 
 > **Warning:** Running the integration tests wipes out the entire `db.poet.works` collection and inserts testing data. This is done by the `test/integration/PrepareDB.ts` file. In the future, a less invasive mechanism will be developed. Meanwhile, make sure you're comfortable with this before running the integration tests!
 
-Currently, Po.et Node is lacking some tests. The most critical paths that aren't being tested right now are:
+Functional tests are run as follows:
 
-- Broadcasting of transactions in a single Node (submit work, wait a bit, get work and expect transactionId to be set and valid)
-- Replication across nodes (submit WORK to Node A, get WORK in Node B)
+  - Setup a docker-compose override file
+```bash
+  $ cp docker-compose.override.yml.example docker-compose.override.yml
+```
+  - Edit the new file and uncomment the 'bitcoind-2' service
+      - DO NOT uncomment the `volumes` section. It is only used for debugging.
+  - Build and run the functional tests
+```bash
+  $ docker-compose build
+  $ docker-compose up
+  $ docker-compose exec poet-node npm run test:functional
+```
 
 See issues [#22](poetapp/node#22), [#25](poetapp/node#25) and [#27](poetapp/node#27) for more info on this topic.
 

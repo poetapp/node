@@ -4,7 +4,7 @@ services:
   mongo:
     image: mongo:3.4
     ports:
-    - "27017:27017"
+      - "27017:27017"
     volumes:
       - db:/data/db
       - ./mongodb:/docker-entrypoint-initdb.d
@@ -12,22 +12,26 @@ services:
   rabbit:
     image: rabbitmq:3
     ports:
-    - "5671:5671"
-    - "5672:5672"
+      - "5671:5671"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=some_secret_cookie
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=adminPass
 
   ipfs:
     image: ipfs/go-ipfs:v0.4.17
     ports:
-    - "8080:8080"
-    - "4001:4001"
-    - "5001:5001"
+      - "8080:8080"
+      - "4001:4001"
+      - "5001:5001"
     volumes:
-    - data:/data/ipfs
+      - data:/data/ipfs
 
   bitcoind-1:
     image: ruimarinho/bitcoin-core:0.17.0
     ports:
-    - "18443:18443"
+      - "18443:18443"
     command:
       -printtoconsole
       -server
@@ -36,6 +40,7 @@ services:
       -rpcuser=bitcoinrpcuser
       -rpcpassword=bitcoinrpcpassword
       -rpcallowip=::/0
+      -deprecatedrpc=signrawtransaction
 
   poet-node:
     build: .
@@ -49,7 +54,7 @@ services:
     environment:
       - POET_SERVICE=node
       - BITCOIN_URL=bitcoind-1
-      - RABBITMQ_URL=amqp://rabbit
+      - RABBITMQ_URL=amqp://admin:adminPass@rabbit
       - MONGODB_HOST=mongo
       - IPFS_URL=http://ipfs:5001
       - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
