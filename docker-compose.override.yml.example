@@ -31,12 +31,6 @@ services:
   poet-node:
     environment:
       - ENABLE_TIMESTAMPING=true
-    #   - BITCOIN_URL=bitcoind-1
-    #   - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
-    #   - MINIMUM_BLOCK_HEIGHT=100,
-    #   - TIMESTAMP_INTERVAL_IN_SECONDS=10,
-    #   - BATCH_CREATION_INTERVAL_IN_SECONDS=5,
-    #   - READ_DIRECTORY_INTERVAL_IN_SECONDS=5,
     # volumes:
     #   - .:/usr/src/app
     # command: sleep infinity
