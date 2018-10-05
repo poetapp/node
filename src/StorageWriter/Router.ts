@@ -1,12 +1,16 @@
 import { isClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
+import { anyPass } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
+import { isNoMoreEntriesException } from './Exceptions'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
+
+export const isTraceError = anyPass([isNoMoreEntriesException])
 
 @injectable()
 export class Router {
@@ -29,6 +33,7 @@ export class Router {
 
   async start() {
     await this.messaging.consume(this.exchange.newClaim, this.onNewClaim)
+    await this.messaging.consume(this.exchange.storageWriterStoreNextClaim, this.onStorageWriterStoreNextClaim)
   }
 
   async stop() {
@@ -54,6 +59,22 @@ export class Router {
         },
         'Uncaught Exception while Storing Claim'
       )
+    }
+  }
+
+  onStorageWriterStoreNextClaim = async () => {
+    const logger = this.logger.child({ method: 'onStorageWriterStoreNextClaim' })
+    logger.info('Upload next claim request')
+    try {
+      const { ipfsFileHash, claim } = await this.claimController.storeNextClaim()
+      await this.messaging.publish(this.exchange.claimIpfsHash, {
+        claimId: claim.id,
+        ipfsFileHash,
+      })
+      logger.info({ ipfsFileHash, claim }, 'Upload next claim success')
+    } catch (error) {
+      if (isTraceError(error)) return logger.trace({ error })
+      logger.error({ error }, 'Upload next claim failure')
     }
   }
 }

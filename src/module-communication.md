@@ -9,7 +9,7 @@ This document describes communication between the high level modules of the poet
 
 - on `newClaim`
   - **View** stores the claim information into the work collection
-  - **Storage** adds the claim to IPFS, then publishes `ClaimIPFSHash`
+  - **StorageWriter** asynchronously adds the claim to IPFS, then publishes `ClaimIPFSHash`
 
 - on `ClaimIPFSHash`
   - **BatchWriter** Stores an entry to be batched

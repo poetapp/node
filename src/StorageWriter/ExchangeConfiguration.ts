@@ -3,4 +3,5 @@ export interface ExchangeConfiguration {
   readonly newClaim?: string
   readonly poetAnchorDownloaded?: string
   readonly claimsDownloaded?: string
+  readonly storageWriterStoreNextClaim: string
 }
