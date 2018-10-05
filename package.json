@@ -82,7 +82,7 @@
     "ipfs-api": "24.0.2",
     "nodemon": "1.18.4",
     "nyc": "poetapp/nyc#fbc2ed1",
-    "riteway": "2.0.7",
+    "riteway": "2.0.8",
     "semantic-release": "15.9.17",
     "sinon": "6.3.5",
     "ts-node": "7.0.1",
