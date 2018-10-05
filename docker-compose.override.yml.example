@@ -10,6 +10,9 @@ services:
     # volumes:
     #   - bitcoind1:/home/bitcoin/.bitcoin
 
+  # This is part of the override config because it is only needed when
+  # running functional tests. Someone checking out the repo and wanting
+  # to just run a poet node only needs bitcoind-1.
   bitcoind-2:
     # image: ruimarinho/bitcoin-core:0.16.3
     # volumes:
@@ -24,6 +27,7 @@ services:
     #   -rpcpassword=bitcoinrpcpassword
     #   -rpcallowip=::/0
     #   -server
+    #   -deprecatedrpc=signrawtransaction
     #   -addnode=bitcoind-1
     # links:
     #   - bitcoind-1:bitcoind-1

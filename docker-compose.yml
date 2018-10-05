@@ -40,6 +40,7 @@ services:
       -rpcuser=bitcoinrpcuser
       -rpcpassword=bitcoinrpcpassword
       -rpcallowip=::/0
+      -deprecatedrpc=signrawtransaction
 
   poet-node:
     build: .
