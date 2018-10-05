@@ -42,6 +42,9 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly batchCreationIntervalInSeconds: number
 
   readonly readDirectoryIntervalInSeconds: number
+
+  readonly uploadClaimIntervalInSeconds: number
+  readonly uploadClaimMaxAttempts: number
 }
 
 export interface LoggingConfiguration {
@@ -67,6 +70,7 @@ export interface ExchangeConfiguration {
   readonly exchangeIpfsHashTxId: string
   readonly exchangePoetAnchorDownloaded: string
   readonly exchangeClaimsDownloaded: string
+  readonly exchangeStorageWriterStoreNextClaim: string
 }
 
 const defaultConfiguration: Configuration = {
@@ -106,6 +110,9 @@ const defaultConfiguration: Configuration = {
 
   readDirectoryIntervalInSeconds: 30,
 
+  uploadClaimIntervalInSeconds: 30,
+  uploadClaimMaxAttempts: 10,
+
   forceBlockHeight: undefined,
 
   exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
@@ -117,6 +124,7 @@ const defaultConfiguration: Configuration = {
   exchangeIpfsHashTxId: 'IPFS_HASH_TX_ID',
   exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
   exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
+  exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
