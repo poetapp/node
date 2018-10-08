@@ -17,7 +17,7 @@ services:
   # running functional tests. Someone checking out the repo and wanting
   # to just run a poet node only needs bitcoind-1.
   bitcoind-2:
-    image: ruimarinho/bitcoin-core:0.16.3
+    image: ruimarinho/bitcoin-core:0.17.0
     # volumes:
     #   - bitcoind2:/home/bitcoin/.bitcoin
     ports:
