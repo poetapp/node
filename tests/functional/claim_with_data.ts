@@ -4,16 +4,27 @@ import { path } from 'ramda'
 import { describe } from 'riteway'
 import { app } from '../../src/app'
 import { ensureBitcoinBalance } from '../helpers/bitcoin'
+import { dbHelper } from '../helpers/database'
 import { delay, runtimeId } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'
 const Client = require('bitcoin-core')
 
+const PREFIX_A = `test-functional-nodeA-poet-${runtimeId()}`
 const NODE_A_PORT = '28081'
+const PREFIX_B = `test-functional-nodeB-poet-${runtimeId()}`
 const NODE_B_PORT = '28082'
 const privateKey = 'L1mptZyB6aWkiJU7dvAK4UUjLSaqzcRNYJn3KuAA7oEVyiNn3ZPF'
 const getWorkFromNodeA = getWork(NODE_A_PORT)
 const postWorkToNodeA = postWork(NODE_A_PORT)
 const getWorkFromNodeB = getWork(NODE_B_PORT)
+
+const blockchainSettings = {
+  MINIMUM_BLOCK_HEIGHT: 100,
+  ENABLE_TIMESTAMPING: true,
+  TIMESTAMP_INTERVAL_IN_SECONDS: 10,
+  BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
+  READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
+}
 
 const bitcoindClientA = new Client({
   host: process.env.BITCOIN_URL || 'bitcoind-1',
@@ -23,33 +34,38 @@ const bitcoindClientA = new Client({
   username: 'bitcoinrpcuser',
 })
 
+const createDatabase = async (prefix: string) => {
+  const db = dbHelper()
+
+  return {
+    teardown: db.teardown,
+    settings: await db.setup(prefix),
+  }
+}
+
 describe('A user can successfully submit a claim into the po.et network', async (assert: any) => {
   const text = 'A most excellent read...'
 
+  const dbA = await createDatabase(PREFIX_A)
   const serverA = await app({
     BITCOIN_URL: process.env.BITCOIN_URL || 'bitcoind-1',
     API_PORT: NODE_A_PORT,
-    MONGODB_DATABASE: `test-functional-nodeA-poet-${runtimeId()}`,
-    MONGODB_HOST: 'mongo',
-    MINIMUM_BLOCK_HEIGHT: 100,
-    ENABLE_TIMESTAMPING: true,
-    TIMESTAMP_INTERVAL_IN_SECONDS: 10,
-    BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
-    READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
-    EXCHANGE_PREFIX: `test-functional-nodeA-poet-${runtimeId()}`,
+    MONGODB_DATABASE: dbA.settings.tempDbName,
+    MONGODB_USER: dbA.settings.tempDbUser,
+    MONGODB_PASSWORD: dbA.settings.tempDbPassword,
+    EXCHANGE_PREFIX: PREFIX_A,
+    ...blockchainSettings,
   })
 
+  const dbB = await createDatabase(PREFIX_B)
   const serverB = await app({
     BITCOIN_URL: process.env.BITCOIN_B_URL || 'bitcoind-2',
     API_PORT: NODE_B_PORT,
-    MONGODB_DATABASE: `test-functional-nodeB-poet-${runtimeId()}`,
-    MONGODB_HOST: 'mongo',
-    MINIMUM_BLOCK_HEIGHT: 100,
-    ENABLE_TIMESTAMPING: true,
-    TIMESTAMP_INTERVAL_IN_SECONDS: 10,
-    BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
-    READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
-    EXCHANGE_PREFIX: `test-functional-nodeB-poet-${runtimeId()}`,
+    MONGODB_DATABASE: dbB.settings.tempDbName,
+    MONGODB_USER: dbB.settings.tempDbUser,
+    MONGODB_PASSWORD: dbB.settings.tempDbPassword,
+    EXCHANGE_PREFIX: PREFIX_B,
+    ...blockchainSettings,
   })
 
   // Make sure node A has regtest coins to pay for transactions.
@@ -195,4 +211,6 @@ describe('A user can successfully submit a claim into the po.et network', async 
 
   await serverA.stop()
   await serverB.stop()
+  await dbA.teardown()
+  await dbB.teardown()
 })

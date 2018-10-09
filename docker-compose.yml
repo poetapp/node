@@ -5,6 +5,14 @@ services:
     image: mongo:3.4
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootPass
+      - POET_DB=poet
+      - POET_DB_USER=poet
+      - POET_DB_PASSWORD=poetPass
     volumes:
       - db:/data/db
       - ./mongodb:/docker-entrypoint-initdb.d
@@ -56,6 +64,8 @@ services:
       - BITCOIN_URL=bitcoind-1
       - RABBITMQ_URL=amqp://admin:adminPass@rabbit
       - MONGODB_HOST=mongo
+      - MONGODB_USER=poet
+      - MONGODB_PASSWORD=poetPass
       - IPFS_URL=http://ipfs:5001
       - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
     links:
