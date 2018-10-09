@@ -1,9 +1,7 @@
 import { describe } from 'riteway'
 import { camelCaseToScreamingSnakeCase } from './camelCaseToScreamingSnakeCase'
 
-describe('camelCaseToScreamingSnakeCase()', async (should: any) => {
-  const { assert } = should()
-
+describe('camelCaseToScreamingSnakeCase()', async (assert: any) => {
   assert({
     given: 'no arguments',
     should: 'return an empty string',

@@ -7,9 +7,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { WorkController } from './WorkController'
 
-describe('View Router', async (should: any) => {
-  const { assert } = should('')
-
+describe('View Router', async (assert: any) => {
   const host = 'http://localhost'
   const port = 3000
   const server = new Server(host, port)

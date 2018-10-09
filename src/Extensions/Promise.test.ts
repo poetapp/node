@@ -4,9 +4,7 @@ import { describe } from 'riteway'
 
 import './Promise'
 
-describe('Promise', async (should: any) => {
-  const { assert } = should('')
-
+describe('Promise', async (assert: any) => {
   const SUCCESS = true
   const ERROR = false
   const TRANSLATION = 'TRANSLATION'

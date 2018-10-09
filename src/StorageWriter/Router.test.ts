@@ -3,11 +3,10 @@ import { describe } from 'riteway'
 import { NoMoreEntriesException } from './Exceptions'
 import { isTraceError } from './Router'
 
-describe('Router.isTraceError', async should => {
-  const { assert } = should('return the correct boolean')
-
+describe('Router.isTraceError', async assert => {
   assert({
     given: 'a normal error',
+    should: 'return the correct boolean',
     actual: isTraceError(new Error()),
     expected: false,
   })
@@ -17,6 +16,7 @@ describe('Router.isTraceError', async should => {
   traceErrors.map(err =>
     assert({
       given: 'a trace error',
+      should: 'return the correct boolean',
       actual: isTraceError(err),
       expected: true,
     })

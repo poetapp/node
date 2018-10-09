@@ -9,9 +9,7 @@ import { anchorPrefixAndVersionMatch, blockToPoetAnchors, dataToPoetAnchor } fro
 
 import * as TestBlock from './TestData/block-0000000070746b06bbec07a7cd35e0c6d47bfa4e2544a6a1d2aa6efc49d47679.json'
 
-describe('Bitcoin.blockToPoetAnchors', async should => {
-  const { assert } = should()
-
+describe('Bitcoin.blockToPoetAnchors', async assert => {
   assert({
     given: 'testnet block 1356137',
     should: 'satisfy basic integrity checks',
@@ -86,9 +84,7 @@ describe('Bitcoin.blockToPoetAnchors', async should => {
   }
 })
 
-describe('Bitcoin.getMatchingAnchors', async should => {
-  const { assert } = should('return only the ones matching prefix and version')
-
+describe('Bitcoin.getMatchingAnchors', async assert => {
   const anchorPoet0001: PoetBlockAnchor = {
     transactionId: '0b801f8cc7bec11048b18d9591d35eb747cfcbd1945ad4a72d6baf8f74c7da2e',
     storageProtocol: StorageProtocol.IPFS,
@@ -131,38 +127,41 @@ describe('Bitcoin.getMatchingAnchors', async should => {
 
   assert({
     given,
+    should: 'return only the ones matching prefix and version',
     actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_POET, [0, 0, 0, 1])),
     expected: [anchorPoet0001, anchorPoet0001b],
   })
 
   assert({
     given,
+    should: 'return only the ones matching prefix and version',
     actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, [0, 0, 0, 1])),
     expected: [anchorBard0001],
   })
 
   assert({
     given,
+    should: 'return only the ones matching prefix and version',
     actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_POET, [0, 0, 0, 2])),
     expected: [anchorPoet0002],
   })
 
   assert({
     given,
+    should: 'return only the ones matching prefix and version',
     actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, [0, 0, 0, 2])),
     expected: [anchorBard0002],
   })
 
   assert({
     given,
+    should: 'return only the ones matching prefix and version',
     actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, [0, 0, 0, 3])),
     expected: [],
   })
 })
 
-describe('Bitcoin.dataToPoetAnchor', async should => {
-  const { assert } = should()
-
+describe('Bitcoin.dataToPoetAnchor', async assert => {
   function assertSample(
     prefix: string,
     version: number[],

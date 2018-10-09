@@ -2,9 +2,7 @@ import { describe } from 'riteway'
 
 import { bitcoinRPCConfigurationToBitcoinCoreArguments, createEnvToConfigurationKeyMap } from './Configuration'
 
-describe('createEnvToConfigurationKeyMap()', async (should: any) => {
-  const { assert } = should()
-
+describe('createEnvToConfigurationKeyMap()', async (assert: any) => {
   assert({
     given: 'empty array',
     should: 'return empty object',
@@ -28,9 +26,7 @@ describe('createEnvToConfigurationKeyMap()', async (should: any) => {
   }
 })
 
-describe('bitcoinRPCConfigurationToBitcoinCoreArguments()', async (should: any) => {
-  const { assert } = should()
-
+describe('bitcoinRPCConfigurationToBitcoinCoreArguments()', async (assert: any) => {
   const defaultConfiguration = {
     bitcoinUrl: '127.0.0.1',
     bitcoinPort: 18443,

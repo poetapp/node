@@ -17,9 +17,7 @@ const configuration = {
 const CustomPino = Object.create(Pino)
 CustomPino.child = spy()
 
-describe('Logging', async (should: any) => {
-  const { assert } = should('')
-
+describe('Logging', async (assert: any) => {
   {
     const logger = createModuleLogger(configuration, __dirname)
 

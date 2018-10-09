@@ -2,9 +2,7 @@ import { describe } from 'riteway'
 
 import { isTruthy } from './isTruthy'
 
-describe('isTruthy', async should => {
-  const { assert } = should()
-
+describe('isTruthy', async assert => {
   assert({
     given: 'null',
     should: 'return false',

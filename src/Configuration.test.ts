@@ -5,9 +5,7 @@ import { loadConfigurationWithDefaults, mergeConfigs } from './Configuration'
 
 const defaultConfig = mergeConfigs()
 
-describe('src/Configuration', async (should: any) => {
-  const { assert } = should()
-
+describe('src/Configuration', async (assert: any) => {
   assert({
     given: 'no arguments',
     should: 'return the default config',
@@ -83,8 +81,7 @@ describe('src/Configuration', async (should: any) => {
   }
 })
 
-describe('loadConfigurationWithDefaults', async (should: any) => {
-  const { assert } = should()
+describe('loadConfigurationWithDefaults', async (assert: any) => {
   const mongodbOverrides = {
     API_PORT: '4321',
     ENABLE_TIMESTAMPING: 'true',
@@ -133,9 +130,7 @@ describe('loadConfigurationWithDefaults', async (should: any) => {
   }
 })
 
-describe('src/Configuration RabbitmqExchangeMessages', async (should: any) => {
-  const { assert } = should()
-
+describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
   {
     const defaultValues = {
       exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',

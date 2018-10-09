@@ -3,9 +3,7 @@ import { describe } from 'riteway'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 
-describe('IPFS', async (should: any) => {
-  const { assert } = should('')
-
+describe('IPFS', async assert => {
   const IPFSConfiguration: IPFSConfiguration = {
     ipfsUrl: '',
     downloadTimeoutInSeconds: 1,
