@@ -11,8 +11,7 @@ process.env.API_PORT = '28080'
 const asyncTimeout = (delay: number = 1) =>
   new Promise((resolve, reject) => setTimeout(() => resolve(false), delay * 1000))
 
-describe('gracefully stopping the application', async should => {
-  const { assert } = should()
+describe('gracefully stopping the application', async assert => {
   const delay = 5
   const server = await app()
 

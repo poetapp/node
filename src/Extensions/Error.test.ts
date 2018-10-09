@@ -1,9 +1,7 @@
 import { describe } from 'riteway'
 import './Error'
 
-describe('Extensions Error', async (should: any) => {
-  const { assert } = should('')
-
+describe('Extensions Error', async (assert: any) => {
   {
     const customError = new Error('error')
     const actual = JSON.parse(JSON.stringify(customError))

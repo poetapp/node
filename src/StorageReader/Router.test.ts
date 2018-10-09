@@ -10,9 +10,7 @@ import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 
-describe('StorageReader Router', async (should: any) => {
-  const { assert } = should('')
-
+describe('StorageReader Router', async (assert: any) => {
   const host = 'http://localhost'
   const port = 3000
   const server = new Server(host, port)

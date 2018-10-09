@@ -18,9 +18,7 @@ const fetchFile = async (hash: string): Promise<string> => {
   return response.text()
 }
 
-describe('IPFS.addText', async should => {
-  const { assert } = should('match the claim read from ipfs')
-
+describe('IPFS.addText', async assert => {
   {
     const ipfs = createIPFS()
     const claim = allAsciiCharactersClaim
@@ -29,6 +27,7 @@ describe('IPFS.addText', async should => {
 
     assert({
       given: 'a claim that only contains ascii characters',
+      should: 'match the claim read from ipfs',
       actual: claimFromIPFS,
       expected: claim,
     })
@@ -42,6 +41,7 @@ describe('IPFS.addText', async should => {
 
     assert({
       given: 'a claim that contains non-ascii characters',
+      should: 'match the claim read from ipfs',
       actual: claimFromIPFS,
       expected: claim,
     })
@@ -55,6 +55,7 @@ describe('IPFS.addText', async should => {
 
     assert({
       given: 'a longer claim that contains non-ascii characters',
+      should: 'match the claim read from ipfs',
       actual: claimFromIPFS,
       expected: claim,
     })

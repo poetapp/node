@@ -21,9 +21,7 @@ const claim = {
 
 const ipfsFileHash = ''
 
-describe('Interfaces isClaimIPFSHashPair', async (should: any) => {
-  const { assert } = should('')
-
+describe('Interfaces isClaimIPFSHashPair', async (assert: any) => {
   {
     assert({
       given: 'an input without the required object properties',

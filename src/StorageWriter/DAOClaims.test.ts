@@ -4,13 +4,12 @@ import { describe, Try } from 'riteway'
 
 import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DAOClaims'
 
-describe('DOAClaims.getClaimFromFindAndUpdateResponse', async should => {
-  const { assert } = should('return the correct value')
-
+describe('DOAClaims.getClaimFromFindAndUpdateResponse', async assert => {
   {
     const response: FindAndModifyWriteOpResultObject = {}
     assert({
       given: 'a response that does not contain a value',
+      should: 'return the correct value',
       actual: getClaimFromFindAndUpdateResponse(response),
       expected: undefined,
     })
@@ -20,6 +19,7 @@ describe('DOAClaims.getClaimFromFindAndUpdateResponse', async should => {
     const response: FindAndModifyWriteOpResultObject = { value: {} }
     assert({
       given: 'a response that does not contain a claim',
+      should: 'return the correct value',
       actual: getClaimFromFindAndUpdateResponse(response),
       expected: undefined,
     })
@@ -34,15 +34,14 @@ describe('DOAClaims.getClaimFromFindAndUpdateResponse', async should => {
     }
     assert({
       given: 'a response that contians a claim',
+      should: 'return the correct value',
       actual: getClaimFromFindAndUpdateResponse(response),
       expected: claim,
     })
   }
 })
 
-describe('DOAClaims.throwIfClaimNotFound', async should => {
-  const { assert } = should()
-
+describe('DOAClaims.throwIfClaimNotFound', async assert => {
   assert({
     given: 'null',
     should: 'throw',

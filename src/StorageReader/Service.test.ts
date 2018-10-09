@@ -11,9 +11,7 @@ import { IPFSConfiguration } from './IPFSConfiguration'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
-describe('StorageReader Router', async (should: any) => {
-  const { assert } = should('')
-
+describe('StorageReader Router', async (assert: any) => {
   const host = 'http://localhost'
   const port = 3000
   const server = new Server(host, port)

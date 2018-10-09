@@ -9,9 +9,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS } from './IPFS'
 import { IPFSConfiguration } from './IPFSConfiguration'
 
-describe('StorageReader ClaimController', async (should: any) => {
-  const { assert } = should('')
-
+describe('StorageReader ClaimController', async (assert: any) => {
   const host = 'http://localhost'
   const port = 3000
   const server = new Server(host, port)

@@ -4,9 +4,7 @@ import { spy } from 'sinon'
 
 import { RequestValidationMiddleware } from './RequestValidationMiddleware'
 
-describe('RequestValidationMiddleware', async (should: any) => {
-  const { assert } = should('')
-
+describe('RequestValidationMiddleware', async (assert: any) => {
   const name = 'Jon Doe'
 
   const schema = {
@@ -65,7 +63,11 @@ describe('RequestValidationMiddleware', async (should: any) => {
   {
     const next = spy()
 
-    await RequestValidationMiddleware({ body: schema, query: schema, params: schema })(ctx, next)
+    await RequestValidationMiddleware({
+      body: schema,
+      query: schema,
+      params: schema,
+    })(ctx, next)
 
     assert({
       given: 'valid schema for validating body, params and query request together',

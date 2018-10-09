@@ -19,10 +19,8 @@ class FetchTimeoutError extends Error {
   }
 }
 
-describe('FetchError', async (should: any) => {
-  const { assert } = should('')
-
-  describe('isFetchError', async (should: any) => {
+describe('FetchError', async (assert: any) => {
+  describe('isFetchError', async (assert: any) => {
     {
       const fetchError = new FetchError()
       const actual = isFetchError(fetchError)
@@ -46,7 +44,7 @@ describe('FetchError', async (should: any) => {
     }
   })
 
-  describe('isFetchTimeoutError', async (should: any) => {
+  describe('isFetchTimeoutError', async (assert: any) => {
     {
       const fetchError = new FetchTimeoutError('request-timeout')
       const actual = isFetchTimeoutError(fetchError)

@@ -43,8 +43,7 @@ const createDatabase = async (prefix: string) => {
   }
 }
 
-describe('A user can successfully submit a claim into the po.et network', async (should: any) => {
-  const { assert } = should('')
+describe('A user can successfully submit a claim into the po.et network', async (assert: any) => {
   const text = 'A most excellent read...'
 
   const dbA = await createDatabase(PREFIX_A)

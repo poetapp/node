@@ -1,9 +1,7 @@
 import { describe } from 'riteway'
 import { minutesToMiliseconds, secondsToMiliseconds } from './Time'
 
-describe('Time minutesToMiliseconds()', async (should: any) => {
-  const { assert } = should('')
-
+describe('Time minutesToMiliseconds()', async (assert: any) => {
   {
     assert({
       given: 'minutesToMiliseconds(0)',
@@ -32,9 +30,7 @@ describe('Time minutesToMiliseconds()', async (should: any) => {
   }
 })
 
-describe('Time secondsToMiliseconds()', async (should: any) => {
-  const { assert } = should('')
-
+describe('Time secondsToMiliseconds()', async (assert: any) => {
   {
     assert({
       given: 'secondsToMiliseconds(0)',

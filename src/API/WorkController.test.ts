@@ -6,9 +6,7 @@ import { describe } from 'riteway'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { WorkController } from './WorkController'
 
-describe('API WorkController', async (should: any) => {
-  const { assert } = should('')
-
+describe('API WorkController', async (assert: any) => {
   const host = 'http://localhost'
   const port = 3000
   const server = new Server(host, port)
