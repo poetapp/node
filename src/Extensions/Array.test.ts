@@ -2,9 +2,7 @@ import { describe } from 'riteway'
 import './Array'
 
 describe('Array', async () => {
-  describe('Array.toObject', async (should: any) => {
-    const { assert } = should('')
-
+  describe('Array.toObject', async (assert: any) => {
     const arrayWithObject = [['key1', 'value1'], ['key2', 'value2']]
 
     const result = arrayWithObject.toObject()

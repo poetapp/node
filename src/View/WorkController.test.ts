@@ -4,9 +4,7 @@ import { describe } from 'riteway'
 
 import { WorkController } from './WorkController'
 
-describe('View WorkController', async (should: any) => {
-  const { assert } = should('')
-
+describe('View WorkController', async (assert: any) => {
   const host = 'http://localhost'
   const port = 3000
   const server = new Server(host, port)

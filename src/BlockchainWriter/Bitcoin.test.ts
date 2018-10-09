@@ -5,9 +5,7 @@ import { IllegalPrefixLength, IllegalVersionLength, poetAnchorToData } from './B
 
 import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
-describe('Bitcoin.getData', async should => {
-  const { assert } = should()
-
+describe('Bitcoin.getData', async assert => {
   {
     const testGetData = (poetAnchor: PoetAnchor) => {
       const data = poetAnchorToData(poetAnchor)
