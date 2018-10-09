@@ -5,7 +5,6 @@ import { describe, Try } from 'riteway'
 import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DAOClaims'
 
 describe('DOAClaims.getClaimFromFindAndUpdateResponse', async assert => {
-
   {
     const response: FindAndModifyWriteOpResultObject = {}
     assert({
