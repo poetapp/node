@@ -25,7 +25,7 @@ services:
     command:
       -printtoconsole
       -testnet=${USE_BTC_TESTNET:-0}
-     -regtest=${USE_BTC_REGTEST:-1}
+      -regtest=${USE_BTC_REGTEST:-1}
       -rpcuser=bitcoinrpcuser
       -rpcpassword=bitcoinrpcpassword
       -rpcallowip=::/0
