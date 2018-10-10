@@ -21,6 +21,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly mongodbDatabase: string
   readonly mongodbUrl: string
   readonly ipfsUrl: string
+  readonly healthIntervalInSeconds: number
 
   readonly apiPort: number
 
@@ -70,6 +71,7 @@ export interface ExchangeConfiguration {
   readonly exchangeIpfsHashTxId: string
   readonly exchangePoetAnchorDownloaded: string
   readonly exchangeClaimsDownloaded: string
+  readonly exchangeClaimsNotDownloaded: string
   readonly exchangeStorageWriterStoreNextClaim: string
 }
 
@@ -98,6 +100,8 @@ const defaultConfiguration: Configuration = {
   enableTimestamping: false,
   timestampIntervalInSeconds: 30,
 
+  healthIntervalInSeconds: 30,
+
   downloadIntervalInSeconds: 5,
   downloadRetryDelayInMinutes: 10,
   downloadMaxAttempts: 20,
@@ -124,6 +128,7 @@ const defaultConfiguration: Configuration = {
   exchangeIpfsHashTxId: 'IPFS_HASH_TX_ID',
   exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
   exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
+  exchangeClaimsNotDownloaded: 'CLAIMS_NOT_DOWNLOADED',
   exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM',
 }
 

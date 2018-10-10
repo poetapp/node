@@ -12,6 +12,7 @@ import { BatchWriter } from 'BatchWriter/BatchWriter'
 import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
 import { loadConfigurationWithDefaults, Configuration } from 'Configuration'
+import { Health } from 'Health/Health'
 import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
@@ -49,6 +50,7 @@ export async function app(localVars: any = {}) {
     port: configuration.apiPort,
     dbUrl: configuration.mongodbUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
+    downloadMaxAttempts: configuration.downloadMaxAttempts,
     exchanges: {
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
@@ -137,6 +139,7 @@ export async function app(localVars: any = {}) {
       batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
+      claimsNotDownloaded: configuration.exchangeClaimsNotDownloaded,
     },
   })
   try {
@@ -220,6 +223,28 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'BlockchainReader was unable to start')
   }
 
+  const health = new Health({
+    ...loggingConfiguration,
+    dbUrl: configuration.mongodbUrl,
+    ipfsUrl: configuration.ipfsUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
+    bitcoinUrl: configuration.bitcoinUrl,
+    bitcoinPort: configuration.bitcoinPort,
+    bitcoinNetwork: configuration.bitcoinNetwork,
+    bitcoinUsername: configuration.bitcoinUsername,
+    bitcoinPassword: configuration.bitcoinPassword,
+    healthIntervalInSeconds: configuration.healthIntervalInSeconds,
+    exchanges: {
+      claimsNotDownloaded: configuration.exchangeClaimsNotDownloaded,
+    },
+  })
+
+  try {
+    await health.start()
+  } catch (exception) {
+    logger.error({ exception }, 'Health was unable to start')
+  }
+
   return {
     stop: async () => {
       logger.info('Po.et node terminating...')
@@ -232,6 +257,7 @@ export async function app(localVars: any = {}) {
       await blockchainWriter.stop()
       await storageWriter.stop()
       await storage.stop()
+      await health.stop()
 
       logger.info('Po.et node terminated')
       return true

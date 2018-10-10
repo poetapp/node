@@ -7,6 +7,8 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { APIConfiguration } from './APIConfiguration'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
+import { HealthController } from './HealthController'
+import { HealthControllerConfiguration } from './HealthControllerConfiguration'
 import { Router } from './Router'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
@@ -57,6 +59,10 @@ export class API {
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<RouterConfiguration>('RouterConfiguration').toConstantValue({ port: this.configuration.port })
     this.container.bind<WorkController>('WorkController').to(WorkController)
+    this.container.bind<HealthController>('HealthController').to(HealthController)
+    this.container.bind<HealthControllerConfiguration>('HealthControllerConfiguration').toConstantValue({
+      downloadMaxAttempts: this.configuration.downloadMaxAttempts,
+    })
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
