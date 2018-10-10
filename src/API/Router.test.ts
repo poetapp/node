@@ -5,20 +5,21 @@ import { describe } from 'riteway'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { HealthController } from './HealthController'
-import { HealthControllerConfiguration } from './HealthControllerConfiguration'
+import { IPFSConfiguration } from './IPFSConfiguration'
+import { IPFS } from './IPFS'
 import { Router } from './Router'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
 
 describe('API Router', async (assert: any) => {
   const configuration = { port: 3000 } as RouterConfiguration
-  const healthControllerConfiguration: HealthControllerConfiguration = {
-    downloadMaxAttempts: 1,
-  }
   const host = 'http://localhost'
   const port = 3000
   const server = new Server(host, port)
-  const healthController = new HealthController(new Db('poet', server), healthControllerConfiguration)
+  const IPFSConfiguration: IPFSConfiguration = {
+    ipfsUrl: '',
+  }
+  const healthController = new HealthController(new Db('poet', server), new IPFS(IPFSConfiguration))
   const exchangeConfiguration: ExchangeConfiguration = {
     poetAnchorDownloaded: '',
     claimsDownloaded: '',
