@@ -16,8 +16,6 @@ declare module 'bitcoin-core' {
     getBlock(hash: string, verbosity?: number): any
     getBlockHash(height: number): string
     getNewAddress(): Promise<string>
-    getNetworkInfo(): any
-    getWalletInfo(): any
     createRawTransaction(inputs: any, outputs: any): Promise<string>
     fundRawTransaction(hexstring: string): Promise<FundRawTransactionResponse>
     signRawTransaction(hexstring: string): Promise<SignRawTransactionResponse>

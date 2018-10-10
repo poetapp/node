@@ -37,10 +37,7 @@ export class StorageReader {
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await this.mongoClient.db()
 
-    const exchangesMessaging = pick(
-      ['poetAnchorDownloaded', 'claimsDownloaded', 'claimsNotDownloaded'],
-      this.configuration.exchanges
-    )
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
