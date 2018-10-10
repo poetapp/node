@@ -4,6 +4,9 @@ import * as Pino from 'pino'
 import { describe } from 'riteway'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
+import { HealthController } from './HealthController'
+import { IPFS } from './IPFS'
+import { IPFSConfiguration } from './IPFSConfiguration'
 import { Router } from './Router'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
@@ -13,6 +16,10 @@ describe('API Router', async (assert: any) => {
   const host = 'http://localhost'
   const port = 3000
   const server = new Server(host, port)
+  const IPFSConfiguration: IPFSConfiguration = {
+    ipfsUrl: '',
+  }
+  const healthController = new HealthController(new Db('poet', server), new IPFS(IPFSConfiguration))
   const exchangeConfiguration: ExchangeConfiguration = {
     poetAnchorDownloaded: '',
     claimsDownloaded: '',
@@ -30,7 +37,7 @@ describe('API Router', async (assert: any) => {
   )
 
   {
-    const router = new Router(Pino(), configuration, workController)
+    const router = new Router(Pino(), configuration, workController, healthController)
 
     assert({
       given: 'the new instance of Router',
