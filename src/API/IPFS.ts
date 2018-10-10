@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 
-interface IPFSConfiguration {
+export interface IPFSConfiguration {
   readonly ipfsUrl: string
 }
 

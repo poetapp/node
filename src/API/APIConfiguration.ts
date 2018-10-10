@@ -1,7 +1,7 @@
 import { LoggingConfiguration } from 'Configuration'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { IPFSConfiguration } from './IPFSConfiguration'
+import { IPFSConfiguration } from './IPFS'
 
 export interface APIConfiguration extends LoggingConfiguration, IPFSConfiguration {
   readonly port: number
