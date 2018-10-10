@@ -1,7 +1,9 @@
 import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 
-import { IPFSConfiguration } from './IPFSConfiguration'
+interface IPFSConfiguration {
+  readonly ipfsUrl: string
+}
 
 type checkHealth = () => Promise<number>
 
