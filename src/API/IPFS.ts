@@ -14,6 +14,7 @@ export class IPFS {
   constructor(@inject('IPFSConfiguration') configuration: IPFSConfiguration) {
     this.url = configuration.ipfsUrl
   }
+  
   checkHealth: checkHealth = async () => {
     const response = await fetch(`${this.url}/api/v0/version`)
     return response.status
