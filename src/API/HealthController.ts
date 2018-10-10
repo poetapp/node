@@ -8,10 +8,7 @@ export class HealthController {
   private readonly db: Db
   private readonly ipfs: IPFS
 
-  constructor(
-    @inject('DB') db: Db,
-    @inject('IPFS') ipfs: IPFS
-  ) {
+  constructor(@inject('DB') db: Db, @inject('IPFS') ipfs: IPFS) {
     this.db = db
     this.ipfs = ipfs
   }
