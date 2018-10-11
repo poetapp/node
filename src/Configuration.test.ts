@@ -117,6 +117,7 @@ describe('loadConfigurationWithDefaults', async (assert: any) => {
       exchangeIpfsHashTxId: 'myPrefix.IPFS_HASH_TX_ID',
       exchangePoetAnchorDownloaded: 'myPrefix.POET_ANCHOR_DOWNLOADED',
       exchangeClaimsDownloaded: 'myPrefix.CLAIMS_DOWNLOADED',
+      exchangeStorageWriterStoreNextClaim: 'myPrefix.STORAGE_WRITER::STORE_NEXT_CLAIM',
     }
     const keys = Object.keys(expected)
     const actual = pick(keys, loadConfigurationWithDefaults(overrideValues))
