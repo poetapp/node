@@ -28,13 +28,13 @@ const createDatabase = async (prefix: string) => {
 
 describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
 
-  const dbA = await createDatabase(PREFIX)
-  const serverA = await app({
+  const db = await createDatabase(PREFIX)
+  const server = await app({
     BITCOIN_URL: process.env.BITCOIN_URL || "bitcoind-1",
     API_PORT: NODE_PORT,
-    MONGODB_DATABASE: dbA.settings.tempDbName,
-    MONGODB_USER: dbA.settings.tempDbUser,
-    MONGODB_PASSWORD: dbA.settings.tempDbPassword,
+    MONGODB_DATABASE: db.settings.tempDbName,
+    MONGODB_USER: db.settings.tempDbUser,
+    MONGODB_PASSWORD: db.settings.tempDbPassword,
     EXCHANGE_PREFIX: PREFIX,
     ...blockchainSettings
   });
@@ -66,6 +66,6 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
       expected: 'boolean',
     })
   }
-  await serverA.stop()
-  await dbA.teardown()
+  await server.stop()
+  await db.teardown()
 })
