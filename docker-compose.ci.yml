@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  bitcoind-2:
+    image: ruimarinho/bitcoin-core:0.17.0
+    ports:
+      - "19443:18443"
+    command:
+      -printtoconsole
+      -testnet=${USE_BTC_TESTNET:-0}
+      -regtest=${USE_BTC_REGTEST:-1}
+      -rpcuser=bitcoinrpcuser
+      -rpcpassword=bitcoinrpcpassword
+      -rpcallowip=::/0
+      -server
+      -deprecatedrpc=signrawtransaction
+      -addnode=bitcoind-1
+    links:
+      - bitcoind-1:bitcoind-1
+
+  poet-node:
+    environment:
+      - READ_DIRECTORY_INTERVAL_IN_SECONDS=40

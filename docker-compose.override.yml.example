@@ -13,13 +13,10 @@ services:
     # volumes:
     #   - bitcoind1:/home/bitcoin/.bitcoin
 
-  # This is part of the override config because it is only needed when
-  # running functional tests. Someone checking out the repo and wanting
-  # to just run a poet node only needs bitcoind-1.
   bitcoind-2:
-    image: ruimarinho/bitcoin-core:0.17.0
     # volumes:
     #   - bitcoind2:/home/bitcoin/.bitcoin
+    image: ruimarinho/bitcoin-core:0.17.0
     ports:
       - "19443:18443"
     command:
@@ -33,7 +30,8 @@ services:
       -deprecatedrpc=signrawtransaction
       -addnode=bitcoind-1
     links:
-      - bitcoind-1
+      - bitcoind-1:bitcoind-1
+
 
   poet-node:
     environment:
