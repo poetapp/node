@@ -7,14 +7,6 @@ import { delay, runtimeId, createDatabase } from '../helpers/utils'
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
 
-const blockchainSettings = {
-  MINIMUM_BLOCK_HEIGHT: 100,
-  ENABLE_TIMESTAMPING: true,
-  TIMESTAMP_INTERVAL_IN_SECONDS: 10,
-  BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
-  READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
-}
-
 describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
   const db = await createDatabase(PREFIX)
   const server = await app({
@@ -24,7 +16,6 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     MONGODB_USER: db.settings.tempDbUser,
     MONGODB_PASSWORD: db.settings.tempDbPassword,
     EXCHANGE_PREFIX: PREFIX,
-    ...blockchainSettings,
   })
 
   // Allow everything to finish starting.
@@ -40,14 +31,14 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
 
     assert({
       given: 'a request to the health endpoing',
-      should: 'return mongoIsConnected and ipfsIsConnected',
+      should: 'return object with property mongoIsConnected',
       actual: typeof mongoIsConnected,
       expected: 'boolean',
     })
 
     assert({
       given: 'a request to the health endpoing',
-      should: 'return mongoIsConnected and ipfsIsConnected',
+      should: 'return object with property ipfsIsConnected',
       actual: typeof ipfsIsConnected,
       expected: 'boolean',
     })
