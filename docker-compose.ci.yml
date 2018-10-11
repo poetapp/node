@@ -16,8 +16,4 @@ services:
       -deprecatedrpc=signrawtransaction
       -addnode=bitcoind-1
     links:
-      - bitcoind-1:bitcoind-1
-
-  poet-node:
-    environment:
-      - READ_DIRECTORY_INTERVAL_IN_SECONDS=40
+      - bitcoind-1
