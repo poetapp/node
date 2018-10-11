@@ -6,6 +6,11 @@ import { IPFS } from './IPFS'
 export const isOkOne = ({ ok }: { ok: number }) => ok === 1
 export const isStatus200 = ({ status }: { status: number }) => status === 200
 
+interface HealthObject {
+  readonly mongoIsConnected: boolean
+  readonly ipfsIsConnected: boolean
+}
+
 @injectable()
 export class HealthController {
   private readonly db: Db
@@ -16,7 +21,7 @@ export class HealthController {
     this.ipfs = ipfs
   }
 
-  async checkMongo(): Promise<any> {
+  private async checkMongo(): Promise<boolean> {
     try {
       const mongoConnection = await this.db.stats()
       return isOkOne(mongoConnection)
@@ -25,7 +30,7 @@ export class HealthController {
     }
   }
 
-  async checkIPFS(): Promise<any> {
+  private async checkIPFS(): Promise<boolean> {
     try {
       const ipfsConnection = await this.ipfs.getVersion()
       return isStatus200(ipfsConnection)
@@ -33,7 +38,7 @@ export class HealthController {
       return false
     }
   }
-  async getHealth(): Promise<any> {
+  async getHealth(): Promise<HealthObject> {
     const mongoIsConnected = await this.checkMongo()
     const ipfsIsConnected = await this.checkIPFS()
 
