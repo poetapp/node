@@ -49,6 +49,7 @@ export async function app(localVars: any = {}) {
     port: configuration.apiPort,
     dbUrl: configuration.mongodbUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
+    ipfsUrl: configuration.ipfsUrl,
     exchanges: {
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
