@@ -3,8 +3,8 @@ import { Db } from 'mongodb'
 
 import { IPFS } from './IPFS'
 
-export const isOkOne = ({ ok }: { ok: number }) => ok === 1 
-export const isStatus200 = ({ status }: { status: number }) => status === 200 
+export const isOkOne = ({ ok }: { ok: number }) => ok === 1
+export const isStatus200 = ({ status }: { status: number }) => status === 200
 
 @injectable()
 export class HealthController {

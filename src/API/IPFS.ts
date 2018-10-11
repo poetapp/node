@@ -14,6 +14,6 @@ export class IPFS {
   constructor(@inject('IPFSConfiguration') configuration: IPFSConfiguration) {
     this.url = configuration.ipfsUrl
   }
-  
+
   getVersion: getVersion = async () => await fetch(`${this.url}/api/v0/version`)
 }
