@@ -16,7 +16,6 @@ const blockchainSettings = {
   READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
 }
 
-
 const createDatabase = async (prefix: string) => {
   const db = dbHelper()
 
@@ -27,23 +26,20 @@ const createDatabase = async (prefix: string) => {
 }
 
 describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
-
   const db = await createDatabase(PREFIX)
   const server = await app({
-    BITCOIN_URL: process.env.BITCOIN_URL || "bitcoind-1",
+    BITCOIN_URL: process.env.BITCOIN_URL || 'bitcoind-1',
     API_PORT: NODE_PORT,
     MONGODB_DATABASE: db.settings.tempDbName,
     MONGODB_USER: db.settings.tempDbUser,
     MONGODB_PASSWORD: db.settings.tempDbPassword,
     EXCHANGE_PREFIX: PREFIX,
-    ...blockchainSettings
-  });
-
+    ...blockchainSettings,
+  })
 
   // Allow everything to finish starting.
   await delay(5 * 1000)
 
-  
   {
     // Check health.
 
