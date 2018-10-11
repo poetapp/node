@@ -163,6 +163,7 @@ const applyExchangePrefix = (configVars: any) => {
     'exchangeIpfsHashTxId',
     'exchangePoetAnchorDownloaded',
     'exchangeClaimsDownloaded',
+    'exchangeStorageWriterStoreNextClaim',
   ]
 
   return {
