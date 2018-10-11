@@ -1,9 +1,8 @@
 /* tslint:disable:no-relative-imports */
 import { describe } from 'riteway'
 import { app } from '../../src/app'
-import { dbHelper } from '../helpers/database'
 import { getHealth } from '../helpers/health'
-import { delay, runtimeId } from '../helpers/utils'
+import { delay, runtimeId, createDatabase } from '../helpers/utils'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
@@ -14,15 +13,6 @@ const blockchainSettings = {
   TIMESTAMP_INTERVAL_IN_SECONDS: 10,
   BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
   READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
-}
-
-const createDatabase = async (prefix: string) => {
-  const db = dbHelper()
-
-  return {
-    teardown: db.teardown,
-    settings: await db.setup(prefix),
-  }
 }
 
 describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
