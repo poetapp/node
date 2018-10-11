@@ -74,7 +74,7 @@ export interface ExchangeConfiguration {
 }
 
 const defaultConfiguration: Configuration = {
-  rabbitmqUrl: 'amqp://localhost',
+  rabbitmqUrl: 'amqp://admin:adminPass@localhost',
   exchangePrefix: '',
   mongodbUser: '',
   mongodbPassword: '',
