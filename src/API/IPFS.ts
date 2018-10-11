@@ -5,7 +5,7 @@ export interface IPFSConfiguration {
   readonly ipfsUrl: string
 }
 
-type checkHealth = () => Promise<number>
+type getVersion = () => Promise<any>
 
 @injectable()
 export class IPFS {
@@ -15,8 +15,5 @@ export class IPFS {
     this.url = configuration.ipfsUrl
   }
   
-  checkHealth: checkHealth = async () => {
-    const response = await fetch(`${this.url}/api/v0/version`)
-    return response.status
-  }
+  getVersion: getVersion = async () => await fetch(`${this.url}/api/v0/version`)
 }
