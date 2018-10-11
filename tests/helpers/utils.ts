@@ -6,10 +6,10 @@ export const runtimeId = () => `${process.pid}-${new Date().getMilliseconds()}-$
 export const delay = promisify(setTimeout)
 
 export const createDatabase = async (prefix: string) => {
-  const db = dbHelper();
+  const db = dbHelper()
 
   return {
     teardown: db.teardown,
-    settings: await db.setup(prefix)
-  };
-};
+    settings: await db.setup(prefix),
+  }
+}

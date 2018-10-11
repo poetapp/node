@@ -38,7 +38,7 @@ export class HealthController {
       return false
     }
   }
-  
+
   async getHealth(): Promise<HealthObject> {
     const mongoIsConnected = await this.checkMongo()
     const ipfsIsConnected = await this.checkIPFS()
