@@ -15,17 +15,17 @@ services:
 env:
   - REPO=poetapp/node RABBITMQ_URL=amqp://localhost
 
-install:	
-  - DC_FILES="-f docker-compose.yml -f docker-compose.ci.yml"	
-  - docker-compose $DC_FILES build	
-  - docker images	
-  - docker-compose $DC_FILES up -d	
-  - sleep 15	
-  - docker-compose $DC_FILES ps
+install:
+  - DC_FILES="-f docker-compose.yml -f docker-compose.ci.yml"
+  - docker-compose $DC_FILES build
+  - docker images
+  - docker-compose $DC_FILES up -d
+  - sleep 10
 
 script:
   - docker-compose exec poet-node npm run lint
   - docker-compose exec poet-node npm run coverage
+  - docker-compose exec poet-node npm run test:functional
 
 after:
   - docker images
