@@ -12,7 +12,7 @@ services:
   - rabbitmq
   - docker
 env:
-  - REPO=poetapp/node
+  - REPO=poetapp/node RABBITMQ_URL=amqp://localhost
 before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update
