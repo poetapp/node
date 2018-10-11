@@ -1,4 +1,4 @@
-FROM node:10.11.0
+FROM node:10.12.0
 
 RUN echo "deb http://ftp.us.debian.org/debian unstable main contrib non-free" >> /etc/apt/sources.list.d/unstable.list
 
