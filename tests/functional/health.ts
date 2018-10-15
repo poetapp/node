@@ -42,28 +42,28 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
       given: 'a request to the health endpoint',
       should: 'return object with property ipfsIsConnected',
       actual: isNil(ipfsIsConnected),
-      expected: true,
+      expected: false,
     })
 
     assert({
       given: 'a request to the health endpoint',
       should: 'return object with property blockchainInfo',
       actual: isNil(blockchainInfo),
-      expected: true,
+      expected: false,
     })
 
     assert({
       given: 'a request to the health endpoint',
       should: 'return object with property walletInfo',
       actual: isNil(walletInfo),
-      expected: true,
+      expected: false,
     })
 
     assert({
       given: 'a request to the health endpoint',
       should: 'return object with property networkInfo',
       actual: isNil(networkInfo),
-      expected: true,
+      expected: false,
     })
   }
   await server.stop()
