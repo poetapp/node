@@ -15,7 +15,6 @@ It's built on top of the [Bitcoin](https://github.com/bitcoin/bitcoin) blockchai
 - [How to Run the Po.et Node](#how-to-run-the-poet-node)
     - [Install](#install)
     - [Docker](#docker)
-    - [Makefile](#makefile)
     - [Dependencies](#dependencies)
     - [Configuration](#configuration)
 - [API](#api)
@@ -65,37 +64,16 @@ cd node
 docker-compose up --build
 ```
 
-### Makefile
-```bash
-# Clone The Po.et Node
-git clone https://github.com/poetapp/node.git
-
-cd node
-
-make all
-
-# to clean up and stop processes:
-make stop
-make clean
-```
-
-Make Commands available:
-```bash
-make all # makes all dependencies
-make stop # stops the docker containers
-make clean # removes node_modules and all stopped containers
-make setup # setup the nodejs dependencies
-make containers # creates the dependent docker containers for mongodb, rabbitmq, bitcoind and ipfs
-```
-
 ### Dependencies
 The Po.et Node depends on RabbitMQ, IPFS, MongoDB and Bitcoin Core. By default, it looks for all of them in localhost.
 
-For a quick startup, we provide `make` commands that build and run these dependencies in Docker containers. You will need to have Docker installed and running for this (see [How to Install Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce)).
+For a quick startup, we provide `docker-compose files` that build and run these dependencies in Docker containers. You will need to have Docker installed and running for this (see [How to Install Docker CE](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce)).
 
-You only need to run `sudo make mongo rabbit ipfs` once to create the Docker images, and `sudo make start-all` to start them when they shut down.
+You only need to run `docker-compose build` to create or update the Docker images, and `docker-compose up -d` to start them.
+To shut everything down, it is recommended to use `docker-compose down --volumes`  to stop the running containers and clear any data.
+If you wish to keep data between invocations, use `docker-compose down`.
 
-You can also `sudo make sh-mongo` and `sudo make sh-ipfs` to run the mongo shell or ssh into the IPFS container.
+You can also `docker-compose exec mongo bash` and `docker-compose exec ipfs bash` to run the mongo shell or ssh into the IPFS container.
 
 In a production environment, you may want to run these applications natively installed on the OS rather than dockerized. If you choose to run IPFS dockerized, make sure it's able to communicate with other IPFS nodes outside your network.
 
