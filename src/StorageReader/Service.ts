@@ -5,7 +5,10 @@ import * as Pino from 'pino'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { ClaimController } from './ClaimController'
-import { ServiceConfiguration } from './ServiceConfiguration'
+
+export interface ServiceConfiguration {
+  readonly downloadIntervalInSeconds: number
+}
 
 @injectable()
 export class Service {

@@ -1,8 +1,6 @@
 import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 
-import { IPFSConfiguration } from './IPFSConfiguration'
-
 enum Type {
   File = 'File',
   Directory = 'Directory',
@@ -35,6 +33,10 @@ export interface LSResult {
 type getDirectoryFileHashes = (s: string) => Promise<ReadonlyArray<string>>
 
 type ls = (s: string) => Promise<LSResult>
+
+export interface IPFSConfiguration {
+  readonly ipfsUrl: string
+}
 
 @injectable()
 export class IPFS {
