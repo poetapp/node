@@ -3,18 +3,22 @@ import { Db, MongoClient, Collection } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
+import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { BatchReaderConfiguration } from './BatchReaderConfiguration'
 import { ClaimController } from './ClaimController'
 import { DirectoryDAO } from './DirectoryDAO'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { IPFS } from './IPFS'
-import { IPFSConfiguration } from './IPFSConfiguration'
+import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
-import { Service } from './Service'
-import { ServiceConfiguration } from './ServiceConfiguration'
+import { Service, ServiceConfiguration } from './Service'
+
+export interface BatchReaderConfiguration extends LoggingConfiguration, ServiceConfiguration, IPFSConfiguration {
+  readonly dbUrl: string
+  readonly rabbitmqUrl: string
+  readonly exchanges: ExchangeConfiguration
+}
 
 export class BatchReader {
   private readonly logger: Pino.Logger
