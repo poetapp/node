@@ -6,15 +6,24 @@ import { pick } from 'ramda'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { ClaimController } from './ClaimController'
-import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { ClaimController, ClaimControllerConfiguration } from './ClaimController'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { IPFS } from './IPFS'
-import { IPFSConfiguration } from './IPFSConfiguration'
+import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
-import { Service } from './Service'
-import { ServiceConfiguration } from './ServiceConfiguration'
-import { StorageReaderConfiguration } from './StorageReaderConfiguration'
+import { Service, ServiceConfiguration } from './Service'
+
+import { LoggingConfiguration } from 'Configuration'
+
+export interface StorageReaderConfiguration
+  extends LoggingConfiguration,
+    ServiceConfiguration,
+    ClaimControllerConfiguration,
+    IPFSConfiguration {
+  readonly ipfsUrl: string
+  readonly dbUrl: string
+  readonly rabbitmqUrl: string
+  readonly exchanges: ExchangeConfiguration
+}
 
 @injectable()
 export class StorageReader {
