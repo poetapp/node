@@ -10,7 +10,6 @@ import { minutesToMiliseconds } from 'Helpers/Time'
 import { ClaimIdIPFSHashPair } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
-import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
 import { FailureReason, FailureType } from './DownloadFailure'
 import { Entry } from './Entry'
 import {
@@ -21,6 +20,11 @@ import {
   errorToIPFSError,
 } from './Exceptions'
 import { IPFS } from './IPFS'
+
+export interface ClaimControllerConfiguration {
+  readonly downloadRetryDelayInMinutes: number
+  readonly downloadMaxAttempts: number
+}
 
 @injectable()
 export class ClaimController {

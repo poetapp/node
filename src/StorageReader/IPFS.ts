@@ -3,7 +3,10 @@ import fetch from 'node-fetch'
 
 import { secondsToMiliseconds } from 'Helpers/Time'
 
-import { IPFSConfiguration } from './IPFSConfiguration'
+export interface IPFSConfiguration {
+  readonly ipfsUrl: string
+  readonly downloadTimeoutInSeconds: number
+}
 
 /**
  * Wrapper around IPFS' RPC
