@@ -73,7 +73,7 @@ export class HealthController {
       }
       return blockchainInfo
     } catch (e) {
-      return e
+      return { blockchainInfo: 'Error retrieving blockchainInfo...'}
     }
   }
   private async getWalletInfo(): Promise<any> {
@@ -83,7 +83,7 @@ export class HealthController {
       }
       return walletInfo
     } catch (e) {
-      return e
+      return { walletInfo: 'Error retrieving walletInfo...' }
     }
   }
   private async getNetworkInfo(): Promise<any> {
@@ -93,7 +93,7 @@ export class HealthController {
       }
       return networkInfo
     } catch (e) {
-      return e
+      return { networkInfo: 'Error retrieving networkInfo...' }
     }
   }
 
