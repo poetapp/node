@@ -1,5 +1,7 @@
 /* tslint:disable:no-relative-imports */
+import { isNil } from 'ramda'
 import { describe } from 'riteway'
+
 import { app } from '../../src/app'
 import { getHealth } from '../helpers/health'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
@@ -39,28 +41,28 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     assert({
       given: 'a request to the health endpoint',
       should: 'return object with property ipfsIsConnected',
-      actual: ipfsIsConnected !== null,
+      actual: isNil(ipfsIsConnected),
       expected: true,
     })
 
     assert({
       given: 'a request to the health endpoint',
       should: 'return object with property blockchainInfo',
-      actual: blockchainInfo !== null,
+      actual: isNil(blockchainInfo),
       expected: true,
     })
 
     assert({
       given: 'a request to the health endpoint',
       should: 'return object with property walletInfo',
-      actual: walletInfo !== null,
+      actual: isNil(walletInfo),
       expected: true,
     })
 
     assert({
       given: 'a request to the health endpoint',
       should: 'return object with property networkInfo',
-      actual: networkInfo !== null,
+      actual: isNil(networkInfo),
       expected: true,
     })
   }
