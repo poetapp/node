@@ -3,12 +3,16 @@ import { Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 
+import { LoggingConfiguration, BitcoinRPCConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 
-import { HealthConfiguration } from './HealthConfiguration'
 import { HealthController } from './HealthController'
-import { HealthService } from './HealthService'
-import { HealthServiceConfiguration } from './HealthServiceConfiguration'
+import { HealthService, HealthServiceConfiguration } from './HealthService'
+
+export interface HealthConfiguration extends LoggingConfiguration, BitcoinRPCConfiguration, HealthServiceConfiguration {
+  readonly dbUrl: string
+  readonly rabbitmqUrl: string
+}
 
 export class Health {
   private readonly logger: Pino.Logger

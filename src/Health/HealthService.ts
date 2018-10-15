@@ -5,7 +5,10 @@ import * as Pino from 'pino'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { HealthController } from './HealthController'
-import { HealthServiceConfiguration } from './HealthServiceConfiguration'
+
+export interface HealthServiceConfiguration {
+  readonly healthIntervalInSeconds: number
+}
 
 @injectable()
 export class HealthService {
@@ -35,9 +38,9 @@ export class HealthService {
     this.interval.stop()
   }
 
-  private getHealth = async (): Promise<any> => {
-    await this.controller.getBlockchainInfo()
-    await this.controller.getWalletInfo()
-    await this.controller.getNetworkInfo()
+  private getHealth = async (): Promise<void> => {
+    await this.controller.refreshBlockchainInfo()
+    await this.controller.refreshWalletInfo()
+    await this.controller.refreshNetworkInfo()
   }
 }

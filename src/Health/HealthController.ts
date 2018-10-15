@@ -2,10 +2,48 @@ import BitcoinCore = require('bitcoin-core')
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
+import { pick, pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
+enum LogTypes {
+  info = 'info',
+  trace = 'trace',
+  error = 'error',
+}
+
+interface BlockchainInfo {
+  readonly blocks: number
+  readonly verificationprogress: number
+  readonly bestblockhash: string
+  readonly warnings: string
+  readonly size_on_disk: number
+}
+
+interface WalletInfo {
+  readonly balance: number
+  readonly txcount: number
+}
+
+interface NetworkInfo {
+  readonly version: number
+  readonly subversion: string
+  readonly connections: number
+  readonly networkactive: boolean
+  readonly protocolversion: number
+  readonly warnings: string
+}
+
+const blockchainInfoKeys = ['blocks', 'verificationprogress', 'bestblockhash', 'warnings', 'size_on_disk']
+
+const walletInfoKeys = ['balance', 'txcount']
+
+const networkInfoKeys = ['version', 'subversion', 'connections', 'networkactive', 'protocolversion', 'warnings']
+
 export const isStatus200 = ({ status }: { status: number }) => status === 200
+const pickNetworkInfoKeys = pick(networkInfoKeys)
+const pickBlockchainInfoKeys = pick(blockchainInfoKeys)
+const pickWalletInfoKeys = pick(walletInfoKeys)
 
 @injectable()
 export class HealthController {
@@ -25,23 +63,17 @@ export class HealthController {
     this.bitcoinCore = bitcoinCore
   }
 
-  async getBlockchainInfo(): Promise<void> {
-    const logger = this.logger.child({ method: 'getBlockchainInfo' })
+  private readonly log = (level: LogTypes) => (message: string) => async (value: any) => {
+    const logger = this.logger
+    logger[level]({ value }, message)
+    return value
+  }
 
-    const {
-      blocks,
-      verificationprogress,
-      bestblockhash,
-      warnings,
-      size_on_disk,
-    } = await this.bitcoinCore.getBlockchainInfo()
-    const blockchainInfo = { blocks, verificationprogress, bestblockhash, warnings, size_on_disk }
-    logger.trace(
-      {
-        blockchainInfo,
-      },
-      'Blockchain Info retrieved successfully.'
-    )
+  private async getBlockchainInfo(): Promise<BlockchainInfo> {
+    return pickBlockchainInfoKeys(await this.bitcoinCore.getBlockchainInfo())
+  }
+
+  private async updateBlockchainInfo(blockchainInfo: BlockchainInfo): Promise<BlockchainInfo> {
     await this.collection.updateOne(
       { name: 'blockchainInfo' },
       {
@@ -51,19 +83,14 @@ export class HealthController {
       },
       { upsert: true }
     )
+    return blockchainInfo
   }
 
-  async getWalletInfo(): Promise<void> {
-    const logger = this.logger.child({ method: 'getBalance' })
+  async getWalletInfo(): Promise<WalletInfo> {
+    return pickWalletInfoKeys(await this.bitcoinCore.getWalletInfo())
+  }
 
-    const { balance, txcount } = await this.bitcoinCore.getWalletInfo()
-    const walletInfo = { balance, txcount }
-    logger.trace(
-      {
-        walletInfo,
-      },
-      'Bitcoin walletInfo retrieved successfully.'
-    )
+  private async updateWalletInfo(walletInfo: WalletInfo): Promise<WalletInfo> {
     await this.collection.updateOne(
       { name: 'walletInfo' },
       {
@@ -73,26 +100,14 @@ export class HealthController {
       },
       { upsert: true }
     )
+    return walletInfo
   }
 
-  async getNetworkInfo(): Promise<void> {
-    const logger = this.logger.child({ method: 'getBalance' })
+  private async getNetworkInfo(): Promise<NetworkInfo> {
+    return pickNetworkInfoKeys(await this.bitcoinCore.getNetworkInfo())
+  }
 
-    const {
-      version,
-      subversion,
-      connections,
-      networkactive,
-      protocolversion,
-      warnings,
-    } = await this.bitcoinCore.getNetworkInfo()
-    const networkInfo = { version, subversion, connections, networkactive, protocolversion, warnings }
-    logger.trace(
-      {
-        networkInfo,
-      },
-      'Bitcoin network info retrieved successfully.'
-    )
+  private async updateNetworkInfo(networkInfo: NetworkInfo): Promise<NetworkInfo> {
     await this.collection.updateOne(
       { name: 'networkInfo' },
       {
@@ -102,5 +117,30 @@ export class HealthController {
       },
       { upsert: true }
     )
+    return networkInfo
   }
+
+  public refreshBlockchainInfo = pipeP(
+    this.log(LogTypes.trace)('refreshing blockchain info'),
+    this.getBlockchainInfo,
+    this.log(LogTypes.trace)('new info gathered, saving blockchain info'),
+    this.updateBlockchainInfo,
+    this.log(LogTypes.trace)('refreshed blockchain info')
+  )
+
+  public refreshWalletInfo = pipeP(
+    this.log(LogTypes.trace)('refreshing wallet info'),
+    this.getWalletInfo,
+    this.log(LogTypes.trace)('new info gathered, saving wallet info'),
+    this.updateWalletInfo,
+    this.log(LogTypes.trace)('refreshed wallet info')
+  )
+
+  public refreshNetworkInfo = pipeP(
+    this.log(LogTypes.trace)('refreshing network info'),
+    this.getNetworkInfo,
+    this.log(LogTypes.trace)('new info gathered, saving network info'),
+    this.updateNetworkInfo,
+    this.log(LogTypes.trace)('refreshed network info')
+  )
 }
