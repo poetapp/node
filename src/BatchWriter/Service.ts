@@ -7,7 +7,10 @@ import { secondsToMiliseconds } from 'Helpers/Time'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { ServiceConfiguration } from './ServiceConfiguration'
+
+export interface ServiceConfiguration {
+  readonly batchCreationIntervalInSeconds: number
+}
 
 @injectable()
 export class Service {

@@ -3,18 +3,22 @@ import { Db, MongoClient, Collection } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
+import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { BatchWriterConfiguration } from './BatchWriterConfiguration'
 import { ClaimController } from './ClaimController'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileDAO } from './FileDAO'
-import { IPFS } from './IPFS'
-import { IPFSConfiguration } from './IPFSConfiguration'
+import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
-import { Service } from './Service'
-import { ServiceConfiguration } from './ServiceConfiguration'
+import { Service, ServiceConfiguration } from './Service'
+
+export interface BatchWriterConfiguration extends LoggingConfiguration, ServiceConfiguration, IPFSConfiguration {
+  readonly dbUrl: string
+  readonly rabbitmqUrl: string
+  readonly exchanges: ExchangeConfiguration
+}
 
 @injectable()
 export class BatchWriter {

@@ -1,13 +1,15 @@
 import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 
-import { IPFSConfiguration } from './IPFSConfiguration'
-
 type addFileToDirectory = (directoryhash: string, filehash: string) => Promise<string>
 
 type addFilesToDirectory = (x: { ipfsDirectoryHash: string; ipfsFileHashes: ReadonlyArray<string> }) => Promise<string>
 
 type createEmptyDirectory = () => Promise<string>
+
+export interface IPFSConfiguration {
+  readonly ipfsUrl: string
+}
 
 @injectable()
 export class IPFS {
