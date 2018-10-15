@@ -73,7 +73,7 @@ export class HealthController {
       }
       return blockchainInfo
     } catch (e) {
-      return { blockchainInfo: 'Error retrieving blockchainInfo...'}
+      return { blockchainInfo: 'Error retrieving blockchainInfo...' }
     }
   }
   private async getWalletInfo(): Promise<any> {
