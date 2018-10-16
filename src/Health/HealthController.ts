@@ -5,6 +5,7 @@ import * as Pino from 'pino'
 import { pick, pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { IPFS } from './IPFS'
 
 enum LogTypes {
   info = 'info',
@@ -34,6 +35,10 @@ interface NetworkInfo {
   readonly warnings: string
 }
 
+interface IPFSInfo {
+  readonly ipfsIsConnected: boolean
+}
+
 const blockchainInfoKeys = ['blocks', 'verificationprogress', 'bestblockhash', 'warnings', 'size_on_disk']
 
 const walletInfoKeys = ['balance', 'txcount']
@@ -51,16 +56,19 @@ export class HealthController {
   private readonly collection: Collection
   private readonly bitcoinCore: BitcoinCore
   private readonly logger: Pino.Logger
+  private readonly ipfs: IPFS
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
-    @inject('BitcoinCore') bitcoinCore: BitcoinCore
+    @inject('BitcoinCore') bitcoinCore: BitcoinCore,
+    @inject('IPFS') ipfs: IPFS
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('health')
     this.bitcoinCore = bitcoinCore
+    this.ipfs = ipfs
   }
 
   private readonly log = (level: LogTypes) => (message: string) => async (value: any) => {
@@ -120,6 +128,29 @@ export class HealthController {
     return networkInfo
   }
 
+  private async checkIPFSConnection(): Promise<IPFSInfo> {
+    try {
+      const ipfsConnection = await this.ipfs.getVersion()
+      const ipfsIsConnected = isStatus200(ipfsConnection)
+      return { ipfsIsConnected }
+    } catch (e) {
+      return { ipfsIsConnected: false }
+    }
+  }
+
+  private async updateIPFSInfo(ipfsInfo: IPFSInfo): Promise<object> {
+    await this.collection.updateOne(
+      { name: 'ipfsInfo' },
+      {
+        $set: {
+          ipfsInfo,
+        },
+      },
+      { upsert: true }
+    )
+    return ipfsInfo
+  }
+
   public refreshBlockchainInfo = pipeP(
     this.log(LogTypes.trace)('refreshing blockchain info'),
     this.getBlockchainInfo,
@@ -142,5 +173,13 @@ export class HealthController {
     this.log(LogTypes.trace)('new info gathered, saving network info'),
     this.updateNetworkInfo,
     this.log(LogTypes.trace)('refreshed network info')
+  )
+
+  public refreshIPFSInfo = pipeP(
+    this.log(LogTypes.trace)('refreshing IPFS info'),
+    this.checkIPFSConnection,
+    this.log(LogTypes.trace)('new info gathered, saving IPFS info'),
+    this.updateIPFSInfo,
+    this.log(LogTypes.trace)('refreshed IPFS info')
   )
 }
