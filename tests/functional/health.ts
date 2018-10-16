@@ -1,5 +1,7 @@
 /* tslint:disable:no-relative-imports */
+import { isNil } from 'ramda'
 import { describe } from 'riteway'
+
 import { app } from '../../src/app'
 import { getHealth } from '../helpers/health'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
@@ -27,20 +29,41 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     const response = await getHealth(NODE_PORT)
     const healthData = await response.json()
 
-    const { mongoIsConnected, ipfsIsConnected } = healthData
+    const { mongoIsConnected, ipfsIsConnected, blockchainInfo, networkInfo, walletInfo } = healthData
 
     assert({
-      given: 'a request to the health endpoing',
+      given: 'a request to the health endpoint',
       should: 'return object with property mongoIsConnected',
       actual: typeof mongoIsConnected,
       expected: 'boolean',
     })
 
     assert({
-      given: 'a request to the health endpoing',
+      given: 'a request to the health endpoint',
       should: 'return object with property ipfsIsConnected',
-      actual: typeof ipfsIsConnected,
-      expected: 'boolean',
+      actual: isNil(ipfsIsConnected),
+      expected: false,
+    })
+
+    assert({
+      given: 'a request to the health endpoint',
+      should: 'return object with property blockchainInfo',
+      actual: isNil(blockchainInfo),
+      expected: false,
+    })
+
+    assert({
+      given: 'a request to the health endpoint',
+      should: 'return object with property walletInfo',
+      actual: isNil(walletInfo),
+      expected: false,
+    })
+
+    assert({
+      given: 'a request to the health endpoint',
+      should: 'return object with property networkInfo',
+      actual: isNil(networkInfo),
+      expected: false,
     })
   }
   await server.stop()

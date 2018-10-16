@@ -34,6 +34,8 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly enableTimestamping: boolean
   readonly timestampIntervalInSeconds: number
 
+  readonly healthIntervalInSeconds: number
+
   readonly downloadIntervalInSeconds: number
   readonly downloadRetryDelayInMinutes: number
   readonly downloadMaxAttempts: number
@@ -98,6 +100,8 @@ const defaultConfiguration: Configuration = {
   enableTimestamping: false,
   timestampIntervalInSeconds: 30,
 
+  healthIntervalInSeconds: 30,
+
   downloadIntervalInSeconds: 5,
   downloadRetryDelayInMinutes: 10,
   downloadMaxAttempts: 20,
@@ -135,8 +139,10 @@ export const mergeConfigs = (localVars: any = {}) => {
     ...loadConfigurationFromEnv(localVars),
     ...loadConfigurationFromFile(configurationPath()),
   }
-  // TODO: This is here to support using either MONGODB_URL or MONGO_HOST, MONGO_PORT, etc.
-  // Remove this once local-dev switches over to using the individual env vars.
+
+  // Support setting MONGODB_URL all at once or via separate variables.
+  // Especially needed for production since the schema is different (mongodb+srv) and
+  // there's currently no override for that.
   if (config.mongodbUrl === defaultMongodbUrl) {
     const mongoAuth = config.mongodbUser !== '' ? `${config.mongodbUser}:${config.mongodbPassword}@` : ''
     config.mongodbUrl = `mongodb://${mongoAuth}${config.mongodbHost}:${config.mongodbPort}/${config.mongodbDatabase}`
