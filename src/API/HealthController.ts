@@ -68,7 +68,7 @@ export class HealthController {
 
   private async getBlockchainInfo(): Promise<any> {
     try {
-      const { blockchainInfo = {} } = (await this.collection.findOne({ name: 'blockchainInfo' }))
+      const { blockchainInfo = {} } = await this.collection.findOne({ name: 'blockchainInfo' })
       return blockchainInfo
     } catch (e) {
       return { error: 'Error retrieving blockchainInfo...' }
@@ -76,7 +76,7 @@ export class HealthController {
   }
   private async getWalletInfo(): Promise<any> {
     try {
-      const { walletInfo = {} } = (await this.collection.findOne({ name: 'walletInfo' }))
+      const { walletInfo = {} } = await this.collection.findOne({ name: 'walletInfo' })
       return walletInfo
     } catch (e) {
       return { error: 'Error retrieving walletInfo...' }
@@ -84,7 +84,7 @@ export class HealthController {
   }
   private async getNetworkInfo(): Promise<any> {
     try {
-      const { networkInfo = {} } = (await this.collection.findOne({ name: 'networkInfo' }))
+      const { networkInfo = {} } = await this.collection.findOne({ name: 'networkInfo' })
       return networkInfo
     } catch (e) {
       return { error: 'Error retrieving networkInfo...' }
