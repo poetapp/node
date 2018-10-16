@@ -6,34 +6,12 @@ import { IPFS } from './IPFS'
 export const isOkOne = ({ ok }: { ok: number }) => ok === 1
 export const isStatus200 = ({ status }: { status: number }) => status === 200
 
-interface WalletInfo {
-  readonly balance: number
-  readonly txcount: number
-}
-
-interface BlockChainInfo {
-  readonly blocks: number
-  readonly verificationprogress: number
-  readonly bestblockhash: string
-  readonly warnings: string
-  readonly size_on_disk: number
-}
-
-interface NetworkInfo {
-  readonly version: number
-  readonly subversion: string
-  readonly connections: number
-  readonly networkactive: boolean
-  readonly protocolversion: number
-  readonly warnings: string
-}
-
 interface HealthObject {
   readonly mongoIsConnected: boolean
   readonly ipfsIsConnected: boolean
-  readonly walletInfo: WalletInfo
-  readonly blockchainInfo: BlockChainInfo
-  readonly networkInfo: NetworkInfo
+  readonly walletInfo: object
+  readonly blockchainInfo: object
+  readonly networkInfo: object
 }
 
 @injectable()
@@ -66,7 +44,7 @@ export class HealthController {
     }
   }
 
-  private async getBlockchainInfo(): Promise<any> {
+  private async getBlockchainInfo(): Promise<object> {
     try {
       const { blockchainInfo = {} } = await this.collection.findOne({ name: 'blockchainInfo' })
       return blockchainInfo
@@ -74,7 +52,7 @@ export class HealthController {
       return { error: 'Error retrieving blockchainInfo...' }
     }
   }
-  private async getWalletInfo(): Promise<any> {
+  private async getWalletInfo(): Promise<object> {
     try {
       const { walletInfo = {} } = await this.collection.findOne({ name: 'walletInfo' })
       return walletInfo
@@ -82,7 +60,7 @@ export class HealthController {
       return { error: 'Error retrieving walletInfo...' }
     }
   }
-  private async getNetworkInfo(): Promise<any> {
+  private async getNetworkInfo(): Promise<object> {
     try {
       const { networkInfo = {} } = await this.collection.findOne({ name: 'networkInfo' })
       return networkInfo
