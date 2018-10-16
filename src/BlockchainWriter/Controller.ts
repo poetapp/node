@@ -96,7 +96,9 @@ export class Controller {
     try {
       return await bitcoinCore.fundRawTransaction(rawTransaction)
     } catch (exception) {
-      throw new InsufficientFundsException('Insuffiecient funds for transaction')
+      if (exception.message === 'Insufficient funds')
+        throw new InsufficientFundsException('Insuffiecient funds for transaction')
+      throw new Error(exception.message)
     }
   }
 
