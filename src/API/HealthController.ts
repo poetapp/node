@@ -68,32 +68,26 @@ export class HealthController {
 
   private async getBlockchainInfo(): Promise<any> {
     try {
-      const { blockchainInfo } = (await this.collection.findOne({ name: 'blockchainInfo' })) || {
-        blockchainInfo: 'Getting Blockchain Info...',
-      }
+      const { blockchainInfo = {} } = (await this.collection.findOne({ name: 'blockchainInfo' }))
       return blockchainInfo
     } catch (e) {
-      return { blockchainInfo: 'Error retrieving blockchainInfo...' }
+      return { error: 'Error retrieving blockchainInfo...' }
     }
   }
   private async getWalletInfo(): Promise<any> {
     try {
-      const { walletInfo } = (await this.collection.findOne({ name: 'walletInfo' })) || {
-        walletInfo: 'Getting Wallet Info...',
-      }
+      const { walletInfo = {} } = (await this.collection.findOne({ name: 'walletInfo' }))
       return walletInfo
     } catch (e) {
-      return { walletInfo: 'Error retrieving walletInfo...' }
+      return { error: 'Error retrieving walletInfo...' }
     }
   }
   private async getNetworkInfo(): Promise<any> {
     try {
-      const { networkInfo } = (await this.collection.findOne({ name: 'networkInfo' })) || {
-        networkInfo: 'Getting Network Info...',
-      }
+      const { networkInfo = {} } = (await this.collection.findOne({ name: 'networkInfo' }))
       return networkInfo
     } catch (e) {
-      return { networkInfo: 'Error retrieving networkInfo...' }
+      return { error: 'Error retrieving networkInfo...' }
     }
   }
 
