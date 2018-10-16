@@ -231,8 +231,8 @@ export async function app(localVars: any = {}) {
     ipfsUrl: configuration.ipfsUrl,
     bitcoinUsername: configuration.bitcoinUsername,
     bitcoinPassword: configuration.bitcoinPassword,
-    healthIntervalInSeconds: configuration.healthIntervalInSeconds
-  });
+    healthIntervalInSeconds: configuration.healthIntervalInSeconds,
+  })
 
   try {
     await health.start()

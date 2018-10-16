@@ -56,7 +56,7 @@ export class HealthController {
       return { error: 'Error retrieving walletInfo...' }
     }
   }
-  
+
   private async getNetworkInfo(): Promise<object> {
     try {
       const { networkInfo = {} } = await this.collection.findOne({ name: 'networkInfo' })
