@@ -1,5 +1,6 @@
 import BitcoinCore = require('bitcoin-core')
 import { Container } from 'inversify'
+import { Messaging } from 'Messaging/Messaging'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 
@@ -9,9 +10,15 @@ import { createModuleLogger } from 'Helpers/Logging'
 import { HealthController } from './HealthController'
 import { HealthService, HealthServiceConfiguration } from './HealthService'
 
+
+export interface ExchangeConfiguration {
+  readonly claimsNotDownloaded: string
+}
+
 export interface HealthConfiguration extends LoggingConfiguration, BitcoinRPCConfiguration, HealthServiceConfiguration {
   readonly dbUrl: string
   readonly rabbitmqUrl: string
+  readonly exchanges: ExchangeConfiguration
 }
 
 export class Health {
@@ -21,6 +28,8 @@ export class Health {
   private mongoClient: MongoClient
   private dbConnection: Db
   private cron: HealthService
+  private messaging: Messaging
+
 
   constructor(configuration: HealthConfiguration) {
     this.configuration = configuration
@@ -31,6 +40,9 @@ export class Health {
     this.logger.info({ configuration: this.configuration }, 'Health Starting')
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await this.mongoClient.db()
+
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, this.configuration.exchanges)
+    await this.messaging.start()
 
     this.initializeContainer()
 
@@ -64,5 +76,6 @@ export class Health {
     this.container.bind<HealthServiceConfiguration>('HealthServiceConfiguration').toConstantValue({
       healthIntervalInSeconds: this.configuration.healthIntervalInSeconds,
     })
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }
