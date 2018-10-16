@@ -5,7 +5,7 @@ export const isOkOne = ({ ok }: { ok: number }) => ok === 1
 
 interface HealthObject {
   readonly mongoIsConnected: boolean
-  readonly IPFSInfo: object
+  readonly ipfsInfo: object
   readonly walletInfo: object
   readonly blockchainInfo: object
   readonly networkInfo: object
@@ -68,13 +68,13 @@ export class HealthController {
 
   async getHealth(): Promise<HealthObject> {
     const mongoIsConnected = await this.checkMongo()
-    const IPFSInfo = await this.getIPFSInfo()
+    const ipfsInfo = await this.getIPFSInfo()
     const walletInfo = await this.getWalletInfo()
     const blockchainInfo = await this.getBlockchainInfo()
     const networkInfo = await this.getNetworkInfo()
     return {
       mongoIsConnected,
-      IPFSInfo,
+      ipfsInfo,
       walletInfo,
       blockchainInfo,
       networkInfo,
