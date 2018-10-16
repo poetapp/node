@@ -188,7 +188,7 @@ describe('Bitcoin.dataToPoetAnchor', async assert => {
     given: 'A non Poet OP_RETURN Data',
     should: 'return undefined',
     actual: dataToPoetAnchor('918cc48177c39a01ab6a20d3e980526775262996de00928fa92d163bd2508812'),
-    expected: undefined
+    expected: undefined,
   })
 
   assertSample('POET', [2, 3], StorageProtocol.IPFS, 'QmSRWxHeNikpTJpUfvheaVgkx4jFheEPWMwhMTyy4sL3Uw')

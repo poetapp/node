@@ -14,7 +14,11 @@ enum AnchorSectionsLengths {
   Version = 2,
   IPFSHash = 46,
 }
-const anchorByteLength = AnchorSectionsLengths.Prefix + AnchorSectionsLengths.Version + AnchorSectionsLengths.StorageProtocol + AnchorSectionsLengths.IPFSHash
+const anchorByteLength =
+  AnchorSectionsLengths.Prefix +
+  AnchorSectionsLengths.Version +
+  AnchorSectionsLengths.StorageProtocol +
+  AnchorSectionsLengths.IPFSHash
 
 export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor> =>
   block.tx
