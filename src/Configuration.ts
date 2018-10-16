@@ -34,6 +34,8 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly enableTimestamping: boolean
   readonly timestampIntervalInSeconds: number
 
+  readonly healthIntervalInSeconds: number
+
   readonly downloadIntervalInSeconds: number
   readonly downloadRetryDelayInMinutes: number
   readonly downloadMaxAttempts: number
@@ -97,6 +99,8 @@ const defaultConfiguration: Configuration = {
 
   enableTimestamping: false,
   timestampIntervalInSeconds: 30,
+
+  healthIntervalInSeconds: 30,
 
   downloadIntervalInSeconds: 5,
   downloadRetryDelayInMinutes: 10,
