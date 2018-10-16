@@ -86,7 +86,7 @@ export class HealthController {
     return blockchainInfo
   }
 
-  async getWalletInfo(): Promise<WalletInfo> {
+  private async getWalletInfo(): Promise<WalletInfo> {
     return pickWalletInfoKeys(await this.bitcoinCore.getWalletInfo())
   }
 
