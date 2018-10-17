@@ -8,8 +8,6 @@ import { Messaging } from 'Messaging/Messaging'
 import { APIConfiguration } from './APIConfiguration'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { HealthController } from './HealthController'
-import { IPFS } from './IPFS'
-import { IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
@@ -63,9 +61,5 @@ export class API {
     this.container.bind<HealthController>('HealthController').to(HealthController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
-    this.container.bind<IPFS>('IPFS').to(IPFS)
-    this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
-      ipfsUrl: this.configuration.ipfsUrl,
-    })
   }
 }
