@@ -8,14 +8,18 @@ interface VOutWithTxId extends VOut {
   readonly transactionId: string
 }
 
-enum AnchorSectionsLengths {
-  Prefix = 4,
-  StorageProtocol = 1,
-  Version = 2,
-  IPFSHash = 46,
+const AnchorSectionsLengths = {
+  Prefix: 4,
+  StorageProtocol: 1,
+  Version: 2,
+  IPFSHash: 46,
 }
 
-const sumObjectValues = pipe(values, sum)
+const sumObjectValues = pipe(
+  values,
+  sum
+)
+
 const anchorByteLength = sumObjectValues(AnchorSectionsLengths)
 
 export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor> =>
@@ -26,11 +30,10 @@ export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor>
     .filter(poetAnchorHasCorrectPrefix)
     .map(poetAnchorWithBlockData(block))
 
-export const dataOutputToPoetTransactionAnchors = (acc: ReadonlyArray<PoetTransactionAnchor>, dataOutput: VOutWithTxId) => {
+const dataOutputToPoetTransactionAnchors = (acc: ReadonlyArray<PoetTransactionAnchor>, dataOutput: VOutWithTxId) => {
   const buffer = dataOutputToBuffer(dataOutput)
-  if(isCorrectBufferLength(buffer)) return acc
   const poetAnchor = bufferToPoetAnchor(buffer)
-  return [...acc, combineAnchorAndTransactionId(poetAnchor, dataOutput)]
+  return isCorrectBufferLength(buffer) ? [...acc, combineAnchorAndTransactionId(poetAnchor, dataOutput)] : acc
 }
 
 const transactionToDataOutput = (transaction: Transaction): VOutWithTxId | undefined => {
@@ -55,7 +58,6 @@ const combineAnchorAndTransactionId = (anchor: PoetAnchor, output: VOutWithTxId)
 
 const dataOutputToData = (dataOutput: VOutWithTxId): string => {
   const { asm } = dataOutput.scriptPubKey
-  console.log(asm.split(' ')[1])
   return asm.split(' ')[1]
 }
 
@@ -68,7 +70,9 @@ const dataOutputToBuffer = pipe(
   dataToBuffer
 )
 
-export const isCorrectBufferLength = (buffer: Buffer) => buffer.byteLength < anchorByteLength ? false : true
+export const isCorrectBufferLength = (buffer: Buffer) => {
+  return buffer.byteLength < anchorByteLength ? false : true
+}
 
 export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchor => {
   const prefix = buffer.slice(0, 4).toString()
