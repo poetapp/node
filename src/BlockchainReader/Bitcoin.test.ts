@@ -228,7 +228,7 @@ describe('Bitcoin.bufferToPoetAnchor', async assert => {
   assert({
     given: 'Buffer from incorrect OP_RETURN data',
     should: 'return false',
-    actual: isCorrectBufferLength(Buffer.from('OP_DUP OP_HS1 349ab07939fcc33afae02d4ba98 OP_EQUAL'.split(' ')[1])),
+    actual: isCorrectBufferLength(Buffer.from('OP_HS1')),
     expected: false,
   })
 })
