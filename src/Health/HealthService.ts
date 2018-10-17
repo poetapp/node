@@ -39,6 +39,7 @@ export class HealthService {
   }
 
   private getHealth = async (): Promise<void> => {
+    await this.controller.refreshIPFSInfo()
     await this.controller.refreshBlockchainInfo()
     await this.controller.refreshWalletInfo()
     await this.controller.refreshNetworkInfo()

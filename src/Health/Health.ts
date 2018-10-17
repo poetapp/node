@@ -8,8 +8,13 @@ import { createModuleLogger } from 'Helpers/Logging'
 
 import { HealthController } from './HealthController'
 import { HealthService, HealthServiceConfiguration } from './HealthService'
+import { IPFS, IPFSConfiguration } from './IPFS'
 
-export interface HealthConfiguration extends LoggingConfiguration, BitcoinRPCConfiguration, HealthServiceConfiguration {
+export interface HealthConfiguration
+  extends LoggingConfiguration,
+    BitcoinRPCConfiguration,
+    HealthServiceConfiguration,
+    IPFSConfiguration {
   readonly dbUrl: string
   readonly rabbitmqUrl: string
 }
@@ -63,6 +68,10 @@ export class Health {
     )
     this.container.bind<HealthServiceConfiguration>('HealthServiceConfiguration').toConstantValue({
       healthIntervalInSeconds: this.configuration.healthIntervalInSeconds,
+    })
+    this.container.bind<IPFS>('IPFS').to(IPFS)
+    this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
+      ipfsUrl: this.configuration.ipfsUrl,
     })
   }
 }
