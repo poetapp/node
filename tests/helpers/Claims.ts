@@ -500,8 +500,8 @@ export const AllGodsChildrenNeedTravelingShoes: SignedVerifiableClaim = {
   claim: {
     name: "All God's Children Need Traveling Shoes",
     author: 'Maya Angelou',
-    tags: 'autobiography',
     dateCreated: '1986-01-01T00:00:00.000Z',
+    tags: 'autobiography',
     datePublished: '1986-01-01T00:00:00.000Z',
   },
   'sec:proof': {

@@ -3,7 +3,7 @@ import { configureCreateVerifiableClaim, getVerifiableClaimSigner } from '@po.et
 import { path, pipeP } from 'ramda'
 import { describe } from 'riteway'
 import { app } from '../../src/app'
-import { issuerACD, PrivateKeyACD } from '../../test/Claims'
+import { issuerACD, PrivateKeyACD } from '../helpers/Claims'
 import { ensureBitcoinBalance } from '../helpers/bitcoin'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'

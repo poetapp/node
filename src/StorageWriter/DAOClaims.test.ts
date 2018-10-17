@@ -2,7 +2,7 @@
 import { FindAndModifyWriteOpResultObject } from 'mongodb'
 import { describe, Try } from 'riteway'
 
-import { TheRaven } from '../../test/Claims'
+import { TheRaven } from '../../tests/helpers/Claims'
 import { getClaimFromFindAndUpdateResponse, throwIfClaimNotFound } from './DAOClaims'
 
 describe('DOAClaims.getClaimFromFindAndUpdateResponse', async (assert: any) => {

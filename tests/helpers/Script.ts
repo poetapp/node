@@ -1,5 +1,6 @@
 /* tslint:disable:no-console */
 /* tslint:disable:no-relative-imports */
+
 import { configureCreateVerifiableClaim, getVerifiableClaimSigner } from '@po.et/poet-js'
 import { pipeP } from 'ramda'
 

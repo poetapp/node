@@ -1,6 +1,6 @@
 /* tslint:disable:no-relative-imports */
 import { describe } from 'riteway'
-import { TheRaven } from '../test/Claims'
+import { TheRaven } from '../tests/helpers/Claims'
 import { isClaimIPFSHashPair } from './Interfaces'
 
 const ipfsFileHash = ''

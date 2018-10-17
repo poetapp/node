@@ -228,7 +228,7 @@ const claim = await createClaim(privateKey, ClaimType.Work, {
 
 ```
 
-> You can find more examples on how to build and publish claims in the integration tests in [test/Integration/PostWork](./test/Integration/PostWork.ts).
+> You can find more examples on how to build and publish claims in the integration tests in [tests/integration/API/WorksController.test.ts](./tests/integration/API/WorkController.tests.ts).
 
 ### Running as a Daemon
 Create a file with the following contents and place it in `~/.config/systemd/user/poet-node.service`:
