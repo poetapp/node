@@ -32,8 +32,9 @@ export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor>
 
 const dataOutputToPoetTransactionAnchors = (acc: ReadonlyArray<PoetTransactionAnchor>, dataOutput: VOutWithTxId) => {
   const buffer = dataOutputToBuffer(dataOutput)
-  const poetAnchor = bufferToPoetAnchor(buffer)
-  return isCorrectBufferLength(buffer) ? [...acc, combineAnchorAndTransactionId(poetAnchor, dataOutput)] : acc
+  return isCorrectBufferLength(buffer)
+    ? [...acc, combineAnchorAndTransactionId(bufferToPoetAnchor(buffer), dataOutput)]
+    : acc
 }
 
 const transactionToDataOutput = (transaction: Transaction): VOutWithTxId | undefined => {
