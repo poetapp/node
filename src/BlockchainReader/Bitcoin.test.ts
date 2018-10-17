@@ -184,10 +184,17 @@ describe('Bitcoin.dataToPoetAnchor', async assert => {
     })
   }
 
-  assertSample('POET', [2, 3], StorageProtocol.IPFS, 'Jim')
-  assertSample('BARD', [2, 3], StorageProtocol.IPFS, 'Robert')
-  assertSample('POET', [1, 0], StorageProtocol.IPFS, 'Roger')
-  assertSample('BARD', [1, 0], StorageProtocol.IPFS, 'Syd')
+  assert({
+    given: 'A non Poet OP_RETURN Data',
+    should: 'return undefined',
+    actual: dataToPoetAnchor('918cc48177c39a01ab6a20d3e980526775262996de00928fa92d163bd2508812'),
+    expected: undefined,
+  })
+
+  assertSample('POET', [2, 3], StorageProtocol.IPFS, 'QmSRWxHeNikpTJpUfvheaVgkx4jFheEPWMwhMTyy4sL3Uw')
+  assertSample('BARD', [2, 3], StorageProtocol.IPFS, 'QmNqgEdJGQHft9gghaaZVK916wxPYzhWC8Hu94f6Vbk6bZ')
+  assertSample('POET', [1, 0], StorageProtocol.IPFS, 'Qmb44k9wqTPsZwNci57kSfp1jprPTyEqFDYAHn2bW7GV4q')
+  assertSample('BARD', [1, 0], StorageProtocol.IPFS, 'QmdJo8ixhj7Kq5Xz8W62gFZbVZwnXWVkbxgRPzGp5DF4Ex')
 })
 
 // Would be way better to validate the block's hash

@@ -8,6 +8,18 @@ interface VOutWithTxId extends VOut {
   readonly transactionId: string
 }
 
+enum AnchorSectionsLengths {
+  Prefix = 4,
+  StorageProtocol = 1,
+  Version = 2,
+  IPFSHash = 46,
+}
+const anchorByteLength =
+  AnchorSectionsLengths.Prefix +
+  AnchorSectionsLengths.Version +
+  AnchorSectionsLengths.StorageProtocol +
+  AnchorSectionsLengths.IPFSHash
+
 export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor> =>
   block.tx
     .map(transactionToPoetAnchor)
@@ -44,6 +56,7 @@ const dataOutputToData = (dataOutput: VOutWithTxId): string => {
 
 export const dataToPoetAnchor = (data: string): PoetAnchor => {
   const buffer = Buffer.from(data, 'hex')
+  if (buffer.byteLength < anchorByteLength) return undefined
   const prefix = buffer.slice(0, 4).toString()
   const version = Array.from(buffer.slice(4, 6))
   const storageProtocol = buffer.readInt8(6)
