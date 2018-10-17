@@ -58,6 +58,7 @@ export class Health {
     this.logger.info('Stopping Health...')
     await this.router.stop()
     await this.cron.stop()
+    await this.messaging.stop()
     this.logger.info('Stopping Health Database...')
     await this.mongoClient.close()
   }

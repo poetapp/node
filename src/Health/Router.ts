@@ -31,8 +31,7 @@ export class Router {
   }
 
   async stop() {
-    this.logger.info('Stopping Health Messaging...')
-    await this.messaging.stop()
+    this.logger.info('Stopping Health Router...')
   }
 
   onGetHealth = async () => {
