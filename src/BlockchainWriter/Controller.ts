@@ -3,13 +3,13 @@ import BitcoinCore = require('bitcoin-core')
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
-import { InsufficientFundsException } from 'Exceptions'
 import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { poetAnchorToData } from './Bitcoin'
 import { ControllerConfiguration } from './ControllerConfiguration'
 import { DAO } from './DAO'
+import { translateFundTransactionError } from './Exceptions'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 @injectable()
@@ -91,19 +91,8 @@ export class Controller {
     })
   }
 
-  private fundTransaction = async (rawTransaction: string) => {
-    const { bitcoinCore } = this
-    try {
-      return await bitcoinCore.fundRawTransaction(rawTransaction)
-    } catch (exception) {
-      if (exception.message === 'Insufficient funds')
-        throw new InsufficientFundsException('Insuffiecient funds for transaction')
-      throw new Error(exception.message)
-    }
-  }
-
   private anchorData = async (data: string) => {
-    const { bitcoinCore, fundTransaction } = this
+    const { bitcoinCore } = this
     const logger = this.logger.child({ method: 'anchorData' })
 
     const rawTransaction = await bitcoinCore.createRawTransaction([], { data })
@@ -115,7 +104,7 @@ export class Controller {
       'Got rawTransaction from Bitcoin Core'
     )
 
-    const fundedTransaction = await fundTransaction(rawTransaction)
+    const fundedTransaction = await bitcoinCore.fundRawTransaction(rawTransaction).catch(translateFundTransactionError)
 
     logger.trace(
       {
