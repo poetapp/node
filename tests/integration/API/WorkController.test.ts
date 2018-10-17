@@ -330,7 +330,6 @@ describe('GET /works?issuer=:issuer', async assert => {
       expected: 10,
     })
 
-
     assert({
       given: 'a call to GET /works for an issuer',
       should: 'return only claims created by that issuer',
@@ -464,7 +463,7 @@ describe('POST /works', async assert => {
   {
     const invalidSignedClaim = {
       ...ABraveAndStartlingTruth,
-      'sec:proof': TheRaven['sec:proof']
+      'sec:proof': TheRaven['sec:proof'],
     }
     const response = await postWorkToNode(invalidSignedClaim)
 
