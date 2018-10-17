@@ -10,6 +10,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 interface WorksFilters {
   readonly issuer?: string
+  readonly publicKey?: string
   readonly offset?: number
   readonly limit?: number
 }
