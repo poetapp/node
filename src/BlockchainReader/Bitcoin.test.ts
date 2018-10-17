@@ -5,7 +5,7 @@ import { describe } from 'riteway'
 import { poetAnchorToData } from 'BlockchainWriter/Bitcoin'
 import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
-import { anchorPrefixAndVersionMatch, blockToPoetAnchors, dataToPoetAnchor } from './Bitcoin'
+import { anchorPrefixAndVersionMatch, blockToPoetAnchors, bufferToPoetAnchor } from './Bitcoin'
 
 import * as TestBlock from './TestData/block-0000000070746b06bbec07a7cd35e0c6d47bfa4e2544a6a1d2aa6efc49d47679.json'
 
@@ -161,7 +161,7 @@ describe('Bitcoin.getMatchingAnchors', async assert => {
   })
 })
 
-describe('Bitcoin.dataToPoetAnchor', async assert => {
+describe('Bitcoin.bufferToPoetAnchor', async assert => {
   function assertSample(
     prefix: string,
     version: number[],
@@ -179,7 +179,7 @@ describe('Bitcoin.dataToPoetAnchor', async assert => {
     assert({
       given: 'a hex string of a Po.et anchor',
       should: 'return the anchor correctly parsed',
-      actual: dataToPoetAnchor(data),
+      actual: bufferToPoetAnchor(Buffer.from(data, 'hex')),
       expected,
     })
   }
