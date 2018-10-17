@@ -1,24 +1,24 @@
 import { inject, injectable } from 'inversify'
-import { Db } from 'mongodb'
-
-import { IPFS } from './IPFS'
+import { Db, Collection } from 'mongodb'
 
 export const isOkOne = ({ ok }: { ok: number }) => ok === 1
-export const isStatus200 = ({ status }: { status: number }) => status === 200
 
 interface HealthObject {
   readonly mongoIsConnected: boolean
-  readonly ipfsIsConnected: boolean
+  readonly ipfsInfo: object
+  readonly walletInfo: object
+  readonly blockchainInfo: object
+  readonly networkInfo: object
 }
 
 @injectable()
 export class HealthController {
   private readonly db: Db
-  private readonly ipfs: IPFS
+  private readonly collection: Collection
 
-  constructor(@inject('DB') db: Db, @inject('IPFS') ipfs: IPFS) {
+  constructor(@inject('DB') db: Db) {
     this.db = db
-    this.ipfs = ipfs
+    this.collection = this.db.collection('health')
   }
 
   private async checkMongo(): Promise<boolean> {
@@ -30,22 +30,54 @@ export class HealthController {
     }
   }
 
-  private async checkIPFS(): Promise<boolean> {
+  private async getIPFSInfo(): Promise<object> {
     try {
-      const ipfsConnection = await this.ipfs.getVersion()
-      return isStatus200(ipfsConnection)
+      const { ipfsInfo = {} } = await this.collection.findOne({ name: 'ipfsInfo' })
+      return ipfsInfo
     } catch (e) {
-      return false
+      return { error: 'Error retrieving IPFSInfo...' }
+    }
+  }
+
+  private async getBlockchainInfo(): Promise<object> {
+    try {
+      const { blockchainInfo = {} } = await this.collection.findOne({ name: 'blockchainInfo' })
+      return blockchainInfo
+    } catch (e) {
+      return { error: 'Error retrieving blockchainInfo...' }
+    }
+  }
+
+  private async getWalletInfo(): Promise<object> {
+    try {
+      const { walletInfo = {} } = await this.collection.findOne({ name: 'walletInfo' })
+      return walletInfo
+    } catch (e) {
+      return { error: 'Error retrieving walletInfo...' }
+    }
+  }
+
+  private async getNetworkInfo(): Promise<object> {
+    try {
+      const { networkInfo = {} } = await this.collection.findOne({ name: 'networkInfo' })
+      return networkInfo
+    } catch (e) {
+      return { error: 'Error retrieving networkInfo...' }
     }
   }
 
   async getHealth(): Promise<HealthObject> {
     const mongoIsConnected = await this.checkMongo()
-    const ipfsIsConnected = await this.checkIPFS()
-
+    const ipfsInfo = await this.getIPFSInfo()
+    const walletInfo = await this.getWalletInfo()
+    const blockchainInfo = await this.getBlockchainInfo()
+    const networkInfo = await this.getNetworkInfo()
     return {
       mongoIsConnected,
-      ipfsIsConnected,
+      ipfsInfo,
+      walletInfo,
+      blockchainInfo,
+      networkInfo,
     }
   }
 }
