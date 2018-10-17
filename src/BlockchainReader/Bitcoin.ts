@@ -70,9 +70,7 @@ const dataOutputToBuffer = pipe(
   dataToBuffer
 )
 
-export const isCorrectBufferLength = (buffer: Buffer) => {
-  return buffer.byteLength < anchorByteLength ? false : true
-}
+export const isCorrectBufferLength = (buffer: Buffer) => buffer.byteLength >= anchorByteLength
 
 export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchor => {
   const prefix = buffer.slice(0, 4).toString()
