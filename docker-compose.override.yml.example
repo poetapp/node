@@ -44,6 +44,7 @@ services:
   # regtest-watcher:
   #   image: node_poet-node:latest
   #   depends_on:
+  #     - poet-node
   #     - bitcoind-1
   #   environment:
   #     - POET_SERVICE=regtest-watcher
