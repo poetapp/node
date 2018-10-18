@@ -5,8 +5,13 @@ import { describe } from 'riteway'
 import { poetAnchorToData } from 'BlockchainWriter/Bitcoin'
 import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
-import { anchorPrefixAndVersionMatch, blockToPoetAnchors, bufferToPoetAnchor, isCorrectBufferLength, dataOutputToBuffer } from './Bitcoin'
+import { anchorPrefixAndVersionMatch, blockToPoetAnchors, bufferToPoetAnchor, isCorrectBufferLength } from './Bitcoin'
 
+/* 
+  Pulling this block information from Insight-API offered different results than with using the Bitcoin-Core-API.
+  The transactions scriptPubKey property did not include a type for several transactions when using Insight-API, but it was included with the 
+  Bitcoin-Core-API.
+*/
 import * as TestBlock from './TestData/block-0000000070746b06bbec07a7cd35e0c6d47bfa4e2544a6a1d2aa6efc49d47679.json'
 import * as TestBlock1 from './TestData/block-00000000f8b690cb98c5bf9e221b47b493a27523e8e8b94a18022abd3e51fb42.json'
 
@@ -262,7 +267,7 @@ const validateTestBlockIntegrity = allPass([
 const validateTestBlock1Integrity = allPass([
   (block: any) => block.tx,
   (block: any) => Array.isArray(block.tx),
-  (block: any) => block.tx.length === 123
+  (block: any) => block.tx.length === 123,
 ])
 
 const localeCompare = (a: string, b: string) => a.localeCompare(b)
