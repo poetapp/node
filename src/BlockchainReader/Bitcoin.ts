@@ -59,14 +59,15 @@ const combineAnchorAndTransactionId = (anchor: PoetAnchor, output: VOutWithTxId)
 
 const dataOutputToData = (dataOutput: VOutWithTxId): string => {
   const { asm } = dataOutput.scriptPubKey
-  return asm.split(' ')[1]
+  const data = asm.split(' ')[1]
+  return data || ''
 }
 
 const dataToBuffer = (data: string): Buffer => {
   return Buffer.from(data, 'hex')
 }
 
-const dataOutputToBuffer = pipe(
+export const dataOutputToBuffer = pipe(
   dataOutputToData,
   dataToBuffer
 )

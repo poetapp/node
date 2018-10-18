@@ -8,12 +8,20 @@ import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 import { anchorPrefixAndVersionMatch, blockToPoetAnchors, bufferToPoetAnchor, isCorrectBufferLength } from './Bitcoin'
 
 import * as TestBlock from './TestData/block-0000000070746b06bbec07a7cd35e0c6d47bfa4e2544a6a1d2aa6efc49d47679.json'
+import * as TestBlock1 from './TestData/block-00000000f8b690cb98c5bf9e221b47b493a27523e8e8b94a18022abd3e51fb42.json'
 
 describe('Bitcoin.blockToPoetAnchors', async assert => {
   assert({
     given: 'testnet block 1356137',
     should: 'satisfy basic integrity checks',
     actual: validateTestBlockIntegrity(TestBlock),
+    expected: true,
+  })
+
+  assert({
+    given: 'testnet block 1288513',
+    should: 'satisfy basic integrity checks',
+    actual: validateTestBlock1Integrity(TestBlock1),
     expected: true,
   })
 
@@ -80,6 +88,17 @@ describe('Bitcoin.blockToPoetAnchors', async assert => {
       should: 'all expected IPFS Directory hashes should be in the returned anchors',
       actual: equals(anchorsIpfsHashes.sort(localeCompare), ipfsDirectoryHashes.sort(localeCompare)),
       expected: true,
+    })
+  }
+
+  {
+    const poetAnchors = blockToPoetAnchors(TestBlock1)
+
+    assert({
+      given: 'a block that contains a transaction with scriptPubKey.type === "nullData" and no OP_RETURN',
+      should: 'filter out the transaction',
+      actual: poetAnchors.length,
+      expected: 0,
     })
   }
 })
@@ -238,6 +257,12 @@ const validateTestBlockIntegrity = allPass([
   (block: any) => block.tx,
   (block: any) => Array.isArray(block.tx),
   (block: any) => block.tx.length === 146,
+])
+
+const validateTestBlock1Integrity = allPass([
+  (block: any) => block.tx,
+  (block: any) => Array.isArray(block.tx),
+  (block: any) => block.tx.length === 123,
 ])
 
 const localeCompare = (a: string, b: string) => a.localeCompare(b)
