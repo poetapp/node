@@ -9,6 +9,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { poetAnchorToData } from './Bitcoin'
 import { ControllerConfiguration } from './ControllerConfiguration'
 import { DAO } from './DAO'
+import { translateFundTransactionError } from './Exceptions'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 @injectable()
@@ -103,7 +104,7 @@ export class Controller {
       'Got rawTransaction from Bitcoin Core'
     )
 
-    const fundedTransaction = await bitcoinCore.fundRawTransaction(rawTransaction)
+    const fundedTransaction = await bitcoinCore.fundRawTransaction(rawTransaction).catch(translateFundTransactionError)
 
     logger.trace(
       {
