@@ -2,7 +2,7 @@
 import { describe } from 'riteway'
 
 import { TheRaven } from '../../helpers/Claims'
-import { delay, runtimeId, setUpServerAndDb} from '../../helpers/utils'
+import { delay, runtimeId, setUpServerAndDb } from '../../helpers/utils'
 import { getWork, postWork } from '../../helpers/works'
 
 describe('GET /works/:id', async assert => {
