@@ -103,7 +103,7 @@ This is what the default configuration looks like:
 
   apiPort: 18080,
   poetNetwork: 'BARD',
-  poetVersion: [0, 0, 0, 2],
+  poetVersion: [0, 3],
   minimumBlockHeight: 1253828,
   blockchainReaderIntervalInSeconds: 5,
 
