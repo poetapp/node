@@ -16,7 +16,7 @@ import {
   ASongFlungUpToHeaven,
   MomAndMeAndMom,
   OnThePulseOfMorning,
-  ABraveAndStartlingTrugh,
+  ABraveAndStartlingTruth,
 } from './Claims'
 
 const setUpClaims = async () => {
@@ -31,7 +31,7 @@ const setUpClaims = async () => {
   console.log(await createClaim(PrivateKeyMA, ClaimType.Work, ASongFlungUpToHeaven.attributes))
   console.log(await createClaim(PrivateKeyMA, ClaimType.Work, MomAndMeAndMom.attributes))
   console.log(await createClaim(PrivateKeyMA, ClaimType.Work, OnThePulseOfMorning.attributes))
-  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, ABraveAndStartlingTrugh.attributes))
+  console.log(await createClaim(PrivateKeyMA, ClaimType.Work, ABraveAndStartlingTruth.attributes))
 }
 
 setUpClaims().catch(console.error)
