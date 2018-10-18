@@ -5,7 +5,7 @@ import { describe } from 'riteway'
 import { poetAnchorToData } from 'BlockchainWriter/Bitcoin'
 import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
-import { anchorPrefixAndVersionMatch, blockToPoetAnchors, bufferToPoetAnchor } from './Bitcoin'
+import { anchorPrefixAndVersionMatch, blockToPoetAnchors, bufferToPoetAnchor, isCorrectBufferLength } from './Bitcoin'
 
 import * as TestBlock from './TestData/block-0000000070746b06bbec07a7cd35e0c6d47bfa4e2544a6a1d2aa6efc49d47679.json'
 
@@ -188,6 +188,49 @@ describe('Bitcoin.bufferToPoetAnchor', async assert => {
   assertSample('BARD', [2, 3], StorageProtocol.IPFS, 'Robert')
   assertSample('POET', [1, 0], StorageProtocol.IPFS, 'Roger')
   assertSample('BARD', [1, 0], StorageProtocol.IPFS, 'Syd')
+})
+
+describe('Bitcoin.bufferToPoetAnchor', async assert => {
+  const bufferFromAnchor = (
+    prefix: string,
+    version: number[],
+    storageProtocol: StorageProtocol,
+    ipfsDirectoryHash: string
+  ): Buffer =>
+    Buffer.from(
+      poetAnchorToData({
+        prefix,
+        version,
+        storageProtocol,
+        ipfsDirectoryHash,
+      }),
+      'hex'
+    )
+
+  assert({
+    given: 'Buffer from correct poet anchor with IPFS file hash',
+    should: 'return true',
+    actual: isCorrectBufferLength(
+      bufferFromAnchor('POET', [2, 3], StorageProtocol.IPFS, 'QmPth96BuMUhHJDDiTNL6wphBMCXQWTDmm1uQe63VeGmPT')
+    ),
+    expected: true,
+  })
+
+  assert({
+    given: 'Buffer from correct poet anchor with IPFS directory hash',
+    should: 'return true',
+    actual: isCorrectBufferLength(
+      bufferFromAnchor('POET', [2, 3], StorageProtocol.IPFS, 'Qmdrv2VoXKpzpSzS1iKpWMxfM9THEhGgBriKqbMyAiTF1U')
+    ),
+    expected: true,
+  })
+
+  assert({
+    given: 'Buffer from incorrect OP_RETURN data',
+    should: 'return false',
+    actual: isCorrectBufferLength(Buffer.from('OP_HS1')),
+    expected: false,
+  })
 })
 
 // Would be way better to validate the block's hash
