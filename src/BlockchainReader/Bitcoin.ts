@@ -1,5 +1,5 @@
 import { PoetAnchor, PoetBlockAnchor, PoetTransactionAnchor } from '@po.et/poet-js'
-import { equals, allPass, pipe } from 'ramda'
+import { equals, allPass, pipe, values, sum } from 'ramda'
 
 import { PREFIX_BARD, PREFIX_POET, Block, Transaction, VOut } from 'Helpers/Bitcoin'
 import { isTruthy } from 'Helpers/isTruthy'
@@ -7,6 +7,20 @@ import { isTruthy } from 'Helpers/isTruthy'
 interface VOutWithTxId extends VOut {
   readonly transactionId: string
 }
+
+const AnchorSectionsLengths = {
+  Prefix: 4,
+  StorageProtocol: 1,
+  Version: 2,
+  IPFSHash: 46,
+}
+
+const sumObjectValues = pipe(
+  values,
+  sum
+)
+
+const anchorByteLength = sumObjectValues(AnchorSectionsLengths)
 
 export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor> =>
   block.tx
@@ -18,8 +32,9 @@ export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor>
 
 const dataOutputToPoetTransactionAnchors = (acc: ReadonlyArray<PoetTransactionAnchor>, dataOutput: VOutWithTxId) => {
   const buffer = dataOutputToBuffer(dataOutput)
-  const poetAnchor = bufferToPoetAnchor(buffer)
-  return [...acc, combineAnchorAndTransactionId(poetAnchor, dataOutput)]
+  return isCorrectBufferLength(buffer)
+    ? [...acc, combineAnchorAndTransactionId(bufferToPoetAnchor(buffer), dataOutput)]
+    : acc
 }
 
 const transactionToDataOutput = (transaction: Transaction): VOutWithTxId | undefined => {
@@ -55,6 +70,8 @@ const dataOutputToBuffer = pipe(
   dataOutputToData,
   dataToBuffer
 )
+
+export const isCorrectBufferLength = (buffer: Buffer) => buffer.byteLength >= anchorByteLength
 
 export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchor => {
   const prefix = buffer.slice(0, 4).toString()
