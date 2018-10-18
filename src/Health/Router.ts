@@ -30,10 +30,6 @@ export class Router {
     await this.messaging.consume(this.exchange.getHealth, this.onGetHealth)
   }
 
-  async stop() {
-    this.logger.info('Stopping Health Router...')
-  }
-
   onGetHealth = async () => {
     const logger = this.logger.child({ method: 'onGetHealth' })
     try {
