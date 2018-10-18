@@ -24,7 +24,7 @@ describe('GET /works/:id', async assert => {
 
     assert({
       given: 'an id of a submitted work',
-      should: 'reuturn ok',
+      should: 'return ok',
       actual: theRavenResponse.ok,
       expected: true,
     })
