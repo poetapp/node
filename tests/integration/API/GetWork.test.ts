@@ -1,5 +1,3 @@
-import {Claim} from "@po.et/poet-js";
-
 /* tslint:disable:no-relative-imports */
 import { describe } from 'riteway'
 
@@ -22,9 +20,6 @@ describe('GET /works/:id', async assert => {
 
   // Submit a claim
   await postWorkToNode(TheRaven)
-
-  // Wait for a claim batch to be submitted to the store.
-  await delay(parseInt(process.env.TIMESTAMP_INTERVAL_IN_SECONDS || '10', 10) * 1000 * 2)
 
   {
     const theRavenResponse = await getWorkFromNode(TheRaven.id)
