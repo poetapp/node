@@ -2,7 +2,7 @@
 import { describe } from 'riteway'
 
 import { TheRaven } from '../../helpers/Claims'
-import { delay, runtimeId, setUpServerAndDb } from '../../helpers/utils'
+import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
 import { getWork, postWork } from '../../helpers/works'
 
 describe('GET /works/:id', async assert => {
@@ -14,9 +14,6 @@ describe('GET /works/:id', async assert => {
   const postWorkToNode = postWork(NODE_PORT)
 
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
-
-  // Wait for everything to finish starting
-  await delay(5 * 1000)
 
   // Submit a claim
   await postWorkToNode(TheRaven)
