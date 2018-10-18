@@ -11,13 +11,15 @@ const {
   BITCOIN_NEW_BLOCK_INTERVAL_MS: newBlockInterval = 60000,
 } = process.env
 
-const bitcoindClientA = new Client({ host, port, network: 'regtest', username, password })
+const configuration = { host, port, network: 'regtest', username, password }
+const bitcoindClientA = new Client(configuration)
 
 const main = async () => {
   try {
     logger.info('Checking wallet balance')
     const balance = await bitcoindClientA.getBalance()
-    logger.info(`Wallet balance: ${balance}`)
+    logger.info({ balance }, `Wallet balance retrieved`)
+
     if (balance === 0) {
       logger.info('Wallet is empty - generating bitcoin')
       await bitcoindClientA.generate(101)
@@ -32,10 +34,10 @@ const main = async () => {
   }
 }
 
-logger.info('Regtest Watcher started')
+logger.info({ ...configuration, password: '[HIDDEN]' }, 'Regtest Watcher started')
 main().then(
   setInterval(
-    () => main().then(() => logger.info('Regtest Watcher interval finished')),
+    () => main().then(() => logger.info({ newBlockInterval }, 'Regtest Watcher interval finished')),
     parseInt(newBlockInterval)
   )
 )
