@@ -13,8 +13,7 @@ import { Controller, ControllerConfiguration } from './Controller'
 import { DAO } from './DAO'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
-import { Service } from './Service'
-import { ServiceConfiguration } from './ServiceConfiguration'
+import { Service, ServiceConfiguration } from './Service'
 
 export interface BlockchainWriterConfiguration
   extends LoggingConfiguration,
