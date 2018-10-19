@@ -10,26 +10,26 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { anchorPrefixAndVersionMatch, blockToPoetAnchors } from './Bitcoin'
 
-export interface ClaimControllerConfiguration {
+export interface ControllerConfiguration {
   readonly poetNetwork: string
   readonly poetVersion: ReadonlyArray<number>
 }
 
 @injectable()
-export class ClaimController {
+export class Controller {
   private readonly logger: Pino.Logger
   private readonly db: Db
   private readonly collection: Collection
   private readonly messaging: Messaging
   private readonly bitcoinCore: BitcoinCore
-  private readonly configuration: ClaimControllerConfiguration
+  private readonly configuration: ControllerConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
-    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration
+    @inject('ClaimControllerConfiguration') configuration: ControllerConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db

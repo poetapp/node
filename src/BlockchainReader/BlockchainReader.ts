@@ -9,14 +9,14 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { BitcoinRPCConfiguration, LoggingConfiguration } from 'Configuration'
 
-import { BlockchainReaderService, BlockchainReaderServiceConfiguration } from './BlockchainReaderService'
-import { ClaimController, ClaimControllerConfiguration } from './ClaimController'
+import { Controller, ControllerConfiguration } from './Controller'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
+import { Service, ServiceConfiguration } from './Service'
 
 export interface BlockchainReaderConfiguration
   extends LoggingConfiguration,
-    ClaimControllerConfiguration,
-    BlockchainReaderServiceConfiguration,
+    ControllerConfiguration,
+    ServiceConfiguration,
     BitcoinRPCConfiguration {
   readonly rabbitmqUrl: string
   readonly dbUrl: string
@@ -31,7 +31,7 @@ export class BlockchainReader {
   private mongoClient: MongoClient
   private dbConnection: Db
   private messaging: Messaging
-  private cron: BlockchainReaderService
+  private service: Service
 
   constructor(configuration: BlockchainReaderConfiguration) {
     this.configuration = configuration
@@ -49,8 +49,8 @@ export class BlockchainReader {
 
     this.initializeContainer()
 
-    this.cron = this.container.get('Cron')
-    await this.cron.start()
+    this.service = this.container.get('Service')
+    await this.service.start()
 
     this.logger.info('BlockchainReader Started')
   }
@@ -59,15 +59,15 @@ export class BlockchainReader {
     this.logger.info('BlockchainReader Stopping...')
     this.logger.info('BlockchainReader Database Stopping...')
     await this.mongoClient.close()
-    this.cron.stop()
+    this.service.stop()
     this.logger.info('BlockchainReader Messaging Stopping...')
     await this.messaging.stop()
   }
 
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<BlockchainReaderService>('Cron').to(BlockchainReaderService)
+    this.container.bind<Controller>('ClaimController').to(Controller)
+    this.container.bind<Service>('Service').to(Service)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<BitcoinCore>('BitcoinCore').toConstantValue(
@@ -79,10 +79,8 @@ export class BlockchainReader {
         password: this.configuration.bitcoinPassword,
       })
     )
-    this.container
-      .bind<ClaimControllerConfiguration>('ClaimControllerConfiguration')
-      .toConstantValue(this.configuration)
-    this.container.bind<BlockchainReaderServiceConfiguration>('BlockchainReaderServiceConfiguration').toConstantValue({
+    this.container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
+    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       minimumBlockHeight: this.configuration.minimumBlockHeight,
       blockchainReaderIntervalInSeconds: this.configuration.blockchainReaderIntervalInSeconds,
       forceBlockHeight: this.configuration.forceBlockHeight,
