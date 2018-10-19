@@ -72,6 +72,7 @@ export interface ExchangeConfiguration {
   readonly exchangePoetAnchorDownloaded: string
   readonly exchangeClaimsDownloaded: string
   readonly exchangeStorageWriterStoreNextClaim: string
+  readonly exchangeGetHealth: string
 }
 
 const defaultConfiguration: Configuration = {
@@ -128,6 +129,7 @@ const defaultConfiguration: Configuration = {
   exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
   exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
   exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM',
+  exchangeGetHealth: 'HEALTH::GET_HEALTH',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
@@ -169,6 +171,7 @@ const applyExchangePrefix = (configVars: any) => {
     'exchangePoetAnchorDownloaded',
     'exchangeClaimsDownloaded',
     'exchangeStorageWriterStoreNextClaim',
+    'exchangeGetHealth',
   ]
 
   return {

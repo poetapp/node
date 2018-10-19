@@ -232,6 +232,9 @@ export async function app(localVars: any = {}) {
     bitcoinUsername: configuration.bitcoinUsername,
     bitcoinPassword: configuration.bitcoinPassword,
     healthIntervalInSeconds: configuration.healthIntervalInSeconds,
+    exchanges: {
+      getHealth: configuration.exchangeGetHealth,
+    },
   })
 
   try {
