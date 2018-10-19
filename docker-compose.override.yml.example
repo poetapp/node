@@ -40,6 +40,19 @@ services:
     #   - .:/usr/src/app
     # command: sleep infinity
 
+  # Uncomment this service to automatically generate a new block every 5 seconds.
+  # regtest-watcher:
+  #   image: node_poet-node:latest
+  #   depends_on:
+  #     - poet-node
+  #     - bitcoind-1
+  #   environment:
+  #     - POET_SERVICE=regtest-watcher
+  #     - BITCOIN_NEW_BLOCK_INTERVAL_MS=5000
+  #   links:
+  #     - bitcoind-1
+  #   command: scripts/regtest-watcher.js
+
 # volumes:
 #   bitcoind1:
 #     driver: local
