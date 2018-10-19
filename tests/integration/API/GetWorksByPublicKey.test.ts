@@ -19,12 +19,12 @@ import {
   TheWeekOfDiana,
 } from '../../helpers/Claims'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
-import { getWork, postWork } from '../../helpers/works'
+import { getWork, postWorkWithDelay } from '../../helpers/works'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
 const getWorkFromNode = getWork(NODE_PORT)
-const postWorkToNode = postWork(NODE_PORT)
+const postWorkToNode = postWorkWithDelay(NODE_PORT)
 
 const setUpExistingClaims = async (claims: ReadonlyArray<Claim>) =>
   await Promise.all(claims.map(async (claim: Claim) => postWorkToNode(claim)))
@@ -58,48 +58,49 @@ describe('GET /works?publicKey=:publicKey', async assert => {
   const getPublicKeys = (claims: any) => pluck('publicKey')(claims)
 
   {
+    const given = 'a call to GET /works for the MA publicKey'
     const response = await getWorkFromNode(`?publicKey=${ABraveAndStartlingTruth.publicKey}`)
     const claims = await response.json()
     const publicKeys = uniq(getPublicKeys(claims))
     const claimsWithoutTimestamps = getClaimsWithoutTimestamps(claims)
 
     assert({
-      given: 'a call to get works for a publicKey',
+      given,
       should: 'succeed',
       actual: response.ok,
       expected: true,
     })
 
     assert({
-      given: 'a call to GET /works for a publicKey',
+      given,
       should: 'return 200',
       actual: response.status,
       expected: 200,
     })
 
     assert({
-      given: `a call to GET /works for the MA publicKey`,
+      given,
       should: `return claims for the publicKey`,
       actual: claims.length,
       expected: 10,
     })
 
     assert({
-      given: 'a call to GET /works for a publicKey',
+      given,
       should: 'return only claims created by that publicKey',
       actual: publicKeys,
       expected: [ABraveAndStartlingTruth.publicKey],
     })
 
     assert({
-      given: 'a call to GET /works for a publicKey',
+      given,
       should: 'return count in the header X-Total-Count',
       actual: await response.headers.get('X-Total-Count'),
       expected: '10',
     })
 
     assert({
-      given: 'a call to GET /works for a publicKey',
+      given,
       should: 'return only signedClaims',
       actual: all(isClaim)(claimsWithoutTimestamps),
       expected: true,
@@ -107,19 +108,20 @@ describe('GET /works?publicKey=:publicKey', async assert => {
   }
 
   {
+    const given = 'a call to GET /works for the EAP publicKey'
     const response = await getWorkFromNode(`?publicKey=${TheRaven.publicKey}`)
     const claims = await response.json()
     const publicKeys = uniq(getPublicKeys(claims))
 
     assert({
-      given: 'a call to GET /works for the EAP public',
+      given,
       should: 'return a different list',
       actual: claims.length,
       expected: 2,
     })
 
     assert({
-      given: 'a call to GET /works for a different publicKey',
+      given,
       should: 'return only claims created by that publicKey',
       actual: publicKeys,
       expected: [TheRaven.publicKey],
@@ -138,25 +140,26 @@ describe('GET /works?publicKey=:publicKey', async assert => {
   }
 
   {
+    const given = 'a publicKey with no associated claims'
     const response = await getWorkFromNode('?publicKey=unknown')
     const claims = await response.json()
 
     assert({
-      given: 'an publicKey with no claims',
+      given,
       should: 'return ok',
       actual: response.ok,
       expected: true,
     })
 
     assert({
-      given: 'an publicKey with no claims',
+      given,
       should: 'return 200',
       actual: response.status,
       expected: 200,
     })
 
     assert({
-      given: 'an publicKey with no claims',
+      given,
       should: 'return an empty array',
       actual: claims,
       expected: [],

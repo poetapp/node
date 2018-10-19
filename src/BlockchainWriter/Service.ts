@@ -5,7 +5,10 @@ import * as Pino from 'pino'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { Controller } from './Controller'
-import { ServiceConfiguration } from './ServiceConfiguration'
+
+export interface ServiceConfiguration {
+  readonly timestampIntervalInSeconds: number
+}
 
 @injectable()
 export class Service {

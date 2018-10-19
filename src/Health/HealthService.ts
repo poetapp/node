@@ -3,8 +3,9 @@ import { injectable, inject } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { Messaging } from 'Messaging/Messaging'
 
-import { HealthController } from './HealthController'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export interface HealthServiceConfiguration {
   readonly healthIntervalInSeconds: number
@@ -13,19 +14,22 @@ export interface HealthServiceConfiguration {
 @injectable()
 export class HealthService {
   private readonly logger: Pino.Logger
-  private readonly controller: HealthController
   private readonly configuration: HealthServiceConfiguration
   private readonly interval: Interval
+  private readonly messaging: Messaging
+  private readonly exchange: ExchangeConfiguration
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
-    @inject('HealthController') controller: HealthController,
-    @inject('HealthServiceConfiguration') configuration: HealthServiceConfiguration
+    @inject('Messaging') messaging: Messaging,
+    @inject('HealthServiceConfiguration') configuration: HealthServiceConfiguration,
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
-    this.controller = controller
     this.configuration = configuration
+    this.messaging = messaging
     this.interval = new Interval(this.getHealth, this.configuration.healthIntervalInSeconds * 1000)
+    this.exchange = exchange
   }
 
   async start() {
@@ -39,9 +43,6 @@ export class HealthService {
   }
 
   private getHealth = async (): Promise<void> => {
-    await this.controller.refreshIPFSInfo()
-    await this.controller.refreshBlockchainInfo()
-    await this.controller.refreshWalletInfo()
-    await this.controller.refreshNetworkInfo()
+    await this.messaging.publish(this.exchange.getHealth, '')
   }
 }

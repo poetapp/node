@@ -3,7 +3,7 @@ import { describe } from 'riteway'
 
 import { TheRaven } from '../../helpers/Claims'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
-import { getWork, postWork } from '../../helpers/works'
+import { getWork, postWorkWithDelay } from '../../helpers/works'
 
 describe('GET /works/:id', async assert => {
   // Setup Mongodb and the app server
@@ -11,7 +11,7 @@ describe('GET /works/:id', async assert => {
   const NODE_PORT = '28081'
 
   const getWorkFromNode = getWork(NODE_PORT)
-  const postWorkToNode = postWork(NODE_PORT)
+  const postWorkToNode = postWorkWithDelay(NODE_PORT)
 
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
@@ -24,7 +24,7 @@ describe('GET /works/:id', async assert => {
 
     assert({
       given: 'an id of a submitted work',
-      should: 'reuturn ok',
+      should: 'return ok',
       actual: theRavenResponse.ok,
       expected: true,
     })
