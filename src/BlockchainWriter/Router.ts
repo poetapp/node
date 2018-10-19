@@ -27,10 +27,7 @@ export class Router {
   }
 
   async start() {
-    await this.messaging.consume(
-      this.exchange.batchWriterCreateNextBatchSuccess,
-      this.onCreateBatchSuccess
-    )
+    await this.messaging.consume(this.exchange.batchWriterCreateNextBatchSuccess, this.onCreateBatchSuccess)
   }
 
   onCreateBatchSuccess = async (message: any): Promise<void> => {
