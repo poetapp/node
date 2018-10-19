@@ -79,9 +79,7 @@ export class BlockchainReader {
         password: this.configuration.bitcoinPassword,
       })
     )
-    this.container
-      .bind<ControllerConfiguration>('ClaimControllerConfiguration')
-      .toConstantValue(this.configuration)
+    this.container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       minimumBlockHeight: this.configuration.minimumBlockHeight,
       blockchainReaderIntervalInSeconds: this.configuration.blockchainReaderIntervalInSeconds,
