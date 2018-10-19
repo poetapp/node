@@ -43,5 +43,6 @@ export const setUpServerAndDb = async ({
     EXCHANGE_PREFIX: PREFIX,
     ...blockchainSettings,
   })
+  await delay(5 * 1000)
   return { db, server }
 }
