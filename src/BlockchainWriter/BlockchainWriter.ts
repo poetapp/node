@@ -4,17 +4,27 @@ import { Collection, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
+import { BitcoinRPCConfiguration, LoggingConfiguration } from 'Configuration'
 import { bitcoinRPCConfigurationToBitcoinCoreArguments } from 'Helpers/Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { BlockchainWriterConfiguration } from './BlockchainWriterConfiguration'
 import { Controller, ControllerConfiguration } from './Controller'
 import { DAO } from './DAO'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { Service } from './Service'
 import { ServiceConfiguration } from './ServiceConfiguration'
+
+export interface BlockchainWriterConfiguration
+  extends LoggingConfiguration,
+    ControllerConfiguration,
+    ServiceConfiguration,
+    BitcoinRPCConfiguration {
+  readonly dbUrl: string
+  readonly rabbitmqUrl: string
+  readonly exchanges: ExchangeConfiguration
+}
 
 @injectable()
 export class BlockchainWriter {
