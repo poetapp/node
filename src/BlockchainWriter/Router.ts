@@ -29,12 +29,12 @@ export class Router {
   async start() {
     await this.messaging.consume(
       this.exchange.batchWriterCreateNextBatchSuccess,
-      this.onBlockchainWriterRequestTimestampRequest
+      this.onCreateBatchSuccess
     )
   }
 
-  onBlockchainWriterRequestTimestampRequest = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onBlockchainWriterRequestTimestampRequest' })
+  onCreateBatchSuccess = async (message: any): Promise<void> => {
+    const logger = this.logger.child({ method: 'onCreateBatchSuccess' })
 
     const messageContent = message.content.toString()
     const { ipfsDirectoryHash } = JSON.parse(messageContent)
@@ -43,19 +43,19 @@ export class Router {
       {
         ipfsDirectoryHash,
       },
-      'creating timestamp request'
+      'Creating anchor request'
     )
 
     try {
-      await this.claimController.requestTimestamp(ipfsDirectoryHash)
-      logger.trace({ ipfsDirectoryHash }, 'Timestamp request created')
+      await this.claimController.requestAnchor(ipfsDirectoryHash)
+      logger.trace({ ipfsDirectoryHash }, 'Anchor request created')
     } catch (error) {
       logger.error(
         {
           error,
           ipfsDirectoryHash,
         },
-        'Timestamp request failure'
+        'Anchor request failure'
       )
     }
   }
