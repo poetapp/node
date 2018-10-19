@@ -1,5 +1,5 @@
 /* tslint:disable:no-relative-imports */
-import { all, pickBy } from 'ramda'
+import { pickBy } from 'ramda'
 import { describe } from 'riteway'
 
 import { ABraveAndStartlingTruth } from '../../helpers/Claims'
