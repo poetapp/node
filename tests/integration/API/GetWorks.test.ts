@@ -19,12 +19,12 @@ import {
   TheWeekOfDiana,
 } from '../../helpers/Claims'
 import { delay, runtimeId, setUpServerAndDb } from '../../helpers/utils'
-import { getWork, postWork } from '../../helpers/works'
+import { getWork, postWorkWithDelay } from '../../helpers/works'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
 const getWorkFromNode = getWork(NODE_PORT)
-const postWorkToNode = postWork(NODE_PORT)
+const postWorkToNode = postWorkWithDelay(NODE_PORT)
 
 const setUpExistingClaims = async (claims: ReadonlyArray<Claim>) =>
   await Promise.all(claims.map(async (claim: Claim) => postWorkToNode(claim)))
@@ -59,53 +59,54 @@ describe('GET /works', async assert => {
   await setUpExistingClaims(works)
 
   {
+    const given = 'a call to GET /works'
     const response = await getWorkFromNode('')
     const claims = await response.json()
 
     assert({
-      given: 'a call to GET /works',
+      given,
       should: 'return ok',
       actual: response.ok,
       expected: true,
     })
 
     assert({
-      given: 'a call to GET /works',
+      given,
       should: 'return a status of 200',
       actual: response.status,
       expected: 200,
     })
 
     assert({
-      given: 'a call to GET /works',
+      given,
       should: 'return an Array',
       actual: Array.isArray(claims),
       expected: true,
     })
 
     assert({
-      given: 'a call to GET /claims',
+      given,
       should: 'return at least 3 claims',
       actual: claims.length >= 3,
       expected: true,
     })
 
     assert({
-      given: 'a call to GET /works',
+      given,
       should: 'return no more than 10 claims',
       actual: claims.length <= 10,
       expected: true,
     })
 
     assert({
-      given: 'a call to GET /works',
+      given,
       should: 'return count in the header X-Total-Count',
       actual: await response.headers.get('X-Total-Count'),
       expected: '13',
     })
 
     assert({
-      given: 'a call to GET /works',
+      given,
       should: 'return only signed claims',
       actual: all(isClaim)(getClaimsWithoutTimestamps(claims)),
       expected: true,
