@@ -118,6 +118,7 @@ describe('loadConfigurationWithDefaults', async (assert: any) => {
       exchangePoetAnchorDownloaded: 'myPrefix.POET_ANCHOR_DOWNLOADED',
       exchangeClaimsDownloaded: 'myPrefix.CLAIMS_DOWNLOADED',
       exchangeStorageWriterStoreNextClaim: 'myPrefix.STORAGE_WRITER::STORE_NEXT_CLAIM',
+      exchangeGetHealth: 'myPrefix.HEALTH::GET_HEALTH',
     }
     const keys = Object.keys(expected)
     const actual = pick(keys, loadConfigurationWithDefaults(overrideValues))
@@ -143,6 +144,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
       exchangeIpfsHashTxId: 'IPFS_HASH_TX_ID',
       exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
       exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
+      exchangeGetHealth: 'HEALTH::GET_HEALTH',
     }
 
     const keys = Object.keys(defaultValues)
@@ -168,6 +170,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
       EXCHANGE_IPFS_HASH_TX_ID: 'override',
       EXCHANGE_POET_ANCHOR_DOWNLOADED: 'override',
       EXCHANGE_CLAIMS_DOWNLOADED: 'override',
+      EXCHANGE_GET_HEALTH: 'override',
     }
 
     const expected = {
@@ -180,6 +183,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
       exchangeIpfsHashTxId: 'override',
       exchangePoetAnchorDownloaded: 'override',
       exchangeClaimsDownloaded: 'override',
+      exchangeGetHealth: 'override',
     }
 
     const keys = Object.keys(expected)
