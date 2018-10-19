@@ -3,7 +3,7 @@ import { all, pickBy } from 'ramda'
 import { describe } from 'riteway'
 
 import { ABraveAndStartlingTruth } from '../../helpers/Claims'
-import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
+import { delay, runtimeId, setUpServerAndDb } from '../../helpers/utils'
 import { getWork, postWork } from '../../helpers/works'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
@@ -34,6 +34,8 @@ describe('POST /works', async assert => {
       actual: body,
       expected: '',
     })
+
+    await delay(5000)
 
     const retrievedResponse = await getWorkFromNode(ABraveAndStartlingTruth.id)
     const retrievedClaim = getClaimWithoutTimestamp(await retrievedResponse.json())
