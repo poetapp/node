@@ -31,7 +31,7 @@ export class BlockchainReader {
   private mongoClient: MongoClient
   private dbConnection: Db
   private messaging: Messaging
-  private cron: Service
+  private service: Service
 
   constructor(configuration: BlockchainReaderConfiguration) {
     this.configuration = configuration
@@ -49,8 +49,8 @@ export class BlockchainReader {
 
     this.initializeContainer()
 
-    this.cron = this.container.get('Cron')
-    await this.cron.start()
+    this.service = this.container.get('Service')
+    await this.service.start()
 
     this.logger.info('BlockchainReader Started')
   }
@@ -59,7 +59,7 @@ export class BlockchainReader {
     this.logger.info('BlockchainReader Stopping...')
     this.logger.info('BlockchainReader Database Stopping...')
     await this.mongoClient.close()
-    this.cron.stop()
+    this.service.stop()
     this.logger.info('BlockchainReader Messaging Stopping...')
     await this.messaging.stop()
   }
@@ -67,7 +67,7 @@ export class BlockchainReader {
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<Service>('Cron').to(Service)
+    this.container.bind<Service>('Service').to(Service)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<BitcoinCore>('BitcoinCore').toConstantValue(

@@ -39,7 +39,7 @@ export class Service {
   }
 
   stop() {
-    this.logger.info('BlockchainReader Cron Stopping...')
+    this.logger.info('BlockchainReader Service Stopping...')
     this.interval.stop()
   }
 
