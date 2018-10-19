@@ -6,24 +6,24 @@ import { childWithFileName } from 'Helpers/Logging'
 
 import { ClaimController } from './ClaimController'
 
-export interface BlockchainReaderServiceConfiguration {
+export interface ServiceConfiguration {
   readonly minimumBlockHeight: number
   readonly blockchainReaderIntervalInSeconds: number
   readonly forceBlockHeight?: number
 }
 
 @injectable()
-export class BlockchainReaderService {
+export class Service {
   private readonly logger: Pino.Logger
   private readonly claimController: ClaimController
-  private readonly configuration: BlockchainReaderServiceConfiguration
+  private readonly configuration: ServiceConfiguration
   private readonly interval: Interval
   private lastBlockHeight: number
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('ClaimController') claimController: ClaimController,
-    @inject('BlockchainReaderServiceConfiguration') configuration: BlockchainReaderServiceConfiguration
+    @inject('ServiceConfiguration') configuration: ServiceConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController

@@ -9,14 +9,14 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { BitcoinRPCConfiguration, LoggingConfiguration } from 'Configuration'
 
-import { BlockchainReaderService, BlockchainReaderServiceConfiguration } from './BlockchainReaderService'
 import { ClaimController, ClaimControllerConfiguration } from './ClaimController'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
+import { Service, ServiceConfiguration } from './Service'
 
 export interface BlockchainReaderConfiguration
   extends LoggingConfiguration,
     ClaimControllerConfiguration,
-    BlockchainReaderServiceConfiguration,
+    ServiceConfiguration,
     BitcoinRPCConfiguration {
   readonly rabbitmqUrl: string
   readonly dbUrl: string
@@ -31,7 +31,7 @@ export class BlockchainReader {
   private mongoClient: MongoClient
   private dbConnection: Db
   private messaging: Messaging
-  private cron: BlockchainReaderService
+  private cron: Service
 
   constructor(configuration: BlockchainReaderConfiguration) {
     this.configuration = configuration
@@ -67,7 +67,7 @@ export class BlockchainReader {
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<BlockchainReaderService>('Cron').to(BlockchainReaderService)
+    this.container.bind<Service>('Cron').to(Service)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<BitcoinCore>('BitcoinCore').toConstantValue(
@@ -82,7 +82,7 @@ export class BlockchainReader {
     this.container
       .bind<ClaimControllerConfiguration>('ClaimControllerConfiguration')
       .toConstantValue(this.configuration)
-    this.container.bind<BlockchainReaderServiceConfiguration>('BlockchainReaderServiceConfiguration').toConstantValue({
+    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       minimumBlockHeight: this.configuration.minimumBlockHeight,
       blockchainReaderIntervalInSeconds: this.configuration.blockchainReaderIntervalInSeconds,
       forceBlockHeight: this.configuration.forceBlockHeight,
