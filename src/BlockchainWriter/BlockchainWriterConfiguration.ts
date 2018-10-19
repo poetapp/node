@@ -1,6 +1,6 @@
 import { BitcoinRPCConfiguration, LoggingConfiguration } from 'Configuration'
 
-import { ControllerConfiguration } from './ControllerConfiguration'
+import { ControllerConfiguration } from './Controller'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { ServiceConfiguration } from './ServiceConfiguration'
 
