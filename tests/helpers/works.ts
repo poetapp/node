@@ -17,7 +17,7 @@ export const postWork = (port: string, host?: string) => (claim: Claim) =>
     body: JSON.stringify(claim),
   })
 
-export const postWorkWithDelay = (port: string, host?: string, delayValue: number = 5000) => (claim: Claim) => {
+export const postWorkWithDelay = (port: string, host?: string, delayValue: number = 5000) => async (claim: Claim) => {
   const postWorkToNode = postWork(port, host)
   const response = postWorkToNode(claim)
   await delay(delayValue)
