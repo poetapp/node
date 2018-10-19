@@ -58,10 +58,27 @@ npm start
 
 ### Docker
 You need to have [Docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/) installed.
+Clone the repo:
 ```bash
 git clone https://github.com/poetapp/node.git
 cd node
+```
+
+To start the Po.et node environment, run:
+```bash
 docker-compose up --build
+```
+
+Using the instructions above, new blocks have to be generated manually.
+This is often desirable during development. To have blocks automatically
+generated, follow the instructions below instead to mine a new block
+every 5 seconds.
+
+```bash
+  $ cp docker-compose.override.yml.example docker-compose.override.yml
+  # Edit docker-compose.override.yml and uncomment
+  # the `regtest-watcher` service in `docker-compose.yml`
+  $ docker-compose up --build
 ```
 
 ### Dependencies
