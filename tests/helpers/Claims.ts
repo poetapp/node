@@ -213,7 +213,7 @@ export const OnThePulseOfMorning: Work = {
   },
 }
 
-export const ABraveAndStartlingTrugh: Work = {
+export const ABraveAndStartlingTruth: Work = {
   id: '87e5629053d5d8c29372d9e5a18542cd6d7080ba80b7261e371b08c7ddcc9baa',
   publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
   signature:
