@@ -19,12 +19,12 @@ import {
   TheWeekOfDiana,
 } from '../../helpers/Claims'
 import { delay, runtimeId, setUpServerAndDb } from '../../helpers/utils'
-import { getWork, postWork } from '../../helpers/works'
+import { getWork, postWorkWithDelay } from '../../helpers/works'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
 const getWorkFromNode = getWork(NODE_PORT)
-const postWorkToNode = postWork(NODE_PORT)
+const postWorkToNode = postWorkWithDelay(NODE_PORT)
 
 const setUpExistingClaims = async (claims: ReadonlyArray<Claim>) =>
   await Promise.all(claims.map(async (claim: Claim) => postWorkToNode(claim)))
