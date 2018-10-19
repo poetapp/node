@@ -1,5 +1,4 @@
 /* tslint:disable:no-relative-imports */
-/* tslint:disable:no-console */
 import * as assert from 'assert'
 import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
@@ -73,6 +72,7 @@ export interface ExchangeConfiguration {
   readonly exchangePoetAnchorDownloaded: string
   readonly exchangeClaimsDownloaded: string
   readonly exchangeStorageWriterStoreNextClaim: string
+  readonly exchangeGetHealth: string
 }
 
 const defaultConfiguration: Configuration = {
@@ -129,6 +129,7 @@ const defaultConfiguration: Configuration = {
   exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
   exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
   exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM',
+  exchangeGetHealth: 'HEALTH::GET_HEALTH',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
@@ -170,6 +171,7 @@ const applyExchangePrefix = (configVars: any) => {
     'exchangePoetAnchorDownloaded',
     'exchangeClaimsDownloaded',
     'exchangeStorageWriterStoreNextClaim',
+    'exchangeGetHealth',
   ]
 
   return {
@@ -185,17 +187,11 @@ export const loadConfigurationWithDefaults = (localVars: any = {}) =>
   )({ ...process.env, ...localVars })
 
 function loadConfigurationFromFile(configPath: string): Configuration | {} {
-  if (!existsSync(configPath)) {
-    console.log('File', configPath, 'not found')
-    return {}
-  }
+  if (!existsSync(configPath)) return {}
 
   const configuration = JSON.parse(readFileSync(configPath, 'utf8'))
 
-  console.log('Loaded configuration from ' + configPath)
-
   if (typeof configuration.poetNetwork === 'string') validatePoetNetwork(configuration.poetNetwork)
-
   if (typeof configuration.poetVersion === 'object') validatePoetVersion(configuration.poetVersion)
 
   return configuration
