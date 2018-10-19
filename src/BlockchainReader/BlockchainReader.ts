@@ -7,11 +7,21 @@ import { pick } from 'ramda'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { BlockchainReaderConfiguration } from './BlockchainReaderConfiguration'
-import { BlockchainReaderService } from './BlockchainReaderService'
-import { BlockchainReaderServiceConfiguration } from './BlockchainReaderServiceConfiguration'
-import { ClaimController } from './ClaimController'
-import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+import { BitcoinRPCConfiguration, LoggingConfiguration } from 'Configuration'
+
+import { BlockchainReaderService, BlockchainReaderServiceConfiguration } from './BlockchainReaderService'
+import { ClaimController, ClaimControllerConfiguration } from './ClaimController'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
+
+export interface BlockchainReaderConfiguration
+  extends LoggingConfiguration,
+    ClaimControllerConfiguration,
+    BlockchainReaderServiceConfiguration,
+    BitcoinRPCConfiguration {
+  readonly rabbitmqUrl: string
+  readonly dbUrl: string
+  readonly exchanges: ExchangeConfiguration
+}
 
 @injectable()
 export class BlockchainReader {

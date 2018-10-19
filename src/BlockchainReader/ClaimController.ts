@@ -9,7 +9,11 @@ import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { anchorPrefixAndVersionMatch, blockToPoetAnchors } from './Bitcoin'
-import { ClaimControllerConfiguration } from './ClaimControllerConfiguration'
+
+export interface ClaimControllerConfiguration {
+  readonly poetNetwork: string
+  readonly poetVersion: ReadonlyArray<number>
+}
 
 @injectable()
 export class ClaimController {

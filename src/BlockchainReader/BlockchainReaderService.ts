@@ -4,8 +4,13 @@ import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import { BlockchainReaderServiceConfiguration } from './BlockchainReaderServiceConfiguration'
 import { ClaimController } from './ClaimController'
+
+export interface BlockchainReaderServiceConfiguration {
+  readonly minimumBlockHeight: number
+  readonly blockchainReaderIntervalInSeconds: number
+  readonly forceBlockHeight?: number
+}
 
 @injectable()
 export class BlockchainReaderService {
