@@ -6,7 +6,7 @@
 [![Docker Automated build](https://img.shields.io/docker/automated/poetapp/node.svg?style=flat)](https://hub.docker.com/r/poetapp/node/)
 [![Join the chat at https://gitter.im/poetapp/Lobby](https://badges.gitter.im/poetapp/Lobby.svg)](https://gitter.im/poetapp/Lobby)
 
-The Po.et Node allows you to timestamp documents in a decentralized manner.
+The Po.et Node allows you to anchor documents in a decentralized manner.
 
 It's built on top of the [Bitcoin](https://github.com/bitcoin/bitcoin) blockchain and [IPFS](https://ipfs.io/).
 
@@ -97,7 +97,7 @@ In a production environment, you may want to run these applications natively ins
 ### Configuration
 The Po.et Node comes with a default configuration that mostly works out of the box.
 
-By default, timestamping to the blockchain is disabled, and Bitcoin Core, RabbitMQ, IPFS and MongoDB are expected to be running on localhost with their default ports.
+By default Bitcoin Core, RabbitMQ, IPFS and MongoDB are expected to be running on localhost with their default ports.
 
 You can change any configuration by placing a JSON file in `~/.po.et/configuration.json`. Po.et will look for this file upon startup and, if found, merge its contents with the default configuration.
 
@@ -129,7 +129,6 @@ This is what the default configuration looks like:
   bitcoinAddress: '',
   bitcoinAddressPrivateKey: '',
 
-  enableTimestamping: false,
   timestampIntervalInSeconds: 30,
   batchCreationIntervalInSeconds: 600
   readNextDirectoryIntervalInSeconds: 30
@@ -137,8 +136,6 @@ This is what the default configuration looks like:
 ```
 
 The node works out-of-the-box with the default configuration as long as it's running with the MongoDB, IPFS, RabbitMQ and Bitcoin Core docker images provided in this repository (see [docker-compose.yml](./docker-compose.yml)).
-
-Anchoring to the Bitcoin blockchain must always be enabled manually. This is done by setting `enableTimestamping` to `true` and providing a valid `bitcoinAddress` and the corresponding `bitcoinAddressPrivateKey`.
 
 A valid Bitcoin address can be created using [Ian Coleman's Mnemonic Code Converter](https://iancoleman.io/bip39/), or by creating and exporting the private keys and addresses from bitcoin-cli or wallets that support key exporting.
 

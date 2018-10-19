@@ -17,11 +17,6 @@ import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
 
-const startStopNoop = {
-  start: () => Promise.resolve(),
-  stop: () => Promise.resolve(),
-}
-
 export async function app(localVars: any = {}) {
   console.log('Running Po.et Node')
   console.log('')
@@ -63,22 +58,20 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'API was unable to start')
   }
 
-  const batchWriter = configuration.enableTimestamping
-    ? new BatchWriter({
-        ...loggingConfiguration,
-        batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
-        dbUrl: configuration.mongodbUrl,
-        ipfsUrl: configuration.ipfsUrl,
-        rabbitmqUrl: configuration.rabbitmqUrl,
-        exchanges: {
-          claimIpfsHash: configuration.exchangeClaimIpfsHash,
-          batchWriterCreateNextBatchRequest: configuration.exchangeBatchWriterCreateNextBatchRequest,
-          batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
-          poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
-          claimsDownloaded: configuration.exchangeClaimsDownloaded,
-        },
-      })
-    : startStopNoop
+  const batchWriter = new BatchWriter({
+    ...loggingConfiguration,
+    batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
+    dbUrl: configuration.mongodbUrl,
+    ipfsUrl: configuration.ipfsUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
+    exchanges: {
+      claimIpfsHash: configuration.exchangeClaimIpfsHash,
+      batchWriterCreateNextBatchRequest: configuration.exchangeBatchWriterCreateNextBatchRequest,
+      batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
+    },
+  })
 
   try {
     await batchWriter.start()
@@ -168,27 +161,25 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'StorageWriter was unable to start')
   }
 
-  const blockchainWriter = configuration.enableTimestamping
-    ? new BlockchainWriter({
-        ...loggingConfiguration,
-        dbUrl: configuration.mongodbUrl,
-        rabbitmqUrl: configuration.rabbitmqUrl,
-        poetNetwork: configuration.poetNetwork,
-        poetVersion: configuration.poetVersion,
-        timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
-        bitcoinUrl: configuration.bitcoinUrl,
-        bitcoinPort: configuration.bitcoinPort,
-        bitcoinNetwork: configuration.bitcoinNetwork,
-        bitcoinUsername: configuration.bitcoinUsername,
-        bitcoinPassword: configuration.bitcoinPassword,
-        exchanges: {
-          ipfsHashTxId: configuration.exchangeIpfsHashTxId,
-          batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
-          poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
-          claimsDownloaded: configuration.exchangeClaimsDownloaded,
-        },
-      })
-    : startStopNoop
+  const blockchainWriter = new BlockchainWriter({
+    ...loggingConfiguration,
+    dbUrl: configuration.mongodbUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
+    poetNetwork: configuration.poetNetwork,
+    poetVersion: configuration.poetVersion,
+    timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
+    bitcoinUrl: configuration.bitcoinUrl,
+    bitcoinPort: configuration.bitcoinPort,
+    bitcoinNetwork: configuration.bitcoinNetwork,
+    bitcoinUsername: configuration.bitcoinUsername,
+    bitcoinPassword: configuration.bitcoinPassword,
+    exchanges: {
+      ipfsHashTxId: configuration.exchangeIpfsHashTxId,
+      batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
+    },
+  })
 
   try {
     await blockchainWriter.start()
