@@ -41,14 +41,14 @@ describe('POST /works', async assert => {
     const retrievedClaim = getClaimWithoutTimestamp(await retrievedResponse.json())
 
     assert({
-      given: 'POST /works with a signed verifiable claim',
-      should: 'be able to retrieve the claim by id',
+      given: 'a work posted to node',
+      should: 'retrieve the work by id',
       actual: retrievedResponse.ok,
       expected: true,
     })
 
     assert({
-      given: 'POST /works with a signed verifiable claim',
+      given: 'a work posted to node',
       should: 'retrieve the full claim',
       actual: retrievedClaim,
       expected: ABraveAndStartlingTruth,
