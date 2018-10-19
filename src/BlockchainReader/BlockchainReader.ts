@@ -9,13 +9,13 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { BitcoinRPCConfiguration, LoggingConfiguration } from 'Configuration'
 
-import { ClaimController, ClaimControllerConfiguration } from './ClaimController'
+import { Controller, ControllerConfiguration } from './Controller'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Service, ServiceConfiguration } from './Service'
 
 export interface BlockchainReaderConfiguration
   extends LoggingConfiguration,
-    ClaimControllerConfiguration,
+    ControllerConfiguration,
     ServiceConfiguration,
     BitcoinRPCConfiguration {
   readonly rabbitmqUrl: string
@@ -66,7 +66,7 @@ export class BlockchainReader {
 
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<ClaimController>('ClaimController').to(ClaimController)
+    this.container.bind<Controller>('ClaimController').to(Controller)
     this.container.bind<Service>('Service').to(Service)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
@@ -80,7 +80,7 @@ export class BlockchainReader {
       })
     )
     this.container
-      .bind<ClaimControllerConfiguration>('ClaimControllerConfiguration')
+      .bind<ControllerConfiguration>('ClaimControllerConfiguration')
       .toConstantValue(this.configuration)
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
       minimumBlockHeight: this.configuration.minimumBlockHeight,

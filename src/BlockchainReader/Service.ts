@@ -4,7 +4,7 @@ import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import { ClaimController } from './ClaimController'
+import { Controller } from './Controller'
 
 export interface ServiceConfiguration {
   readonly minimumBlockHeight: number
@@ -15,14 +15,14 @@ export interface ServiceConfiguration {
 @injectable()
 export class Service {
   private readonly logger: Pino.Logger
-  private readonly claimController: ClaimController
+  private readonly claimController: Controller
   private readonly configuration: ServiceConfiguration
   private readonly interval: Interval
   private lastBlockHeight: number
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
-    @inject('ClaimController') claimController: ClaimController,
+    @inject('ClaimController') claimController: Controller,
     @inject('ServiceConfiguration') configuration: ServiceConfiguration
   ) {
     this.logger = childWithFileName(logger, __filename)
