@@ -20,7 +20,7 @@ const getWorkFromNodeB = getWork(NODE_B_PORT)
 const blockchainSettings = {
   MINIMUM_BLOCK_HEIGHT: 100,
   ENABLE_TIMESTAMPING: true,
-  TIMESTAMP_INTERVAL_IN_SECONDS: 10,
+  ANCHOR_INTERVAL_IN_SECONDS: 10,
   BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
   READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
   UPLOAD_CLAIM_INTERVAL_IN_SECONDS: 5,
@@ -93,7 +93,7 @@ describe('A user can successfully submit a claim into the po.et network', async 
   }
 
   // Wait for a claim batch to be submitted to the blockchain.
-  await delay(parseInt(process.env.TIMESTAMP_INTERVAL_IN_SECONDS || '10', 10) * 1000 * 2)
+  await delay(parseInt(process.env.ANCHOR_INTERVAL_IN_SECONDS || '10', 10) * 1000 * 2)
 
   // mine N confirmation blocks on bitcoindA.
   await bitcoindClientA.generate(parseInt(process.env.CONFIRMATION_BLOCKS || '1', 10))
