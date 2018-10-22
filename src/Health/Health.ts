@@ -6,6 +6,7 @@ import * as Pino from 'pino'
 import { LoggingConfiguration, BitcoinRPCConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { HealthController } from './HealthController'
 import { HealthService, HealthServiceConfiguration } from './HealthService'
 import { IPFS, IPFSConfiguration } from './IPFS'
@@ -37,6 +38,9 @@ export class Health {
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await this.mongoClient.db()
 
+    this.messaging = new Messaging(this.configuration.rabbitmqUrl, this.configuration.exchanges)
+    await this.messaging.start()
+    
     this.initializeContainer()
 
     this.cron = this.container.get('Cron')
@@ -73,5 +77,6 @@ export class Health {
     this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
       ipfsUrl: this.configuration.ipfsUrl,
     })
+    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }
