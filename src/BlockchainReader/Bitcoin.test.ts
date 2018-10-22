@@ -25,7 +25,7 @@ describe('Bitcoin.blockToPoetAnchors', async assert => {
     expected: true,
   })
 
-  const ipfsDirectoryHashes = ['QmaKtaPqfWvss2ndhGdcLRc9uGcLvUUyuZeGcrDZWN58Zi']
+  const ipfsDirectoryHashes = ['9tmyge2RGfyymosruzDgPjdHNXpFmp5BqY5fXNqskw4PitFPuZaKQVcdcodDqPE']
 
   {
     const poetAnchors = blockToPoetAnchors(TestBlock as any) // as any: see footer note
