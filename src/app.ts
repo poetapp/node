@@ -139,6 +139,7 @@ export async function app(localVars: any = {}) {
       batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
+      claimsNotDownloaded: configuration.exchangeClaimsNotDownloaded,
     },
   })
   try {
