@@ -1,12 +1,13 @@
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
-import { IPFSHashFailure } from 'Interfaces'
+import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
 import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { HealthController } from './HealthController'
+import { Claim } from '../../node_modules/@po.et/poet-js';
 
 @injectable()
 export class Router {
@@ -29,7 +30,8 @@ export class Router {
 
   async start() {
     await this.messaging.consume(this.exchange.getHealth, this.onGetHealth)
-    await this.messaging.consume(this.exchange.claimsNotDownloaded, this.onClaimsNotDownloaded)
+    await this.messaging.consumeClaimsNotDownloaded(this.onClaimsNotDownloaded)
+    await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded);
   }
 
   onGetHealth = async () => {
@@ -52,6 +54,17 @@ export class Router {
       await this.controller.upsertIPFSFailures(ipfsHashFailures)
     } catch (error) {
       logger.error({ error }, 'Failed to upsert ipfsHashFailures on health')
+    }
+  }
+
+  onClaimsDownloaded = async (claimIPFSHashPair: ReadonlyArray<ClaimIPFSHashPair>) => {
+    const logger = this.logger.child({ method: 'onClaimsDownloaded' })
+
+    logger.trace({ claimIPFSHashPair }, 'IPFS Download Success')
+    try {
+      await this.controller.removeIPFSFailure(claimIPFSHashPair)
+    } catch (e) {
+      logger.error({ e }, 'Failed to remove IPFSHashFailue on health')
     }
   }
 }

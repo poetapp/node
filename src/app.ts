@@ -237,6 +237,7 @@ export async function app(localVars: any = {}) {
     exchanges: {
       getHealth: configuration.exchangeGetHealth,
       claimsNotDownloaded: configuration.exchangeClaimsNotDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
     },
   })
 
