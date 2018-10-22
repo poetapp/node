@@ -24,5 +24,5 @@ export interface IPFSHashFailure {
 }
 const hasFailureType = has('failureType')
 const hasFailureReason = has('failureReason')
-const hasFailureTime = has('failureTime');
+const hasFailureTime = has('failureTime')
 export const isIPFSHashFailure = allPass([hasIPFSFileHash, hasFailureReason, hasFailureType, hasFailureTime])

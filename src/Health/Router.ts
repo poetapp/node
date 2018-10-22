@@ -1,13 +1,12 @@
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
-import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
 import { childWithFileName } from 'Helpers/Logging'
+import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { HealthController } from './HealthController'
-import { Claim } from '../../node_modules/@po.et/poet-js';
 
 @injectable()
 export class Router {
@@ -31,7 +30,7 @@ export class Router {
   async start() {
     await this.messaging.consume(this.exchange.getHealth, this.onGetHealth)
     await this.messaging.consumeClaimsNotDownloaded(this.onClaimsNotDownloaded)
-    await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded);
+    await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
   }
 
   onGetHealth = async () => {

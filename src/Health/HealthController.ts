@@ -186,38 +186,37 @@ export class HealthController {
 
   private async updateIPFSFailures(ipfsHashFailuresHashExisting: ReadonlyArray<IPFSHashFailureHashExisting>) {
     this.logger.debug({ ipfsHashFailuresHashExisting }, 'Updating IPFS Failures by IPFS Hash')
-    await 
-      ipfsHashFailuresHashExisting.map(
-        async ({ ipfsFileHash, failureReason, failureType, failureTime, hashExisting }) => {
-          if (!hashExisting)
-            await this.collection.updateOne(
-              { name: 'ipfsDownloadRetries' },
-              {
-                $push: {
-                  ipfsDownloadRetries: {
-                    ipfsFileHash,
-                    failureReason,
-                    failureType,
-                    lastDownloadAttemptTime: failureTime,
-                    downloadAttempts: 1,
-                  },
+    await ipfsHashFailuresHashExisting.map(
+      async ({ ipfsFileHash, failureReason, failureType, failureTime, hashExisting }) => {
+        if (!hashExisting)
+          await this.collection.updateOne(
+            { name: 'ipfsDownloadRetries' },
+            {
+              $push: {
+                ipfsDownloadRetries: {
+                  ipfsFileHash,
+                  failureReason,
+                  failureType,
+                  lastDownloadAttemptTime: failureTime,
+                  downloadAttempts: 1,
                 },
-              }
-            )
-          else
-            await this.collection.updateOne(
-              { name: 'ipfsDownloadRetries', 'ipfsDownloadRetries.ipfsFileHash': ipfsFileHash },
-              {
-                $set: {
-                  'ipfsDownloadRetries.$.failureReason': failureReason,
-                  'ipfsDownloadRetries.$.failureType': failureType,
-                  'ipfsDownloadRetries.$.lastDownloadAttemptTime': failureTime,
-                },
-                $inc: { 'ipfsDownloadRetries.$.downloadAttempts': 1 },
-              }
-            )
-        }
-      )
+              },
+            }
+          )
+        else
+          await this.collection.updateOne(
+            { name: 'ipfsDownloadRetries', 'ipfsDownloadRetries.ipfsFileHash': ipfsFileHash },
+            {
+              $set: {
+                'ipfsDownloadRetries.$.failureReason': failureReason,
+                'ipfsDownloadRetries.$.failureType': failureType,
+                'ipfsDownloadRetries.$.lastDownloadAttemptTime': failureTime,
+              },
+              $inc: { 'ipfsDownloadRetries.$.downloadAttempts': 1 },
+            }
+          )
+      }
+    )
   }
 
   public refreshBlockchainInfo = pipeP(
@@ -263,7 +262,10 @@ export class HealthController {
     this.logger.debug({ claimIPFSHashPair }, 'Removing IPFS Failure')
     await Promise.all(
       claimIPFSHashPair.map(async ({ ipfsFileHash }) => {
-        await this.collection.update({ name: 'ipfsDownloadRetries' }, { $pull: { 'ipfsDownloadRetries': { ipfsFileHash } } })
+        await this.collection.update(
+          { name: 'ipfsDownloadRetries' },
+          { $pull: { ipfsDownloadRetries: { ipfsFileHash } } }
+        )
       })
     )
   }

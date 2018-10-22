@@ -24,7 +24,8 @@ export class HealthController {
 
   constructor(
     @inject('DB') db: Db,
-    @inject('HealthControllerConfiguration') configuration: HealthControllerConfiguration) {
+    @inject('HealthControllerConfiguration') configuration: HealthControllerConfiguration
+  ) {
     this.configuration = configuration
     this.db = db
     this.collection = this.db.collection('health')
@@ -75,7 +76,7 @@ export class HealthController {
     }
   }
 
-  private async getIPFSDownloadRetries(): Promise<number | object>  {
+  private async getIPFSDownloadRetries(): Promise<number | object> {
     try {
       const { ipfsDownloadRetries = [] } = await this.collection.findOne({ name: 'ipfsDownloadRetries' })
       return ipfsDownloadRetries.length
@@ -109,19 +110,19 @@ export class HealthController {
   private async getIPFSFailuresWillRetry(): Promise<number | object> {
     try {
       const { ipfsDownloadRetries: ipfsFailureWillRetry = [] } = await this.collection.findOne(
-      { name: 'ipfsDownloadRetries' },
-      {
-        projection: {
-          _id: 0,
-          ipfsDownloadRetries: {
-            $elemMatch: {
-              failureType: { $ne: 'HARD' },
-              downloadAttempts: { $not: { $gte: this.configuration.downloadMaxAttempts } },
+        { name: 'ipfsDownloadRetries' },
+        {
+          projection: {
+            _id: 0,
+            ipfsDownloadRetries: {
+              $elemMatch: {
+                failureType: { $ne: 'HARD' },
+                downloadAttempts: { $not: { $gte: this.configuration.downloadMaxAttempts } },
+              },
             },
           },
-        },
-      }
-    )
+        }
+      )
       return ipfsFailureWillRetry.length
     } catch (e) {
       return { error: 'Error retrieving IFPSFailuresWillRetry' }
@@ -131,9 +132,9 @@ export class HealthController {
   private async getIPFSHardFailures(): Promise<number | object> {
     try {
       const { ipfsDownloadRetries: IPFSHardFailures = [] } = await this.collection.findOne(
-      { name: 'ipfsDownloadRetries' },
-      { projection: { _id: 0, ipfsDownloadRetries: { $elemMatch: { failureType: 'HARD' } } } }
-    )
+        { name: 'ipfsDownloadRetries' },
+        { projection: { _id: 0, ipfsDownloadRetries: { $elemMatch: { failureType: 'HARD' } } } }
+      )
       return IPFSHardFailures.length
     } catch (e) {
       return { error: 'Error retrieving IFPSHardFailures' }
@@ -150,7 +151,7 @@ export class HealthController {
       IPFSDownloadRetries,
       IPFSHardFailures,
       IPFSFailureWillRetry,
-      IPFSFailureMaxRetries
+      IPFSFailureMaxRetries,
     }
   }
 

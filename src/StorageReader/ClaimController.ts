@@ -92,7 +92,7 @@ export class ClaimController {
         }
       )
 
-  const publishEntryFailureReason = async (
+    const publishEntryFailureReason = async (
       ipfsFileHash: string,
       failureType: FailureType,
       failureReason: FailureReason,
@@ -126,8 +126,7 @@ export class ClaimController {
       else if (error instanceof InvalidClaim) {
         await updateEntryFailureReason(error.ipfsFileHash, FailureType.Hard, error.failureReason)
         await publishEntryFailureReason(error.ipfsFileHash, FailureType.Hard, error.failureReason, error.failureTime)
-      }
-      else if (error instanceof IPFSTimeoutError) {
+      } else if (error instanceof IPFSTimeoutError) {
         await updateEntryFailureReason(error.ipfsFileHash, FailureType.Soft, FailureReason.IPFSTimeout)
         await publishEntryFailureReason(
           error.ipfsFileHash,
@@ -135,8 +134,7 @@ export class ClaimController {
           FailureReason.IPFSTimeout,
           error.failureTime
         )
-      }
-      else if (error instanceof IPFSGenericError) {
+      } else if (error instanceof IPFSGenericError) {
         logger.warn({ error })
         await updateEntryFailureReason(error.ipfsFileHash, FailureType.Soft, FailureReason.IPFSGeneric)
         await publishEntryFailureReason(
