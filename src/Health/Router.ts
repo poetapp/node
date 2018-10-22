@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
+import { IPFSHashFailure } from 'Interfaces'
 import { childWithFileName } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -28,6 +29,7 @@ export class Router {
 
   async start() {
     await this.messaging.consume(this.exchange.getHealth, this.onGetHealth)
+    await this.messaging.consume(this.exchange.claimsNotDownloaded, this.onClaimsNotDownloaded)
   }
 
   onGetHealth = async () => {
@@ -39,6 +41,17 @@ export class Router {
       await this.controller.refreshIPFSInfo()
     } catch (error) {
       logger.error({ error }, 'Failed to getHealthInfo')
+    }
+  }
+
+  onClaimsNotDownloaded = async (ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) => {
+    const logger = this.logger.child({ method: 'onClaimsNotDownloaded' })
+
+    logger.trace({ ipfsHashFailures }, 'IPFS Download Failure')
+    try {
+      await this.controller.upsertIPFSFailures(ipfsHashFailures)
+    } catch (error) {
+      logger.error({ error }, 'Failed to upsert ipfsHashFailures on health')
     }
   }
 }

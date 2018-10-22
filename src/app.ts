@@ -50,6 +50,7 @@ export async function app(localVars: any = {}) {
     port: configuration.apiPort,
     dbUrl: configuration.mongodbUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
+    downloadMaxAttempts: configuration.downloadMaxAttempts,
     exchanges: {
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
@@ -234,6 +235,7 @@ export async function app(localVars: any = {}) {
     healthIntervalInSeconds: configuration.healthIntervalInSeconds,
     exchanges: {
       getHealth: configuration.exchangeGetHealth,
+      claimsNotDownloaded: configuration.exchangeClaimsNotDownloaded,
     },
   })
 

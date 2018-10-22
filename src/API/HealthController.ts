@@ -9,14 +9,26 @@ interface HealthObject {
   readonly walletInfo: object
   readonly blockchainInfo: object
   readonly networkInfo: object
+  readonly ipfsDownloadRetries: ReadonlyArray<object>
+  readonly ipfsFailureMaxRetries: ReadonlyArray<object>
+  readonly ipfsFailureWillRetry: ReadonlyArray<object>
+  readonly hardIpfsFailures: ReadonlyArray<object>
+}
+
+export interface HealthControllerConfiguration {
+  readonly downloadMaxAttempts: number
 }
 
 @injectable()
 export class HealthController {
+  private readonly configuration: HealthControllerConfiguration
   private readonly db: Db
   private readonly collection: Collection
 
-  constructor(@inject('DB') db: Db) {
+  constructor(
+    @inject('DB') db: Db,
+    @inject('HealthControllerConfiguration') configuration: HealthControllerConfiguration) {
+    this.configuration = configuration
     this.db = db
     this.collection = this.db.collection('health')
   }
@@ -72,12 +84,51 @@ export class HealthController {
     const walletInfo = await this.getWalletInfo()
     const blockchainInfo = await this.getBlockchainInfo()
     const networkInfo = await this.getNetworkInfo()
+    const { ipfsDownloadRetries } = (await this.collection.findOne({ name: 'ipfsDownloadRetries' })) || {
+      ipfsDownloadRetries: 'No IFPS Download Retries',
+    }
+    const { ipfsDownloadRetries: hardIpfsFailures } = (await this.collection.findOne(
+      { name: 'ipfsDownloadRetries' },
+      { projection: { _id: 0, ipfsDownloadRetries: { $elemMatch: { failureType: 'HARD' } } } }
+    )) || { ipfsDownloadRetries: 'No IFPS Download Retries' }
+    const { ipfsDownloadRetries: ipfsFailureWillRetry } = (await this.collection.findOne(
+      { name: 'ipfsDownloadRetries' },
+      {
+        projection: {
+          _id: 0,
+          ipfsDownloadRetries: {
+            $elemMatch: {
+              failureType: { $ne: 'HARD' },
+              downloadAttempts: { $not: { $gte: this.configuration.downloadMaxAttempts } },
+            },
+          },
+        },
+      }
+    )) || { ipfsDownloadRetries: 'No IFPS Download Retries' }
+    const { ipfsDownloadRetries: ipfsFailureMaxRetries } = (await this.collection.findOne(
+      { name: 'ipfsDownloadRetries' },
+      {
+        projection: {
+          _id: 0,
+          ipfsDownloadRetries: {
+            $elemMatch: {
+              failureType: { $ne: 'HARD' },
+              downloadAttempts: { $gte: this.configuration.downloadMaxAttempts },
+            },
+          },
+        },
+      }
+    )) || { ipfsDownloadRetries: 'No IFPS Download Retries' }
     return {
       mongoIsConnected,
       ipfsInfo,
       walletInfo,
       blockchainInfo,
       networkInfo,
+      ipfsDownloadRetries,
+      ipfsFailureMaxRetries,
+      ipfsFailureWillRetry,
+      hardIpfsFailures
     }
   }
 }
