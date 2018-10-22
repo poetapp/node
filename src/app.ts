@@ -175,7 +175,7 @@ export async function app(localVars: any = {}) {
         rabbitmqUrl: configuration.rabbitmqUrl,
         poetNetwork: configuration.poetNetwork,
         poetVersion: configuration.poetVersion,
-        timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
+        anchorIntervalInSeconds: configuration.anchorIntervalInSeconds,
         bitcoinUrl: configuration.bitcoinUrl,
         bitcoinPort: configuration.bitcoinPort,
         bitcoinNetwork: configuration.bitcoinNetwork,

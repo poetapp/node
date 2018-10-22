@@ -130,7 +130,7 @@ This is what the default configuration looks like:
   bitcoinAddressPrivateKey: '',
 
   enableTimestamping: false,
-  timestampIntervalInSeconds: 30,
+  anchorIntervalInSeconds: 30,
   batchCreationIntervalInSeconds: 600
   readNextDirectoryIntervalInSeconds: 30
 }

@@ -94,7 +94,7 @@ const createContainer = (
     .bind<BitcoinCore>('BitcoinCore')
     .toConstantValue(new BitcoinCore(bitcoinRPCConfigurationToBitcoinCoreArguments(configuration)))
   container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
-    timestampIntervalInSeconds: configuration.timestampIntervalInSeconds,
+    anchorIntervalInSeconds: configuration.anchorIntervalInSeconds,
   })
   container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(configuration)
   container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(configuration.exchanges)

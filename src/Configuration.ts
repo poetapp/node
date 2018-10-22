@@ -31,7 +31,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly forceBlockHeight?: number
 
   readonly enableTimestamping: boolean
-  readonly timestampIntervalInSeconds: number
+  readonly anchorIntervalInSeconds: number
 
   readonly healthIntervalInSeconds: number
 
@@ -98,7 +98,7 @@ const defaultConfiguration: Configuration = {
   blockchainReaderIntervalInSeconds: 5,
 
   enableTimestamping: false,
-  timestampIntervalInSeconds: 30,
+  anchorIntervalInSeconds: 30,
 
   healthIntervalInSeconds: 30,
 

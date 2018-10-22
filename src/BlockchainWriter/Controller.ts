@@ -41,9 +41,9 @@ export class Controller {
     this.exchange = exchange
   }
 
-  async requestTimestamp(ipfsDirectoryHash: string): Promise<void> {
+  async requestAnchor(ipfsDirectoryHash: string): Promise<void> {
     this.logger.debug({
-      method: 'timestampWithRetry',
+      method: 'requestAnchor',
       ipfsDirectoryHash,
     })
     await this.dao.insertIpfsDirectoryHash(ipfsDirectoryHash)
