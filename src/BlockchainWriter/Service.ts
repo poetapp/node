@@ -7,7 +7,7 @@ import { childWithFileName } from 'Helpers/Logging'
 import { Controller } from './Controller'
 
 export interface ServiceConfiguration {
-  readonly timestampIntervalInSeconds: number
+  readonly anchorIntervalInSeconds: number
 }
 
 @injectable()
@@ -23,7 +23,7 @@ export class Service {
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
-    this.interval = new Interval(this.timestampNextHash, 1000 * configuration.timestampIntervalInSeconds)
+    this.interval = new Interval(this.anchorNextHash, 1000 * configuration.anchorIntervalInSeconds)
   }
 
   async start() {
@@ -34,10 +34,10 @@ export class Service {
     this.interval.stop()
   }
 
-  private timestampNextHash = async () => {
-    const logger = this.logger.child({ method: 'timestampNextHash' })
+  private anchorNextHash = async () => {
+    const logger = this.logger.child({ method: 'anchorNextHash' })
 
-    logger.trace('Requesting Timestamping of Next Hash')
+    logger.trace('Requesting anchoring of next hash')
 
     try {
       await this.claimController.anchorNextIPFSDirectoryHash()
@@ -46,7 +46,7 @@ export class Service {
         {
           error,
         },
-        'Uncaught exception while timestamping next hash'
+        'Uncaught exception while anchoring next hash'
       )
     }
   }
