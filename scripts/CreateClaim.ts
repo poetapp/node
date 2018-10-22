@@ -1,8 +1,8 @@
 /* tslint:disable:no-console */
 import { createClaim, ClaimType } from '@po.et/poet-js'
 
-import { PrivateKeyACD } from '../tests/helpers/Claims'
-import { Client } from '../tests/helpers/Helper'
+import { PrivateKeyACD } from '../test/Claims'
+import { Client } from '../test/Integration/Helper'
 
 const main = async () => {
   const attributes = {
