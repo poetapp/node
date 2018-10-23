@@ -6,8 +6,6 @@ import { IllegalPrefixLength, IllegalVersionLength, poetAnchorToData } from './B
 
 import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
-const getB58 = (text: string) => bs58.encode(Buffer.from(text))
-
 describe('Bitcoin.getData', async assert => {
   {
     const testGetData = (poetAnchor: PoetAnchor) => {
