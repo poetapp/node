@@ -14,7 +14,7 @@ export class InvalidClaim extends Error {
   readonly failureReason: FailureReason
   readonly failureTime?: number
 
-  constructor(ipfsFileHash: string, failureReason: FailureReason, failureTime: number) {
+  constructor(ipfsFileHash: string, failureReason: FailureReason, failureTime?: number) {
     super()
     this.ipfsFileHash = ipfsFileHash
     this.failureReason = failureReason
@@ -25,9 +25,9 @@ export class InvalidClaim extends Error {
 export class IPFSGenericError extends Error {
   readonly ipfsFileHash: string
   readonly underlyingError: Error
-  readonly failureTime: number
+  readonly failureTime?: number
 
-  constructor(ipfsFileHash: string, underlyingError: Error, failureTime: number) {
+  constructor(ipfsFileHash: string, underlyingError: Error, failureTime?: number) {
     super()
     this.ipfsFileHash = ipfsFileHash
     this.underlyingError = underlyingError
@@ -37,9 +37,9 @@ export class IPFSGenericError extends Error {
 
 export class IPFSTimeoutError extends Error {
   readonly ipfsFileHash: string
-  readonly failureTime: number
+  readonly failureTime?: number
 
-  constructor(ipfsFileHash: string, failureTime: number) {
+  constructor(ipfsFileHash: string, failureTime?: number) {
     super()
     this.ipfsFileHash = ipfsFileHash
     this.failureTime = failureTime
