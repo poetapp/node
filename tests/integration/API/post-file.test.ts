@@ -16,8 +16,11 @@ const postFileStream = configurePostFileStream(NODE_PORT)
 
 const getResponseHash = prop('hash')
 
+type calcPath = (relPath: string) => string
+const calcPath: calcPath  = relPath => path.resolve(__dirname, relPath)  
+
 const files = {
-  loremIpsumText: path.resolve(__dirname, '../../fixtures/files/text-english.txt'),
+  loremIpsumText: calcPath('../../fixtures/files/text-english.txt'),
 }
 
 describe('POST /files', async assert => {
