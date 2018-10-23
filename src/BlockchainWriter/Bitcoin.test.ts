@@ -49,7 +49,7 @@ describe('Bitcoin.getData', async assert => {
       prefix: PREFIX_POET,
       version: [0, 2],
       storageProtocol: StorageProtocol.IPFS,
-      ipfsDirectoryHash: getB58('ipfsDirectoryHash'),
+      ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
     }
 
     testGetData(poetAnchor)
@@ -68,7 +68,7 @@ describe('Bitcoin.getData', async assert => {
       prefix: PREFIX_POET,
       version: [1, 2],
       storageProtocol: StorageProtocol.IPFS,
-      ipfsDirectoryHash: getB58('ipfsDirectoryHash'),
+      ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
     }
 
     const tryPrefix = Try(poetAnchorToData, { ...poetAnchor, prefix: 'TOO_LONG' })
