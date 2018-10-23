@@ -5,6 +5,7 @@ import { describe } from 'riteway'
 import { configurePostFileStream } from '../../helpers/files'
 import { configureFetchFile } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
+import * as path from 'path'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
@@ -16,7 +17,7 @@ const postFileStream = configurePostFileStream(NODE_PORT)
 const getResponseHash = prop('hash')
 
 const files = {
-  loremIpsumText: '../../fixtures/files/lorem-ipsum.txt',
+  loremIpsumText: path.resolve(__dirname, '../../fixtures/files/text-english.txt'),
 }
 
 describe('POST /files', async assert => {
@@ -26,7 +27,7 @@ describe('POST /files', async assert => {
   {
     const given = 'a basic text file and post request'
     const should = 'return a hash that can be used to verify the file'
-    const file = fs.readFileSync(files.loremIpsumText)
+    const file = fs.readFileSync(files.loremIpsumText).toString()
     const fileStream = fs.createReadStream(files.loremIpsumText)
 
     try {
