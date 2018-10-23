@@ -116,10 +116,8 @@ export class Router {
 
    private getWorkCounts = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     this.logger.trace('/metrics')
-    const { count } = await this.workController.getByFilters({
+    const { count } = await this.workController.getWorksCountByFilters({
       ...context.query,
-      offset: parseInt(context.query.offset, 10),
-      limit: parseInt(context.query.limit, 10),
     })
     context.body = { TotalWorkClaims: count }
   }

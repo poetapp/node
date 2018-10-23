@@ -18,8 +18,11 @@ interface WorkWithAnchor extends Work {
   readonly timestamp: PoetBlockAnchor
 }
 
-interface WorksWithCount {
+interface WorkCount {
   readonly count: number
+}
+
+interface WorksWithCount extends WorkCount {
   readonly works: ReadonlyArray<WorkWithAnchor>
 }
 
@@ -60,6 +63,12 @@ export class WorkController {
       .toArray()
     const count = await this.collection.find(filters, { projection: { _id: false } }).count()
     return { count, works }
+  }
+
+  async getWorksCountByFilters(worksFilters: WorksFilters = {}): Promise<WorkCount> {
+    this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
+    const count = await this.collection.find(worksFilters, { projection: { _id: false } }).count()
+    return { count }
   }
 
   async create(work: Work): Promise<void> {
