@@ -1,11 +1,11 @@
 /* tslint:disable:no-relative-imports */
 import * as fs from 'fs'
+import * as path from 'path'
 import { prop } from 'ramda'
 import { describe } from 'riteway'
 import { configurePostFileStream } from '../../helpers/files'
 import { configureFetchFile } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
-import * as path from 'path'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
@@ -17,7 +17,7 @@ const postFileStream = configurePostFileStream(NODE_PORT)
 const getResponseHash = prop('hash')
 
 type calcPath = (relPath: string) => string
-const calcPath: calcPath  = relPath => path.resolve(__dirname, relPath)  
+const calcPath: calcPath = relPath => path.resolve(__dirname, relPath)
 
 const files = {
   loremIpsumText: calcPath('../../fixtures/files/text-english.txt'),
