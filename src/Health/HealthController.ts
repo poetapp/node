@@ -112,7 +112,7 @@ export class HealthController {
     return pickWalletInfoKeys(await this.bitcoinCore.getWalletInfo())
   }
 
-  private async addBalanceLowBool(walletInfo: WalletInfo): Promise<WalletInfo> {
+  private addWalletIsBalanceLow(walletInfo: WalletInfo): WalletInfo {
     return addWalletIsBalanceLow(this.configuration.lowWalletBalanceBTC)(walletInfo)
   }
 
@@ -181,7 +181,7 @@ export class HealthController {
     this.log(LogTypes.trace)('refreshing wallet info'),
     this.getWalletInfo,
     this.log(LogTypes.trace)('checking wallet balance against alert threshold'),
-    this.addBalanceLowBool,
+    this.addWalletIsBalanceLow,
     this.log(LogTypes.trace)('new info gathered, saving wallet info'),
     this.updateWalletInfo,
     this.log(LogTypes.trace)('refreshed wallet info')
