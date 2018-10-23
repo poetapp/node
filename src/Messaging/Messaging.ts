@@ -121,30 +121,4 @@ export class Messaging {
   publishClaimsNotDownloaded = async (IPFSHashFailure: ReadonlyArray<IPFSHashFailure>) => {
     return this.publish(this.exchanges.claimsNotDownloaded, IPFSHashFailure)
   }
-
-  consumeClaimsNotDownloaded = async (consume: (IPFSHashFailure: ReadonlyArray<IPFSHashFailure>) => void) => {
-    await this.consume(this.exchanges.claimsNotDownloaded, (message: any) => {
-      const messageContent = message.content.toString()
-      const IPFSHashFailure = JSON.parse(messageContent)
-
-      if (!Array.isArray(IPFSHashFailure)) {
-        console.log({
-          action: 'consumeClaimsNotDownloaded',
-          message: 'Expected IPFSHashFailure to be an Array.',
-          IPFSHashFailure,
-        })
-        return
-      }
-
-      if (IPFSHashFailure.map(isIPFSHashFailure).find(_ => !_)) {
-        console.log({
-          action: 'consumeClaimsNotDownloaded',
-          message: 'Expected IPFSHashFailure to be an Array<IPFSHashFailure>.',
-          offendingElements: IPFSHashFailure.map(isIPFSHashFailure).filter(_ => !_),
-        })
-        return
-      }
-      consume(IPFSHashFailure)
-    })
-  }
 }
