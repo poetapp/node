@@ -150,27 +150,27 @@ To use a custom instance of Bitcoin Core, the instance must be running with RPC 
 Currently, the Node exposes four endpoints.
 
 ### `GET /works/:id`
-Returns a single claim by its Id.
+Returns a single signed verifiable work claim by its Id.
 
 For simplicity, this endpoint adds a `.timestamp` in the response, which is not a real part of the claim, but provides valuable information such as the ID of the transaction in which this claim has been timestamped, the IPFS directory hash in which it can be found, etc.
 
 A 404 error is returned if the claim isn't found in this Node's database. This doesn't strictly mean the claim does not exist in the Po.et Network — it just doesn't exist in this Node.
 
-### `GET /works?publicKey=...&limit=x&offset=x`
-Returns a paginated array of claims, with all of the claims belonging to the passed public key. Default limit per request is 10 claims. This is configurable with limit and offset paramaters where offset is the number of claims to skip and limit is the number of claims returned per request.
+### `GET /works?issuer=...&limit=x&offset=x`
+Returns a paginated array of signed verifiable claims, all belonging to the passed issuer. Default limit per request is 10 claims. This is configurable with limit and offset paramaters where offset is the number of claims to skip and limit is the number of claims returned per request.
 
 ### `GET /works?offset=x&limit=x`
-Returns a paginated array of claims, which defaults to 10 per request. This is configurable with limit and offset parameters where offset is the number of claims to skip and limit is the number of claims returned per request.
+Returns a paginated array of signed verifiable claims, which defaults to 10 per request. This is configurable with limit and offset parameters where offset is the number of claims to skip and limit is the number of claims returned per request.
 
 ### `POST /works`
 Publish a work.
 
 This endpoint is async, unless an immediate error can be detected (e.g., a malformed claim), in which case the endpoint will return an ACK. There is no guarantee that the work has actually been processed, timestamped and sent to IPFS. To confirm that, you'll need to `GET /works/:id` and check the `.timestamp` attribute.
 
-This endpoint expects a fully constructed claim — with the correct `.id`, `.publicKey`, `.signature` and `.dateCreated`. See [Building Claims](#building-claims) for information on how to correctly create these attributes.
+This endpoint expects a fully constructed signed verifiable claim — with the correct `'@context'`, `.id`, `.issuer`, `.issuanceDate`, `.type`, and `sec:proof`. See [Building Claims](#building-claims) for information on how to correctly create these attributes.
 
 ## Building Claims
-A Po.et Claim is a JSON object that holds arbitrary information plus a few attributes that allow the network to verify that the claim:
+A Po.et Claim is a signed verifiable claim that holds arbitrary information and allows the network to verify that the claim:
 
 - has actually been created by a specific person,
 - has not been modified since its creation, and
@@ -181,46 +181,99 @@ A Po.et Claim is a JSON object that holds arbitrary information plus a few attri
 For example, a claim could look like this:
 ```js
 {
-  id: '15867401b92567b4f7ea83e39a646ab9eb581b560bc78488b7a0c1b586c70215',
-  publicKey: '02badf4650ba545608242c2d303d587cf4f778ae3cf2b3ef99fbda37555a400fd2',
-  signature: '304402201824b78d3703162eb7f240341968ebfecad1f002f988dbc9ec80c1317e49d6290220470124c7425a5d8024778991863f0a25931a7e45fb72223bea81728a08e30b50',
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: 'f4b3e6cd7e516211d1b718b84860d26f59e3933c03c25c29d4e9ce9cc34ff26b',
   type: ClaimType.Work,
-  created: new Date('2017-12-11T22:58:11.375Z').toISOString(),
-  attributes: {
-    name: 'The Murders in the Rue Morgue',
-    author: 'Edgar Allan Poe',
-    tags: 'short story, detective story, detective',
-    dateCreated: '1841-01-01T00:00:00.000Z',
-    datePublished: '1841-01-01T00:00:00.000Z',
-    text: 'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...'
-  }
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IkdhRWZ2QURLQUw1ZXVWQjZxZ2p1djlnMkxoOVBhM2FuWkxLZjRnUlFvWVM0In0=',
+  issuanceDate: '2018-10-12T01:54:11.559Z',
+  claim: {
+    name: 'A Study in Scarlet',
+    author: 'Arthur Conan Doyle',
+    tags: 'detective novel, detective',
+    dateCreated: '1886-01-01T00:00:00.000Z',
+    datePublished: '1887-01-01T00:00:00.000Z',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IkdhRWZ2QURLQUw1ZXVWQjZxZ2p1djlnMkxoOVBhM2FuWkxLZjRnUlFvWVM0In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19.._qJsUa-caH8BLds4rVLV9GuMEqxUlw6VRyfXN23Z0KHgtnJIiTnXoSzuwFF_rnIicza94Ggh5xkGAT4hZcrwBQ',
+      'sec:nonce': 'cjn5czg1u0000mnc93s13ihuz',
+    },
+  },
 }
-
 ```
 
-The `publicKey` field must be set to the public part of a key pair you own. You'll need the corresponding private key to prove this claim was generated by you.
+The `issuer` field contains the public part of a key pair you own. You'll need the corresponding private key to prove 
+this claim was generated by you. Use `@poet/poet-js` to generate an appropriate issuer from your private key.
 
-The `signature` must be set to the result of cryptographically signing the `id` field with the private key you own using the elliptic curve DSA signature scheme. This signature is currently being validated with [bitcore.Crypto.ECDSA.verify](https://github.com/bitpay/bitcore-lib/blob/master/lib/crypto/ecdsa.js#L270), and we're using [bitcore.Crypto.ECDSA.sign](https://github.com/bitpay/bitcore-lib/blob/master/lib/crypto/ecdsa.js#L279) to sign our claims.
+The `sec:proof` must be set to the result of cryptographically signing the claim with the private key you own using jsonld-signatures
+with the ED25519 eliptical curve. This signature is currently being validated with [jsonld-signatures.verify](https://github.com/digitalbazaar/jsonld-signatures/blob/master/lib/suites/Ed25519Signature2018.js#L78), 
+and we're using [jsonld-signatures.sign](https://github.com/digitalbazaar/jsonld-signatures/blob/master/lib/suites/Ed25519Signature2018.js#L15) to sign our claims.
 
-The `id` field is the `sha256` of the claim, excluding the `id` and `signature` fields, so `getId(claim) == getId(getId(claim))`. We're using [DigitalBazaar's jsonld](https://github.com/digitalbazaar/jsonld.js) implementation of [JSON-LD](https://www.w3.org/2018/jsonld-cg-reports/json-ld/) in order to serialize the claims to a byte buffer deterministically and hashing this byte buffer.
+The `id` field is the `sha256` of the canonicalized claim, excluding the `id` and `sec:proof` fields, so `getId(claim) == getId(getId(claim))`. We're using [DigitalBazaar's jsonld](https://github.com/digitalbazaar/jsonld.js) implementation of [JSON-LD](https://www.w3.org/2018/jsonld-cg-reports/json-ld/) in order to serialize the claims to a byte buffer deterministically and hashing this byte buffer.
 
 ### Po.et JS
-All this logic is abstracted away in [Po.et JS](https://github.com/poetapp/poet-js), so if you're working with JavaScript or TypeScript you can simply use the `createClaim(privateKey, claimType, attributes)` function like so:
+All this logic is abstracted away in [Po.et JS](https://github.com/poetapp/poet-js), so if you're working with JavaScript or 
+TypeScript you can simply use the library:
 
 ```ts
-import { ClaimType, createClaim } from '@po.et/poet-js'
+import { configureCreateVerifiableClaim, createIssuerFromPrivateKey, getVerifiableClaimSigner } from '@po.et/poet-js'
 
-const privateKey = <YOUR_PRIVATE_KEY>
+const { configureSignVerifiableClaim } = getVerifiableClaimSigner()
 
-const claim = await createClaim(privateKey, ClaimType.Work, {
-  name: 'The Murders in the Rue Morgue',
+const issuerPrivateKey = 'LWgo1jraJrCB2QT64UVgRemepsNopBF3eJaYMPYVTxpEoFx7sSzCb1QysHeJkH2fnGFgHirgVR35Hz5A1PpXuH6' 
+const issuer = createIssuerFromPrivateKey(issuerPrivateKey)
+
+const createVerifiableWorkClaim = configureCreateVerifiableClaim({ issuer })
+const signVerifiableClaim = configureSignVerifiableClaim({ privateKey: issuerPrivateKey })
+
+const workClaim = {
+  name: 'The Raven',
   author: 'Edgar Allan Poe',
-  tags: 'short story, detective story, detective',
-  dateCreated: '1841-01-01T00:00:00.000Z',
-  datePublished: '1841-01-01T00:00:00.000Z',
-  text: 'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...'
-})
+  tags: 'poem',
+  dateCreated: '',
+  datePublished: '1845-01-29T03:00:00.000Z',
+  archiveUrl: 'https://example.com/raven',
+  hash: '<hash of content>',
+}
 
+const unsignedVerifiableClaim = await createVerifiableWorkClaim(workClaim)
+const signedWorkClaim = await signVerifiableClaim(unsignedVerifiableClaim)
 ```
 
 > You can find more examples on how to build and publish claims in the integration tests in [tests/API/integration/PostWork.test](./tests/integration/API/PostWork.test.ts).
@@ -274,9 +327,7 @@ During development, you can also run `npm run watch` to automatically watch for 
 ### Tests
 Unit and integration tests are located in this repo. You can run both with `npm test` or separately with `npm run test:unit` and `npm run test:integration`.
 
-The integration tests are hard-coded to hit `http://localhost:18080`. In the future, this will be picked up from an environment variable and defaulted to that same url.
-
-> **Warning:** Running the integration tests wipes out the entire `db.poet.works` collection and inserts testing data. This is done by the `test/integration/PrepareDB.ts` file. In the future, a less invasive mechanism will be developed. Meanwhile, make sure you're comfortable with this before running the integration tests!
+The integration tests run in isolated instances of the app and database. 
 
 Functional tests are run as follows:
 
