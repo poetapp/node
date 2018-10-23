@@ -5,12 +5,17 @@ import * as Pino from 'pino'
 import { pick, pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
+
 import { IPFS } from './IPFS'
 
 enum LogTypes {
   info = 'info',
   trace = 'trace',
   error = 'error',
+}
+
+export interface HealthControllerConfiguration {
+  readonly lowWalletBalanceBTC: number
 }
 
 interface BlockchainInfo {
@@ -24,6 +29,7 @@ interface BlockchainInfo {
 interface WalletInfo {
   readonly balance: number
   readonly txcount: number
+  readonly balanceLow?: boolean
 }
 
 interface NetworkInfo {
@@ -52,6 +58,7 @@ const pickWalletInfoKeys = pick(walletInfoKeys)
 
 @injectable()
 export class HealthController {
+  private readonly configuration: HealthControllerConfiguration
   private readonly db: Db
   private readonly collection: Collection
   private readonly bitcoinCore: BitcoinCore
@@ -61,10 +68,12 @@ export class HealthController {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
+    @inject('HealthControllerConfiguration') configuration: HealthControllerConfiguration,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
     @inject('IPFS') ipfs: IPFS
   ) {
     this.logger = childWithFileName(logger, __filename)
+    this.configuration = configuration
     this.db = db
     this.collection = this.db.collection('health')
     this.bitcoinCore = bitcoinCore
@@ -96,6 +105,13 @@ export class HealthController {
 
   private async getWalletInfo(): Promise<WalletInfo> {
     return pickWalletInfoKeys(await this.bitcoinCore.getWalletInfo())
+  }
+
+  private async checkWalletBalance(walletInfo: WalletInfo): Promise<WalletInfo> {
+    const { balance } = walletInfo
+    return balance < this.configuration.lowWalletBalanceBTC
+      ? { ...walletInfo, balanceLow: true }
+      : { ...walletInfo, balanceLow: false }
   }
 
   private async updateWalletInfo(walletInfo: WalletInfo): Promise<WalletInfo> {
@@ -162,6 +178,8 @@ export class HealthController {
   public refreshWalletInfo = pipeP(
     this.log(LogTypes.trace)('refreshing wallet info'),
     this.getWalletInfo,
+    this.log(LogTypes.trace)('checking wallet balance against alert threshold'),
+    this.checkWalletBalance,
     this.log(LogTypes.trace)('new info gathered, saving wallet info'),
     this.updateWalletInfo,
     this.log(LogTypes.trace)('refreshed wallet info')
