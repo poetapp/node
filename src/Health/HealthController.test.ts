@@ -24,12 +24,12 @@ describe('addWalletIsBalanceLow()', async assert => {
     txcount,
   })
   const addWalletIsBalanceBelow2 = addWalletIsBalanceLow(2)
-
+  const should = 'return walletInfo with correct isBalanceLow bool'
   {
     const walletInfo = walletGen(3)
     assert({
       given: 'a lowBalanceAmount lower than balance property of walletInfo',
-      should: 'return walletInfo with correct isBalanceLow bool',
+      should,
       actual: addWalletIsBalanceBelow2(walletInfo),
       expected: { ...walletInfo, isBalanceLow: false },
     })
@@ -39,7 +39,7 @@ describe('addWalletIsBalanceLow()', async assert => {
     const walletInfo = walletGen(2)
     assert({
       given: 'a lowBalanceAmount equal to balance property of walletInfo',
-      should: 'return walletInfo with correct isBalanceLow bool',
+      should,
       actual: addWalletIsBalanceBelow2(walletInfo),
       expected: { ...walletInfo, isBalanceLow: false },
     })
@@ -49,7 +49,7 @@ describe('addWalletIsBalanceLow()', async assert => {
     const walletInfo = walletGen(1)
     assert({
       given: 'a lowBalanceAmount higher than balance property of walletInfo',
-      should: 'return walletInfo with correct isBalanceLow bool',
+      should,
       actual: addWalletIsBalanceBelow2(walletInfo),
       expected: { ...walletInfo, isBalanceLow: true },
     })
