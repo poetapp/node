@@ -235,8 +235,6 @@ export async function app(localVars: any = {}) {
     healthIntervalInSeconds: configuration.healthIntervalInSeconds,
     exchanges: {
       getHealth: configuration.exchangeGetHealth,
-      claimsNotDownloaded: configuration.exchangeClaimsNotDownloaded,
-      claimsDownloaded: configuration.exchangeClaimsDownloaded,
     },
   })
 
