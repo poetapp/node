@@ -8,7 +8,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { APIConfiguration } from './APIConfiguration'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { HealthController, HealthControllerConfiguration } from './HealthController'
+import { HealthController } from './HealthController'
 import { Router } from './Router'
 import { RouterConfiguration } from './RouterConfiguration'
 import { WorkController } from './WorkController'
@@ -62,9 +62,6 @@ export class API {
     this.container.bind<HealthController>('HealthController').to(HealthController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
-    this.container.bind<HealthControllerConfiguration>('HealthControllerConfiguration').toConstantValue({
-      downloadMaxAttempts: this.configuration.downloadMaxAttempts,
-    })
     this.container.bind<VerifiableClaimSigner>('VerifiableClaimSigner').toConstantValue(getVerifiableClaimSigner())
   }
 }
