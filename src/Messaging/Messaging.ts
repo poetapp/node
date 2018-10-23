@@ -1,5 +1,5 @@
 /* tslint:disable:no-console */
-import { isClaim, PoetBlockAnchor } from '@po.et/poet-js'
+import { isSignedVerifiableClaim, PoetBlockAnchor } from '@po.et/poet-js'
 import { Connection, connect, Channel } from 'amqplib'
 
 import { ClaimIPFSHashPair, isClaimIPFSHashPair } from 'Interfaces'
@@ -74,11 +74,11 @@ export class Messaging {
         return
       }
 
-      if (poetBlockAnchors.map(isClaim).find(_ => !_)) {
+      if (poetBlockAnchors.map(isSignedVerifiableClaim).find(_ => !_)) {
         console.log({
           action: 'consumeBlockAnchorsDownloaded',
           message: 'Expected poetBlockAnchors to be an Array<Claim>.',
-          offendingElements: poetBlockAnchors.map(isClaim).filter(_ => !_),
+          offendingElements: poetBlockAnchors.map(isSignedVerifiableClaim).filter(_ => !_),
         })
         return
       }

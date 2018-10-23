@@ -1,5 +1,5 @@
 /* tslint:disable:no-relative-imports */
-import { Claim, isClaim } from '@po.et/poet-js'
+import { SignedVerifiableClaim, isSignedVerifiableClaim } from '@po.et/poet-js'
 import { all, pickBy } from 'ramda'
 import { describe } from 'riteway'
 
@@ -26,8 +26,8 @@ const NODE_PORT = '28081'
 const getWorkFromNode = getWork(NODE_PORT)
 const postWorkToNode = postWorkWithDelay(NODE_PORT)
 
-const setUpExistingClaims = async (claims: ReadonlyArray<Claim>) =>
-  await Promise.all(claims.map(async (claim: Claim) => postWorkToNode(claim)))
+const setUpExistingClaims = async (claims: ReadonlyArray<SignedVerifiableClaim>) =>
+  await Promise.all(claims.map(async (claim: SignedVerifiableClaim) => postWorkToNode(claim)))
 
 const works = [
   ABraveAndStartlingTruth,
@@ -98,17 +98,19 @@ describe('GET /works', async assert => {
       expected: true,
     })
 
+    // Why >= 13? If you run functional tests before integration tests without restarting your container, you will get 14,
+    // otherwise, you will get 13.
     assert({
       given,
       should: 'return count in the header X-Total-Count',
-      actual: await response.headers.get('X-Total-Count'),
-      expected: '13',
+      actual: Number.parseInt(await response.headers.get('X-Total-Count'), 10) >= 13,
+      expected: true,
     })
 
     assert({
       given,
       should: 'return only signed claims',
-      actual: all(isClaim)(getClaimsWithoutTimestamps(claims)),
+      actual: all(isSignedVerifiableClaim)(getClaimsWithoutTimestamps(claims)),
       expected: true,
     })
   }

@@ -1,4 +1,4 @@
-import { Claim } from '@po.et/poet-js'
+import { SignedVerifiableClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { pipeP } from 'ramda'
@@ -15,7 +15,7 @@ enum LogTypes {
 }
 
 interface StoreNextClaimData {
-  readonly claim: Claim
+  readonly claim: SignedVerifiableClaim
   readonly ipfsFileHash?: string
 }
 
@@ -41,7 +41,7 @@ export class ClaimController {
     return value
   }
 
-  public readonly create = async (claim: Claim): Promise<void> => {
+  public readonly create = async (claim: SignedVerifiableClaim): Promise<void> => {
     const logger = this.logger.child({ method: 'create' })
 
     logger.trace({ claim }, 'Adding Claim')
@@ -56,7 +56,7 @@ export class ClaimController {
     return { claim }
   }
 
-  private readonly uploadClaim = (claim: Claim) => this.ipfs.addText(JSON.stringify(claim))
+  private readonly uploadClaim = (claim: SignedVerifiableClaim) => this.ipfs.addText(JSON.stringify(claim))
 
   private readonly storeClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {
     const { claim } = data

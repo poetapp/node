@@ -1,8 +1,10 @@
 /* tslint:disable:no-relative-imports */
-import { ClaimType, createClaim, isValidClaim } from '@po.et/poet-js'
-import { path } from 'ramda'
+import { configureCreateVerifiableClaim, getVerifiableClaimSigner, isSignedVerifiableClaim } from '@po.et/poet-js'
+import { path, pipeP } from 'ramda'
 import { describe } from 'riteway'
+
 import { app } from '../../src/app'
+import { issuer, privateKey } from '../helpers/Keys'
 import { ensureBitcoinBalance } from '../helpers/bitcoin'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'
@@ -12,7 +14,6 @@ const PREFIX_A = `test-functional-nodeA-poet-${runtimeId()}`
 const NODE_A_PORT = '28081'
 const PREFIX_B = `test-functional-nodeB-poet-${runtimeId()}`
 const NODE_B_PORT = '28082'
-const privateKey = 'L1mptZyB6aWkiJU7dvAK4UUjLSaqzcRNYJn3KuAA7oEVyiNn3ZPF'
 const getWorkFromNodeA = getWork(NODE_A_PORT)
 const postWorkToNodeA = postWork(NODE_A_PORT)
 const getWorkFromNodeB = getWork(NODE_B_PORT)
@@ -34,9 +35,15 @@ const bitcoindClientA = new Client({
   username: 'bitcoinrpcuser',
 })
 
-describe('A user can successfully submit a claim into the po.et network', async (assert: any) => {
-  const text = 'A most excellent read...'
+const { configureSignVerifiableClaim } = getVerifiableClaimSigner()
+const createVerifiableClaim = configureCreateVerifiableClaim({ issuer })
+const signVerifiableClaim = configureSignVerifiableClaim({ privateKey })
+const createClaim = pipeP(
+  createVerifiableClaim,
+  signVerifiableClaim
+)
 
+describe('A user can successfully submit a claim into the po.et network', async (assert: any) => {
   const dbA = await createDatabase(PREFIX_A)
   const serverA = await app({
     BITCOIN_URL: process.env.BITCOIN_URL || 'bitcoind-1',
@@ -67,15 +74,15 @@ describe('A user can successfully submit a claim into the po.et network', async 
 
   // Create a claim.
 
-  const claim = await createClaim(privateKey, ClaimType.Work, {
+  const claim = await createClaim({
     name: 'Author Name',
-    text,
   })
 
+  // This is a test of what? Seems like just poetjs
   assert({
     given: 'a newly created claim',
     should: 'be valid',
-    actual: await isValidClaim(claim),
+    actual: await isSignedVerifiableClaim(claim),
     expected: true,
   })
 
@@ -99,7 +106,7 @@ describe('A user can successfully submit a claim into the po.et network', async 
   await bitcoindClientA.generate(parseInt(process.env.CONFIRMATION_BLOCKS || '1', 10))
 
   // Wait for claim batches to be read from the blockchain.
-  await delay(parseInt(process.env.READ_DIRECTORY_INTERVAL_IN_SECONDS || '5', 10) * 1000 * 2)
+  await delay(parseInt(process.env.READ_DIRECTORY_INTERVAL_IN_SECONDS || '5', 10) * 1000 * 3)
 
   {
     // Retrieve the claim from the same po.et node it was submitted to.
@@ -151,7 +158,7 @@ describe('A user can successfully submit a claim into the po.et network', async 
   }
 
   // Wait for claim batches to be read from the blockchain on po.et node B.
-  await delay(parseInt(process.env.READ_DIRECTORY_INTERVAL_IN_SECONDS || '5', 10) * 1000 * 2)
+  await delay(parseInt(process.env.READ_DIRECTORY_INTERVAL_IN_SECONDS || '5', 10) * 1000 * 3)
 
   {
     let claimDataB

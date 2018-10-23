@@ -1,250 +1,743 @@
 /* tslint:disable:max-line-length */
-import { ClaimAttributes, ClaimType, Work } from '@po.et/poet-js'
+import { ClaimType, SignedVerifiableClaim } from '@po.et/poet-js'
 
-export const TheRaven: Work = {
-  id: '1bb5e7959c7cb28936ec93eb6893094241a5bc396f08845b4f52c86034f0ddf8',
-  publicKey: '02badf4650ba545608242c2d303d587cf4f778ae3cf2b3ef99fbda37555a400fd2',
-  signature:
-    '3045022100e020a7ffeffa5d40ffde618c6c861678e38de69fd377028ec57ad93893883b3702201f085284a9064bab7e1cd39349e65d136d8f67e4b6b897c3e7db6b400ed91034',
-  type: ClaimType.Work,
-  created: '2017-11-13T15:00:00.000Z',
-  attributes: {
-    name: 'The Raven',
-    author: 'Edgar Allan Poe',
-    tags: 'poem',
-    dateCreated: '',
-    datePublished: '1845-01-29T03:00:00.000Z',
-    text: 'Once upon a midnight dreary...',
+export const AStudyInScarlet: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
   },
-}
-
-export const TheMurdersInTheRueMorgue: Work = {
-  id: '15867401b92567b4f7ea83e39a646ab9eb581b560bc78488b7a0c1b586c70215',
-  publicKey: '02badf4650ba545608242c2d303d587cf4f778ae3cf2b3ef99fbda37555a400fd2',
-  signature:
-    '304402201824b78d3703162eb7f240341968ebfecad1f002f988dbc9ec80c1317e49d6290220470124c7425a5d8024778991863f0a25931a7e45fb72223bea81728a08e30b50',
+  id: 'f4b3e6cd7e516211d1b718b84860d26f59e3933c03c25c29d4e9ce9cc34ff26b',
   type: ClaimType.Work,
-  created: '2017-12-11T22:58:11.375Z',
-  attributes: {
-    name: 'The Murders in the Rue Morgue',
-    author: 'Edgar Allan Poe',
-    tags: 'short story, detective story, detective',
-    dateCreated: '1841-01-01T00:00:00.000Z',
-    datePublished: '1841-01-01T00:00:00.000Z',
-    text:
-      'The mental features discoursed of as the analytical, are, in themselves, but little susceptible of analysis...',
-  },
-}
-
-export const AStudyInScarlet: Work = {
-  id: '33ebc219caa62d07e3f27f891620d24499e53811b81f72762f6240d7b92dcbf3',
-  publicKey: '02db393ae2d566ceddd95a97fd88bc2897a0818528158261cec45087a58786f09d',
-  signature:
-    '3045022100df2034f6e8dd277cbbddfff3652d50ec0b7a59f385e3f68df188e290be77a88302201856b5d8cc07c7726afc41cc0f6f67eabd5ea23a413dcbbbdc1047285f1a2150',
-  type: ClaimType.Work,
-  created: '2017-12-11T22:58:11.327Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IkdhRWZ2QURLQUw1ZXVWQjZxZ2p1djlnMkxoOVBhM2FuWkxLZjRnUlFvWVM0In0=',
+  issuanceDate: '2018-10-12T01:54:11.559Z',
+  claim: {
     name: 'A Study in Scarlet',
     author: 'Arthur Conan Doyle',
     tags: 'detective novel, detective',
     dateCreated: '1886-01-01T00:00:00.000Z',
     datePublished: '1887-01-01T00:00:00.000Z',
-    text: 'In the year 1878 I took my degree of Doctor of Medicine of the University of London...',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IkdhRWZ2QURLQUw1ZXVWQjZxZ2p1djlnMkxoOVBhM2FuWkxLZjRnUlFvWVM0In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19.._qJsUa-caH8BLds4rVLV9GuMEqxUlw6VRyfXN23Z0KHgtnJIiTnXoSzuwFF_rnIicza94Ggh5xkGAT4hZcrwBQ',
+      'sec:nonce': 'cjn5czg1u0000mnc93s13ihuz',
+    },
   },
 }
 
-export const TheWeekOfDiana: Work = {
-  id: 'fe3aa85a31323d73515893ca5f8db7c11af536ea665374ee00bad1d0f7d26b4d',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '3045022100d596962bf22dde012e0ef8329b411404719d033d21015fadb2e57c773ee872b40220286a424908588cac3a8792f72ed076aa171332ec6bb02bb96454f14254bd7d72',
+export const TheMurdersInTheRueMorgue: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: 'bef82fd1df606421cbdf24993d5fabdcd5b83b70a44e8af9ecc64ec4a2fe098c',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:13.909Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjQyVk1GYWVONVhTZk5qQk4zUEU3ckZvU1lycHBmUDR2aWZSMVlXZnB6eDhYIn0=',
+  issuanceDate: '2018-10-12T01:54:11.637Z',
+  claim: {
+    name: 'The Murders in the Rue Morgue',
+    author: 'Edgar Allan Poe',
+    tags: 'short story, detective story, detective',
+    dateCreated: '1841-01-01T00:00:00.000Z',
+    datePublished: '1841-01-01T00:00:00.000Z',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjQyVk1GYWVONVhTZk5qQk4zUEU3ckZvU1lycHBmUDR2aWZSMVlXZnB6eDhYIn0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..kv3FTelr03-3STNzLxiwseYIUpat02iq-Qvn3mpThl7NNgAHaNmOHqXNNy8UuEMm4gUmvVfDXQLE0GOIzxGZDg',
+      'sec:nonce': 'cjn5czg3i0001mnc9e62ntdzj',
+    },
+  },
+}
+
+export const TheRaven: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: 'eb1de236c5ed14930e0a0bac87bdc3e26778670a5a6dc35d6acce931290017c7',
+  type: ClaimType.Work,
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjQyVk1GYWVONVhTZk5qQk4zUEU3ckZvU1lycHBmUDR2aWZSMVlXZnB6eDhYIn0=',
+  issuanceDate: '2018-10-12T01:54:11.673Z',
+  claim: {
+    name: 'The Raven',
+    author: 'Edgar Allan Poe',
+    tags: 'poem',
+    dateCreated: '',
+    datePublished: '1845-01-29T03:00:00.000Z',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjQyVk1GYWVONVhTZk5qQk4zUEU3ckZvU1lycHBmUDR2aWZSMVlXZnB6eDhYIn0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..3_84-KBC4XPVhakWX9SC1fRrTyo4laIoyvef17KK305-vhgpGRfrAZP9d0FGomf4pPOpkRP_Zzo13sQ-yvG-CQ',
+      'sec:nonce': 'cjn5czg4d0002mnc90aru2bn1',
+    },
+  },
+}
+
+export const TheWeekOfDiana: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: '83eb777ce7dc56d949940ecc751ca3dc7cd5c0dee33bdb5ad53be2892e021971',
+  type: ClaimType.Work,
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.699Z',
+  claim: {
     name: 'The Week of Diana',
     author: 'Maya Angelou',
     tags: 'poem',
     dateCreated: '1997-09-06T00:00:00.000Z',
     datePublished: '1997-09-06T00:00:00.000Z',
-    text: 'The dark lantern of world sadness has cast its shadow upon the land....',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..UbXYJ5F0oBg2L0l_AodJEhJZOaGfbfL3cJvYhz9kDEii7LvEd-5UIlVqRYVWrcG0Rk27n0GHbAV0CwAdSRgsAQ',
+      'sec:nonce': 'cjn5czg540003mnc9esa6dobt',
+    },
   },
 }
 
-export const KnowWhyTheCagedBirdSings: Work = {
-  id: 'a5ad28f528327d89dfea9c8c752722ecfe34860e896a5f868b045d631d4a8baf',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '304402201b4464b320d4f3c65d21395e05724ac011f4a6016241ff63b6a56d9d451676670220447a62cbddc1e41775e5486a26223bccc660ff6ce112b42002a8878312831a8c',
+export const KnowWhyTheCagedBirdSings: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: '9d07329481a645edcfb0ce96681c21888c98fb945194aa3d724835af32f4f4c7',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:13.940Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.716Z',
+  claim: {
     name: 'Know Why the Caged Bird Sings',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1969-01-01T00:00:00.000Z',
     datePublished: '1969-01-01T00:00:00.000Z',
-    text:
-      'I know why the caged bird sings, ah me, When his wing is bruised and his bosom sore, When he beats his bars and would be free; It is not a carol of joy or glee,....',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..NAS6_tYzYQdBk7nnbW-yZghoTNgZEWgmekjRxPNTMKhmnjS7TVCHv-MhYmzqEkuGpGAgmlmoxFtTYbm2_DvJBw',
+      'sec:nonce': 'cjn5czg5k0004mnc91gh6av18',
+    },
   },
 }
 
-export const GatherTogetherInMyName: Work = {
-  id: '43eea2bc07c2de051a8e389b7db11dedcf4e7d65fcb86a4cb758447a2f4c1bc2',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '304402201b60c02d2c490b6c037a2b38d51eb2f448e32619b00d91ef08acabf25c42fb160220714b3f859d1a483d088c4c5c8f48f9a856a26f2e3ffb785e0278476803649b4a',
+export const GatherTogetherInMyName: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: '1d5da7af4370ee6b079b60b27782913fb3eaa526e4bf9a82568e1f39ae48f043',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:13.950Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.739Z',
+  claim: {
     name: 'Gather Together in My Name',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1974-01-01T00:00:00.000Z',
     datePublished: '1974-01-01T00:00:00.000Z',
-    text:
-      'I was mortified. A silly white woman who probably counted on her toes looked me in the face and said I had not passed. ....',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..6VV67J_vcwm5wady0nkcTo1HUPeKJaljvsaCDapinVaJMETmLYJGJUI6t4Og30sINLuDo1ai22PpBnPGqXb_BA',
+      'sec:nonce': 'cjn5czg680005mnc96iqai24s',
+    },
   },
 }
 
-export const SinginAndSwinginAndGettingMerryLikeChristmas: Work = {
-  id: '91c23a6f14b1afde4b1ccde0c1ad4ecf17c029ebf81547fa16f2e4fc37dd19a6',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '304502210098fba1efdca83e2a725bbb96cfcf0841bee42379319d441931f12975891e65f50220204cc1d8d69bc6753b3f1e1d24bd66b586e4a532a4ae97126da05e49ca8aa1c4',
+export const SinginAndSwinginAndGettingMerryLikeChristmas: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: '7453b6020e55e6ecf817837c5831db6d507a15498c113def3c6e922118395f1b',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:13.962Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.756Z',
+  claim: {
     name: "Singin' and Swingin' and Gettin' Merry Like Christmas",
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1976-01-01T00:00:00.000Z',
     datePublished: '1976-01-01T00:00:00.000Z',
-    text:
-      'Don’t the moon look lonesome shining through the trees? Ah, don’t the moon look lonesome shining through the trees? Don’t your house look lonesome when your baby pack up to leave?....',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..EbJfqEAEQ7neSIxgZs2Rp64i8fOHOje5rvhUYGNcmJAYktKp4J_Pr_iM52ythAyXKS1z-LCJc9scDeSaltxHAQ',
+      'sec:nonce': 'cjn5czg6o0006mnc983h5nr0h',
+    },
   },
 }
 
-export const TheHeartOfAWoman: Work = {
-  id: '756ecd1fc0624c8d3012123fc5cb9a2749317205cd3a727dcd661e7c87c34b8f',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '3045022100f859137cee38039aa2ae04ec039be36ab7714eaea904e2a23d99400d3d7d7f7a02201b85d506f9120cd3004be75688ef4da266f747fee2139472315463246e466ce3',
+export const TheHeartOfAWoman: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: '42fb449d583831178963fe5f04ebb75263f84063a892a3e98cdb7b3c3c385596',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:13.970Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.773Z',
+  claim: {
     name: 'The Heart of a Woman',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1981-01-01T00:00:00.000Z',
     datePublished: '1981-01-01T00:00:00.000Z',
-    text:
-      "The Harlem Writer's Guild was meeting at John's house, and my palms were sweating and my tongue was thick....",
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..hK6C5ag3YamK295rragVMhDl2kAlm8aqvsxnNUFqxLhRVjxkMDiT-r7HIdSGzczFMQLCQ-iiPxynBZgtjiqNDQ',
+      'sec:nonce': 'cjn5czg790007mnc9n39wkajj',
+    },
   },
 }
 
-export const AllGodsChildrenNeedTravelingShoes: Work = {
-  id: 'f1178b50664534ceca141d1095bf0220739c928f8229156f0936cd6d4ca04b50',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '3044022034ae8666cb1362e6f1d405cf3ea35a6c92734356c978a57e0c604f8ba3369ef8022041604d498785ce9646b1179f1287fd55aa1935d89829c2942830d6dbca409adc',
+export const AllGodsChildrenNeedTravelingShoes: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: 'eda7d7a3a2c093b86d62c763b798d8615094be7f31eb3e691dc96b9c6621f6ac',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:13.978Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.799Z',
+  claim: {
     name: "All God's Children Need Traveling Shoes",
     author: 'Maya Angelou',
-    tags: 'autobiography',
     dateCreated: '1986-01-01T00:00:00.000Z',
+    tags: 'autobiography',
     datePublished: '1986-01-01T00:00:00.000Z',
-    text:
-      'The breezes of the West African night were intimate and shy, licking the hair, sweeping through cotton dresses with unseemly intimacy....',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..8aXsC6ecLbPo3WspdT9-h98DoHEKJLdW15dqrTFXInJobbQiIKmWfzmjhQAMWn0x6ykqRL7HtAo7HHBqkkm7CQ',
+      'sec:nonce': 'cjn5czg7u0008mnc9w6q40sn9',
+    },
   },
 }
 
-export const ASongFlungUpToHeaven: Work = {
-  id: 'db3dc4951ec124302321fae346916bb4323bee5be21ee85fea2a165cd089138a',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '3045022100cc731a99514e9aade4ddbd728f203934231a10a0f66e9fbeebdd7e9569fbcf4b02202a2dfb538cc3695e412cdc03a712643dd5c7b17f22f9d687ebdd84cf22086183',
+export const ASongFlungUpToHeaven: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: '129215bab01ec528f24f4e391cc57cb6d7b1a1d2bdee278bacbe59228e57ffd4',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:13.991Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.815Z',
+  claim: {
     name: 'A Song Flung Up to Heaven',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '2002-01-01T00:00:00.000Z',
     datePublished: '2002-01-01T00:00:00.000Z',
-    text:
-      "One The old ark's a-movering a-movering a-movering the old ark's a-movering and I'm going home. Nineteenth - century American spiritual....",
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..bX5W0KjQuc_NvJFDoxvE2YuheFMYAOi6v6jc5rRxtulLaaLh3F8SLapwJS2w_HfJYEb2BLtxhRdcHppOyAVoBQ',
+      'sec:nonce': 'cjn5czg8b0009mnc9584kx4z6',
+    },
   },
 }
 
-export const MomAndMeAndMom: Work = {
-  id: '6808946ff36160771b55371655d92161c331893bafbbab05fb4aebfbb2c63170',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '304402202bc198e9a381e5ec7c2f41ab7019ffe7a0eaed928a6f5ab44fc321a8a85d952502203403e03a319d7ecd6b9b6ea76012889e36e2b964d704441c0ddef13e6af19bfe',
+export const MomAndMeAndMom: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: 'b9a5398933eaac26784965402aff0f5d8dfbfc0b2cb03d1f2fb26870b1f19578',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:14.002Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.836Z',
+  claim: {
     name: 'Mom & Me & Mom',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '2013-01-01T00:00:00.000Z',
     datePublished: '2013-01-01T00:00:00.000Z',
-    text:
-      'The first decade of the twentieth century was not a great time to be born black and poor and female in St. Louis, Missouri, but Vivian Baxter was born black and poor, to black and poor parents....',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..8CEd2kKYSSVPl2peYIgtUWhp5vGWqlYn67tDwpmvkcNSBkbYI4sQ5Mir5ktCPFFH5IotwCwV0lKx9tG8Jiw6Dg',
+      'sec:nonce': 'cjn5czg8w000amnc928f58bl2',
+    },
   },
 }
 
-export const OnThePulseOfMorning: Work = {
-  id: '95c8c7220ec2aa151abba6106f471b21e3a4e2705e95883cedc43119e20629ad',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '3045022100fd7cd78372ef8ded1d69100fc4a5993d0f37afe907ae4de6e04d66fd24facf83022009e00d0ae1b4d6bdd861b55a8f53a31cd8d989b95683ee0d755e1226434cc5bc',
+export const OnThePulseOfMorning: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: '8030edb527be097392e7db4fb4a61f5526a2877cfe8296a527f6c6ee2c751177',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:14.010Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.852Z',
+  claim: {
     name: 'On the Pulse of Morning',
     author: 'Maya Angelou',
     tags: 'poem',
     dateCreated: '1993-01-01T00:00:00.000Z',
     datePublished: '1993-01-01T00:00:00.000Z',
-    text: 'A Rock, A River, A Tree; Hosts to species long since departed, Marked the mastodon....',
+  },
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..EMCdGhMQ4KOg-fFttw8umB0hAyzH9RpDJ-6Zq-TViu3Q5m_UtlO2tbYE_pKzcqRYcdzNPca5kuRkthPOJarTBA',
+      'sec:nonce': 'cjn5czg9b000bmnc9lniyjsqu',
+    },
   },
 }
 
-export const ABraveAndStartlingTruth: Work = {
-  id: '87e5629053d5d8c29372d9e5a18542cd6d7080ba80b7261e371b08c7ddcc9baa',
-  publicKey: '03099911d34be151e24e6be3f36588b5fb78a7401a052406673dc40c7c0f793054',
-  signature:
-    '3045022100cd36fe5eaa4a268ed98618edae844378ab31bf33bfe3a5b5f1eb2dca9beff9e602201f39910795af3e373960ea3258669df439471f946359d82238fea3d100ba0ca7',
+export const ABraveAndStartlingTruth: SignedVerifiableClaim = {
+  '@context': {
+    cred: 'https://w3id.org/credentials#',
+    dc: 'http://purl.org/dc/terms/',
+    schema: 'http://schema.org/',
+    sec: 'https://w3id.org/security#',
+    id: 'sec:digestValue',
+    issuer: 'cred:issuer',
+    issuanceDate: 'cred:issued',
+    type: 'schema:additionalType',
+    claim: 'schema:CreativeWork',
+    archiveUrl: 'schema:url',
+    author: 'schema:author',
+    canonicalUrl: 'schema:url',
+    contributors: {
+      '@id': 'schema:ItemList',
+      '@container': '@list',
+      '@type': 'schema:contributor',
+    },
+    copyrightHolder: 'schema:copyrightHolder',
+    dateCreated: 'schema:dateCreated',
+    datePublished: 'schema:datePublished',
+    license: 'schema:license',
+    name: 'schema:name',
+    tags: 'schema:keywords',
+    hash: 'sec:digestValue',
+  },
+  id: 'e69befb7aaf8ca87de36025e93dd88cf93aeed522d030b92b255553bec96a652',
   type: ClaimType.Work,
-  created: '2018-07-31T22:29:14.019Z',
-  attributes: {
+  issuer:
+    'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+  issuanceDate: '2018-10-12T01:54:11.876Z',
+  claim: {
     name: 'A Brave and Startling Truth',
     author: 'Maya Angelou',
     tags: 'poem',
     dateCreated: '1995-01-01T00:00:00.000Z',
     datePublished: '1995-01-01T00:00:00.000Z',
-    text: 'We, this people, on this small and drifting planet Whose hands can strike with such abandon....',
   },
-}
-
-export const TheRavenHex =
-  '0a201bb5e7959c7cb28936ec93eb6893094241a5bc396f08845b4f52c86034f0ddf8122102badf4650ba545608242c2d303d587cf4f778ae3cf2b3ef99fbda37555a400fd21a473045022100e020a7ffeffa5d40ffde618c6c861678e38de69fd377028ec57ad93893883b3702201f085284a9064bab7e1cd39349e65d136d8f67e4b6b897c3e7db6b400ed910342204576f726b2880db93affb2b32190a06617574686f72120f456467617220416c6c616e20506f6532290a07636f6e74656e74121e4f6e63652075706f6e2061206d69646e69676874206472656172792e2e2e320f0a0b6461746563726561746564120032290a0d646174657075626c69736865641218313834352d30312d32395430333a30303a30302e3030305a32110a046e616d65120954686520526176656e320c0a04746167731204706f656d'
-
-export const PrivateKeyEAP = 'KxuZJmgVAipi9hfYXHTyGYmmhkbG7fBzmkyVnj6t9j9rDR1nN1vN'
-export const PrivateKeyACD = 'cPtZVYmMDT4aLm9inqXG9N8HQhAD5GgM8LuXZUbbFcqZTTcvQSP9'
-export const PrivateKeyMA = 'cNF7epKBWa4HD9rk6mVqckT6WS5QddCQZ1xQ2qoynXiVg15dKJZL'
-
-export function makeClaim(attributes: ClaimAttributes) {
-  const created = '2017-12-11T22:54:40.261Z'
-  const publicKey = '02db393ae2d566ceddd95a97fd88bc2897a0818528158261cec45087a58786f09d'
-  const type = ClaimType.Work
-  return {
-    publicKey,
-    created,
-    type,
-    attributes,
-  }
+  'sec:proof': {
+    '@graph': {
+      '@type': 'sec:Ed25519Signature2018',
+      'dc:created': {
+        '@type': 'http://www.w3.org/2001/XMLSchema#dateTime',
+        '@value': '2018-10-12T01:54:11Z',
+      },
+      'dc:creator': {
+        '@id':
+          'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
+      },
+      'sec:jws':
+        'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..dC-p1o8xc-jLHcK7z58KvhstCBSPWW-2rOL4P2_PDxFNwOdHVuWNnSCj5IZwUrFDwsafd9a-BQCUlF1jZHJJDg',
+      'sec:nonce': 'cjn5czga0000cmnc9hug2zggn',
+    },
+  },
 }

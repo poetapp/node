@@ -2,7 +2,7 @@
 import { pickBy } from 'ramda'
 import { describe } from 'riteway'
 
-import { ABraveAndStartlingTruth } from '../../helpers/Claims'
+import { ABraveAndStartlingTruth, TheRaven } from '../../helpers/Claims'
 import { delay, runtimeId, setUpServerAndDb } from '../../helpers/utils'
 import { getWork, postWork } from '../../helpers/works'
 
@@ -58,8 +58,9 @@ describe('POST /works', async assert => {
   {
     const invalidSignedClaim = {
       ...ABraveAndStartlingTruth,
-      signature: 'invalid sig',
+      'sec:proof': TheRaven['sec:proof'],
     }
+
     const response = await postWorkToNode(invalidSignedClaim)
 
     assert({
