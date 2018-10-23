@@ -62,6 +62,12 @@ export class WorkController {
     return { count, works }
   }
 
+  async getWorksCountByFilters(worksFilters: WorksFilters = {}): Promise<number> {
+    this.logger.trace({ method: 'getWorksCountByFilters', worksFilters }, 'Getting Work Counts by Filters from DB')
+    const count = await this.collection.find(worksFilters, { projection: { _id: false } }).count()
+    return count
+  }
+
   async create(work: Work): Promise<void> {
     this.logger.trace({ method: 'create', work }, 'Creating Work')
     // TODO: verify id, publicKey, signature and createdDate
