@@ -56,6 +56,8 @@ const pickNetworkInfoKeys = pick(networkInfoKeys)
 const pickBlockchainInfoKeys = pick(blockchainInfoKeys)
 const pickWalletInfoKeys = pick(walletInfoKeys)
 
+export const isBalanceLow = (BTCbalance: number, BTCminBalance: number) => BTCbalance < BTCminBalance
+
 @injectable()
 export class HealthController {
   private readonly configuration: HealthControllerConfiguration
@@ -107,11 +109,10 @@ export class HealthController {
     return pickWalletInfoKeys(await this.bitcoinCore.getWalletInfo())
   }
 
-  private async checkWalletBalance(walletInfo: WalletInfo): Promise<WalletInfo> {
+  private async addBalanceLowBool(walletInfo: WalletInfo): Promise<WalletInfo> {
     const { balance } = walletInfo
-    return balance < this.configuration.lowWalletBalanceBTC
-      ? { ...walletInfo, balanceLow: true }
-      : { ...walletInfo, balanceLow: false }
+    const balanceLow = isBalanceLow(balance, this.configuration.lowWalletBalanceBTC)
+    return { ...walletInfo, balanceLow }
   }
 
   private async updateWalletInfo(walletInfo: WalletInfo): Promise<WalletInfo> {
@@ -179,7 +180,7 @@ export class HealthController {
     this.log(LogTypes.trace)('refreshing wallet info'),
     this.getWalletInfo,
     this.log(LogTypes.trace)('checking wallet balance against alert threshold'),
-    this.checkWalletBalance,
+    this.addBalanceLowBool,
     this.log(LogTypes.trace)('new info gathered, saving wallet info'),
     this.updateWalletInfo,
     this.log(LogTypes.trace)('refreshed wallet info')
