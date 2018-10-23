@@ -1,4 +1,4 @@
-import { Claim } from '@po.et/poet-js'
+import { SignedVerifiableClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db, FindAndModifyWriteOpResultObject } from 'mongodb'
 import { isNil, pipeP, lensPath, view } from 'ramda'
@@ -13,10 +13,11 @@ const L = {
   valueClaim: lensPath(['value', 'claim']),
 }
 
-export const getClaimFromFindAndUpdateResponse = (response: FindAndModifyWriteOpResultObject): Claim | undefined =>
-  view(L.valueClaim, response)
+export const getClaimFromFindAndUpdateResponse = (
+  response: FindAndModifyWriteOpResultObject
+): SignedVerifiableClaim | undefined => view(L.valueClaim, response)
 
-export const throwIfClaimNotFound = (claim: Claim): Claim => {
+export const throwIfClaimNotFound = (claim: SignedVerifiableClaim): SignedVerifiableClaim => {
   if (isNil(claim)) throw new NoMoreEntriesException('No claims found')
   return claim
 }
@@ -35,7 +36,7 @@ export class DAOClaims {
     await this.collection.createIndex({ 'claim.id': 1 }, { unique: true })
   }
 
-  public readonly addClaim = async (claim: Claim) => {
+  public readonly addClaim = async (claim: SignedVerifiableClaim) => {
     await this.collection.insertOne({ claim, storageAttempts: 0, ipfsFileHash: null })
   }
 
