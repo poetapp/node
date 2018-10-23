@@ -1,11 +1,11 @@
 /* tslint:disable:no-relative-imports */
 import { configureCreateVerifiableClaim, getVerifiableClaimSigner } from '@po.et/poet-js'
-import { promisify } from 'util'
 import { pipeP } from 'ramda'
+import { promisify } from 'util'
 
 import { app } from '../../src/app'
-import { dbHelper } from './database'
 import { issuerACD, issuerEAP, issuerMA, privateKeyACD, privateKeyEAP, privateKeyMA } from './Keys'
+import { dbHelper } from './database'
 
 export const runtimeId = () => `${process.pid}-${new Date().getMilliseconds()}-${Math.floor(Math.random() * 10)}`
 export const delay = promisify(setTimeout)
