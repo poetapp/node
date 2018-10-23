@@ -1,6 +1,6 @@
 import { describe } from 'riteway'
 
-import { isStatus200, isBalanceLow } from './HealthController'
+import { isStatus200, addWalletIsBalanceLow } from './HealthController'
 
 describe('isStatus200()', async assert => {
   assert({
@@ -18,25 +18,40 @@ describe('isStatus200()', async assert => {
   })
 })
 
-describe('isBalanceLow()', async assert => {
-  assert({
-    given: 'a balance above lowWalletBalanceBTC',
-    should: 'return false',
-    actual: isBalanceLow(2, 1),
-    expected: false,
+describe('addWalletIsBalanceLow()', async assert => {
+  const walletGen = (balance = 0, txcount = 0) => ({
+    balance,
+    txcount,
   })
+  const addWalletIsBalanceBelow2 = addWalletIsBalanceLow(2)
 
-  assert({
-    given: 'a balance equal to lowWalletBalanceBTC',
-    should: 'return false',
-    actual: isBalanceLow(1, 1),
-    expected: false,
-  })
+  {
+    const walletInfo = walletGen(3)
+    assert({
+      given: 'a lowBalanceAmount lower than balance property of walletInfo',
+      should: 'return walletInfo with correct isBalanceLow bool',
+      actual: addWalletIsBalanceBelow2(walletInfo),
+      expected: { ...walletInfo, isBalanceLow: false },
+    })
+  }
 
-  assert({
-    given: 'a balance below lowWalletBalanceBTC',
-    should: 'return true',
-    actual: isBalanceLow(1, 2),
-    expected: true,
-  })
+  {
+    const walletInfo = walletGen(2)
+    assert({
+      given: 'a lowBalanceAmount equal to balance property of walletInfo',
+      should: 'return walletInfo with correct isBalanceLow bool',
+      actual: addWalletIsBalanceBelow2(walletInfo),
+      expected: { ...walletInfo, isBalanceLow: false },
+    })
+  }
+
+  {
+    const walletInfo = walletGen(1)
+    assert({
+      given: 'a lowBalanceAmount higher than balance property of walletInfo',
+      should: 'return walletInfo with correct isBalanceLow bool',
+      actual: addWalletIsBalanceBelow2(walletInfo),
+      expected: { ...walletInfo, isBalanceLow: true },
+    })
+  }
 })

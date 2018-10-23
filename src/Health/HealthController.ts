@@ -56,7 +56,10 @@ const pickNetworkInfoKeys = pick(networkInfoKeys)
 const pickBlockchainInfoKeys = pick(blockchainInfoKeys)
 const pickWalletInfoKeys = pick(walletInfoKeys)
 
-export const isBalanceLow = (BTCbalance: number, BTCminBalance: number) => BTCbalance < BTCminBalance
+export const addWalletIsBalanceLow = (lowBalanceAmount: number) => (walletInfo: WalletInfo) => {
+  const { balance } = walletInfo
+  return balance < lowBalanceAmount ? { ...walletInfo, isBalanceLow: true } : { ...walletInfo, isBalanceLow: false }
+}
 
 @injectable()
 export class HealthController {
@@ -110,9 +113,7 @@ export class HealthController {
   }
 
   private async addBalanceLowBool(walletInfo: WalletInfo): Promise<WalletInfo> {
-    const { balance } = walletInfo
-    const balanceLow = isBalanceLow(balance, this.configuration.lowWalletBalanceBTC)
-    return { ...walletInfo, balanceLow }
+    return addWalletIsBalanceLow(this.configuration.lowWalletBalanceBTC)(walletInfo)
   }
 
   private async updateWalletInfo(walletInfo: WalletInfo): Promise<WalletInfo> {
