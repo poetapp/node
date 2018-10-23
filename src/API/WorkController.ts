@@ -63,7 +63,7 @@ export class WorkController {
   }
 
   async getWorksCountByFilters(worksFilters: WorksFilters = {}): Promise<number> {
-    this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
+    this.logger.trace({ method: 'getWorksCountByFilters', worksFilters }, 'Getting Work Counts by Filters from DB')
     const count = await this.collection.find(worksFilters, { projection: { _id: false } }).count()
     return count
   }
