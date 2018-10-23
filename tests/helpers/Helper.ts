@@ -1,4 +1,4 @@
-import { Claim } from '@po.et/poet-js'
+import { SignedVerifiableClaim } from '@po.et/poet-js'
 import fetch from 'node-fetch'
 import { promisify } from 'util'
 
@@ -36,7 +36,7 @@ export class Client {
     return fetch(this.url + '/works/?publicKey=' + publicKey)
   }
 
-  postWork(claim: Claim) {
+  postWork(claim: SignedVerifiableClaim) {
     return fetch(this.url + '/works/', {
       method: 'POST',
       headers: {

@@ -1,3 +1,4 @@
+import { getVerifiableClaimSigner, VerifiableClaimSigner } from '@po.et/poet-js'
 import { injectable, Container } from 'inversify'
 import { MongoClient, Db } from 'mongodb'
 import * as Pino from 'pino'
@@ -64,5 +65,6 @@ export class API {
     this.container.bind<HealthControllerConfiguration>('HealthControllerConfiguration').toConstantValue({
       downloadMaxAttempts: this.configuration.downloadMaxAttempts,
     })
+    this.container.bind<VerifiableClaimSigner>('VerifiableClaimSigner').toConstantValue(getVerifiableClaimSigner())
   }
 }

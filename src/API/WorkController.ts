@@ -9,7 +9,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 interface WorksFilters {
-  readonly publicKey?: string
+  readonly issuer?: string
   readonly offset?: number
   readonly limit?: number
 }

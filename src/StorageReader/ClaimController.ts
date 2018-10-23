@@ -1,4 +1,4 @@
-import { Claim, isValidClaim } from '@po.et/poet-js'
+import { SignedVerifiableClaim, VerifiableClaimSigner } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
@@ -34,13 +34,15 @@ export class ClaimController {
   private readonly messaging: Messaging
   private readonly ipfs: IPFS
   private readonly configuration: ClaimControllerConfiguration
+  private readonly verifiableClaimSigner: VerifiableClaimSigner
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
     @inject('IPFS') ipfs: IPFS,
-    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration
+    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
+    @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
@@ -48,6 +50,7 @@ export class ClaimController {
     this.configuration = configuration
     this.messaging = messaging
     this.ipfs = ipfs
+    this.verifiableClaimSigner = verifiableClaimSigner
   }
 
   async download(ipfsFileHashes: ReadonlyArray<string>) {
@@ -146,7 +149,7 @@ export class ClaimController {
       } else throw error
     }
 
-    const logSuccess = (x: { claim: Claim; entry: Entry }) => {
+    const logSuccess = (x: { claim: SignedVerifiableClaim; entry: Entry }) => {
       logger.trace(x, 'Successfully downloaded entry')
       logger.info({ claimId: x.claim.id }, 'Successfully downloaded entry')
       return x
@@ -257,7 +260,8 @@ export class ClaimController {
     const serialized = await downloadClaim(ipfsFileHash)
     const claim = parseClaim(ipfsFileHash, serialized)
 
-    if (!isValidClaim(claim)) throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidClaim, new Date().getTime())
+    if (!(await this.verifiableClaimSigner.isValidSignedVerifiableClaim(claim)))
+      throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidClaim, new Date().getTime())
 
     logger.trace({ ipfsFileHash, claim }, 'Finished claim download')
 
@@ -290,7 +294,7 @@ export class ClaimController {
     }
   }
 
-  private updateEntryPairs = async ({ entry, claim, ...rest }: { claim: Claim; entry: Entry }) => {
+  private updateEntryPairs = async ({ entry, claim, ...rest }: { claim: SignedVerifiableClaim; entry: Entry }) => {
     const logger = this.logger.child({ method: 'updateEntryPairs' })
     logger.trace('started updating hash pairs')
 
@@ -310,7 +314,7 @@ export class ClaimController {
     }
   }
 
-  private publishEntryDownload = async ({ entry, claim, ...rest }: { claim: Claim; entry: Entry }) => {
+  private publishEntryDownload = async ({ entry, claim, ...rest }: { claim: SignedVerifiableClaim; entry: Entry }) => {
     const logger = this.logger.child({ method: 'publishEntryDownload' })
     logger.trace('started publishing')
 
