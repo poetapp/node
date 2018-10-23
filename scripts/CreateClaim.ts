@@ -1,7 +1,6 @@
 /* tslint:disable:no-console */
-
 import { Client } from '../tests/helpers/Helper'
-import { createACDClaim } from '../tests/helpers/Script'
+import { createACDClaim } from '../tests/helpers/utils'
 
 const main = async () => {
   const attributes = {
