@@ -20,7 +20,7 @@ type calcPath = (relPath: string) => string
 const calcPath: calcPath = relPath => path.resolve(__dirname, relPath)
 
 const files = {
-  loremIpsumText: calcPath('../../fixtures/files/text-english.txt'),
+  loremIpsumText: calcPath('../../fixtures/files/text-utf8-ascii.txt'),
 }
 
 describe('POST /files', async assert => {
@@ -28,7 +28,7 @@ describe('POST /files', async assert => {
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   {
-    const given = 'a basic text file and post request'
+    const given = 'a utf8 ascii text file and post request'
     const should = 'return a hash that can be used to verify the file'
     const file = fs.readFileSync(files.loremIpsumText).toString()
     const fileStream = fs.createReadStream(files.loremIpsumText)
