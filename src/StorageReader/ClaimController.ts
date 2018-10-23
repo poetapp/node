@@ -228,7 +228,7 @@ export class ClaimController {
     const claim = parseClaim(ipfsFileHash, serialized)
 
     if (!(await this.verifiableClaimSigner.isValidSignedVerifiableClaim(claim)))
-      throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidClaim)
+      throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidSignedVerifiableClaim)
 
     logger.trace({ ipfsFileHash, claim }, 'Finished claim download')
 
