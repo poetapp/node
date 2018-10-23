@@ -28,7 +28,7 @@ const signACDWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyAC
 const signEAPWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyEAP })
 const signMAWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyMA })
 
-const createACDClaim = pipeP(
+export const createACDClaim = pipeP(
   createACDWorkClaim,
   signACDWorkClaim
 )
