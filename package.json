@@ -72,6 +72,7 @@
     "@types/mongodb": "3.1.12",
     "@types/node-fetch": "1.6.9",
     "@types/pino": "4.16.1",
+    "@types/ramda": "0.25.39",
     "@types/sinon": "5.0.5",
     "babel-cli": "6.26.0",
     "babel-plugin-module-resolver": "3.1.1",
@@ -82,9 +83,9 @@
     "riteway": "3.0.0",
     "semantic-release": "15.10.5",
     "sinon": "7.0.0",
+    "travis-deploy-once": "5.0.9",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.6.0",
-    "travis-deploy-once": "5.0.9",
     "typescript": "3.1.3"
   }
 }

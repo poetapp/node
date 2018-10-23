@@ -1,7 +1,4 @@
 /* tslint:disable:no-console */
-import { configureCreateVerifiableClaim, getVerifiableClaimSigner } from '@po.et/poet-js'
-import { pipeP } from 'ramda'
-
 import {
   AStudyInScarlet,
   TheMurdersInTheRueMorgue,
@@ -16,30 +13,7 @@ import {
   OnThePulseOfMorning,
   ABraveAndStartlingTruth,
 } from './Claims'
-import { issuerACD, issuerEAP, issuerMA, privateKeyACD, privateKeyEAP, privateKeyMA } from './Keys'
-
-const { configureSignVerifiableClaim } = getVerifiableClaimSigner()
-
-const createACDWorkClaim = configureCreateVerifiableClaim({ issuer: issuerACD })
-const createEAPWorkClaim = configureCreateVerifiableClaim({ issuer: issuerEAP })
-const createMAWorkClaim = configureCreateVerifiableClaim({ issuer: issuerMA })
-
-const signACDWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyACD })
-const signEAPWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyEAP })
-const signMAWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyMA })
-
-const createACDClaim = pipeP(
-  createACDWorkClaim,
-  signACDWorkClaim
-)
-const createEAPClaim = pipeP(
-  createEAPWorkClaim,
-  signEAPWorkClaim
-)
-const createMAClaim = pipeP(
-  createMAWorkClaim,
-  signMAWorkClaim
-)
+import { createACDClaim, createEAPClaim, createMAClaim } from './utils'
 
 const setUpClaims = async () => {
   console.log(await createACDClaim(AStudyInScarlet.claim))
