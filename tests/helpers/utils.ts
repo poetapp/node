@@ -1,7 +1,10 @@
 /* tslint:disable:no-relative-imports */
+import { configureCreateVerifiableClaim, getVerifiableClaimSigner } from '@po.et/poet-js'
+import { pipeP } from 'ramda'
 import { promisify } from 'util'
 
 import { app } from '../../src/app'
+import { issuerACD, issuerEAP, issuerMA, privateKeyACD, privateKeyEAP, privateKeyMA } from './Keys'
 import { dbHelper } from './database'
 
 export const runtimeId = () => `${process.pid}-${new Date().getMilliseconds()}-${Math.floor(Math.random() * 10)}`
@@ -46,3 +49,26 @@ export const setUpServerAndDb = async ({
   await delay(5 * 1000)
   return { db, server }
 }
+
+const { configureSignVerifiableClaim } = getVerifiableClaimSigner()
+
+const createACDWorkClaim = configureCreateVerifiableClaim({ issuer: issuerACD })
+const createEAPWorkClaim = configureCreateVerifiableClaim({ issuer: issuerEAP })
+const createMAWorkClaim = configureCreateVerifiableClaim({ issuer: issuerMA })
+
+const signACDWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyACD })
+const signEAPWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyEAP })
+const signMAWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyMA })
+
+export const createACDClaim = pipeP(
+  createACDWorkClaim,
+  signACDWorkClaim
+)
+export const createEAPClaim = pipeP(
+  createEAPWorkClaim,
+  signEAPWorkClaim
+)
+export const createMAClaim = pipeP(
+  createMAWorkClaim,
+  signMAWorkClaim
+)
