@@ -1,3 +1,4 @@
+import { getVerifiableClaimSigner, VerifiableClaimSigner } from '@po.et/poet-js'
 import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
@@ -93,6 +94,7 @@ export class StorageReader {
     })
 
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
+    this.container.bind<VerifiableClaimSigner>('VerifiableClaimSigner').toConstantValue(getVerifiableClaimSigner())
   }
 
   private async createIndices() {
