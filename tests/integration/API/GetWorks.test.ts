@@ -103,7 +103,7 @@ describe('GET /works', async assert => {
     assert({
       given,
       should: 'return count in the header X-Total-Count',
-      actual: Number.parseInt(await response.headers.get('X-Total-Count')) >= 13,
+      actual: Number.parseInt(await response.headers.get('X-Total-Count'), 10) >= 13,
       expected: true,
     })
 
