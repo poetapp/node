@@ -2,7 +2,7 @@
 import { isSignedVerifiableClaim, PoetBlockAnchor } from '@po.et/poet-js'
 import { Connection, connect, Channel } from 'amqplib'
 
-import { ClaimIPFSHashPair, isClaimIPFSHashPair, isIPFSHashFailure, IPFSHashFailure } from 'Interfaces'
+import { ClaimIPFSHashPair, isClaimIPFSHashPair, IPFSHashFailure } from 'Interfaces'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
