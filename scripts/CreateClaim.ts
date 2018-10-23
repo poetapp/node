@@ -8,7 +8,7 @@ const main = async () => {
     author: process.argv[3] || 'the tester',
   }
   const client = new Client()
-  const claim = await createACDClaim(attributes);
+  const claim = await createACDClaim(attributes)
 
   console.log(JSON.stringify(claim, null, 2))
 
