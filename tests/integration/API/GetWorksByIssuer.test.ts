@@ -1,5 +1,5 @@
 /* tslint:disable:no-relative-imports */
-import { Claim, isClaim } from '@po.et/poet-js'
+import { SignedVerifiableClaim, isSignedVerifiableClaim } from '@po.et/poet-js'
 import { all, pickBy, pluck, uniq } from 'ramda'
 import { describe } from 'riteway'
 
@@ -26,8 +26,8 @@ const NODE_PORT = '28081'
 const getWorkFromNode = getWork(NODE_PORT)
 const postWorkToNode = postWorkWithDelay(NODE_PORT)
 
-const setUpExistingClaims = async (claims: ReadonlyArray<Claim>) =>
-  await Promise.all(claims.map(async (claim: Claim) => postWorkToNode(claim)))
+const setUpExistingClaims = async (claims: ReadonlyArray<SignedVerifiableClaim>) =>
+  await Promise.all(claims.map(async (claim: SignedVerifiableClaim) => postWorkToNode(claim)))
 
 const works = [
   ABraveAndStartlingTruth,
@@ -48,20 +48,20 @@ const works = [
 const getClaimWithoutTimestamp = (claim: any) => pickBy((v: any, k: string) => k !== 'timestamp', claim)
 const getClaimsWithoutTimestamps = (claims: ReadonlyArray<any>) => claims.map(getClaimWithoutTimestamp)
 
-describe('GET /works?publicKey=:publicKey', async assert => {
+describe('GET /works?issuer=:issuer', async assert => {
   // Setup Mongodb and the app server
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   // Submit claims
   await setUpExistingClaims(works)
 
-  const getPublicKeys = (claims: any) => pluck('publicKey')(claims)
+  const getissuers = (claims: any) => pluck('issuer')(claims)
 
   {
-    const given = 'a call to GET /works for the MA publicKey'
-    const response = await getWorkFromNode(`?publicKey=${ABraveAndStartlingTruth.publicKey}`)
+    const given = 'a call to GET /works for the MA issuer'
+    const response = await getWorkFromNode(`?issuer=${encodeURIComponent(ABraveAndStartlingTruth.issuer)}`)
     const claims = await response.json()
-    const publicKeys = uniq(getPublicKeys(claims))
+    const issuers = uniq(getissuers(claims))
     const claimsWithoutTimestamps = getClaimsWithoutTimestamps(claims)
 
     assert({
@@ -80,16 +80,16 @@ describe('GET /works?publicKey=:publicKey', async assert => {
 
     assert({
       given,
-      should: `return claims for the publicKey`,
+      should: `return claims for the issuer`,
       actual: claims.length,
       expected: 10,
     })
 
     assert({
       given,
-      should: 'return only claims created by that publicKey',
-      actual: publicKeys,
-      expected: [ABraveAndStartlingTruth.publicKey],
+      should: 'return only claims created by that issuer',
+      actual: issuers,
+      expected: [ABraveAndStartlingTruth.issuer],
     })
 
     assert({
@@ -102,16 +102,16 @@ describe('GET /works?publicKey=:publicKey', async assert => {
     assert({
       given,
       should: 'return only signedClaims',
-      actual: all(isClaim)(claimsWithoutTimestamps),
+      actual: all(isSignedVerifiableClaim)(claimsWithoutTimestamps),
       expected: true,
     })
   }
 
   {
-    const given = 'a call to GET /works for the EAP publicKey'
-    const response = await getWorkFromNode(`?publicKey=${TheRaven.publicKey}`)
+    const given = 'a call to GET /works for the EAP issuer'
+    const response = await getWorkFromNode(`?issuer=${TheRaven.issuer}`)
     const claims = await response.json()
-    const publicKeys = uniq(getPublicKeys(claims))
+    const issuers = uniq(getissuers(claims))
 
     assert({
       given,
@@ -122,17 +122,17 @@ describe('GET /works?publicKey=:publicKey', async assert => {
 
     assert({
       given,
-      should: 'return only claims created by that publicKey',
-      actual: publicKeys,
-      expected: [TheRaven.publicKey],
+      should: 'return only claims created by that issuer',
+      actual: issuers,
+      expected: [TheRaven.issuer],
     })
   }
 
   {
-    const response = await getWorkFromNode('?publicKey=')
+    const response = await getWorkFromNode('?issuer=')
 
     assert({
-      given: 'a call to GET /works for a missing publicKey value',
+      given: 'a call to GET /works for a missing issuer value',
       should: 'return 422',
       actual: response.status,
       expected: 422,
@@ -140,8 +140,8 @@ describe('GET /works?publicKey=:publicKey', async assert => {
   }
 
   {
-    const given = 'a publicKey with no associated claims'
-    const response = await getWorkFromNode('?publicKey=unknown')
+    const given = 'a issuer with no associated claims'
+    const response = await getWorkFromNode('?issuer=unknown')
     const claims = await response.json()
 
     assert({

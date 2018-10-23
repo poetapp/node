@@ -39,8 +39,8 @@ describe('GET /works/:id', async assert => {
     assert({
       given: 'given an id of a submitted work',
       should: 'return the entire claim',
-      actual: theRavenClaim.attributes.name,
-      expected: TheRaven.attributes.name,
+      actual: theRavenClaim.claim,
+      expected: TheRaven.claim,
     })
 
     const invalidResponse = await getWorkFromNode('1234')
