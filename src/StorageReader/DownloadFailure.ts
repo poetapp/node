@@ -5,7 +5,7 @@ export enum FailureType {
 
 export enum FailureReason {
   InvalidJson = 'INVALID_JSON',
-  InvalidClaim = 'INVALID_CLAIM',
+  InvalidSignedVerifiableClaim = 'INVALID_SIGNED_VERIFIABLE_CLAIM',
   IPFSGeneric = 'IPFS_GENERIC',
   IPFSTimeout = 'IPFS_TIMEOUT',
 }

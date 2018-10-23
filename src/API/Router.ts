@@ -118,13 +118,16 @@ export class Router {
 
     this.logger.trace({ body }, 'POST /works')
 
-    if (!isSignedVerifiableClaim(body)) throw new IllegalArgumentException('Request Body must be a Claim.')
+    if (!isSignedVerifiableClaim(body))
+      throw new IllegalArgumentException('Request Body must be a Signed Verifiable Claim.')
 
     if (!isWork(body))
-      throw new IllegalArgumentException(`Claim's type must be ${ClaimType.Work}, not ${Object(body).type}`)
+      throw new IllegalArgumentException(
+        `Signed Verifiable Claim's type must be ${ClaimType.Work}, not ${Object(body).type}`
+      )
 
     if (!(await this.verifiableClaimSigner.isValidSignedVerifiableClaim(body)))
-      throw new IllegalArgumentException("Claim's signature is incorrect.")
+      throw new IllegalArgumentException("Signed Verifiable Claim's signature is incorrect.")
 
     await this.workController.create(body)
 

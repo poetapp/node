@@ -71,7 +71,7 @@ describe('POST /works', async assert => {
     })
 
     const actual = await response.text()
-    const expected = "Claim's signature is incorrect."
+    const expected = "Signed Verifiable Claim's signature is incorrect."
 
     assert({
       given: 'POST /works with an invalidly signed claim',
