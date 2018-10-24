@@ -79,29 +79,45 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     })
   }
 
-  // Make sure node has more regtest coins than LOW_WALLET_BALANCE_IN_BITCOIN.
-  await ensureBitcoinBalanceAboveMin(bitcoindClient, LOW_WALLET_BALANCE_IN_BITCOIN)
+  // TODO: Test that isBalanceLow returns true when balance is below LOW_WALLET_BALANCE_IN_BITCOIN: 
+  // Currently if other tests run first they will likely raise the wallet balance above the minimum and return false.
+  // 
+  // {
+  //   const response = await getHealth(NODE_PORT)
+  //   const healthData = await response.json()
+  // 
+  //   const { walletInfo: isBalanceLow } = healthData
+  //   assert({
+  //     given: `a request to the health endpoint while the bitcoin balance is below LOW_WALLET_BALANCE_BTC`,
+  //     should: 'return walletInfo property isBalanceLow as true',
+  //     actual: isBalanceLow,
+  //     expected: true,
+  //   })
+  // }
+  // 
+  // // Make sure node has more regtest coins than LOW_WALLET_BALANCE_IN_BITCOIN.
+  // await ensureBitcoinBalanceAboveMin(bitcoindClient, LOW_WALLET_BALANCE_IN_BITCOIN)
 
-  // Make sure health service runs again.
-  await delay(5 * 1000)
+  // // Make sure health service runs again.
+  // await delay(5 * 1000)
 
-  {
-    // Check isBalanceLow is false.
+  // {
+  //   // Check isBalanceLow is false.
 
-    const response = await getHealth(NODE_PORT)
-    const healthData = await response.json()
+  //   const response = await getHealth(NODE_PORT)
+  //   const healthData = await response.json()
 
-    const {
-      walletInfo: { isBalanceLow },
-    } = healthData
+  //   const {
+  //     walletInfo: { isBalanceLow },
+  //   } = healthData
 
-    assert({
-      given: `a request to the health endpoint while the bitcoin balance is above LOW_WALLET_BALANCE_BTC`,
-      should: 'return walletInfo property isBalanceLow as false',
-      actual: isBalanceLow,
-      expected: false,
-    })
-  }
+  //   assert({
+  //     given: `a request to the health endpoint while the bitcoin balance is above LOW_WALLET_BALANCE_BTC`,
+  //     should: 'return walletInfo property isBalanceLow as false',
+  //     actual: isBalanceLow,
+  //     expected: false,
+  //   })
+  // }
 
   await server.stop()
   await db.teardown()

@@ -102,7 +102,7 @@ const defaultConfiguration: Configuration = {
   anchorIntervalInSeconds: 30,
 
   healthIntervalInSeconds: 30,
-  lowWalletBalanceInBitcoin: 500,
+  lowWalletBalanceInBitcoin: 1,
 
   downloadIntervalInSeconds: 5,
   downloadRetryDelayInMinutes: 10,
