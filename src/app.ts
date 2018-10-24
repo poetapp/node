@@ -228,7 +228,7 @@ export async function app(localVars: any = {}) {
     bitcoinUrl: configuration.bitcoinUrl,
     bitcoinPort: configuration.bitcoinPort,
     bitcoinNetwork: configuration.bitcoinNetwork,
-    lowWalletBalanceBTC: configuration.lowWalletBalanceBTC,
+    lowWalletBalanceInBitcoin: configuration.lowWalletBalanceInBitcoin,
     ipfsUrl: configuration.ipfsUrl,
     bitcoinUsername: configuration.bitcoinUsername,
     bitcoinPassword: configuration.bitcoinPassword,

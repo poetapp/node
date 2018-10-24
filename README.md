@@ -124,11 +124,6 @@ This is what the default configuration looks like:
   minimumBlockHeight: 1253828,
   blockchainReaderIntervalInSeconds: 5,
 
-  // insightUrl will soon be deprecated
-  insightUrl: 'https://test-insight.bitpay.com/api',
-  bitcoinAddress: '',
-  bitcoinAddressPrivateKey: '',
-
   enableTimestamping: false,
   anchorIntervalInSeconds: 30,
   batchCreationIntervalInSeconds: 600
