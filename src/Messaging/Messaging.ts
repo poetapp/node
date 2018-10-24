@@ -1,5 +1,4 @@
 /* tslint:disable:no-console */
-import { isSignedVerifiableClaim, PoetBlockAnchor } from '@po.et/poet-js'
 import { Connection, connect, Channel } from 'amqplib'
 
 import { ClaimIPFSHashPair, isClaimIPFSHashPair } from 'Interfaces'
