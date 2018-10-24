@@ -1,7 +1,7 @@
 /* tslint:disable:no-relative-imports */
 import * as fs from 'fs'
 import * as path from 'path'
-import { prop, pipeP } from 'ramda'
+import { prop, pipeP, identity } from 'ramda'
 import { describe, Try } from 'riteway'
 import { configurePostFileStream, getResponseJson } from '../../helpers/files'
 import { configureFetchFile } from '../../helpers/ipfs'
@@ -16,8 +16,8 @@ const postFileStream = configurePostFileStream(NODE_PORT)
 
 const getHash = prop('hash')
 
-type toPromise = (fn: <A,B>(v: A) => B) => (v: unknown) => Promise<unknown>
-const toPromise: toPromise = (fn) => (v) => Promise.resolve(fn(v))
+type toPromise = <A, B>(fn?: (a: A) => B) => (v: A) => Promise<B>
+const toPromise: toPromise = (fn = identity) => v => Promise.resolve(fn(v))
 
 type calcPath = (relPath: string) => string
 const calcPath: calcPath = relPath => path.resolve(__dirname, relPath)
