@@ -1,9 +1,9 @@
 /* tslint:disable:no-relative-imports */
 import * as fs from 'fs'
 import * as path from 'path'
-import { prop } from 'ramda'
-import { describe } from 'riteway'
-import { configurePostFileStream } from '../../helpers/files'
+import { prop, pipeP } from 'ramda'
+import { describe, Try } from 'riteway'
+import { configurePostFileStream, getResponseJson } from '../../helpers/files'
 import { configureFetchFile } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
 
@@ -14,43 +14,36 @@ const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 const fetchIPFSFile = configureFetchFile({ ipfs: { url: IPFS_URL } })
 const postFileStream = configurePostFileStream(NODE_PORT)
 
-const getResponseHash = prop('hash')
+const getHash = prop('hash')
+
+type toPromise = (fn: <A,B>(v: A) => B) => (v: unknown) => Promise<unknown>
+const toPromise: toPromise = (fn) => (v) => Promise.resolve(fn(v))
 
 type calcPath = (relPath: string) => string
 const calcPath: calcPath = relPath => path.resolve(__dirname, relPath)
 
 const files = {
-  utf8AsciiText: calcPath('../../fixtures/files/text-utf8-ascii.txt'),
+  utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
+
+const getResponseJSONHash = pipeP(getResponseJson, toPromise(getHash))
+
+const testResponseHash = pipeP(postFileStream, getResponseJSONHash, fetchIPFSFile)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   {
-    const given = 'a utf8 ascii text file and post request'
-    const should = 'return a hash that can be used to verify the file'
-    const file = fs.readFileSync(files.utf8AsciiText).toString()
-    const fileStream = fs.createReadStream(files.utf8AsciiText)
+    const expected = fs.readFileSync(files.utf8Markdown).toString()
+    const fileStream = fs.createReadStream(files.utf8Markdown)
 
-    try {
-      const postResponse = await postFileStream(fileStream)
-      const getResponse = await fetchIPFSFile(getResponseHash(postResponse))
-
-      assert({
-        given,
-        should,
-        actual: getResponse,
-        expected: file,
-      })
-    } catch (error) {
-      assert({
-        given,
-        should,
-        actual: error,
-        expected: file,
-      })
-    }
+    assert({
+      given: 'a utf8 mardown file',
+      should: 'return a hash that can be used to verify the file',
+      actual: Try(testResponseHash, fileStream),
+      expected,
+    })
   }
 
   await server.stop()

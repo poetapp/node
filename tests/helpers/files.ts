@@ -1,13 +1,13 @@
 /* tslint:disable:no-relative-imports */
 import * as FormData from 'form-data'
 import { ReadStream } from 'fs'
-import fetch from 'node-fetch'
+import fetch, { Response }from 'node-fetch'
 
 const FILES_PATH = 'files'
 
 const baseUrl = (port: string, host: string = 'localhost') => `http://${host}:${port}`
 
-type post = (url: string) => (body: any) => Promise<any>
+type post = (url: string) => (body: any) => Promise<Response>
 const post: post = url => body =>
   fetch(url, {
     method: 'POST',
@@ -17,6 +17,9 @@ const post: post = url => body =>
     },
     body,
   })
+
+type getResponseJson = (response: Response) => Promise<any>
+export const getResponseJson: getResponseJson = (response) => response.json()
 
 type createForm = (options?: any) => () => FormData
 const createForm: createForm = options => () => new FormData(options)
