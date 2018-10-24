@@ -3,8 +3,7 @@ import { isNil } from 'ramda'
 import { describe } from 'riteway'
 
 import { app } from '../../src/app'
-import { getHealth } from '../helpers/health'
-import { getMetrics } from '../helpers/metrics'
+import { getHealth, getMetrics } from '../helpers/endpoints'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
