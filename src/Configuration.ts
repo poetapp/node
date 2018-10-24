@@ -34,7 +34,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly anchorIntervalInSeconds: number
 
   readonly healthIntervalInSeconds: number
-  readonly lowWalletBalanceBTC: number
+  readonly lowWalletBalanceInBitcoin: number
 
   readonly downloadIntervalInSeconds: number
   readonly downloadRetryDelayInMinutes: number
@@ -102,7 +102,7 @@ const defaultConfiguration: Configuration = {
   anchorIntervalInSeconds: 30,
 
   healthIntervalInSeconds: 30,
-  lowWalletBalanceBTC: 500,
+  lowWalletBalanceInBitcoin: 1,
 
   downloadIntervalInSeconds: 5,
   downloadRetryDelayInMinutes: 10,

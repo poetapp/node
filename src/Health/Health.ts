@@ -93,7 +93,7 @@ export class Health {
       ipfsUrl: this.configuration.ipfsUrl,
     })
     this.container.bind<HealthControllerConfiguration>('HealthControllerConfiguration').toConstantValue({
-      lowWalletBalanceBTC: this.configuration.lowWalletBalanceBTC,
+      lowWalletBalanceInBitcoin: this.configuration.lowWalletBalanceInBitcoin,
     })
   }
 }

@@ -15,7 +15,7 @@ enum LogTypes {
 }
 
 export interface HealthControllerConfiguration {
-  readonly lowWalletBalanceBTC: number
+  readonly lowWalletBalanceInBitcoin: number
 }
 
 interface BlockchainInfo {
@@ -113,7 +113,7 @@ export class HealthController {
   }
 
   private addWalletIsBalanceLow(walletInfo: WalletInfo): WalletInfo {
-    return addWalletIsBalanceLow(this.configuration.lowWalletBalanceBTC)(walletInfo)
+    return addWalletIsBalanceLow(this.configuration.lowWalletBalanceInBitcoin)(walletInfo)
   }
 
   private async updateWalletInfo(walletInfo: WalletInfo): Promise<WalletInfo> {
