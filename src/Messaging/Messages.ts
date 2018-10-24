@@ -1,5 +1,5 @@
-import { isSignedVerifiableClaim, PoetBlockAnchor } from '@po.et/poet-js'
-import { pipe, not, allPass } from 'ramda'
+import { PoetBlockAnchor } from '@po.et/poet-js'
+import * as Joi from 'joi'
 
 export interface BlockDownloaded {
   readonly block: LightBlock
@@ -12,16 +12,24 @@ export interface LightBlock {
   readonly height: number
 }
 
-const isNotClaim = pipe(
-  isSignedVerifiableClaim,
-  not
-)
+const PoetBlockAnchorJoiSchema = Joi.object({
+  prefix: Joi.string().required(),
+  version: Joi.array()
+    .length(2)
+    .items(Joi.number()),
+  storageProtocol: Joi.number().required(),
+  ipfsDirectoryHash: Joi.string().required(),
+  transactionId: Joi.string().required(),
+  blockHeight: Joi.number().required(),
+  blockHash: Joi.string().required(),
+})
 
-const allAreClaims = (array: ReadonlyArray<any>) => !array.some(isNotClaim)
+const BlockDownloadedJoiSchema = Joi.object({
+  block: Joi.object().required(),
+  poetBlockAnchors: Joi.array()
+    .items(PoetBlockAnchorJoiSchema)
+    .optional(),
+})
 
-export const isArrayOfPoetBlockAnchor = allPass([Array.isArray, allAreClaims])
-
-export const isBlockDownloaded = (messageContent: any): messageContent is BlockDownloaded => {
-  const { poetBlockAnchors } = messageContent
-  return isArrayOfPoetBlockAnchor(poetBlockAnchors)
-}
+export const isBlockDownloaded = (messageContent: any): messageContent is BlockDownloaded =>
+  Joi.validate(messageContent, BlockDownloadedJoiSchema).error === null
