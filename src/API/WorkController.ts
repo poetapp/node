@@ -9,7 +9,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 interface WorksFilters {
-  readonly publicKey?: string
+  readonly issuer?: string
   readonly offset?: number
   readonly limit?: number
 }
@@ -60,6 +60,12 @@ export class WorkController {
       .toArray()
     const count = await this.collection.find(filters, { projection: { _id: false } }).count()
     return { count, works }
+  }
+
+  async getWorksCountByFilters(worksFilters: WorksFilters = {}): Promise<number> {
+    this.logger.trace({ method: 'getWorksCountByFilters', worksFilters }, 'Getting Work Counts by Filters from DB')
+    const count = await this.collection.find(worksFilters, { projection: { _id: false } }).count()
+    return count
   }
 
   async create(work: Work): Promise<void> {

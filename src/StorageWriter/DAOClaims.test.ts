@@ -1,4 +1,4 @@
-import { Claim } from '@po.et/poet-js'
+import { SignedVerifiableClaim } from '@po.et/poet-js'
 import { FindAndModifyWriteOpResultObject } from 'mongodb'
 import { describe, Try } from 'riteway'
 
@@ -26,7 +26,7 @@ describe('DOAClaims.getClaimFromFindAndUpdateResponse', async assert => {
   }
 
   {
-    const claim = { id: 'bar' } as Claim
+    const claim = { id: 'bar' } as SignedVerifiableClaim
     const response: FindAndModifyWriteOpResultObject = {
       value: {
         claim,
@@ -57,7 +57,7 @@ describe('DOAClaims.throwIfClaimNotFound', async assert => {
   })
 
   {
-    const claim: Claim = { id: 'bar' } as Claim
+    const claim: SignedVerifiableClaim = { id: 'bar' } as SignedVerifiableClaim
     assert({
       given: 'a claim',
       should: 'return the claim',
