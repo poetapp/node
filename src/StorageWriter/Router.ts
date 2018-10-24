@@ -1,4 +1,4 @@
-import { isClaim } from '@po.et/poet-js'
+import { isSignedVerifiableClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { anyPass } from 'ramda'
@@ -48,7 +48,8 @@ export class Router {
 
     const claim = JSON.parse(messageContent)
 
-    if (!isClaim(claim)) logger.error(`Received a ${this.exchange.newClaim} message, but the content isn't a claim.`)
+    if (!isSignedVerifiableClaim(claim))
+      logger.error(`Received a ${this.exchange.newClaim} message, but the content isn't a claim.`)
 
     try {
       await this.claimController.create(claim)
