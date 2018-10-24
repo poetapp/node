@@ -12,7 +12,7 @@ const doubleFoo = (x: Foo): Foo => ({ foo: double(x.foo) })
 
 describe('toPromise', async (assert: any) => {
   const given = 'given a function and a value'
-  const should = 'apply the  value to the function'
+  const should = 'apply the value to the function'
 
   {
     const value = 10
