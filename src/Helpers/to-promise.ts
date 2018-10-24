@@ -1,2 +1,5 @@
 import { identity } from 'ramda'
-export const toPromise = <A, B>(fn: (a: A) => B = identity) => (v: A) => Promise.resolve(fn(v))
+
+type toPromise = <A, B>(fn?: (a: A) => B) => (v: A) => Promise<B>
+
+export const toPromise: toPromise = (fn = identity) => v => Promise.resolve(fn(v))
