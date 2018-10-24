@@ -1,4 +1,4 @@
-import { isClaim, PoetBlockAnchor } from '@po.et/poet-js'
+import { isSignedVerifiableClaim, PoetBlockAnchor } from '@po.et/poet-js'
 import { pipe, not, allPass } from 'ramda'
 
 export interface BlockDownloaded {
@@ -12,13 +12,16 @@ export interface LightBlock {
   readonly height: number
 }
 
+const isNotClaim = pipe(
+  isSignedVerifiableClaim,
+  not
+)
+
+const allAreClaims = (array: ReadonlyArray<any>) => !array.some(isNotClaim)
+
+export const isArrayOfPoetBlockAnchor = allPass([Array.isArray, allAreClaims])
+
 export const isBlockDownloaded = (messageContent: any): messageContent is BlockDownloaded => {
   const { poetBlockAnchors } = messageContent
-
-  const isNotClaim = pipe(
-    isClaim,
-    not
-  )
-
-  return allPass([Array.isArray(poetBlockAnchors), !poetBlockAnchors.some(isNotClaim)])
+  return isArrayOfPoetBlockAnchor(poetBlockAnchors)
 }
