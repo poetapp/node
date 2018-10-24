@@ -30,7 +30,7 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     EXCHANGE_PREFIX: PREFIX,
     LOW_WALLET_BALANCE_IN_BITCOIN,
     HEALTH_INTERVAL_IN_SECONDS: 1,
-  });
+  })
 
   // Allow everything to finish starting.
   await delay(5 * 1000)
@@ -91,7 +91,9 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     const response = await getHealth(NODE_PORT)
     const healthData = await response.json()
 
-    const { walletInfo: { isBalanceLow } } = healthData
+    const {
+      walletInfo: { isBalanceLow },
+    } = healthData
 
     assert({
       given: `a request to the health endpoint while the bitcoin balance is above LOW_WALLET_BALANCE_BTC`,
