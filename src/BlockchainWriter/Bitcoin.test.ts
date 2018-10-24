@@ -51,7 +51,11 @@ describe('Bitcoin.getData', async assert => {
     }
 
     testGetData(poetAnchor)
-    testGetData({ ...poetAnchor, prefix: PREFIX_BARD, ipfsDirectoryHash: 'Qmed52rzQ2C71mZbLscqQBQEhqcYZ1qjDX3Ugm6UHTasCY' })
+    testGetData({
+      ...poetAnchor,
+      prefix: PREFIX_BARD,
+      ipfsDirectoryHash: 'Qmed52rzQ2C71mZbLscqQBQEhqcYZ1qjDX3Ugm6UHTasCY',
+    })
     testGetData({ ...poetAnchor, prefix: PREFIX_BARD, version: [2, 1] })
     testGetData({
       ...poetAnchor,
