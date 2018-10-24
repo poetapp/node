@@ -9,7 +9,7 @@ import { LoggingConfiguration, BitcoinRPCConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { HealthController } from './HealthController'
+import { HealthController, HealthControllerConfiguration } from './HealthController'
 import { HealthService, HealthServiceConfiguration } from './HealthService'
 import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
@@ -18,6 +18,7 @@ export interface HealthConfiguration
   extends LoggingConfiguration,
     BitcoinRPCConfiguration,
     HealthServiceConfiguration,
+    HealthControllerConfiguration,
     IPFSConfiguration {
   readonly dbUrl: string
   readonly rabbitmqUrl: string
@@ -90,6 +91,9 @@ export class Health {
     this.container.bind<IPFS>('IPFS').to(IPFS)
     this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
       ipfsUrl: this.configuration.ipfsUrl,
+    })
+    this.container.bind<HealthControllerConfiguration>('HealthControllerConfiguration').toConstantValue({
+      lowWalletBalanceBTC: this.configuration.lowWalletBalanceBTC,
     })
   }
 }
