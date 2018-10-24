@@ -3,11 +3,21 @@ import { isNil } from 'ramda'
 import { describe } from 'riteway'
 
 import { app } from '../../src/app'
+import { ensureBitcoinBalanceAboveMin } from '../helpers/bitcoin'
 import { getHealth } from '../helpers/health'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
+const Client = require('bitcoin-core')
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
+const LOW_WALLET_BALANCE_IN_BITCOIN = 250
+const bitcoindClient = new Client({
+  host: process.env.BITCOIN_URL || 'bitcoind-1',
+  port: 18443,
+  network: 'regtest',
+  password: 'bitcoinrpcpassword',
+  username: 'bitcoinrpcuser',
+})
 
 describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
   const db = await createDatabase(PREFIX)
@@ -18,7 +28,9 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     MONGODB_USER: db.settings.tempDbUser,
     MONGODB_PASSWORD: db.settings.tempDbPassword,
     EXCHANGE_PREFIX: PREFIX,
-  })
+    LOW_WALLET_BALANCE_IN_BITCOIN,
+    HEALTH_INTERVAL_IN_SECONDS: 1,
+  });
 
   // Allow everything to finish starting.
   await delay(5 * 1000)
@@ -66,6 +78,29 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
       expected: false,
     })
   }
+
+  // Make sure node has more regtest coins than LOW_WALLET_BALANCE_IN_BITCOIN.
+  await ensureBitcoinBalanceAboveMin(bitcoindClient, LOW_WALLET_BALANCE_IN_BITCOIN)
+
+  // Make sure health service runs again.
+  await delay(5 * 1000)
+
+  {
+    // Check isBalanceLow is false.
+
+    const response = await getHealth(NODE_PORT)
+    const healthData = await response.json()
+
+    const { walletInfo: { isBalanceLow } } = healthData
+
+    assert({
+      given: `a request to the health endpoint while the bitcoin balance is above LOW_WALLET_BALANCE_BTC`,
+      should: 'return walletInfo property isBalanceLow as false',
+      actual: isBalanceLow,
+      expected: false,
+    })
+  }
+
   await server.stop()
   await db.teardown()
 })
