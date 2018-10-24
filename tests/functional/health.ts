@@ -10,7 +10,7 @@ const Client = require('bitcoin-core')
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
-const LOW_WALLET_BALANCE_IN_BITCOIN = 250
+const LOW_WALLET_BALANCE_IN_BITCOIN = 1
 const bitcoindClient = new Client({
   host: process.env.BITCOIN_URL || 'bitcoind-1',
   port: 18443,
