@@ -160,7 +160,8 @@ A 404 error is returned if the claim isn't found in this Node's database. This d
 Returns a paginated array of signed verifiable claims, all belonging to the passed issuer. Default limit per request is 10 claims. This is configurable with limit and offset paramaters where offset is the number of claims to skip and limit is the number of claims returned per request.
 
 ### `GET /works?offset=x&limit=x`
-Returns a paginated array of signed verifiable claims, which defaults to 10 per request. This is configurable with limit and offset parameters where offset is the number of claims to skip and limit is the number of claims returned per request.
+Returns a paginated array of signed verifiable claims, which defaults to 10 per request. This is configurable with limit 
+and offset parameters where offset is the number of claims to skip and limit is the number of claims returned per request.
 
 ### `POST /works`
 Publish a work.

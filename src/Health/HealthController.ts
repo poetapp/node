@@ -5,12 +5,17 @@ import * as Pino from 'pino'
 import { pick, pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
+
 import { IPFS } from './IPFS'
 
 enum LogTypes {
   info = 'info',
   trace = 'trace',
   error = 'error',
+}
+
+export interface HealthControllerConfiguration {
+  readonly lowWalletBalanceBTC: number
 }
 
 interface BlockchainInfo {
@@ -24,6 +29,7 @@ interface BlockchainInfo {
 interface WalletInfo {
   readonly balance: number
   readonly txcount: number
+  readonly balanceLow?: boolean
 }
 
 interface NetworkInfo {
@@ -50,8 +56,14 @@ const pickNetworkInfoKeys = pick(networkInfoKeys)
 const pickBlockchainInfoKeys = pick(blockchainInfoKeys)
 const pickWalletInfoKeys = pick(walletInfoKeys)
 
+export const addWalletIsBalanceLow = (lowBalanceAmount: number) => (walletInfo: WalletInfo) => {
+  const { balance } = walletInfo
+  return balance < lowBalanceAmount ? { ...walletInfo, isBalanceLow: true } : { ...walletInfo, isBalanceLow: false }
+}
+
 @injectable()
 export class HealthController {
+  private readonly configuration: HealthControllerConfiguration
   private readonly db: Db
   private readonly collection: Collection
   private readonly bitcoinCore: BitcoinCore
@@ -61,10 +73,12 @@ export class HealthController {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
+    @inject('HealthControllerConfiguration') configuration: HealthControllerConfiguration,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
     @inject('IPFS') ipfs: IPFS
   ) {
     this.logger = childWithFileName(logger, __filename)
+    this.configuration = configuration
     this.db = db
     this.collection = this.db.collection('health')
     this.bitcoinCore = bitcoinCore
@@ -96,6 +110,10 @@ export class HealthController {
 
   private async getWalletInfo(): Promise<WalletInfo> {
     return pickWalletInfoKeys(await this.bitcoinCore.getWalletInfo())
+  }
+
+  private addWalletIsBalanceLow(walletInfo: WalletInfo): WalletInfo {
+    return addWalletIsBalanceLow(this.configuration.lowWalletBalanceBTC)(walletInfo)
   }
 
   private async updateWalletInfo(walletInfo: WalletInfo): Promise<WalletInfo> {
@@ -162,6 +180,8 @@ export class HealthController {
   public refreshWalletInfo = pipeP(
     this.log(LogTypes.trace)('refreshing wallet info'),
     this.getWalletInfo,
+    this.log(LogTypes.trace)('checking wallet balance against alert threshold'),
+    this.addWalletIsBalanceLow,
     this.log(LogTypes.trace)('new info gathered, saving wallet info'),
     this.updateWalletInfo,
     this.log(LogTypes.trace)('refreshed wallet info')
