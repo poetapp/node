@@ -27,13 +27,18 @@ const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-const trace = (label: string) => (value: undefined) => {
-  console.log(label, value)
-  return value
-}
-
-const testResponseHash = pipeP(toPromise(fs.createReadStream), postFileStream, getResponseJson, toPromise(getHash), fetchIPFSFile)
-const testResponseStatusCode = pipeP(toPromise(fs.createReadStream), postFileStream, toPromise(getStatus))
+const testResponseHash = pipeP(
+  toPromise(fs.createReadStream),
+  postFileStream,
+  getResponseJson,
+  toPromise(getHash),
+  fetchIPFSFile
+)
+const testResponseStatusCode = pipeP(
+  toPromise(fs.createReadStream),
+  postFileStream,
+  toPromise(getStatus)
+)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
@@ -44,7 +49,7 @@ describe('POST /files', async assert => {
     assert({
       given,
       should: 'return a hash that can be used to verify the file',
-      actual: await Try(testResponseHash,  files.utf8Markdown).catch(identity),
+      actual: await Try(testResponseHash, files.utf8Markdown).catch(identity),
       expected: fs.readFileSync(files.utf8Markdown).toString(),
     })
 
@@ -52,7 +57,7 @@ describe('POST /files', async assert => {
       given,
       should: 'return the correct status',
       actual: await Try(testResponseStatusCode, files.utf8Markdown).catch(identity),
-      expected: 200
+      expected: 200,
     })
   }
 
