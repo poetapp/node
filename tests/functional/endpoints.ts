@@ -4,6 +4,7 @@ import { describe } from 'riteway'
 
 import { app } from '../../src/app'
 import { getHealth } from '../helpers/health'
+import { getMetrics } from '../helpers/metrics'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
@@ -66,6 +67,26 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
       expected: false,
     })
   }
+
+  {
+    let metricsData
+
+    try {
+      const response = await getMetrics(NODE_PORT)
+      metricsData = await response.json()
+    } catch (err) {
+      metricsData = {}
+    }
+    const { TotalWorkClaims } = metricsData
+
+    assert({
+      given: 'a request to the health endpoint',
+      should: 'return object with property networkInfo of type number',
+      actual: typeof TotalWorkClaims,
+      expected: 'number',
+    })
+  }
+
   await server.stop()
   await db.teardown()
 })

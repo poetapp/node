@@ -72,3 +72,5 @@ export const createMAClaim = pipeP(
   createMAWorkClaim,
   signMAWorkClaim
 )
+
+export const baseUrl = (port: string, host: string = 'localhost') => `http://${host}:${port}`
