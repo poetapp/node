@@ -15,6 +15,7 @@ const fetchIPFSFile = configureFetchFile({ ipfs: { url: IPFS_URL } })
 const postFileStream = configurePostFileStream(NODE_PORT)
 
 const getHash = prop('hash')
+const getStatus = prop('status')
 
 type toPromise = <A, B>(fn?: (a: A) => B) => (v: A) => Promise<B>
 const toPromise: toPromise = (fn = identity) => v => Promise.resolve(fn(v))
@@ -26,23 +27,32 @@ const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-const getResponseJSONHash = pipeP(getResponseJson, toPromise(getHash))
+const trace = (label: string) => (value: undefined) => {
+  console.log(label, value)
+  return value
+}
 
-const testResponseHash = pipeP(postFileStream, getResponseJSONHash, fetchIPFSFile)
+const testResponseHash = pipeP(toPromise(fs.createReadStream), postFileStream, getResponseJson, toPromise(getHash), fetchIPFSFile)
+const testResponseStatusCode = pipeP(toPromise(fs.createReadStream), postFileStream, toPromise(getStatus))
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
-
   {
-    const expected = fs.readFileSync(files.utf8Markdown).toString()
-    const fileStream = fs.createReadStream(files.utf8Markdown)
+    const given = 'a utf8 mardown file as a multipart file stream'
 
     assert({
-      given: 'a utf8 mardown file',
+      given,
       should: 'return a hash that can be used to verify the file',
-      actual: Try(testResponseHash, fileStream),
-      expected,
+      actual: await Try(testResponseHash,  files.utf8Markdown).catch(identity),
+      expected: fs.readFileSync(files.utf8Markdown).toString(),
+    })
+
+    assert({
+      given,
+      should: 'return the correct status',
+      actual: await Try(testResponseStatusCode, files.utf8Markdown).catch(identity),
+      expected: 200
     })
   }
 
