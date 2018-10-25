@@ -23,6 +23,11 @@ interface WorksWithCount {
   readonly works: ReadonlyArray<WorkWithAnchor>
 }
 
+interface Metrics {
+  readonly totalWorks: number
+  readonly totalUniqueIdentities: number
+}
+
 @injectable()
 export class WorkController {
   private readonly logger: Pino.Logger
@@ -62,15 +67,52 @@ export class WorkController {
     return { count, works }
   }
 
-  async getWorksCountByFilters(worksFilters: WorksFilters = {}): Promise<number> {
+  async create(work: Work): Promise<void> {
+    this.logger.trace({ method: 'create', work }, 'Creating Work')
+    // TODO: verify id, publicKey, signature and createdDate
+    await this.messaging.publish(this.exchange.newClaim, work)
+  }
+
+  private async getWorksCountByFilters(worksFilters: WorksFilters = {}): Promise<number> {
     this.logger.trace({ method: 'getWorksCountByFilters', worksFilters }, 'Getting Work Counts by Filters from DB')
     const count = await this.collection.find(worksFilters, { projection: { _id: false } }).count()
     return count
   }
 
-  async create(work: Work): Promise<void> {
-    this.logger.trace({ method: 'create', work }, 'Creating Work')
-    // TODO: verify id, publicKey, signature and createdDate
-    await this.messaging.publish(this.exchange.newClaim, work)
+  private async getUniqueIdentityCount(worksFilters: WorksFilters = {}): Promise<number> {
+    this.logger.trace(
+      { method: 'getUniqueIdentityCount', worksFilters },
+      'Getting Unique Identity Counts by Filters from DB'
+    )
+    const publicKeys = await this.collection
+      .aggregate([
+        {
+          $group: {
+            _id: '$issuer',
+          },
+        },
+        {
+          $group: {
+            _id: 1,
+            uniqueIdentities: {
+              $sum: 1,
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+          },
+        },
+      ])
+      .toArray()
+    return publicKeys[0].uniqueIdentities
+  }
+
+  async getMetrics(worksFilters: WorksFilters = {}): Promise<Metrics> {
+    this.logger.trace({ method: 'getMetrics', worksFilters }, 'Getting Metrics from DB')
+    const totalWorks = await this.getWorksCountByFilters(worksFilters)
+    const totalUniqueIdentities = await this.getUniqueIdentityCount(worksFilters)
+    return { totalWorks, totalUniqueIdentities }
   }
 }

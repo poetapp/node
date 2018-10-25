@@ -68,7 +68,7 @@ export class Router {
     this.koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), this.getWorks)
     this.koaRouter.post('/works', this.postWork)
     this.koaRouter.get('/health', this.getHealth)
-    this.koaRouter.get('/metrics', this.getWorkCounts)
+    this.koaRouter.get('/metrics', this.getMetrics)
 
     this.koa.use(helmet(SecurityHeaders))
     this.koa.use(KoaCors({ expose: ['X-Total-Count'] }))
@@ -114,12 +114,11 @@ export class Router {
     context.body = works
   }
 
-  private getWorkCounts = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+  private getMetrics = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     this.logger.trace('/metrics')
-    const TotalWorkClaims = await this.workController.getWorksCountByFilters({
+    context.body = await this.workController.getMetrics({
       ...context.query,
     })
-    context.body = { TotalWorkClaims }
   }
 
   private postWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
