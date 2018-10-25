@@ -1,4 +1,5 @@
 import { PoetAnchor, PoetBlockAnchor, PoetTransactionAnchor } from '@po.et/poet-js'
+import * as bs58 from 'bs58'
 import { equals, allPass, pipe, values, sum } from 'ramda'
 
 import { PREFIX_BARD, PREFIX_POET, Block, Transaction, VOut } from 'Helpers/Bitcoin'
@@ -12,7 +13,7 @@ const AnchorSectionsLengths = {
   Prefix: 4,
   StorageProtocol: 1,
   Version: 2,
-  IPFSHash: 46,
+  IPFSHash: 34,
 }
 
 const sumObjectValues = pipe(
@@ -32,6 +33,7 @@ export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor>
 
 const dataOutputToPoetTransactionAnchors = (acc: ReadonlyArray<PoetTransactionAnchor>, dataOutput: VOutWithTxId) => {
   const buffer = dataOutputToBuffer(dataOutput)
+
   return isCorrectBufferLength(buffer)
     ? [...acc, combineAnchorAndTransactionId(bufferToPoetAnchor(buffer), dataOutput)]
     : acc
@@ -78,7 +80,8 @@ export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchor => {
   const prefix = buffer.slice(0, 4).toString()
   const version = Array.from(buffer.slice(4, 6))
   const storageProtocol = buffer.readInt8(6)
-  const ipfsDirectoryHash = buffer.slice(7).toString()
+  const ipfsDirectoryHash = bs58.encode(buffer.slice(7))
+
   return {
     storageProtocol,
     prefix,
