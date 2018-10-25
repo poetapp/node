@@ -1,4 +1,4 @@
-version: '3'
+version: '3.6'
 
 services:
   mongo:
@@ -40,6 +40,28 @@ services:
     image: ruimarinho/bitcoin-core:0.17.0
     ports:
       - "18443:18443"
+    volumes:
+      - type: tmpfs
+        target: /home/bitcoin/.bitcoin
+    restart: always
+    command:
+      -printtoconsole
+      -server
+      -testnet=${USE_BTC_TESTNET:-0}
+      -regtest=${USE_BTC_REGTEST:-1}
+      -rpcuser=bitcoinrpcuser
+      -rpcpassword=bitcoinrpcpassword
+      -rpcallowip=::/0
+      -deprecatedrpc=signrawtransaction
+
+  bitcoind-2:
+    image: ruimarinho/bitcoin-core:0.17.0
+    ports:
+      - "19443:18443"
+    volumes:
+      - type: tmpfs
+        target: /home/bitcoin/.bitcoin
+    restart: always
     command:
       -printtoconsole
       -server
@@ -59,9 +81,11 @@ services:
       - rabbit
       - ipfs
       - bitcoind-1
+      - bitcoind-2
     environment:
       - POET_SERVICE=node
       - BITCOIN_URL=bitcoind-1
+      - BITCOIN_URL_B=bitcoind-2
       - RABBITMQ_URL=amqp://admin:adminPass@rabbit
       - MONGODB_HOST=mongo
       - MONGODB_USER=poet
@@ -74,7 +98,6 @@ services:
       - mongo
       - rabbit
       - ipfs
-      - bitcoind-1
     command: >
       /bin/bash -c "
         sleep 10;
