@@ -41,5 +41,4 @@ deploy:
       all_branches: true
 
 after_deploy:
-  - docker-compose exec poet-node npx semantic-release
-  #- npm run travis-deploy-once "npm run semantic-release"
+  - docker-compose exec poet-node npx semantic-release --no-ci
