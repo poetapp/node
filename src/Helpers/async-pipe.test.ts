@@ -9,7 +9,7 @@ const inc = (x: number) => x + 1
 const doubleP = toPromise(double)
 const incP = toPromise(inc)
 
-describe('toPromise', async (assert: any) => {
+describe('asyncPipe', async (assert: any) => {
   const should = 'apply the value to the functions composition correctly'
 
   {
