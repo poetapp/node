@@ -75,7 +75,7 @@ export class Router {
     this.koa.use(KoaCors({ expose: ['X-Total-Count'] }))
     this.koa.use(LoggerMiddleware(this.logger))
     this.koa.use(HttpExceptionsMiddleware)
-    this.koa.use(KoaBody({ multipart: true }))
+    this.koa.use(KoaBody({ textLimit: 1000000, multipart: true }))
     this.koa.use(this.koaRouter.allowedMethods())
     this.koa.use(this.koaRouter.routes())
   }
@@ -94,7 +94,7 @@ export class Router {
 
     this.logger.error(context.request.files)
 
-    context.body = '{}'
+    context.body = ''
     context.status = 200
   }
 
