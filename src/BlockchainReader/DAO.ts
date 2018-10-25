@@ -3,11 +3,11 @@ import { inject, injectable } from 'inversify'
 import { Collection } from 'mongodb'
 
 export interface Entry {
-  _id?: string
-  blockHeight: number
-  blockHash: string
-  matchingAnchors: ReadonlyArray<PoetBlockAnchor>
-  unmatchingAnchors: ReadonlyArray<PoetBlockAnchor>
+  readonly _id?: string
+  readonly blockHeight: number
+  readonly blockHash: string
+  readonly matchingAnchors: ReadonlyArray<PoetBlockAnchor>
+  readonly unmatchingAnchors: ReadonlyArray<PoetBlockAnchor>
 }
 
 type upsertEntryByHeight = (entry: Entry) => Promise<any>
