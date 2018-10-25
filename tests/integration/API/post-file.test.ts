@@ -1,11 +1,12 @@
 /* tslint:disable:no-relative-imports */
 import * as fs from 'fs'
 import * as path from 'path'
-import { prop, pipeP, identity } from 'ramda'
-import { describe, Try } from 'riteway'
+import { prop,  identity } from 'ramda'
+import { describe } from 'riteway'
 import { configurePostFileStream, getResponseJson } from '../../helpers/files'
 import { configureFetchFile } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
+import { asyncPipe }from 'Helpers/async-pipe'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
@@ -17,9 +18,6 @@ const postFileStream = configurePostFileStream(NODE_PORT)
 const getHash = prop('hash')
 const getStatus = prop('status')
 
-type toPromise = <A, B>(fn?: (a: A) => B) => (v: A) => Promise<B>
-const toPromise: toPromise = (fn = identity) => v => Promise.resolve(fn(v))
-
 type calcPath = (relPath: string) => string
 const calcPath: calcPath = relPath => path.resolve(__dirname, relPath)
 
@@ -27,17 +25,17 @@ const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-const testResponseHash = pipeP(
-  toPromise(fs.createReadStream),
+const testResponseHash = asyncPipe(
+  fs.createReadStream,
   postFileStream,
   getResponseJson,
-  toPromise(getHash),
+  getHash,
   fetchIPFSFile
 )
-const testResponseStatusCode = pipeP(
-  toPromise(fs.createReadStream),
+const testResponseStatusCode = asyncPipe(
+  fs.createReadStream,
   postFileStream,
-  toPromise(getStatus)
+  getStatus
 )
 
 describe('POST /files', async assert => {
@@ -49,14 +47,14 @@ describe('POST /files', async assert => {
     assert({
       given,
       should: 'return a hash that can be used to verify the file',
-      actual: await Try(testResponseHash, files.utf8Markdown).catch(identity),
+      actual: await testResponseHash(files.utf8Markdown).catch(identity),
       expected: fs.readFileSync(files.utf8Markdown).toString(),
     })
 
     assert({
       given,
       should: 'return the correct status',
-      actual: await Try(testResponseStatusCode, files.utf8Markdown).catch(identity),
+      actual: await testResponseStatusCode(files.utf8Markdown).catch(identity),
       expected: 200,
     })
   }
