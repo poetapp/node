@@ -26,7 +26,6 @@
     "test-prepare-db": "node dist/babel/test/PrepareDB.js",
     "prepublishOnly": "npm run build && npm test",
     "semantic-release": "semantic-release",
-    "travis-deploy-once": "travis-deploy-once",
     "create-claim": "ts-node scripts/CreateClaim"
   },
   "files": [
@@ -84,7 +83,6 @@
     "riteway": "3.0.0",
     "semantic-release": "15.10.5",
     "sinon": "7.0.0",
-    "travis-deploy-once": "5.0.9",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.6.0",
     "typescript": "3.1.3"
