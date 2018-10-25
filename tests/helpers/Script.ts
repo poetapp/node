@@ -13,7 +13,7 @@ import {
   OnThePulseOfMorning,
   ABraveAndStartlingTruth,
 } from './Claims'
-import { createACDClaim, createEAPClaim, createMAClaim } from './utils'
+import { createACDClaim, createEAPClaim, createMAClaim } from './createClaims'
 
 const setUpClaims = async () => {
   console.log(await createACDClaim(AStudyInScarlet.claim))
