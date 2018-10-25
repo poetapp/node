@@ -1,4 +1,5 @@
 import { PoetAnchor, StorageProtocol } from '@po.et/poet-js'
+import * as bs58 from 'bs58'
 import { describe, Try } from 'riteway'
 
 import { IllegalPrefixLength, IllegalVersionLength, poetAnchorToData } from './Bitcoin'
@@ -37,7 +38,7 @@ describe('Bitcoin.getData', async assert => {
       assert({
         given,
         should: 'match the message',
-        actual: buffer.slice(7).toString(),
+        actual: bs58.encode(buffer.slice(7)),
         expected: poetAnchor.ipfsDirectoryHash,
       })
     }
@@ -46,13 +47,22 @@ describe('Bitcoin.getData', async assert => {
       prefix: PREFIX_POET,
       version: [0, 2],
       storageProtocol: StorageProtocol.IPFS,
-      ipfsDirectoryHash: 'ipfsDirectoryHash',
+      ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
     }
 
     testGetData(poetAnchor)
-    testGetData({ ...poetAnchor, prefix: PREFIX_BARD, ipfsDirectoryHash: 'another ipfsDirectoryHash' })
+    testGetData({
+      ...poetAnchor,
+      prefix: PREFIX_BARD,
+      ipfsDirectoryHash: 'Qmed52rzQ2C71mZbLscqQBQEhqcYZ1qjDX3Ugm6UHTasCY',
+    })
     testGetData({ ...poetAnchor, prefix: PREFIX_BARD, version: [2, 1] })
-    testGetData({ ...poetAnchor, prefix: PREFIX_BARD, version: [2, 1], ipfsDirectoryHash: 'another ipfsDirectoryHash' })
+    testGetData({
+      ...poetAnchor,
+      prefix: PREFIX_BARD,
+      version: [2, 1],
+      ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
+    })
   }
 
   {
@@ -60,7 +70,7 @@ describe('Bitcoin.getData', async assert => {
       prefix: PREFIX_POET,
       version: [1, 2],
       storageProtocol: StorageProtocol.IPFS,
-      ipfsDirectoryHash: 'ipfsDirectoryHash',
+      ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
     }
 
     const tryPrefix = Try(poetAnchorToData, { ...poetAnchor, prefix: 'TOO_LONG' })
