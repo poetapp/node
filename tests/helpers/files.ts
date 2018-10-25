@@ -1,7 +1,7 @@
 /* tslint:disable:no-relative-imports */
 import * as FormData from 'form-data'
 import { ReadStream } from 'fs'
-import fetch, { Response }from 'node-fetch'
+import fetch, { Response } from 'node-fetch'
 
 const FILES_PATH = 'files'
 
@@ -19,7 +19,7 @@ const post: post = url => body =>
   })
 
 type getResponseJson = (response: Response) => Promise<any>
-export const getResponseJson: getResponseJson = (response) => response.json()
+export const getResponseJson: getResponseJson = response => response.json()
 
 type createForm = (options?: any) => () => FormData
 const createForm: createForm = options => () => new FormData(options)

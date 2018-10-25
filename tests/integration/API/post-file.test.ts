@@ -1,12 +1,12 @@
 /* tslint:disable:no-relative-imports */
+import { asyncPipe } from 'Helpers/async-pipe'
 import * as fs from 'fs'
 import * as path from 'path'
-import { prop,  identity } from 'ramda'
+import { prop, identity } from 'ramda'
 import { describe } from 'riteway'
 import { configurePostFileStream, getResponseJson } from '../../helpers/files'
 import { configureFetchFile } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
-import { asyncPipe }from 'Helpers/async-pipe'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
@@ -25,18 +25,8 @@ const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-const testResponseHash = asyncPipe(
-  fs.createReadStream,
-  postFileStream,
-  getResponseJson,
-  getHash,
-  fetchIPFSFile
-)
-const testResponseStatusCode = asyncPipe(
-  fs.createReadStream,
-  postFileStream,
-  getStatus
-)
+const testResponseHash = asyncPipe(fs.createReadStream, postFileStream, getResponseJson, getHash, fetchIPFSFile)
+const testResponseStatusCode = asyncPipe(fs.createReadStream, postFileStream, getStatus)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
