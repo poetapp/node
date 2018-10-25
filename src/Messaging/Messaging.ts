@@ -1,10 +1,10 @@
 /* tslint:disable:no-console */
-import { isSignedVerifiableClaim, PoetBlockAnchor } from '@po.et/poet-js'
 import { Connection, connect, Channel } from 'amqplib'
 
 import { ClaimIPFSHashPair, isClaimIPFSHashPair } from 'Interfaces'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
+import { BlockDownloaded, isBlockDownloaded } from './Messages'
 
 export class Messaging {
   private readonly connectionUrl: string
@@ -56,34 +56,18 @@ export class Messaging {
   }
 
   // TODO: move these business-specific functions to a different file. See https://github.com/poetapp/node/issues/66
-  publishPoetBlockAnchorsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
-    return this.publish(this.exchanges.poetAnchorDownloaded, poetBlockAnchors)
+  publishBlockDownloaded = async (blockDownloaded: BlockDownloaded) => {
+    return this.publish(this.exchanges.poetAnchorDownloaded, blockDownloaded)
   }
 
-  consumeBlockAnchorsDownloaded = async (consume: (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => void) => {
+  consumeBlockDownloaded = async (consume: (blockDownloaded: BlockDownloaded) => void) => {
     await this.consume(this.exchanges.poetAnchorDownloaded, (message: any) => {
       const messageContent = message.content.toString()
-      const poetBlockAnchors = JSON.parse(messageContent)
+      const blockDownloaded = JSON.parse(messageContent) as unknown
 
-      if (!Array.isArray(poetBlockAnchors)) {
-        console.log({
-          action: 'consumeBlockAnchorsDownloaded',
-          message: 'Expected poetBlockAnchors to be an Array.',
-          poetBlockAnchors,
-        })
-        return
-      }
+      if (!isBlockDownloaded(blockDownloaded)) return
 
-      if (poetBlockAnchors.map(isSignedVerifiableClaim).find(_ => !_)) {
-        console.log({
-          action: 'consumeBlockAnchorsDownloaded',
-          message: 'Expected poetBlockAnchors to be an Array<Claim>.',
-          offendingElements: poetBlockAnchors.map(isSignedVerifiableClaim).filter(_ => !_),
-        })
-        return
-      }
-
-      consume(poetBlockAnchors)
+      consume(blockDownloaded)
     })
   }
 

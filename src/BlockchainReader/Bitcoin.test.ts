@@ -7,12 +7,12 @@ import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
 import { anchorPrefixAndVersionMatch, blockToPoetAnchors, bufferToPoetAnchor, isCorrectBufferLength } from './Bitcoin'
 
-import * as TestBlock from './TestData/block-0000000070746b06bbec07a7cd35e0c6d47bfa4e2544a6a1d2aa6efc49d47679.json'
+import * as TestBlock from './TestData/block-000000000000f29b1e2d33590208811f3cd2b2c190596424617a18460d878288.json'
 import * as TestBlock1 from './TestData/block-00000000f8b690cb98c5bf9e221b47b493a27523e8e8b94a18022abd3e51fb42.json'
 
 describe('Bitcoin.blockToPoetAnchors', async assert => {
   assert({
-    given: 'testnet block 1356137',
+    given: 'testnet block 1440123',
     should: 'satisfy basic integrity checks',
     actual: validateTestBlockIntegrity(TestBlock),
     expected: true,
@@ -25,7 +25,7 @@ describe('Bitcoin.blockToPoetAnchors', async assert => {
     expected: true,
   })
 
-  const ipfsDirectoryHashes = ['QmaKtaPqfWvss2ndhGdcLRc9uGcLvUUyuZeGcrDZWN58Zi']
+  const ipfsDirectoryHashes = ['QmVW4EyxJk77qU2VwpKnvFL8YAXQhj4HBKmq5SfMWy35JW']
 
   {
     const poetAnchors = blockToPoetAnchors(TestBlock as any) // as any: see footer note
@@ -256,7 +256,7 @@ describe('Bitcoin.bufferToPoetAnchor', async assert => {
 const validateTestBlockIntegrity = allPass([
   (block: any) => block.tx,
   (block: any) => Array.isArray(block.tx),
-  (block: any) => block.tx.length === 146,
+  (block: any) => block.tx.length === 81,
 ])
 
 const validateTestBlock1Integrity = allPass([
