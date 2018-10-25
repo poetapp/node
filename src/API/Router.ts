@@ -63,7 +63,8 @@ export class Router {
         limit: Joi.number().optional(),
       },
     }
-
+    
+    this.koaRouter.post('/files', this.postFile)
     this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), this.getWork)
     this.koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), this.getWorks)
     this.koaRouter.post('/works', this.postWork)
@@ -74,7 +75,7 @@ export class Router {
     this.koa.use(KoaCors({ expose: ['X-Total-Count'] }))
     this.koa.use(LoggerMiddleware(this.logger))
     this.koa.use(HttpExceptionsMiddleware)
-    this.koa.use(KoaBody({ textLimit: 1000000 }))
+    this.koa.use(KoaBody({ multipart: true }))
     this.koa.use(this.koaRouter.allowedMethods())
     this.koa.use(this.koaRouter.routes())
   }
@@ -86,6 +87,15 @@ export class Router {
   async stop() {
     this.logger.info('Stopping API Router...')
     await this.server.close()
+  }
+
+  private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    const { body } = context.request
+
+    this.logger.error(context.request.files)
+
+    context.body = '{}'
+    context.status = 200
   }
 
   private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {

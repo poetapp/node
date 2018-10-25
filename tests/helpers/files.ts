@@ -11,28 +11,15 @@ type post = (url: string) => (body: any) => Promise<Response>
 const post: post = url => body =>
   fetch(url, {
     method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
     body,
   })
 
 type getResponseJson = (response: Response) => Promise<any>
 export const getResponseJson: getResponseJson = response => response.json()
 
-type createForm = (options?: any) => () => FormData
-const createForm: createForm = options => () => new FormData(options)
-
-type formAddFileStream = (fileStream: ReadStream) => (form: FormData) => FormData
-const formAddFileStream: formAddFileStream = fileStream => form => {
-  form.append('file', fileStream)
-  return form
-}
-
 type configurePostFileStream = (port: string, host?: string) => (fileStream: ReadStream) => Promise<any>
 export const configurePostFileStream: configurePostFileStream = (port, host) => fileStream => {
   const formData = new FormData()
-  formData.append('file', fileStream)
+  formData.append('file', "foo")
   return post(`${baseUrl(port, host)}/${FILES_PATH}`)(formData)
 }
