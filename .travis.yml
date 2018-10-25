@@ -39,6 +39,9 @@ deploy:
     - bash ./scripts/docker-push.sh
     on:
       all_branches: true
-
-after_deploy:
-  - docker-compose exec poet-node npx semantic-release --no-ci
+  - provider: script
+    skip_cleanup: true
+    script:
+      - docker-compose exec poet-node npx semantic-release --no-ci
+    on:
+      branch: master
