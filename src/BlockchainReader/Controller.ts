@@ -91,7 +91,7 @@ export class Controller {
     })
   }
 
-  async findHighestBlockHeight(): Promise<number | undefined> {
+  async findHighestBlockHeight(): Promise<number | null> {
     const logger = this.logger.child({ method: 'findHighestBlockHeight' })
 
     const highestBlockHeight = await this.dao.findHighestBlockHeight()
