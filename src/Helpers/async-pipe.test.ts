@@ -1,31 +1,34 @@
 import { identity } from 'ramda'
 import { describe, Try } from 'riteway'
 import { asyncPipe } from './async-pipe'
+import { toPromise } from './to-promise'
 
-const triple = (x: number) => x * 3
 const double = (x: number) => x * 2
 const inc = (x: number) => x + 1
 
+const doubleP = toPromise(double)
+const incP = toPromise(inc)
+
 describe('toPromise', async (assert: any) => {
-  const given = 'given functions and a value'
   const should = 'apply the value to the functions composition correctly'
 
   {
     const value = 10
     assert({
-      given,
+      given: 'sync and async functions',
       should,
-      actual: await Try(asyncPipe(double, inc), value).catch(identity),
-      expected: inc(double(value)),
+      actual: await Try(asyncPipe(doubleP, inc), value).catch(identity),
+      expected: inc(await doubleP(value)),
     })
   }
+
   {
     const value = 10
     assert({
       given: 'nested compositions',
       should,
-      actual: await Try(asyncPipe(triple, asyncPipe(double, inc)), value).catch(identity),
-      expected: inc(double(triple(value))),
+      actual: await Try(asyncPipe(doubleP, inc, asyncPipe(double, incP)), value).catch(identity),
+      expected: await incP(double(inc(await doubleP(value)))),
     })
   }
 })
