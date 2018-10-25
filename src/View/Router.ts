@@ -1,9 +1,9 @@
-import { PoetBlockAnchor } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { ClaimIPFSHashPair } from 'Interfaces'
+import { BlockDownloaded } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
@@ -32,7 +32,7 @@ export class Router {
     await this.messaging.consume(this.exchange.newClaim, this.onNewClaim)
     await this.messaging.consume(this.exchange.claimIpfsHash, this.onClaimIPFSHash)
     await this.messaging.consume(this.exchange.ipfsHashTxId, this.onIPFSHashTxId)
-    await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
+    await this.messaging.consumeBlockDownloaded(this.onPoetBlockAnchorsDownloaded)
     await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
     await this.messaging.consume(
       this.exchange.batchReaderReadNextDirectorySuccess,
@@ -127,8 +127,10 @@ export class Router {
     }
   }
 
-  onPoetBlockAnchorsDownloaded = async (poetBlockAnchors: ReadonlyArray<PoetBlockAnchor>) => {
+  onPoetBlockAnchorsDownloaded = async (blockDownloaded: BlockDownloaded) => {
     const logger = this.logger.child({ method: 'onPoetBlockAnchorsDownloaded' })
+
+    const { poetBlockAnchors } = blockDownloaded
 
     logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Anchor')
     try {

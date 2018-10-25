@@ -88,7 +88,14 @@ export class Controller {
       { upsert: true }
     )
 
-    if (matchingAnchors.length) await this.messaging.publishPoetBlockAnchorsDownloaded(matchingAnchors)
+    await this.messaging.publishBlockDownloaded({
+      block: {
+        hash: block.hash,
+        height: block.height,
+        previousHash: block.previousblockhash,
+      },
+      poetBlockAnchors: matchingAnchors,
+    })
   }
 
   async findHighestBlockHeight(): Promise<number | null> {

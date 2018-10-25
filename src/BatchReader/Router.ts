@@ -1,8 +1,8 @@
-import { PoetBlockAnchor } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { BlockDownloaded } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
@@ -28,7 +28,7 @@ export class Router {
   }
 
   async start() {
-    await this.messaging.consumeBlockAnchorsDownloaded(this.onPoetBlockAnchorsDownloaded)
+    await this.messaging.consumeBlockDownloaded(this.onPoetBlockAnchorsDownloaded)
 
     await this.messaging.consume(
       this.exchange.batchReaderReadNextDirectoryRequest,
@@ -42,20 +42,22 @@ export class Router {
     await this.messaging.stop()
   }
 
-  onPoetBlockAnchorsDownloaded = async (poetAnchors: ReadonlyArray<PoetBlockAnchor>): Promise<void> => {
+  onPoetBlockAnchorsDownloaded = async (blockDownloaded: BlockDownloaded): Promise<void> => {
     const logger = this.logger.child({ method: 'onPoetBlockAnchorsDownloaded' })
+
+    const { poetBlockAnchors } = blockDownloaded
 
     logger.trace(
       {
-        poetAnchors,
+        blockDownloaded,
       },
       'Storing directory hashes from PoetBlockAnchors'
     )
 
     try {
-      await this.claimController.addEntries(poetAnchors)
+      await this.claimController.addEntries(poetBlockAnchors)
     } catch (error) {
-      logger.error({ error, poetAnchors }, 'Failed to store directory hashes to DB collection')
+      logger.error({ error, poetBlockAnchors }, 'Failed to store directory hashes to DB collection')
     }
   }
 
