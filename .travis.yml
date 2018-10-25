@@ -13,11 +13,17 @@ services:
   - docker
 
 env:
-  - REPO=poetapp/node RABBITMQ_URL=amqp://localhost
+  REPO: poetapp/node
+  DOCKER_COMPOSE_VERSION: 1.21.2
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 install:
-  - DC_FILES="-f docker-compose.yml -f docker-compose.ci.yml"
-  - docker-compose $DC_FILES up -d
+  - docker-compose up -d
   - sleep 10
 
 script:

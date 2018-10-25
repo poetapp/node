@@ -5,10 +5,9 @@ import { describe } from 'riteway'
 
 import { app } from '../../src/app'
 import { issuer, privateKey } from '../helpers/Keys'
-import { ensureBitcoinBalance } from '../helpers/bitcoin'
+import { ensureBitcoinBalance, bitcoindClients, resetBitcoinServers } from '../helpers/bitcoin'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'
-const Client = require('bitcoin-core')
 
 const PREFIX_A = `test-functional-nodeA-poet-${runtimeId()}`
 const NODE_A_PORT = '28081'
@@ -27,14 +26,6 @@ const blockchainSettings = {
   UPLOAD_CLAIM_INTERVAL_IN_SECONDS: 5,
 }
 
-const bitcoindClientA = new Client({
-  host: process.env.BITCOIN_URL || 'bitcoind-1',
-  port: 18443,
-  network: 'regtest',
-  password: 'bitcoinrpcpassword',
-  username: 'bitcoinrpcuser',
-})
-
 const { configureSignVerifiableClaim } = getVerifiableClaimSigner()
 const createVerifiableClaim = configureCreateVerifiableClaim({ issuer })
 const signVerifiableClaim = configureSignVerifiableClaim({ privateKey })
@@ -43,10 +34,16 @@ const createClaim = pipeP(
   signVerifiableClaim
 )
 
+const { btcdClientA, btcdClientB }: any = bitcoindClients()
+
 describe('A user can successfully submit a claim into the po.et network', async (assert: any) => {
+  await resetBitcoinServers()
+  await btcdClientB.addNode(btcdClientA.host, 'add')
+  await delay(5 * 1000)
+
   const dbA = await createDatabase(PREFIX_A)
   const serverA = await app({
-    BITCOIN_URL: process.env.BITCOIN_URL || 'bitcoind-1',
+    BITCOIN_URL: btcdClientA.host,
     API_PORT: NODE_A_PORT,
     MONGODB_DATABASE: dbA.settings.tempDbName,
     MONGODB_USER: dbA.settings.tempDbUser,
@@ -57,7 +54,7 @@ describe('A user can successfully submit a claim into the po.et network', async 
 
   const dbB = await createDatabase(PREFIX_B)
   const serverB = await app({
-    BITCOIN_URL: process.env.BITCOIN_B_URL || 'bitcoind-2',
+    BITCOIN_URL: btcdClientB.host,
     API_PORT: NODE_B_PORT,
     MONGODB_DATABASE: dbB.settings.tempDbName,
     MONGODB_USER: dbB.settings.tempDbUser,
@@ -67,7 +64,7 @@ describe('A user can successfully submit a claim into the po.et network', async 
   })
 
   // Make sure node A has regtest coins to pay for transactions.
-  await ensureBitcoinBalance(bitcoindClientA)
+  await ensureBitcoinBalance(btcdClientA)
 
   // Allow everything to finish starting.
   await delay(5 * 1000)
@@ -103,7 +100,7 @@ describe('A user can successfully submit a claim into the po.et network', async 
   await delay(parseInt(process.env.ANCHOR_INTERVAL_IN_SECONDS || '10', 10) * 1000 * 2)
 
   // mine N confirmation blocks on bitcoindA.
-  await bitcoindClientA.generate(parseInt(process.env.CONFIRMATION_BLOCKS || '1', 10))
+  await btcdClientA.generate(parseInt(process.env.CONFIRMATION_BLOCKS || '1', 10))
 
   // Wait for claim batches to be read from the blockchain.
   await delay(parseInt(process.env.READ_DIRECTORY_INTERVAL_IN_SECONDS || '5', 10) * 1000 * 3)

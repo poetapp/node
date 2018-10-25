@@ -1,4 +1,4 @@
-version: '3'
+version: '3.6'
 
 services:
   mongo:
@@ -8,30 +8,6 @@ services:
     # image: rabbitmq:3-management
     # ports:
     #   - "15672:15672" # Allows access to the UI for this management image
-
-  bitcoind-1:
-    # volumes:
-    #   - bitcoind1:/home/bitcoin/.bitcoin
-
-  bitcoind-2:
-    # volumes:
-    #   - bitcoind2:/home/bitcoin/.bitcoin
-    image: ruimarinho/bitcoin-core:0.17.0
-    ports:
-      - "19443:18443"
-    command:
-      -printtoconsole
-      -testnet=${USE_BTC_TESTNET:-0}
-      -regtest=${USE_BTC_REGTEST:-1}
-      -rpcuser=bitcoinrpcuser
-      -rpcpassword=bitcoinrpcpassword
-      -rpcallowip=::/0
-      -server
-      -deprecatedrpc=signrawtransaction
-      -addnode=bitcoind-1
-    links:
-      - bitcoind-1:bitcoind-1
-
 
   poet-node:
     environment:
@@ -52,10 +28,3 @@ services:
   #   links:
   #     - bitcoind-1
   #   command: scripts/regtest-watcher.js
-
-# volumes:
-#   bitcoind1:
-#     driver: local
-#
-#   bitcoind2:
-#     driver: local
