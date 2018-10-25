@@ -25,7 +25,7 @@ describe('toPromise', async (assert: any) => {
   {
     const value = 10
     assert({
-      given: 'nested compositions',
+      given: 'nested compositions of sync and async functions',
       should,
       actual: await Try(asyncPipe(doubleP, inc, asyncPipe(double, incP)), value).catch(identity),
       expected: await incP(double(inc(await doubleP(value)))),
