@@ -17,8 +17,6 @@ env:
 
 install:
   - DC_FILES="-f docker-compose.yml -f docker-compose.ci.yml"
-  - docker-compose $DC_FILES build
-  - docker images
   - docker-compose $DC_FILES up -d
   - sleep 10
 
@@ -40,6 +38,9 @@ deploy:
     - bash ./scripts/docker-push.sh
     on:
       all_branches: true
-
-after_deploy:
-  - npm run travis-deploy-once "npm run semantic-release"
+  - provider: script
+    skip_cleanup: true
+    script:
+      - docker-compose exec poet-node npx semantic-release --no-ci
+    on:
+      branch: master
