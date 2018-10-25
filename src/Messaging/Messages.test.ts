@@ -22,10 +22,12 @@ describe('Messages.isBlockDownloaded', async assert => {
     poetBlockAnchors: [validBlockAnchor],
   }
 
+  const should = 'return the correct boolean'
+
   {
     assert({
       given: 'a valid BlockDownloaded object',
-      should: 'isBlockDownloaded should return true',
+      should,
       actual: isBlockDownloaded(validBlockDownloaded),
       expected: true,
     })
@@ -39,7 +41,7 @@ describe('Messages.isBlockDownloaded', async assert => {
 
     assert({
       given: 'a BlockDownloaded with an empty array of poetBlockAnchors',
-      should: 'isBlockDownloaded should return true',
+      should,
       actual: isBlockDownloaded(blockDownloaded),
       expected: true,
     })
@@ -53,7 +55,7 @@ describe('Messages.isBlockDownloaded', async assert => {
 
     assert({
       given: 'a BlockDownloaded with an undefined poetBlockAnchors',
-      should: 'isBlockDownloaded should return true',
+      should,
       actual: isBlockDownloaded(blockDownloaded),
       expected: true,
     })
@@ -64,7 +66,7 @@ describe('Messages.isBlockDownloaded', async assert => {
 
     assert({
       given: 'a BlockDownloaded without poetBlockAnchors',
-      should: 'isBlockDownloaded should return true',
+      should,
       actual: isBlockDownloaded(blockDownloaded),
       expected: true,
     })
@@ -78,7 +80,7 @@ describe('Messages.isBlockDownloaded', async assert => {
 
     assert({
       given: 'a invalid BlockDownloaded with a null poetBlockAnchors',
-      should: 'isBlockDownloaded should return false',
+      should,
       actual: isBlockDownloaded(blockDownloaded),
       expected: false,
     })
@@ -89,7 +91,7 @@ describe('Messages.isBlockDownloaded', async assert => {
 
     assert({
       given: 'a BlockDownloaded without a LightBlock',
-      should: 'isBlockDownloaded should return false',
+      should,
       actual: isBlockDownloaded(blockDownloaded),
       expected: false,
     })
