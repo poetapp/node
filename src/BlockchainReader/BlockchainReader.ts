@@ -1,6 +1,6 @@
 import BitcoinCore = require('bitcoin-core')
 import { injectable, Container } from 'inversify'
-import { MongoClient, Db } from 'mongodb'
+import { MongoClient, Db, Collection } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
@@ -10,6 +10,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { BitcoinRPCConfiguration, LoggingConfiguration } from 'Configuration'
 
 import { Controller, ControllerConfiguration } from './Controller'
+import { DAO } from './DAO'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Service, ServiceConfiguration } from './Service'
 
@@ -52,6 +53,9 @@ export class BlockchainReader {
     this.service = this.container.get('Service')
     await this.service.start()
 
+    const dao: DAO = this.container.get('DAO')
+    await dao.start()
+
     this.logger.info('BlockchainReader Started')
   }
 
@@ -68,7 +72,8 @@ export class BlockchainReader {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Controller>('ClaimController').to(Controller)
     this.container.bind<Service>('Service').to(Service)
-    this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
+    this.container.bind<DAO>('DAO').to(DAO)
+    this.container.bind<Collection>('Collection').toConstantValue(this.dbConnection.collection('blockchainReader'))
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<BitcoinCore>('BitcoinCore').toConstantValue(
       new BitcoinCore({

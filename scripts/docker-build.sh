@@ -6,7 +6,7 @@ set -o pipefail
 # always tag on git hash
 TAG="v-$(git log -1 --pretty=%h)-beta"
 
-docker build -t "${REPO}":"${TAG}" .
+docker tag node_poet-node "${REPO}":"${TAG}"
 
 # if git tag release, tag semver
 if [ -n "${TRAVIS_TAG}" ]; then 
@@ -18,3 +18,5 @@ fi
 if [ "$TRAVIS_BRANCH" == "master" ]; then 
     docker tag "${REPO}":"${TAG}" "${REPO}":latest;
 fi
+
+docker images
