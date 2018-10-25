@@ -46,3 +46,5 @@ export const setUpServerAndDb = async ({
   await delay(5 * 1000)
   return { db, server }
 }
+
+export const baseUrl = (port: string, host: string = 'localhost') => `http://${host}:${port}`
