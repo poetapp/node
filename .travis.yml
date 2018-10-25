@@ -14,10 +14,11 @@ services:
 
 env:
   - REPO=poetapp/node RABBITMQ_URL=amqp://localhost
+  - DC_FILES="-f docker-compose.yml -f docker-compose.ci.yml"
 
 install:
   - DC_FILES="-f docker-compose.yml -f docker-compose.ci.yml"
-  - docker-compose $DC_FILES build
+  #- docker-compose $DC_FILES build
   - docker-compose $DC_FILES up -d >/dev/null
   - sleep 10
 
@@ -41,5 +42,5 @@ deploy:
       all_branches: true
 
 after_deploy:
-  - docker-compose exec poet-node npm run travis-deploy-once "npm run semantic-release"
+  - docker-compose exec poet-node npx semantic-release
   #- npm run travis-deploy-once "npm run semantic-release"
