@@ -13,7 +13,8 @@ services:
   - docker
 
 env:
-  - REPO=poetapp/node
+  REPO: poetapp/node
+  DOCKER_COMPOSE_VERSION: 1.21.2
 
 before_install:
   # Print out the current docker-compose version. Once this reports 1.6+ then we
