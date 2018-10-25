@@ -42,4 +42,5 @@ deploy:
       all_branches: true
 
 after_deploy:
-  - npm run travis-deploy-once "npm run semantic-release"
+  - docker-compose exec -e GH_TOKEN=${GH_TOKEN} -e NPM_TOKEN=${NPM_TOKEN} poet-node npm run travis-deploy-once "npm run semantic-release"
+  #- npm run travis-deploy-once "npm run semantic-release"
