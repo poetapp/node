@@ -20,11 +20,11 @@ export interface HealthControllerConfiguration {
   readonly lowWalletBalanceInBitcoin: number
 }
 
-export const blockchainInfoKeys = ['blocks', 'verificationprogress', 'bestblockhash', 'warnings', 'size_on_disk']
+const blockchainInfoKeys = ['blocks', 'verificationprogress', 'bestblockhash', 'warnings', 'size_on_disk']
 
-export const walletInfoKeys = ['balance', 'txcount']
+const walletInfoKeys = ['balance', 'txcount']
 
-export const networkInfoKeys = ['version', 'subversion', 'connections', 'networkactive', 'protocolversion', 'warnings']
+const networkInfoKeys = ['version', 'subversion', 'connections', 'networkactive', 'protocolversion', 'warnings']
 
 export const isStatus200 = ({ status }: { status: number }) => status === 200
 const pickNetworkInfoKeys = pick(networkInfoKeys)
