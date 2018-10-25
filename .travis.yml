@@ -18,7 +18,6 @@ env:
 install:
   - DC_FILES="-f docker-compose.yml -f docker-compose.ci.yml"
   - docker-compose $DC_FILES build
-  - docker images
   - docker-compose $DC_FILES up -d >/dev/null
   - sleep 10
 
