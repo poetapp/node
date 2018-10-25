@@ -1,4 +1,3 @@
-import { PoetAnchor, PoetBlockAnchor, StorageProtocol } from '@po.et/poet-js'
 import { allPass, equals } from 'ramda'
 import { describe } from 'riteway'
 
@@ -9,6 +8,25 @@ import { anchorPrefixAndVersionMatch, blockToPoetAnchors, bufferToPoetAnchor, is
 
 import * as TestBlock from './TestData/block-000000000000f29b1e2d33590208811f3cd2b2c190596424617a18460d878288.json'
 import * as TestBlock1 from './TestData/block-00000000f8b690cb98c5bf9e221b47b493a27523e8e8b94a18022abd3e51fb42.json'
+
+enum StorageProtocolRefactor {
+  IPFS = 0,
+}
+interface PoetAnchorRefactor {
+  readonly prefix: string
+  readonly version: number
+  readonly storageProtocol: StorageProtocolRefactor
+  readonly ipfsDirectoryHash: string
+}
+
+interface PoetTransactionAnchorRefactor extends PoetAnchorRefactor {
+  readonly transactionId: string
+}
+
+interface PoetBlockAnchorRefactor extends PoetTransactionAnchorRefactor {
+  readonly blockHeight: number
+  readonly blockHash: string
+}
 
 describe('Bitcoin.blockToPoetAnchors', async assert => {
   assert({
@@ -30,11 +48,11 @@ describe('Bitcoin.blockToPoetAnchors', async assert => {
   {
     const poetAnchors = blockToPoetAnchors(TestBlock as any) // as any: see footer note
 
-    const isBardAnchor = (poetAnchor: PoetBlockAnchor) => poetAnchor.prefix === PREFIX_BARD
-    const anchorIsVersion03 = (poetAnchor: PoetBlockAnchor) => equals(poetAnchor.version, [0, 3])
-    const anchorIsBlockHash = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHash === TestBlock.hash
-    const anchorIsBlockHeight = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHeight === TestBlock.height
-    const anchorHasUnexpectedIpfsHash = (poetAnchor: PoetBlockAnchor) =>
+    const isBardAnchor = (poetAnchor: PoetBlockAnchorRefactor) => poetAnchor.prefix === PREFIX_BARD
+    const anchorIsVersion03 = (poetAnchor: PoetBlockAnchorRefactor) => equals(poetAnchor.version, 3)
+    const anchorIsBlockHash = (poetAnchor: PoetBlockAnchorRefactor) => poetAnchor.blockHash === TestBlock.hash
+    const anchorIsBlockHeight = (poetAnchor: PoetBlockAnchorRefactor) => poetAnchor.blockHeight === TestBlock.height
+    const anchorHasUnexpectedIpfsHash = (poetAnchor: PoetBlockAnchorRefactor) =>
       !ipfsDirectoryHashes.includes(poetAnchor.ipfsDirectoryHash)
 
     const anchorsIpfsHashes = poetAnchors.map(poetAnchor => poetAnchor.ipfsDirectoryHash)
@@ -57,7 +75,7 @@ describe('Bitcoin.blockToPoetAnchors', async assert => {
 
     assert({
       given,
-      should: 'return version 0.3 anchors only',
+      should: 'return version 3 anchors only',
       actual: poetAnchors.filter(anchorIsVersion03).length,
       expected: poetAnchors.length,
     })
@@ -104,37 +122,37 @@ describe('Bitcoin.blockToPoetAnchors', async assert => {
 })
 
 describe('Bitcoin.getMatchingAnchors', async assert => {
-  const anchorPoet0001: PoetBlockAnchor = {
+  const anchorPoet0001: PoetBlockAnchorRefactor = {
     transactionId: '0b801f8cc7bec11048b18d9591d35eb747cfcbd1945ad4a72d6baf8f74c7da2e',
-    storageProtocol: StorageProtocol.IPFS,
+    storageProtocol: StorageProtocolRefactor.IPFS,
     prefix: PREFIX_POET,
-    version: [0, 0, 0, 1],
+    version: 1,
     ipfsDirectoryHash: 'QmWC8kTX1G75txRTFNaPhFukk222rxGgEjh2wKCKesj7Gw',
     blockHeight: 1411304,
     blockHash: '0000000000000011c35856348a9deb2a066facd71efb594a8429284022a99bdc',
   }
 
-  const anchorPoet0002: PoetBlockAnchor = {
+  const anchorPoet0002: PoetBlockAnchorRefactor = {
     ...anchorPoet0001,
-    version: [0, 0, 0, 2],
+    version: 2,
   }
 
-  const anchorBard0001: PoetBlockAnchor = {
+  const anchorBard0001: PoetBlockAnchorRefactor = {
     ...anchorPoet0001,
     prefix: PREFIX_BARD,
   }
 
-  const anchorBard0002: PoetBlockAnchor = {
+  const anchorBard0002: PoetBlockAnchorRefactor = {
     ...anchorBard0001,
-    version: [0, 0, 0, 2],
+    version: 2,
   }
 
-  const anchorPoet0001b: PoetBlockAnchor = {
+  const anchorPoet0001b: PoetBlockAnchorRefactor = {
     ...anchorPoet0001,
     ipfsDirectoryHash: 'asdxx',
   }
 
-  const anchors: ReadonlyArray<PoetBlockAnchor> = [
+  const anchors: ReadonlyArray<PoetBlockAnchorRefactor> = [
     anchorPoet0001,
     anchorPoet0002,
     anchorBard0001,
@@ -147,35 +165,35 @@ describe('Bitcoin.getMatchingAnchors', async assert => {
   assert({
     given,
     should: 'return only the ones matching prefix and version',
-    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_POET, [0, 0, 0, 1])),
+    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_POET, 1)),
     expected: [anchorPoet0001, anchorPoet0001b],
   })
 
   assert({
     given,
     should: 'return only the ones matching prefix and version',
-    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, [0, 0, 0, 1])),
+    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, 1)),
     expected: [anchorBard0001],
   })
 
   assert({
     given,
     should: 'return only the ones matching prefix and version',
-    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_POET, [0, 0, 0, 2])),
+    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_POET, 2)),
     expected: [anchorPoet0002],
   })
 
   assert({
     given,
     should: 'return only the ones matching prefix and version',
-    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, [0, 0, 0, 2])),
+    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, 2)),
     expected: [anchorBard0002],
   })
 
   assert({
     given,
     should: 'return only the ones matching prefix and version',
-    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, [0, 0, 0, 3])),
+    actual: anchors.filter(anchorPrefixAndVersionMatch(PREFIX_BARD, 3)),
     expected: [],
   })
 })
@@ -183,11 +201,11 @@ describe('Bitcoin.getMatchingAnchors', async assert => {
 describe('Bitcoin.bufferToPoetAnchor', async assert => {
   function assertSample(
     prefix: string,
-    version: number[],
-    storageProtocol: StorageProtocol,
-    ipfsDirectoryHash: string,
+    version: number,
+    storageProtocol: StorageProtocolRefactor,
+    ipfsDirectoryHash: string
   ) {
-    const expected: PoetAnchor = {
+    const expected: PoetAnchorRefactor = {
       prefix,
       version,
       storageProtocol,
@@ -203,18 +221,18 @@ describe('Bitcoin.bufferToPoetAnchor', async assert => {
     })
   }
 
-  assertSample('POET', [2, 3], StorageProtocol.IPFS, 'Jim')
-  assertSample('BARD', [2, 3], StorageProtocol.IPFS, 'Robert')
-  assertSample('POET', [1, 0], StorageProtocol.IPFS, 'Roger')
-  assertSample('BARD', [1, 0], StorageProtocol.IPFS, 'Syd')
+  assertSample('POET', 23, StorageProtocolRefactor.IPFS, 'Jim')
+  assertSample('BARD', 23, StorageProtocolRefactor.IPFS, 'Robert')
+  assertSample('POET', 10, StorageProtocolRefactor.IPFS, 'Roger')
+  assertSample('BARD', 10, StorageProtocolRefactor.IPFS, 'Syd')
 })
 
 describe('Bitcoin.bufferToPoetAnchor', async assert => {
   const bufferFromAnchor = (
     prefix: string,
-    version: number[],
-    storageProtocol: StorageProtocol,
-    ipfsDirectoryHash: string,
+    version: number,
+    storageProtocol: StorageProtocolRefactor,
+    ipfsDirectoryHash: string
   ): Buffer =>
     Buffer.from(
       poetAnchorToData({
@@ -230,7 +248,7 @@ describe('Bitcoin.bufferToPoetAnchor', async assert => {
     given: 'Buffer from correct poet anchor with IPFS file hash',
     should: 'return true',
     actual: isCorrectBufferLength(
-      bufferFromAnchor('POET', [2, 3], StorageProtocol.IPFS, 'QmPth96BuMUhHJDDiTNL6wphBMCXQWTDmm1uQe63VeGmPT'),
+      bufferFromAnchor('POET', 23, StorageProtocolRefactor.IPFS, 'QmPth96BuMUhHJDDiTNL6wphBMCXQWTDmm1uQe63VeGmPT')
     ),
     expected: true,
   })
@@ -239,7 +257,7 @@ describe('Bitcoin.bufferToPoetAnchor', async assert => {
     given: 'Buffer from correct poet anchor with IPFS directory hash',
     should: 'return true',
     actual: isCorrectBufferLength(
-      bufferFromAnchor('POET', [2, 3], StorageProtocol.IPFS, 'Qmdrv2VoXKpzpSzS1iKpWMxfM9THEhGgBriKqbMyAiTF1U'),
+      bufferFromAnchor('POET', 23, StorageProtocolRefactor.IPFS, 'Qmdrv2VoXKpzpSzS1iKpWMxfM9THEhGgBriKqbMyAiTF1U')
     ),
     expected: true,
   })
