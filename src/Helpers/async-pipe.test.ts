@@ -1,5 +1,5 @@
 import { identity } from 'ramda'
-import { describe, Try } from 'riteway'
+import { describe } from 'riteway'
 import { asyncPipe } from './async-pipe'
 import { toPromise } from './to-promise'
 
@@ -17,7 +17,7 @@ describe('toPromise', async (assert: any) => {
     assert({
       given: 'sync and async functions',
       should,
-      actual: await Try(asyncPipe(doubleP, inc), value).catch(identity),
+      actual: await asyncPipe(doubleP, inc)(value).catch(identity),
       expected: inc(await doubleP(value)),
     })
   }
@@ -27,7 +27,7 @@ describe('toPromise', async (assert: any) => {
     assert({
       given: 'nested compositions',
       should,
-      actual: await Try(asyncPipe(doubleP, inc, asyncPipe(double, incP)), value).catch(identity),
+      actual: await asyncPipe(doubleP, inc, asyncPipe(double, incP))(value).catch(identity),
       expected: await incP(double(inc(await doubleP(value)))),
     })
   }
