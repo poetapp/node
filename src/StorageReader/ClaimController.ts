@@ -250,7 +250,7 @@ export class ClaimController {
       try {
         return JSON.parse(serialized)
       } catch (error) {
-        throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidJson, new Date().getTime())
+        throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidJson)
       }
     }
     const logger = this.logger.child({ method: 'downloadEntryClaim' })
@@ -261,7 +261,7 @@ export class ClaimController {
     const claim = parseClaim(ipfsFileHash, serialized)
 
     if (!(await this.verifiableClaimSigner.isValidSignedVerifiableClaim(claim)))
-      throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidSignedVerifiableClaim, new Date().getTime())
+      throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidSignedVerifiableClaim)
 
     logger.trace({ ipfsFileHash, claim }, 'Finished claim download')
 
