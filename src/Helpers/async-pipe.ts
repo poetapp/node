@@ -78,7 +78,7 @@ export function asyncPipe<V extends any, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10
   fn7: (x: V) => T7 | Promise<T7>,
   fn8: (x: V) => T8 | Promise<T8>,
   fn9: (x: V) => T9 | Promise<T9>,
-  fn10: (x: V) => T1 | Promise<T10>
+  fn10: (x: V) => T10 | Promise<T10>
 ): (x: V) => T10 | Promise<T10>
 
 export function asyncPipe(...fns: any[]) {
