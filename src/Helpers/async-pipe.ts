@@ -1,7 +1,7 @@
 export function asyncPipe<V extends any, T1>(fn1: (x: V) => T1 | Promise<T1>): (x: V) => Promise<T1>
 
 export function asyncPipe<V extends any, T1, T2>(
-  fn2j: (x: V) => T1 | Promise<T1>,
+  fn1: (x: V) => T1 | Promise<T1>,
   fn2: (x: V) => T2 | Promise<T2>
 ): (x: V) => Promise<T2>
 
