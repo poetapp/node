@@ -10,6 +10,10 @@ const fixedNum = always(20)
 const doubleP = toPromise(double)
 const incP = toPromise(inc)
 
+const throwError = (message: string) => () => {
+  throw message
+}
+
 describe('asyncPipe', async (assert: any) => {
   const should = 'apply the value to the functions composition correctly'
 
@@ -18,7 +22,7 @@ describe('asyncPipe', async (assert: any) => {
     assert({
       given: 'sync and async functions',
       should,
-      actual: await asyncPipe(doubleP, inc)(value).catch(identity),
+      actual: await asyncPipe(doubleP, inc)(value),
       expected: inc(await doubleP(value)),
     })
   }
@@ -37,8 +41,18 @@ describe('asyncPipe', async (assert: any) => {
     assert({
       given: 'no starting value',
       should,
-      actual: await asyncPipe(fixedNum, incP)().catch(identity),
+      actual: await asyncPipe(fixedNum, incP)(),
       expected: await incP(fixedNum()),
+    })
+  }
+
+  {
+    const errorMessage = 'foo'
+    assert({
+      given: 'a function that throws and .catch',
+      should: 'be caught',
+      actual: await asyncPipe(inc, throwError(errorMessage))(10).catch(identity),
+      expected: errorMessage,
     })
   }
 })
