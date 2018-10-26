@@ -20,6 +20,7 @@ export const getResponseJson: getResponseJson = response => response.json()
 type configurePostFileStream = (port: string, host?: string) => (fileStream: ReadStream) => Promise<any>
 export const configurePostFileStream: configurePostFileStream = (port, host) => fileStream => {
   const formData = new FormData()
-  formData.append('file', "foo")
+  formData.append('uploads', fileStream)
+  formData.append('test', 'test')
   return post(`${baseUrl(port, host)}/${FILES_PATH}`)(formData)
 }

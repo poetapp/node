@@ -1,24 +1,27 @@
 import fetch, { Response } from 'node-fetch'
-import { pipeP } from 'ramda'
+import { asyncPipe } from 'Helpers/async-pipe'
+
+const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
 type getResponseText = (response: Response) => Promise<string>
 const getResponseText: getResponseText = response => response.text()
 
-type getFile = (ipfsUrl: string) => (hash: string) => Promise<Response>
-const getFile: getFile = ipfsUrl => hash => fetch(`${ipfsUrl}/api/v0/cat?arg=${hash}`)
-
-interface IPFSConfig {
-  url: string
-}
+type getFile = (ipfsUrl?: string) => (hash: string) => Promise<Response>
+const getFile: getFile = (ipfsUrl = IPFS_URL)=> hash => fetch(`${ipfsUrl}/api/v0/cat?arg=${hash}`)
 
 interface FetchFileConfig {
-  ipfs: IPFSConfig
+  port: number, 
+  host: string 
 }
 
-type fetchFile = (hash: string) => Promise<string>
-type configureFetchFile = ({ ipfs }: FetchFileConfig) => fetchFile
-export const configureFetchFile: configureFetchFile = ({ ipfs }) =>
-  pipeP(
-    getFile(ipfs.url),
+const trace = (label: any) => (value: any) => {
+  console.log(label, value)
+  return value;
+}
+
+type configureFetchFile = () => (hash: string) => Promise<string> 
+export const configureFetchFile: configureFetchFile = () =>
+  asyncPipe(
+    getFile(),
     getResponseText
   )

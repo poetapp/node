@@ -2,7 +2,7 @@
 import { asyncPipe } from 'Helpers/async-pipe'
 import * as fs from 'fs'
 import * as path from 'path'
-import { prop, identity } from 'ramda'
+import { prop, identity, head } from 'ramda'
 import { describe } from 'riteway'
 
 import { configurePostFileStream, getResponseJson } from '../../helpers/files'
@@ -13,10 +13,10 @@ const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
-const fetchIPFSFile = configureFetchFile({ ipfs: { url: IPFS_URL } })
+const fetchIPFSFile = configureFetchFile()
 const postFileStream = configurePostFileStream(NODE_PORT)
 
-const getHash = prop('hash')
+const getHash = prop('Hash')
 const getStatus = prop('status')
 
 type calcPath = (relPath: string) => string
@@ -26,8 +26,27 @@ const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-const testResponseHash = asyncPipe(fs.createReadStream, postFileStream, getResponseJson, getHash, fetchIPFSFile)
-const testResponseStatusCode = asyncPipe(fs.createReadStream, postFileStream, getStatus)
+const trace = (label: any) => (value: any) => {
+  console.log()
+  console.log(label, value)
+  console.log()
+  return value;
+}
+
+const testResponseHash = asyncPipe(
+  fs.createReadStream,
+  postFileStream,
+  getResponseJson,
+  head,
+  getHash,
+  fetchIPFSFile,
+)
+
+const testResponseStatusCode = asyncPipe(
+  fs.createReadStream,
+  postFileStream,
+  getStatus
+)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server

@@ -15,6 +15,7 @@ import * as KoaCors from 'koa-cors'
 import * as helmet from 'koa-helmet'
 import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
+import { values } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
@@ -25,6 +26,8 @@ import { RequestValidationMiddleware } from './Middlewares/RequestValidationMidd
 import { RouterConfiguration } from './RouterConfiguration'
 import { SecurityHeaders } from './SecurityHeaders'
 import { WorkController } from './WorkController'
+import { createIpfs } from './ipfs'
+import * as fs from 'fs'
 
 @injectable()
 export class Router {
@@ -63,7 +66,7 @@ export class Router {
         limit: Joi.number().optional(),
       },
     }
-    
+
     this.koaRouter.post('/files', this.postFile)
     this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), this.getWork)
     this.koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), this.getWorks)
@@ -89,12 +92,19 @@ export class Router {
     await this.server.close()
   }
 
+  private addFileToIPFS = async (file: any) => {
+    const ipfs = createIpfs() 
+    const response = await ipfs.addStream(fs.createReadStream(file.path))
+    return await response.json()
+  }
+
+  private addFilesToIPFS = async (files: ReadonlyArray<any>) => Promise.all(files.map(this.addFileToIPFS))
+
   private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    const { body } = context.request
+    const files = context.request.files || {};
+    const responses = await this.addFilesToIPFS(values(files))
 
-    this.logger.error(context.request.files)
-
-    context.body = ''
+    context.body = responses;
     context.status = 200
   }
 
