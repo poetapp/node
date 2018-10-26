@@ -1,7 +1,6 @@
 import * as FormData from 'form-data'
-import fetch from 'node-fetch'
-import * as str from 'string-to-stream'
 import { ReadStream } from 'fs'
+import fetch from 'node-fetch'
 
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
@@ -9,7 +8,7 @@ export interface IPFSConfiguration {
   readonly url?: string
 }
 
-export const createIpfs = ({ url = IPFS_URL  }: IPFSConfiguration = {}) => {
+export const createIpfs = ({ url = IPFS_URL }: IPFSConfiguration = {}) => {
   const addStream = (stream: ReadStream) => {
     const formData = new FormData()
     formData.append('file', stream)
@@ -19,6 +18,6 @@ export const createIpfs = ({ url = IPFS_URL  }: IPFSConfiguration = {}) => {
     })
   }
   return {
-    addStream
+    addStream,
   }
 }

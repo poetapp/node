@@ -19,6 +19,7 @@ import { values } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
+import * as fs from 'fs'
 import { HealthController } from './HealthController'
 import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
 import { LoggerMiddleware } from './Middlewares/LoggerMiddleware'
@@ -27,7 +28,6 @@ import { RouterConfiguration } from './RouterConfiguration'
 import { SecurityHeaders } from './SecurityHeaders'
 import { WorkController } from './WorkController'
 import { createIpfs } from './ipfs'
-import * as fs from 'fs'
 
 @injectable()
 export class Router {
@@ -93,7 +93,7 @@ export class Router {
   }
 
   private addFileToIPFS = async (file: any) => {
-    const ipfs = createIpfs() 
+    const ipfs = createIpfs()
     const response = await ipfs.addStream(fs.createReadStream(file.path))
     return await response.json()
   }
@@ -101,10 +101,10 @@ export class Router {
   private addFilesToIPFS = async (files: ReadonlyArray<any>) => Promise.all(files.map(this.addFileToIPFS))
 
   private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    const files = context.request.files || {};
+    const files = context.request.files || {}
     const responses = await this.addFilesToIPFS(values(files))
 
-    context.body = responses;
+    context.body = responses
     context.status = 200
   }
 

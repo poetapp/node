@@ -11,7 +11,6 @@ import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
-const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
 const fetchIPFSFile = configureFetchFile()
 const postFileStream = configurePostFileStream(NODE_PORT)
@@ -26,27 +25,9 @@ const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-const trace = (label: any) => (value: any) => {
-  console.log()
-  console.log(label, value)
-  console.log()
-  return value;
-}
+const testResponseHash = asyncPipe(fs.createReadStream, postFileStream, getResponseJson, head, getHash, fetchIPFSFile)
 
-const testResponseHash = asyncPipe(
-  fs.createReadStream,
-  postFileStream,
-  getResponseJson,
-  head,
-  getHash,
-  fetchIPFSFile,
-)
-
-const testResponseStatusCode = asyncPipe(
-  fs.createReadStream,
-  postFileStream,
-  getStatus
-)
+const testResponseStatusCode = asyncPipe(fs.createReadStream, postFileStream, getStatus)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
