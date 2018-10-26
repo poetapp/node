@@ -48,5 +48,5 @@ export class IPFSTimeoutError extends Error {
 
 export const errorToIPFSError = (ipfsFileHash: string) => (error: Error) =>
   isFetchTimeoutError(error)
-    ? new IPFSTimeoutError(ipfsFileHash, new Date().getTime())
-    : new IPFSGenericError(ipfsFileHash, error, new Date().getTime())
+    ? new IPFSTimeoutError(ipfsFileHash)
+    : new IPFSGenericError(ipfsFileHash, error)
