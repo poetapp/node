@@ -66,7 +66,7 @@ export class Router {
 
     this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), this.getWork)
     this.koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), this.getWorks)
-    this.koaRouter.post('/works', KoaBody({ textLimit: 1000000 }),this.postWork)
+    this.koaRouter.post('/works', KoaBody({ textLimit: 1000000 }), this.postWork)
     this.koaRouter.get('/health', this.getHealth)
     this.koaRouter.get('/metrics', this.getWorkCounts)
 
