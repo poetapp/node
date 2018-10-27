@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@po.et/tslint-rules": "1.4.6",
-    "@types/amqplib": "0.5.8",
+    "@types/amqplib": "0.5.9",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
     "@types/joi": "13.6.1",
