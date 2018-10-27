@@ -81,7 +81,7 @@
     "nodemon": "1.18.5",
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "3.0.1",
-    "semantic-release": "15.10.5",
+    "semantic-release": "15.10.6",
     "sinon": "7.1.0",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.6.0",
