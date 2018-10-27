@@ -69,7 +69,7 @@
     "@types/koa": "2.0.46",
     "@types/koa-helmet": "3.1.2",
     "@types/koa-router": "7.0.32",
-    "@types/mongodb": "3.1.12",
+    "@types/mongodb": "3.1.13",
     "@types/node-fetch": "1.6.9",
     "@types/pino": "4.16.1",
     "@types/ramda": "0.25.40",
