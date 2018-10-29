@@ -64,19 +64,37 @@ export class Controller {
     const matchingAnchors = filter(anchorPrefixAndVersionMatchConfiguration, anchors)
     const unmatchingAnchors = reject(anchorPrefixAndVersionMatchConfiguration, anchors)
 
+    const previousBlockHash = block.previousblockhash
+
+    const localPreviousHash = await this.dao.findHashByHeight(blockHeight - 1)
+
     logger.trace(
       {
-        blockHeight,
         blockHash,
+        blockHeight,
+        previousBlockHash,
+        localPreviousHash,
         matchingAnchors,
         unmatchingAnchors,
       },
       'Block retrieved and scanned successfully'
     )
 
-    await this.dao.upsertEntryByHeight({
-      blockHeight,
+    if (localPreviousHash && localPreviousHash !== previousBlockHash)
+      logger.warn(
+        {
+          blockHash,
+          blockHeight,
+          previousBlockHash,
+          localPreviousHash,
+        },
+        'Fork detected'
+      )
+
+    await this.dao.upsertEntryByHash({
       blockHash,
+      blockHeight,
+      previousBlockHash,
       matchingAnchors,
       unmatchingAnchors,
     })
