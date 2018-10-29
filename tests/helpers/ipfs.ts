@@ -1,4 +1,4 @@
-import { asyncPipe } from 'Helpers/async-pipe'
+import { asyncPipe } from 'Helpers/asyncPipe'
 import fetch, { Response } from 'node-fetch'
 
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
