@@ -6,6 +6,7 @@ export interface Entry {
   readonly _id?: string
   readonly blockHeight: number
   readonly blockHash: string
+  readonly previousBlockHash: string
   readonly matchingAnchors: ReadonlyArray<PoetBlockAnchor>
   readonly unmatchingAnchors: ReadonlyArray<PoetBlockAnchor>
 }
@@ -13,6 +14,8 @@ export interface Entry {
 type upsertEntryByHeight = (entry: Entry) => Promise<any>
 
 type findHighestBlockHeight = () => Promise<number | undefined>
+
+type findHashByHeight = (blockHeight: number) => Promise<string | undefined>
 
 @injectable()
 export class DAO {
@@ -24,25 +27,21 @@ export class DAO {
 
   readonly start = async (): Promise<void> => {
     await this.collection.createIndex({ blockHeight: 1 }, { unique: true })
+    await this.collection.createIndex({ blockHash: 1 }, { unique: true })
   }
 
-  readonly upsertEntryByHeight: upsertEntryByHeight = ({
-    blockHeight,
-    blockHash,
-    matchingAnchors,
-    unmatchingAnchors,
-  }) =>
-    this.collection.updateOne(
-      { blockHeight },
+  readonly upsertEntryByHash: upsertEntryByHeight = (entry: Entry) => {
+    const { blockHash, ...restOfEntry } = entry
+    return this.collection.updateOne(
+      { blockHash },
       {
         $set: {
-          blockHash,
-          matchingAnchors,
-          unmatchingAnchors,
+          ...restOfEntry,
         },
       },
       { upsert: true }
     )
+  }
 
   readonly findHighestBlockHeight: findHighestBlockHeight = async () => {
     const [{ blockHeight = null } = {}] = await this.collection
@@ -51,5 +50,13 @@ export class DAO {
       .limit(1)
       .toArray()
     return blockHeight
+  }
+
+  readonly findHashByHeight: findHashByHeight = async (blockHeight: number) => {
+    const [{ blockHash = null } = {}] = await this.collection
+      .find({ blockHeight }, { projection: { blockHash: true, _id: 0 } })
+      .limit(1)
+      .toArray()
+    return blockHash
   }
 }
