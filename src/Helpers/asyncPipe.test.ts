@@ -1,6 +1,6 @@
 import { identity, always } from 'ramda'
 import { describe } from 'riteway'
-import { asyncPipe } from './async-pipe'
+import { asyncPipe } from './asyncPipe'
 import { toPromise } from './to-promise'
 
 const double = (x: number) => x * 2
