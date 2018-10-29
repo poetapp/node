@@ -66,18 +66,19 @@ export class Controller {
 
     const previousBlockHash = block.previousblockhash
 
+    const previousHashByHeight = await this.dao.findHashByHeight(blockHeight - 1)
+
     logger.trace(
       {
         blockHash,
         blockHeight,
         previousBlockHash,
+        previousHashByHeight,
         matchingAnchors,
         unmatchingAnchors,
       },
       'Block retrieved and scanned successfully'
     )
-
-    const previousHashByHeight = await this.dao.findHashByHeight(blockHeight - 1)
 
     if (previousHashByHeight && previousHashByHeight !== previousBlockHash)
       logger.warn(
@@ -87,7 +88,7 @@ export class Controller {
           previousBlockHash,
           previousHashByHeight,
         },
-        'Chain reorganization detected.'
+        'Fork detected'
       )
 
     await this.dao.upsertEntryByHash({
