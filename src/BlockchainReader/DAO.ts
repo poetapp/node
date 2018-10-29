@@ -30,23 +30,18 @@ export class DAO {
     await this.collection.createIndex({ blockHash: 1 }, { unique: true })
   }
 
-  readonly upsertEntryByHash: upsertEntryByHeight = ({
-    blockHash,
-    blockHeight,
-    matchingAnchors,
-    unmatchingAnchors,
-  }) =>
-    this.collection.updateOne(
+  readonly upsertEntryByHash: upsertEntryByHeight = (entry: Entry) => {
+    const { blockHash, ...restOfEntry } = entry
+    return this.collection.updateOne(
       { blockHash },
       {
         $set: {
-          blockHeight,
-          matchingAnchors,
-          unmatchingAnchors,
+          ...restOfEntry,
         },
       },
       { upsert: true }
     )
+  }
 
   readonly findHighestBlockHeight: findHighestBlockHeight = async () => {
     const [{ blockHeight = null } = {}] = await this.collection
