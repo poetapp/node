@@ -67,10 +67,10 @@ export class Router {
       },
     }
 
-    this.koaRouter.post('/files', this.postFile)
+    this.koaRouter.post('/files', KoaBody({ multipart: true }), this.postFile)
     this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), this.getWork)
     this.koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), this.getWorks)
-    this.koaRouter.post('/works', this.postWork)
+    this.koaRouter.post('/works', KoaBody({ textLimit: 1000000 }), this.postWork)
     this.koaRouter.get('/health', this.getHealth)
     this.koaRouter.get('/metrics', this.getWorkCounts)
 
@@ -78,7 +78,6 @@ export class Router {
     this.koa.use(KoaCors({ expose: ['X-Total-Count'] }))
     this.koa.use(LoggerMiddleware(this.logger))
     this.koa.use(HttpExceptionsMiddleware)
-    this.koa.use(KoaBody({ textLimit: 1000000, multipart: true }))
     this.koa.use(this.koaRouter.allowedMethods())
     this.koa.use(this.koaRouter.routes())
   }
