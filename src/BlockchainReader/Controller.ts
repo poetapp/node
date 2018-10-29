@@ -66,27 +66,27 @@ export class Controller {
 
     const previousBlockHash = block.previousblockhash
 
-    const previousHashByHeight = await this.dao.findHashByHeight(blockHeight - 1)
+    const localPreviousHash = await this.dao.findHashByHeight(blockHeight - 1)
 
     logger.trace(
       {
         blockHash,
         blockHeight,
         previousBlockHash,
-        previousHashByHeight,
+        localPreviousHash,
         matchingAnchors,
         unmatchingAnchors,
       },
       'Block retrieved and scanned successfully'
     )
 
-    if (previousHashByHeight && previousHashByHeight !== previousBlockHash)
+    if (localPreviousHash && localPreviousHash !== previousBlockHash)
       logger.warn(
         {
           blockHash,
           blockHeight,
           previousBlockHash,
-          previousHashByHeight,
+          localPreviousHash,
         },
         'Fork detected'
       )
