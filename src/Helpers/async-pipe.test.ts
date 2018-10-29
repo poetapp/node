@@ -32,7 +32,7 @@ describe('asyncPipe', async (assert: any) => {
     assert({
       given: 'nested compositions of sync and async functions',
       should,
-      actual: await asyncPipe(doubleP, inc, asyncPipe(double, incP))(value).catch(identity),
+      actual: await asyncPipe(doubleP, inc, asyncPipe(double, incP))(value),
       expected: await incP(double(inc(await doubleP(value)))),
     })
   }
