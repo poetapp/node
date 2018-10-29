@@ -64,19 +64,36 @@ export class Controller {
     const matchingAnchors = filter(anchorPrefixAndVersionMatchConfiguration, anchors)
     const unmatchingAnchors = reject(anchorPrefixAndVersionMatchConfiguration, anchors)
 
+    const previousBlockHash = block.previousblockhash
+
     logger.trace(
       {
-        blockHeight,
         blockHash,
+        blockHeight,
+        previousBlockHash,
         matchingAnchors,
         unmatchingAnchors,
       },
       'Block retrieved and scanned successfully'
     )
 
+    const previousHashByHeight = await this.dao.findHashByHeight(blockHeight - 1)
+
+    if (previousHashByHeight && previousHashByHeight !== previousBlockHash)
+      logger.warn(
+        {
+          blockHash,
+          blockHeight,
+          previousBlockHash,
+          previousHashByHeight,
+        },
+        'Chain reorganization detected.'
+      )
+
     await this.dao.upsertEntryByHash({
       blockHash,
       blockHeight,
+      previousBlockHash,
       matchingAnchors,
       unmatchingAnchors,
     })
