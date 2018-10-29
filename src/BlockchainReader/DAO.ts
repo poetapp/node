@@ -26,17 +26,17 @@ export class DAO {
     await this.collection.createIndex({ blockHeight: 1 }, { unique: true })
   }
 
-  readonly upsertEntryByHeight: upsertEntryByHeight = ({
-    blockHeight,
+  readonly upsertEntryByHash: upsertEntryByHeight = ({
     blockHash,
+    blockHeight,
     matchingAnchors,
     unmatchingAnchors,
   }) =>
     this.collection.updateOne(
-      { blockHeight },
+      { blockHash },
       {
         $set: {
-          blockHash,
+          blockHeight,
           matchingAnchors,
           unmatchingAnchors,
         },

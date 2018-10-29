@@ -74,9 +74,9 @@ export class Controller {
       'Block retrieved and scanned successfully'
     )
 
-    await this.dao.upsertEntryByHeight({
-      blockHeight,
+    await this.dao.upsertEntryByHash({
       blockHash,
+      blockHeight,
       matchingAnchors,
       unmatchingAnchors,
     })
