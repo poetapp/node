@@ -44,8 +44,8 @@ export class HealthDAO {
     this.collection = db.collection('health')
   }
 
-  readonly updateBlockchainInfo: updateBlockchainInfo = async blockchainInfo =>
-    await this.collection.updateOne(
+  readonly updateBlockchainInfo: updateBlockchainInfo = blockchainInfo =>
+    this.collection.updateOne(
       { name: 'blockchainInfo' },
       {
         $set: {
@@ -55,8 +55,8 @@ export class HealthDAO {
       { upsert: true }
     )
 
-  readonly updateWalletInfo: updateWalletInfo = async walletInfo =>
-    await this.collection.updateOne(
+  readonly updateWalletInfo: updateWalletInfo = walletInfo =>
+    this.collection.updateOne(
       { name: 'walletInfo' },
       {
         $set: {
@@ -66,8 +66,8 @@ export class HealthDAO {
       { upsert: true }
     )
 
-  readonly updateNetworkInfo: updateNetworkInfo = async networkInfo =>
-    await this.collection.updateOne(
+  readonly updateNetworkInfo: updateNetworkInfo = networkInfo =>
+    this.collection.updateOne(
       { name: 'networkInfo' },
       {
         $set: {
@@ -77,8 +77,8 @@ export class HealthDAO {
       { upsert: true }
     )
 
-  readonly updateIPFSInfo: updateIPFSInfo = async ipfsInfo =>
-    await this.collection.updateOne(
+  readonly updateIPFSInfo: updateIPFSInfo = ipfsInfo =>
+    this.collection.updateOne(
       { name: 'ipfsInfo' },
       {
         $set: {
