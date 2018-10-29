@@ -37,7 +37,8 @@ export class Router {
       await this.controller.refreshBlockchainInfo()
       await this.controller.refreshNetworkInfo()
       await this.controller.refreshIPFSInfo()
-    } catch (error) {
+      await this.controller.refreshFeeInfo()
+   } catch (error) {
       logger.error({ error }, 'Failed to getHealthInfo')
     }
   }

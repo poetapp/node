@@ -146,6 +146,23 @@ export class HealthController {
     return networkInfo
   }
 
+  private async getEstimatedTransactionFee(): Promise<any> {
+    return await this.bitcoinCore.estimateSmartFee(1)
+  }
+
+  private async updateTransactionFee(feeEstimate: any): Promise<any> {
+    await this.collection.updateOne(
+      { name: 'feeEstimate' },
+      {
+        $set: {
+          feeEstimate,
+        },
+      },
+      { upsert: true }
+    )
+    return feeEstimate
+  }
+
   private async checkIPFSConnection(): Promise<IPFSInfo> {
     try {
       const ipfsConnection = await this.ipfs.getVersion()
@@ -175,6 +192,14 @@ export class HealthController {
     this.log(LogTypes.trace)('new info gathered, saving blockchain info'),
     this.updateBlockchainInfo,
     this.log(LogTypes.trace)('refreshed blockchain info')
+  )
+
+  public refreshFeeInfo = pipeP(
+    this.log(LogTypes.trace)('refreshing transaction fee info'),
+    this.getEstimatedTransactionFee,
+    this.log(LogTypes.trace)('new info gathered, saving transaction fee info'),
+    this.updateTransactionFee,
+    this.log(LogTypes.trace)('refreshed transaction fee info')
   )
 
   public refreshWalletInfo = pipeP(

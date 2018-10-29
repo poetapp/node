@@ -9,6 +9,7 @@ interface HealthObject {
   readonly walletInfo: object
   readonly blockchainInfo: object
   readonly networkInfo: object
+  readonly feeInfo: any
 }
 
 @injectable()
@@ -66,18 +67,29 @@ export class HealthController {
     }
   }
 
+  private async getFeeInfo(): Promise<object> {
+    try {
+      const { feeEstimate = {} } = await this.collection.findOne({ name: 'feeEstimate' })
+      return feeEstimate
+    } catch (e) {
+      return { error: 'Error retrieving feeEstimate...' }
+    }
+  }
+
   async getHealth(): Promise<HealthObject> {
     const mongoIsConnected = await this.checkMongo()
     const ipfsInfo = await this.getIPFSInfo()
     const walletInfo = await this.getWalletInfo()
     const blockchainInfo = await this.getBlockchainInfo()
     const networkInfo = await this.getNetworkInfo()
+    const feeInfo = await this.getFeeInfo()
     return {
       mongoIsConnected,
       ipfsInfo,
       walletInfo,
       blockchainInfo,
       networkInfo,
+      feeInfo
     }
   }
 }
