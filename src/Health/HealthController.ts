@@ -16,6 +16,7 @@ enum LogTypes {
 
 export interface HealthControllerConfiguration {
   readonly lowWalletBalanceInBitcoin: number
+  readonly feeEstimateBitcoinConfMinTargetBlock: number
 }
 
 interface BlockchainInfo {
@@ -39,6 +40,11 @@ interface NetworkInfo {
   readonly networkactive: boolean
   readonly protocolversion: number
   readonly warnings: string
+}
+
+interface EstimatedSmartFeeInfo {
+  readonly feerate: number
+  readonly blocks: number
 }
 
 interface IPFSInfo {
@@ -146,21 +152,21 @@ export class HealthController {
     return networkInfo
   }
 
-  private async getEstimatedTransactionFee(): Promise<any> {
-    return await this.bitcoinCore.estimateSmartFee(1)
+  private async getEstimatedSmartFee(): Promise<EstimatedSmartFeeInfo> {
+    return await this.bitcoinCore.estimateSmartFee(this.configuration.feeEstimateBitcoinConfMinTargetBlock)
   }
 
-  private async updateTransactionFee(feeEstimate: any): Promise<any> {
+  private async updateEstimatedSmartFee(estimatedSmartFeeInfo: any): Promise<EstimatedSmartFeeInfo> {
     await this.collection.updateOne(
-      { name: 'feeEstimate' },
+      { name: 'estimatedSmartFeeInfo' },
       {
         $set: {
-          feeEstimate,
+          estimatedSmartFeeInfo,
         },
       },
       { upsert: true }
     )
-    return feeEstimate
+    return estimatedSmartFeeInfo
   }
 
   private async checkIPFSConnection(): Promise<IPFSInfo> {
@@ -194,11 +200,11 @@ export class HealthController {
     this.log(LogTypes.trace)('refreshed blockchain info')
   )
 
-  public refreshFeeInfo = pipeP(
+  public refreshEstimatedSmartFee = pipeP(
     this.log(LogTypes.trace)('refreshing transaction fee info'),
-    this.getEstimatedTransactionFee,
+    this.getEstimatedSmartFee,
     this.log(LogTypes.trace)('new info gathered, saving transaction fee info'),
-    this.updateTransactionFee,
+    this.updateEstimatedSmartFee,
     this.log(LogTypes.trace)('refreshed transaction fee info')
   )
 

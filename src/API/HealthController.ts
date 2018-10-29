@@ -67,12 +67,12 @@ export class HealthController {
     }
   }
 
-  private async getFeeInfo(): Promise<object> {
+  private async getEstimatedSmartFeeInfo(): Promise<object> {
     try {
-      const { feeEstimate = {} } = await this.collection.findOne({ name: 'feeEstimate' })
-      return feeEstimate
+      const { estimatedSmartFeeInfo = {} } = await this.collection.findOne({ name: 'estimatedSmartFeeInfo' })
+      return estimatedSmartFeeInfo
     } catch (e) {
-      return { error: 'Error retrieving feeEstimate...' }
+      return { error: 'Error retrieving estimatedSmartFeeInfo...' }
     }
   }
 
@@ -82,7 +82,7 @@ export class HealthController {
     const walletInfo = await this.getWalletInfo()
     const blockchainInfo = await this.getBlockchainInfo()
     const networkInfo = await this.getNetworkInfo()
-    const feeInfo = await this.getFeeInfo()
+    const feeInfo = await this.getEstimatedSmartFeeInfo()
     return {
       mongoIsConnected,
       ipfsInfo,
