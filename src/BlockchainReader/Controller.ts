@@ -88,7 +88,7 @@ export class Controller {
           previousBlockHash,
           localPreviousHash,
         },
-        'Fork detected'
+        'Fork detected',
       )
 
     await this.dao.upsertEntryByHash({
