@@ -51,7 +51,7 @@ export class Service {
       await this.claimController.scanBlock(blockHeight)
       this.lastBlockHeight = blockHeight
     } catch (error) {
-      if (error.message === 'Block height out of range') logger.warn({ blockHeight }, error.message)
+      if (error.message === 'Block height out of range') logger.trace({ blockHeight }, error.message)
       else
         logger.error(
           {

@@ -65,7 +65,7 @@ export class Router {
 
   onStorageWriterStoreNextClaim = async () => {
     const logger = this.logger.child({ method: 'onStorageWriterStoreNextClaim' })
-    logger.info('Upload next claim request')
+    logger.trace('Upload next claim request')
     try {
       const { ipfsFileHash, claim } = await this.claimController.storeNextClaim()
       await this.messaging.publish(this.exchange.claimIpfsHash, {
