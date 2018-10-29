@@ -42,7 +42,7 @@ export class ClaimController {
     @inject('Messaging') messaging: Messaging,
     @inject('IPFS') ipfs: IPFS,
     @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
-    @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner
+    @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
@@ -67,7 +67,7 @@ export class ClaimController {
           downloadSuccessTime: null,
           downloadAttempts: 0,
         })),
-        { ordered: false }
+        { ordered: false },
       )
     } catch (exception) {
       if (exception.code !== ErrorCodes.DuplicateKey) throw exception
@@ -80,7 +80,7 @@ export class ClaimController {
     maxAttempts = this.configuration.downloadMaxAttempts,
   }: {
     retryDelay?: number
-    maxAttempts?: number
+    maxAttempts?: number,
   } = {}): Promise<void> {
     const logger = this.logger.child({ method: 'downloadNextHash' })
 
@@ -92,7 +92,7 @@ export class ClaimController {
             failureType,
             failureReason,
           },
-        }
+        },
       )
 
     const pipe = pipeP(
@@ -101,7 +101,7 @@ export class ClaimController {
       this.downloadEntryClaim,
       this.setEntryDownloadSuccessTime,
       this.updateEntryPairs,
-      this.publishEntryDownload
+      this.publishEntryDownload,
     )
 
     const handleErrors = async (error: Error) => {
@@ -132,11 +132,11 @@ export class ClaimController {
     currentTime = new Date().getTime(),
     retryDelay,
     maxAttempts,
-    ...rest
+    ...rest,
   }: {
     currentTime?: number
     retryDelay: number
-    maxAttempts: number
+    maxAttempts: number,
   }) => {
     const logger = this.logger.child({ method: 'findEntryToDownload' })
     logger.trace('started finding entry')
@@ -183,10 +183,10 @@ export class ClaimController {
   private updateEntryAttempts = async ({
     entry,
     currentTime = new Date().getTime(),
-    ...rest
+    ...rest,
   }: {
     entry: Entry
-    currentTime?: number
+    currentTime?: number,
   }) => {
     const logger = this.logger.child({ method: 'updateEntryAttempts' })
     logger.trace({ entry }, 'started updating entry')
@@ -198,7 +198,7 @@ export class ClaimController {
       {
         $set: { lastDownloadAttemptTime: currentTime },
         $inc: { downloadAttempts: 1 },
-      }
+      },
     )
 
     logger.trace('finished updating entry')
@@ -244,7 +244,7 @@ export class ClaimController {
       {
         _id: entryId,
       },
-      { $set: { downloadSuccessTime } }
+      { $set: { downloadSuccessTime } },
     )
 
   private setEntryDownloadSuccessTime = async ({ entry, ...rest }: { entry: Entry }) => {
@@ -308,8 +308,8 @@ export class ClaimController {
 
     const results = await Promise.all(
       claimIdIPFSHashPairs.map(({ claimId, ipfsFileHash }) =>
-        this.collection.updateOne({ ipfsFileHash }, { $set: { claimId } }, { upsert: true })
-      )
+        this.collection.updateOne({ ipfsFileHash }, { $set: { claimId } }, { upsert: true }),
+      ),
     )
 
     const databaseErrors = results.filter(_ => _.result.n !== 1)

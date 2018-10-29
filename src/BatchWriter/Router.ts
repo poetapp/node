@@ -19,7 +19,7 @@ export class Router {
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('ClaimController') claimController: ClaimController,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
@@ -31,7 +31,7 @@ export class Router {
     await this.messaging.consume(this.exchange.claimIpfsHash, this.onClaimIPFSHash)
     await this.messaging.consume(
       this.exchange.batchWriterCreateNextBatchRequest,
-      this.onBatchWriterCreateNextBatchRequest
+      this.onBatchWriterCreateNextBatchRequest,
     )
   }
 
@@ -55,7 +55,7 @@ export class Router {
           ipfsFileHash,
           error,
         },
-        'Uncaught Exception while adding item to be batched'
+        'Uncaught Exception while adding item to be batched',
       )
     }
   }

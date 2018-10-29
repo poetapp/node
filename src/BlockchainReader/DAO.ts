@@ -41,7 +41,7 @@ export class DAO {
           unmatchingAnchors,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
 
   readonly findHighestBlockHeight: findHighestBlockHeight = async () => {

@@ -31,7 +31,7 @@ export const setUpServerAndDb = async ({
 }: {
   PREFIX: string
   NODE_PORT: string
-  blockchainSettings?: any
+  blockchainSettings?: any,
 }) => {
   const db = await createDatabase(PREFIX)
   const server = await app({
