@@ -9,7 +9,7 @@ interface HealthObject {
   readonly walletInfo: object
   readonly blockchainInfo: object
   readonly networkInfo: object
-  readonly feeInfo: any
+  readonly estimatedSmartFeeInfo: object
 }
 
 @injectable()
@@ -82,14 +82,14 @@ export class HealthController {
     const walletInfo = await this.getWalletInfo()
     const blockchainInfo = await this.getBlockchainInfo()
     const networkInfo = await this.getNetworkInfo()
-    const feeInfo = await this.getEstimatedSmartFeeInfo()
+    const estimatedSmartFeeInfo = await this.getEstimatedSmartFeeInfo()
     return {
       mongoIsConnected,
       ipfsInfo,
       walletInfo,
       blockchainInfo,
       networkInfo,
-      feeInfo
+      estimatedSmartFeeInfo
     }
   }
 }

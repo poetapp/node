@@ -41,7 +41,7 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     const response = await getHealth(NODE_PORT)
     const healthData = await response.json()
 
-    const { mongoIsConnected, ipfsInfo, blockchainInfo, networkInfo, walletInfo } = healthData
+    const { mongoIsConnected, ipfsInfo, blockchainInfo, networkInfo, walletInfo, estimatedSmartFeeInfo } = healthData
 
     assert({
       given: 'a request to the health endpoint',
@@ -75,6 +75,13 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
       given: 'a request to the health endpoint',
       should: 'return object with property networkInfo',
       actual: isNil(networkInfo),
+      expected: false,
+    })
+
+    assert({
+      given: 'a request to the health endpoint',
+      should: 'return object with property estimatedSmartFeeInfo',
+      actual: isNil(estimatedSmartFeeInfo),
       expected: false,
     })
 
