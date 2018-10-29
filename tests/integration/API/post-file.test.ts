@@ -1,5 +1,5 @@
 /* tslint:disable:no-relative-imports */
-import { asyncPipe } from 'Helpers/async-pipe'
+import { asyncPipe } from 'Helpers/asyncPipe'
 import * as fs from 'fs'
 import * as path from 'path'
 import { prop, identity, head } from 'ramda'
