@@ -3,9 +3,9 @@ import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
+import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
-import { LoggingConfiguration } from 'Configuration'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
