@@ -17,7 +17,7 @@ enum LogTypes {
 
 export interface HealthControllerConfiguration {
   readonly lowWalletBalanceInBitcoin: number
-  readonly feeEstimateBitcoinConfMinTargetBlock: number
+  readonly feeEstimateMinTargetBlock: number
 }
 
 
@@ -97,7 +97,7 @@ export class HealthController {
   }
 
   private async getEstimatedSmartFee(): Promise<EstimatedSmartFeeInfo> {
-    return await this.bitcoinCore.estimateSmartFee(this.configuration.feeEstimateBitcoinConfMinTargetBlock)
+    return await this.bitcoinCore.estimateSmartFee(this.configuration.feeEstimateMinTargetBlock)
   }
 
   private async updateEstimatedSmartFee(estimatedSmartFeeInfo: EstimatedSmartFeeInfo): Promise<EstimatedSmartFeeInfo> {
