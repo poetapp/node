@@ -49,7 +49,7 @@ export class StorageReader {
 
     const exchangesMessaging = pick(
       ['poetAnchorDownloaded', 'claimsDownloaded', 'claimsNotDownloaded'],
-      this.configuration.exchanges
+      this.configuration.exchanges,
     )
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
