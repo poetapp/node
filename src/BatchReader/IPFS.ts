@@ -23,10 +23,10 @@ interface Link {
 
 export interface LSResult {
   Arguments: {
-    [key: string]: string
+    [key: string]: string,
   }
   Objects: {
-    [key: string]: ObjectIPFS
+    [key: string]: ObjectIPFS,
   }
 }
 

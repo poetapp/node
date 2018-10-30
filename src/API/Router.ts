@@ -42,7 +42,7 @@ export class Router {
     @inject('RouterConfiguration') configuration: RouterConfiguration,
     @inject('WorkController') workController: WorkController,
     @inject('HealthController') healthController: HealthController,
-    @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner
+    @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
@@ -131,11 +131,11 @@ export class Router {
 
     if (!isWork(body))
       throw new IllegalArgumentException(
-        `Signed Verifiable Claim's type must be ${ClaimType.Work}, not ${Object(body).type}`
+        `Signed Verifiable Claim's type must be ${ClaimType.Work}, not ${Object(body).type}`,
       )
 
     if (!(await this.verifiableClaimSigner.isValidSignedVerifiableClaim(body)))
-      throw new IllegalArgumentException("Signed Verifiable Claim's signature is incorrect.")
+      throw new IllegalArgumentException('Signed Verifiable Claim\'s signature is incorrect.')
 
     await this.workController.create(body)
 
