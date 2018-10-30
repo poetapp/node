@@ -1,10 +1,11 @@
 import BitcoinCore = require('bitcoin-core')
 import { inject, injectable } from 'inversify'
-import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 import { pick, pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
+
+import { BlockchainInfo, WalletInfo, NetworkInfo, IPFSInfo, HealthDAO } from './HealthDAO'
 
 import { IPFS } from './IPFS'
 
@@ -16,33 +17,6 @@ enum LogTypes {
 
 export interface HealthControllerConfiguration {
   readonly lowWalletBalanceInBitcoin: number
-}
-
-interface BlockchainInfo {
-  readonly blocks: number
-  readonly verificationprogress: number
-  readonly bestblockhash: string
-  readonly warnings: string
-  readonly size_on_disk: number
-}
-
-interface WalletInfo {
-  readonly balance: number
-  readonly txcount: number
-  readonly balanceLow?: boolean
-}
-
-interface NetworkInfo {
-  readonly version: number
-  readonly subversion: string
-  readonly connections: number
-  readonly networkactive: boolean
-  readonly protocolversion: number
-  readonly warnings: string
-}
-
-interface IPFSInfo {
-  readonly ipfsIsConnected: boolean
 }
 
 const blockchainInfoKeys = ['blocks', 'verificationprogress', 'bestblockhash', 'warnings', 'size_on_disk']
@@ -64,23 +38,21 @@ export const addWalletIsBalanceLow = (lowBalanceAmount: number) => (walletInfo: 
 @injectable()
 export class HealthController {
   private readonly configuration: HealthControllerConfiguration
-  private readonly db: Db
-  private readonly collection: Collection
+  private readonly healthDAO: HealthDAO
   private readonly bitcoinCore: BitcoinCore
   private readonly logger: Pino.Logger
   private readonly ipfs: IPFS
 
   constructor(
     @inject('Logger') logger: Pino.Logger,
-    @inject('DB') db: Db,
+    @inject('HealthDAO') healthDAO: HealthDAO,
     @inject('HealthControllerConfiguration') configuration: HealthControllerConfiguration,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
     @inject('IPFS') ipfs: IPFS,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
-    this.db = db
-    this.collection = this.db.collection('health')
+    this.healthDAO = healthDAO
     this.bitcoinCore = bitcoinCore
     this.ipfs = ipfs
   }
@@ -96,15 +68,7 @@ export class HealthController {
   }
 
   private async updateBlockchainInfo(blockchainInfo: BlockchainInfo): Promise<BlockchainInfo> {
-    await this.collection.updateOne(
-      { name: 'blockchainInfo' },
-      {
-        $set: {
-          blockchainInfo,
-        },
-      },
-      { upsert: true },
-    )
+    await this.healthDAO.updateBlockchainInfo(blockchainInfo)
     return blockchainInfo
   }
 
@@ -117,15 +81,7 @@ export class HealthController {
   }
 
   private async updateWalletInfo(walletInfo: WalletInfo): Promise<WalletInfo> {
-    await this.collection.updateOne(
-      { name: 'walletInfo' },
-      {
-        $set: {
-          walletInfo,
-        },
-      },
-      { upsert: true },
-    )
+    await this.healthDAO.updateWalletInfo(walletInfo)
     return walletInfo
   }
 
@@ -134,15 +90,7 @@ export class HealthController {
   }
 
   private async updateNetworkInfo(networkInfo: NetworkInfo): Promise<NetworkInfo> {
-    await this.collection.updateOne(
-      { name: 'networkInfo' },
-      {
-        $set: {
-          networkInfo,
-        },
-      },
-      { upsert: true },
-    )
+    await this.healthDAO.updateNetworkInfo(networkInfo)
     return networkInfo
   }
 
@@ -157,15 +105,7 @@ export class HealthController {
   }
 
   private async updateIPFSInfo(ipfsInfo: IPFSInfo): Promise<object> {
-    await this.collection.updateOne(
-      { name: 'ipfsInfo' },
-      {
-        $set: {
-          ipfsInfo,
-        },
-      },
-      { upsert: true },
-    )
+    await this.healthDAO.updateIPFSInfo(ipfsInfo)
     return ipfsInfo
   }
 
