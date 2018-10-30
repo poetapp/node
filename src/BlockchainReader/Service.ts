@@ -23,7 +23,7 @@ export class Service {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('ClaimController') claimController: Controller,
-    @inject('ServiceConfiguration') configuration: ServiceConfiguration
+    @inject('ServiceConfiguration') configuration: ServiceConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
@@ -59,7 +59,7 @@ export class Service {
             blockHeight,
             lastBlockHeight: this.lastBlockHeight,
           },
-          'Uncaught Error'
+          'Uncaught Error',
         )
     }
   }

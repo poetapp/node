@@ -28,7 +28,7 @@ export class Controller {
     @inject('DAO') dao: DAO,
     @inject('Messaging') messaging: Messaging,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
-    @inject('ClaimControllerConfiguration') configuration: ControllerConfiguration
+    @inject('ClaimControllerConfiguration') configuration: ControllerConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.dao = dao
@@ -49,7 +49,7 @@ export class Controller {
         blockHeight,
         blockHash,
       },
-      'Block Hash retrieved successfully. Retrieving Raw Block'
+      'Block Hash retrieved successfully. Retrieving Raw Block',
     )
 
     const block: Block = await this.bitcoinCore.getBlock(blockHash, GetBlockVerbosity.Transactions)
@@ -58,25 +58,43 @@ export class Controller {
 
     const anchorPrefixAndVersionMatchConfiguration = anchorPrefixAndVersionMatch(
       this.configuration.poetNetwork,
-      this.configuration.poetVersion
+      this.configuration.poetVersion,
     )
 
     const matchingAnchors = filter(anchorPrefixAndVersionMatchConfiguration, anchors)
     const unmatchingAnchors = reject(anchorPrefixAndVersionMatchConfiguration, anchors)
 
+    const previousBlockHash = block.previousblockhash
+
+    const localPreviousHash = await this.dao.findHashByHeight(blockHeight - 1)
+
     logger.trace(
       {
-        blockHeight,
         blockHash,
+        blockHeight,
+        previousBlockHash,
+        localPreviousHash,
         matchingAnchors,
         unmatchingAnchors,
       },
-      'Block retrieved and scanned successfully'
+      'Block retrieved and scanned successfully',
     )
 
-    await this.dao.upsertEntryByHeight({
-      blockHeight,
+    if (localPreviousHash && localPreviousHash !== previousBlockHash)
+      logger.warn(
+        {
+          blockHash,
+          blockHeight,
+          previousBlockHash,
+          localPreviousHash,
+        },
+        'Fork detected',
+      )
+
+    await this.dao.upsertEntryByHash({
       blockHash,
+      blockHeight,
+      previousBlockHash,
       matchingAnchors,
       unmatchingAnchors,
     })

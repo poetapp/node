@@ -19,7 +19,7 @@ export class Service {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('Controller') claimController: Controller,
-    @inject('ServiceConfiguration') configuration: ServiceConfiguration
+    @inject('ServiceConfiguration') configuration: ServiceConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
@@ -46,7 +46,7 @@ export class Service {
         {
           error,
         },
-        'Uncaught exception while anchoring next hash'
+        'Uncaught exception while anchoring next hash',
       )
     }
   }

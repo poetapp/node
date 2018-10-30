@@ -1,4 +1,5 @@
 /* tslint:disable:no-relative-imports */
+/* tslint:disable:max-line-length */
 import { describe } from 'riteway'
 
 import { TheRaven } from '../../helpers/Claims'

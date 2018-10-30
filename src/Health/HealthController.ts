@@ -75,7 +75,7 @@ export class HealthController {
     @inject('DB') db: Db,
     @inject('HealthControllerConfiguration') configuration: HealthControllerConfiguration,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
-    @inject('IPFS') ipfs: IPFS
+    @inject('IPFS') ipfs: IPFS,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
@@ -103,7 +103,7 @@ export class HealthController {
           blockchainInfo,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
     return blockchainInfo
   }
@@ -124,7 +124,7 @@ export class HealthController {
           walletInfo,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
     return walletInfo
   }
@@ -141,7 +141,7 @@ export class HealthController {
           networkInfo,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
     return networkInfo
   }
@@ -164,7 +164,7 @@ export class HealthController {
           ipfsInfo,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
     return ipfsInfo
   }
@@ -174,7 +174,7 @@ export class HealthController {
     this.getBlockchainInfo,
     this.log(LogTypes.trace)('new info gathered, saving blockchain info'),
     this.updateBlockchainInfo,
-    this.log(LogTypes.trace)('refreshed blockchain info')
+    this.log(LogTypes.trace)('refreshed blockchain info'),
   )
 
   public refreshWalletInfo = pipeP(
@@ -184,7 +184,7 @@ export class HealthController {
     this.addWalletIsBalanceLow,
     this.log(LogTypes.trace)('new info gathered, saving wallet info'),
     this.updateWalletInfo,
-    this.log(LogTypes.trace)('refreshed wallet info')
+    this.log(LogTypes.trace)('refreshed wallet info'),
   )
 
   public refreshNetworkInfo = pipeP(
@@ -192,7 +192,7 @@ export class HealthController {
     this.getNetworkInfo,
     this.log(LogTypes.trace)('new info gathered, saving network info'),
     this.updateNetworkInfo,
-    this.log(LogTypes.trace)('refreshed network info')
+    this.log(LogTypes.trace)('refreshed network info'),
   )
 
   public refreshIPFSInfo = pipeP(
@@ -200,6 +200,6 @@ export class HealthController {
     this.checkIPFSConnection,
     this.log(LogTypes.trace)('new info gathered, saving IPFS info'),
     this.updateIPFSInfo,
-    this.log(LogTypes.trace)('refreshed IPFS info')
+    this.log(LogTypes.trace)('refreshed IPFS info'),
   )
 }
