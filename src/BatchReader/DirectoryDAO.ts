@@ -21,8 +21,8 @@ type findNextEntry = (
   options?: {
     currentTime?: number
     retryDelay?: number
-    maxAttempts?: number
-  }
+    maxAttempts?: number,
+  },
 ) => Promise<Entry>
 
 type setEntrySuccessTime = (x: Entry) => Promise<UpdateWriteOpResult>
@@ -53,7 +53,7 @@ export class DirectoryDAO {
           successTime: null,
           attempts: 0,
         })),
-        { ordered: false }
+        { ordered: false },
       )
       .ignoreError(error => error.code === ErrorCodes.DuplicateKey)
 
@@ -86,7 +86,7 @@ export class DirectoryDAO {
       { ipfsDirectoryHash },
       {
         $set: { successTime },
-      }
+      },
     )
 
   readonly incEntryAttempts: incEntryAttempts = ({ ipfsDirectoryHash, lastAttemptTime = new Date().getTime() }) =>
@@ -95,7 +95,7 @@ export class DirectoryDAO {
       {
         $set: { lastAttemptTime },
         $inc: { attempts: 1 },
-      }
+      },
     )
 
   readonly updateFileHashes: updateFileHashes = ({ ipfsDirectoryHash, ipfsFileHashes }) =>
@@ -103,6 +103,6 @@ export class DirectoryDAO {
       { ipfsDirectoryHash },
       {
         $set: { ipfsFileHashes },
-      }
+      },
     )
 }

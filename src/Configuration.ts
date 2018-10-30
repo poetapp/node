@@ -187,7 +187,7 @@ const applyExchangePrefix = (configVars: any) => {
 export const loadConfigurationWithDefaults = (localVars: any = {}) =>
   pipe(
     mergeConfigs,
-    applyExchangePrefix
+    applyExchangePrefix,
   )({ ...process.env, ...localVars })
 
 function loadConfigurationFromFile(configPath: string): Configuration | {} {
@@ -221,7 +221,7 @@ function loadConfigurationFromEnv(env: any): Partial<Configuration> {
         ...previousValue,
         [map[key]]: extractValue(value),
       }),
-      {}
+      {},
     )
 
   return configurationFromEnv
@@ -233,8 +233,8 @@ function validatePoetVersion(poetVersion: any) {
   poetVersion.forEach((element: any) =>
     assert(
       Number.isInteger(element) && 0 <= element && element < 256,
-      'Each member of poetVersion must be an integer between 0 and 255'
-    )
+      'Each member of poetVersion must be an integer between 0 and 255',
+    ),
   )
 }
 

@@ -18,7 +18,7 @@ export class Router {
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('Controller') claimController: Controller,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
@@ -40,7 +40,7 @@ export class Router {
       {
         ipfsDirectoryHash,
       },
-      'Creating anchor request'
+      'Creating anchor request',
     )
 
     try {
@@ -52,7 +52,7 @@ export class Router {
           error,
           ipfsDirectoryHash,
         },
-        'Anchor request failure'
+        'Anchor request failure',
       )
     }
   }
