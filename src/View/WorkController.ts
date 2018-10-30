@@ -40,7 +40,7 @@ export class WorkController {
     ipfsDirectoryHash,
   }: {
     ipfsFileHashes: ReadonlyArray<string>
-    ipfsDirectoryHash: string
+    ipfsDirectoryHash: string,
   }) => {
     const logger = this.logger.child({ method: 'setDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
@@ -49,9 +49,9 @@ export class WorkController {
         this.workCollection.updateOne(
           { 'timestamp.ipfsFileHash': ipfsFileHash },
           { $set: { 'timestamp.ipfsDirectoryHash': ipfsDirectoryHash } },
-          { upsert: true }
-        )
-      )
+          { upsert: true },
+        ),
+      ),
     )
   }
 
@@ -59,7 +59,7 @@ export class WorkController {
     this.logger.trace({ ipfsDirectoryHash, transactionId }, 'Setting the Transaction ID for a IPFS Hash')
     await this.workCollection.updateMany(
       { 'timestamp.ipfsDirectoryHash': ipfsDirectoryHash },
-      { $set: { 'timestamp.transactionId': transactionId } }
+      { $set: { 'timestamp.transactionId': transactionId } },
     )
   }
 
@@ -71,9 +71,9 @@ export class WorkController {
         this.timestampCollection.updateOne(
           { ipfsDirectoryHash: timestamp.ipfsDirectoryHash },
           { $set: timestamp },
-          { upsert: true }
-        )
-      )
+          { upsert: true },
+        ),
+      ),
     )
   }
 
@@ -82,7 +82,7 @@ export class WorkController {
     ipfsDirectoryHash,
   }: {
     ipfsFileHashes: ReadonlyArray<string>
-    ipfsDirectoryHash: string
+    ipfsDirectoryHash: string,
   }) => {
     const logger = this.logger.child({ method: 'setFileHashesForDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
@@ -94,9 +94,9 @@ export class WorkController {
         this.workCollection.updateOne(
           { 'timestamp.ipfsFileHash': ipfsFileHash },
           { $set: { timestamp: { ...timestamp, ipfsFileHash } } },
-          { upsert: true }
-        )
-      )
+          { upsert: true },
+        ),
+      ),
     )
   }
 
@@ -104,8 +104,8 @@ export class WorkController {
     this.logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
-        this.workCollection.updateOne({ 'timestamp.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true })
-      )
+        this.workCollection.updateOne({ 'timestamp.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
+      ),
     )
   }
 }

@@ -81,7 +81,7 @@ export class Health {
         network: this.configuration.bitcoinNetwork,
         username: this.configuration.bitcoinUsername,
         password: this.configuration.bitcoinPassword,
-      })
+      }),
     )
     this.container.bind<HealthServiceConfiguration>('HealthServiceConfiguration').toConstantValue({
       healthIntervalInSeconds: this.configuration.healthIntervalInSeconds,

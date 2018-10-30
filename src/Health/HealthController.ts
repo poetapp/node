@@ -49,7 +49,7 @@ export class HealthController {
     @inject('HealthDAO') healthDAO: HealthDAO,
     @inject('HealthControllerConfiguration') configuration: HealthControllerConfiguration,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
-    @inject('IPFS') ipfs: IPFS
+    @inject('IPFS') ipfs: IPFS,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
@@ -69,7 +69,19 @@ export class HealthController {
   }
 
   private async updateBlockchainInfo(blockchainInfo: BlockchainInfo): Promise<BlockchainInfo> {
+<<<<<<< HEAD
     await this.healthDAO.updateBlockchainInfo(blockchainInfo)
+=======
+    await this.collection.updateOne(
+      { name: 'blockchainInfo' },
+      {
+        $set: {
+          blockchainInfo,
+        },
+      },
+      { upsert: true },
+    )
+>>>>>>> master
     return blockchainInfo
   }
 
@@ -82,7 +94,19 @@ export class HealthController {
   }
 
   private async updateWalletInfo(walletInfo: WalletInfo): Promise<WalletInfo> {
+<<<<<<< HEAD
     await this.healthDAO.updateWalletInfo(walletInfo)
+=======
+    await this.collection.updateOne(
+      { name: 'walletInfo' },
+      {
+        $set: {
+          walletInfo,
+        },
+      },
+      { upsert: true },
+    )
+>>>>>>> master
     return walletInfo
   }
 
@@ -91,7 +115,19 @@ export class HealthController {
   }
 
   private async updateNetworkInfo(networkInfo: NetworkInfo): Promise<NetworkInfo> {
+<<<<<<< HEAD
     await this.healthDAO.updateNetworkInfo(networkInfo)
+=======
+    await this.collection.updateOne(
+      { name: 'networkInfo' },
+      {
+        $set: {
+          networkInfo,
+        },
+      },
+      { upsert: true },
+    )
+>>>>>>> master
     return networkInfo
   }
 
@@ -106,7 +142,19 @@ export class HealthController {
   }
 
   private async updateIPFSInfo(ipfsInfo: IPFSInfo): Promise<object> {
+<<<<<<< HEAD
     await this.healthDAO.updateIPFSInfo(ipfsInfo)
+=======
+    await this.collection.updateOne(
+      { name: 'ipfsInfo' },
+      {
+        $set: {
+          ipfsInfo,
+        },
+      },
+      { upsert: true },
+    )
+>>>>>>> master
     return ipfsInfo
   }
 
@@ -115,7 +163,7 @@ export class HealthController {
     this.getBlockchainInfo,
     this.log(LogTypes.trace)('new info gathered, saving blockchain info'),
     this.updateBlockchainInfo,
-    this.log(LogTypes.trace)('refreshed blockchain info')
+    this.log(LogTypes.trace)('refreshed blockchain info'),
   )
 
   public refreshWalletInfo = pipeP(
@@ -125,7 +173,7 @@ export class HealthController {
     this.addWalletIsBalanceLow,
     this.log(LogTypes.trace)('new info gathered, saving wallet info'),
     this.updateWalletInfo,
-    this.log(LogTypes.trace)('refreshed wallet info')
+    this.log(LogTypes.trace)('refreshed wallet info'),
   )
 
   public refreshNetworkInfo = pipeP(
@@ -133,7 +181,7 @@ export class HealthController {
     this.getNetworkInfo,
     this.log(LogTypes.trace)('new info gathered, saving network info'),
     this.updateNetworkInfo,
-    this.log(LogTypes.trace)('refreshed network info')
+    this.log(LogTypes.trace)('refreshed network info'),
   )
 
   public refreshIPFSInfo = pipeP(
@@ -141,6 +189,6 @@ export class HealthController {
     this.checkIPFSConnection,
     this.log(LogTypes.trace)('new info gathered, saving IPFS info'),
     this.updateIPFSInfo,
-    this.log(LogTypes.trace)('refreshed IPFS info')
+    this.log(LogTypes.trace)('refreshed IPFS info'),
   )
 }
