@@ -96,6 +96,26 @@ export class ClaimController {
         },
       )
 
+    const publishEntryFailureReason = async (
+      ipfsFileHash: string,
+      failureType: FailureType,
+      failureReason: FailureReason,
+      failureTime: number
+    ) => {
+      const logger = this.logger.child({ method: 'publishEntryFailureReason' })
+      logger.trace('started publishing')
+
+      await this.messaging.publishClaimsNotDownloaded([
+        {
+          ipfsFileHash,
+          failureType,
+          failureReason,
+          failureTime,
+        },
+      ])
+      logger.trace('finished publishing')
+    }
+
     const pipe = pipeP(
       this.findEntryToDownload,
       this.updateEntryAttempts,
@@ -107,13 +127,26 @@ export class ClaimController {
 
     const handleErrors = async (error: Error) => {
       if (error instanceof NoMoreEntriesException) logger.trace(error.message)
-      else if (error instanceof InvalidClaim)
+      else if (error instanceof InvalidClaim) {
         await updateEntryFailureReason(error.ipfsFileHash, FailureType.Hard, error.failureReason)
-      else if (error instanceof IPFSTimeoutError)
+        await publishEntryFailureReason(error.ipfsFileHash, FailureType.Hard, error.failureReason, error.failureTime)
+      } else if (error instanceof IPFSTimeoutError) {
         await updateEntryFailureReason(error.ipfsFileHash, FailureType.Soft, FailureReason.IPFSTimeout)
-      else if (error instanceof IPFSGenericError) {
+        await publishEntryFailureReason(
+          error.ipfsFileHash,
+          FailureType.Soft,
+          FailureReason.IPFSTimeout,
+          error.failureTime
+        )
+      } else if (error instanceof IPFSGenericError) {
         logger.warn({ error })
         await updateEntryFailureReason(error.ipfsFileHash, FailureType.Soft, FailureReason.IPFSGeneric)
+        await publishEntryFailureReason(
+          error.ipfsFileHash,
+          FailureType.Soft,
+          FailureReason.IPFSGeneric,
+          error.failureTime
+        )
       } else throw error
     }
 
