@@ -1,7 +1,7 @@
 /* tslint:disable:no-console */
 import { Connection, connect, Channel } from 'amqplib'
 
-import { ClaimIPFSHashPair, isClaimIPFSHashPair } from 'Interfaces'
+import { ClaimIPFSHashPair, isClaimIPFSHashPair, IPFSHashFailure } from 'Interfaces'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { BlockDownloaded, isBlockDownloaded } from './Messages'
@@ -100,5 +100,9 @@ export class Messaging {
 
       consume(claimIPFSHashPairs)
     })
+  }
+
+  publishClaimsNotDownloaded = async (ipfsHashFailure: ReadonlyArray<IPFSHashFailure>) => {
+    return this.publish(this.exchanges.claimsNotDownloaded, ipfsHashFailure)
   }
 }
