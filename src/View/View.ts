@@ -3,13 +3,19 @@ import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
+import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
-import { ViewConfiguration } from './ViewConfiguration'
 import { WorkController } from './WorkController'
+
+export interface ViewConfiguration extends LoggingConfiguration {
+  readonly dbUrl: string
+  readonly rabbitmqUrl: string
+  readonly exchanges: ExchangeConfiguration
+}
 
 @injectable()
 export class View {
