@@ -10,6 +10,7 @@ import { createModuleLogger } from 'Helpers/Logging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { HealthController, HealthControllerConfiguration } from './HealthController'
+import { HealthDAO } from './HealthDAO'
 import { HealthService, HealthServiceConfiguration } from './HealthService'
 import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
@@ -96,5 +97,6 @@ export class Health {
       lowWalletBalanceInBitcoin: this.configuration.lowWalletBalanceInBitcoin,
       feeEstimateBitcoinConfMinTargetBlock: this.configuration.feeEstimateBitcoinConfMinTargetBlock,
     })
+    this.container.bind<HealthDAO>('HealthDAO').to(HealthDAO)
   }
 }
