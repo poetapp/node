@@ -3,9 +3,9 @@ import { injectable, Container } from 'inversify'
 import { MongoClient, Db } from 'mongodb'
 import * as Pino from 'pino'
 
+import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
-import { LoggingConfiguration } from 'Configuration'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { HealthController } from './HealthController'
