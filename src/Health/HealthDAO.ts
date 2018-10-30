@@ -24,7 +24,6 @@ export interface NetworkInfo {
   readonly warnings: string
 }
 
-
 export interface EstimatedSmartFeeInfo {
   readonly feerate: number
   readonly blocks: number
@@ -104,6 +103,6 @@ export class HealthDAO {
           estimatedSmartFeeInfo,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
 }

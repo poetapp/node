@@ -233,7 +233,7 @@ export async function app(localVars: any = {}) {
     bitcoinUsername: configuration.bitcoinUsername,
     bitcoinPassword: configuration.bitcoinPassword,
     healthIntervalInSeconds: configuration.healthIntervalInSeconds,
-    feeEstimateBitcoinConfMinTargetBlock: configuration.feeEstimateBitcoinConfMinTargetBlock,
+    feeEstimateMinTargetBlock: configuration.feeEstimateMinTargetBlock,
     exchanges: {
       getHealth: configuration.exchangeGetHealth,
     },

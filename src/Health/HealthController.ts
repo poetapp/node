@@ -17,9 +17,8 @@ enum LogTypes {
 
 export interface HealthControllerConfiguration {
   readonly lowWalletBalanceInBitcoin: number
-  readonly feeEstimateBitcoinConfMinTargetBlock: number
+  readonly feeEstimateMinTargetBlock: number
 }
-
 
 const blockchainInfoKeys = ['blocks', 'verificationprogress', 'bestblockhash', 'warnings', 'size_on_disk']
 
@@ -97,7 +96,7 @@ export class HealthController {
   }
 
   private async getEstimatedSmartFee(): Promise<EstimatedSmartFeeInfo> {
-    return await this.bitcoinCore.estimateSmartFee(this.configuration.feeEstimateBitcoinConfMinTargetBlock)
+    return await this.bitcoinCore.estimateSmartFee(this.configuration.feeEstimateMinTargetBlock)
   }
 
   private async updateEstimatedSmartFee(estimatedSmartFeeInfo: EstimatedSmartFeeInfo): Promise<EstimatedSmartFeeInfo> {
@@ -133,7 +132,7 @@ export class HealthController {
     this.getEstimatedSmartFee,
     this.log(LogTypes.trace)('new info gathered, saving transaction fee info'),
     this.updateEstimatedSmartFee,
-    this.log(LogTypes.trace)('refreshed transaction fee info')
+    this.log(LogTypes.trace)('refreshed transaction fee info'),
   )
 
   public refreshWalletInfo = pipeP(

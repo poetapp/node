@@ -95,7 +95,7 @@ export class Health {
     })
     this.container.bind<HealthControllerConfiguration>('HealthControllerConfiguration').toConstantValue({
       lowWalletBalanceInBitcoin: this.configuration.lowWalletBalanceInBitcoin,
-      feeEstimateBitcoinConfMinTargetBlock: this.configuration.feeEstimateBitcoinConfMinTargetBlock,
+      feeEstimateMinTargetBlock: this.configuration.feeEstimateMinTargetBlock,
     })
     this.container.bind<HealthDAO>('HealthDAO').to(HealthDAO)
   }
