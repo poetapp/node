@@ -2,6 +2,9 @@
   "extends": [
     "@po.et/tslint-rules"
   ],
+  "rules": {
+    "object-literal-key-quotes": [true, "as-needed"]
+  },
   "linterOptions": {
     "exclude": [
       "**/*.json"
