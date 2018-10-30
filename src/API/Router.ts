@@ -19,7 +19,7 @@ import { values } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import * as fs from 'fs'
+import { FileController } from './FileController'
 import { HealthController } from './HealthController'
 import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
 import { LoggerMiddleware } from './Middlewares/LoggerMiddleware'
@@ -27,7 +27,6 @@ import { RequestValidationMiddleware } from './Middlewares/RequestValidationMidd
 import { RouterConfiguration } from './RouterConfiguration'
 import { SecurityHeaders } from './SecurityHeaders'
 import { WorkController } from './WorkController'
-import { createIpfs } from './ipfs'
 
 @injectable()
 export class Router {
@@ -35,6 +34,7 @@ export class Router {
   private readonly configuration: RouterConfiguration
   private readonly koa = new Koa()
   private readonly koaRouter = new KoaRouter()
+  private readonly fileController: FileController
   private readonly workController: WorkController
   private readonly healthController: HealthController
   private server: http.Server
@@ -43,12 +43,14 @@ export class Router {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('RouterConfiguration') configuration: RouterConfiguration,
+    @inject('FileController') fileController: FileController,
     @inject('WorkController') workController: WorkController,
     @inject('HealthController') healthController: HealthController,
     @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
+    this.fileController = fileController
     this.workController = workController
     this.healthController = healthController
     this.verifiableClaimSigner = verifiableClaimSigner
@@ -91,17 +93,9 @@ export class Router {
     await this.server.close()
   }
 
-  private addFileToIPFS = async (file: any) => {
-    const ipfs = createIpfs()
-    const response = await ipfs.addStream(fs.createReadStream(file.path))
-    return await response.json()
-  }
-
-  private addFilesToIPFS = async (files: ReadonlyArray<any>) => Promise.all(files.map(this.addFileToIPFS))
-
   private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     const files = context.request.files || {}
-    const responses = await this.addFilesToIPFS(values(files))
+    const responses = await this.fileController.addFiles(values(files))
 
     context.body = responses
     context.status = 200

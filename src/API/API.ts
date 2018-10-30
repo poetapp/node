@@ -8,6 +8,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { APIConfiguration } from './APIConfiguration'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
+import { FileController } from './FileController'
 import { HealthController } from './HealthController'
 import { Router } from './Router'
 import { RouterConfiguration } from './RouterConfiguration'
@@ -58,6 +59,7 @@ export class API {
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<RouterConfiguration>('RouterConfiguration').toConstantValue({ port: this.configuration.port })
+    this.container.bind<FileController>('FileController').to(FileController)
     this.container.bind<WorkController>('WorkController').to(WorkController)
     this.container.bind<HealthController>('HealthController').to(HealthController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
