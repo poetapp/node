@@ -22,9 +22,12 @@ import { HealthController } from './HealthController'
 import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
 import { LoggerMiddleware } from './Middlewares/LoggerMiddleware'
 import { RequestValidationMiddleware } from './Middlewares/RequestValidationMiddleware'
-import { RouterConfiguration } from './RouterConfiguration'
 import { SecurityHeaders } from './SecurityHeaders'
 import { WorkController } from './WorkController'
+
+export interface RouterConfiguration {
+  readonly port: number
+}
 
 @injectable()
 export class Router {
