@@ -23,7 +23,7 @@ export class Router {
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('ClaimController') claimController: ClaimController,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
@@ -58,7 +58,7 @@ export class Router {
         {
           error,
         },
-        'Uncaught Exception while Storing Claim'
+        'Uncaught Exception while Storing Claim',
       )
     }
   }

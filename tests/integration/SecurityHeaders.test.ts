@@ -15,7 +15,7 @@ describe('Security Headers', async assert => {
   const response = await fetch(client.url)
 
   const headers = {
-    'x-content-security-policy': "script-src 'self'",
+    'x-content-security-policy': 'script-src \'self\'',
     'x-frame-options': 'DENY',
     'x-xss-protection': '1; mode=block',
     'x-content-type-options': 'nosniff',
@@ -23,7 +23,7 @@ describe('Security Headers', async assert => {
   }
 
   const actual = await Promise.all(
-    Object.keys(headers).map(async (header: string) => await response.headers.get(header))
+    Object.keys(headers).map(async (header: string) => await response.headers.get(header)),
   )
 
   const expected = values(headers)
