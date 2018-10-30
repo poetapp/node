@@ -1,3 +1,4 @@
+  /* tslint:disable:trailing-comma */
 import { SignedVerifiableClaim, VerifiableClaimSigner } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
@@ -132,7 +133,7 @@ export class ClaimController {
     currentTime = new Date().getTime(),
     retryDelay,
     maxAttempts,
-    ...rest,
+    ...rest
   }: {
     currentTime?: number
     retryDelay: number
@@ -183,7 +184,7 @@ export class ClaimController {
   private updateEntryAttempts = async ({
     entry,
     currentTime = new Date().getTime(),
-    ...rest,
+    ...rest
   }: {
     entry: Entry
     currentTime?: number,
