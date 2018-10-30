@@ -4,7 +4,7 @@ import { describe } from 'riteway'
 
 import { app } from '../../src/app'
 import { ensureBitcoinBalance, resetBitcoinServers } from '../helpers/bitcoin'
-import { getHealth } from '../helpers/health'
+import { getHealth, getMetrics } from '../helpers/endpoints'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
 const Client = require('bitcoin-core')
 
@@ -86,7 +86,6 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
       expected: true,
     })
   }
-
   // Make sure node has regtest coins: Genrate 101 blocks at 25BTC/block if none.
   await ensureBitcoinBalance(bitcoindClient)
 
@@ -108,6 +107,20 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
       should: 'return walletInfo property isBalanceLow as false',
       actual: isBalanceLow,
       expected: false,
+    })
+  }
+
+  {
+
+    const response = await getMetrics(NODE_PORT)
+    const metricsData = await response.json()
+    const { TotalWorkClaims } = metricsData
+
+    assert({
+      given: 'a request to the health endpoint',
+      should: 'return object with property networkInfo of type number',
+      actual: typeof TotalWorkClaims,
+      expected: 'number',
     })
   }
 
