@@ -2,15 +2,16 @@ import * as FormData from 'form-data'
 import * as fs from 'fs'
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
-import fetch from 'node-fetch'
+import fetch, {Response} from 'node-fetch'
 import * as Pino from 'pino'
+import { map } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { asyncPipe } from 'Helpers/asyncPipe'
 
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
-interface POSTFileResponse {
+interface FileResponseJson {
   readonly Hash: string
 }
 
@@ -36,7 +37,7 @@ export class FileController {
     this.collection = this.db.collection('files')
   }
 
-  private log = (logType: LogTypes) => (label: string) => <T extends any[]>(value?: T): T => {
+  private log = (logType: LogTypes) => (label: string) => <T extends any>(value?: T ): T => {
     this.logger[logType]({ value }, label)
     return value
   }
@@ -45,31 +46,34 @@ export class FileController {
     const formData = new FormData()
     formData.append('file', stream)
     return fetch(`${IPFS_URL}/api/v0/add`, {
+      method: 'post',
       body: formData,
-      timeout: 30000,
+      timeout: 1000 * 60 * 10,
     })
   }
 
-  private addFileToIPFS = async (file: File) => {
-    const response = await this.uploadStream(fs.createReadStream(file.path))
-    return await response.json()
-  }
+  private getResponseJson = (x: Response) => x.json()
 
-  private addFilesToIPFS = async (files: ReadonlyArray<File>) => Promise.all(files.map(this.addFileToIPFS))
+  private addFileToIPFS = (fileStream: fs.ReadStream) => this.uploadStream(fileStream)
 
-  private storeIPFSHash = async (response: POSTFileResponse) => {
+  private storeIPFSHash = async (response: FileResponseJson) => {
     const { Hash: hash } = response
     await this.collection.insertOne({ hash })
     return response
   }
 
-  private storeIPFSHashes = async (responses: ReadonlyArray<POSTFileResponse>) => responses.map(this.storeIPFSHash)
+  private handleFile = asyncPipe(
+    this.addFileToIPFS,
+    this.getResponseJson,
+    this.storeIPFSHash,
+  )
+
+  // using Promise.all directly in asyncPipe results in TypeError
+  // "Promise.all called on non-object"
+  private awaitAll = (xs: Array<Promise<any>>) => Promise.all(xs)
 
   public addFiles = asyncPipe(
-    this.log(LogTypes.trace)('Adding files to ipfs'),
-    this.addFilesToIPFS,
-    this.log(LogTypes.trace)('Added files and now storing their hashes'),
-    this.storeIPFSHashes,
-    this.log(LogTypes.trace)('Hashes stored'),
+    map(this.handleFile),
+    this.awaitAll,
   )
 }

@@ -6,6 +6,7 @@ import {
   isSignedVerifiableClaim,
   VerifiableClaimSigner,
 } from '@po.et/poet-js'
+import * as fs from 'fs'
 import * as http from 'http'
 import { injectable, inject } from 'inversify'
 import * as Joi from 'joi'
@@ -15,7 +16,7 @@ import * as KoaCors from 'koa-cors'
 import * as helmet from 'koa-helmet'
 import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
-import { values } from 'ramda'
+import { map, values, prop, pipe } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
@@ -30,6 +31,10 @@ import { WorkController } from './WorkController'
 export interface RouterConfiguration {
   readonly port: number
 }
+
+const getPath = prop('path')
+
+const createStreamFromFile = pipe(getPath, fs.createReadStream)
 
 @injectable()
 export class Router {
@@ -98,7 +103,7 @@ export class Router {
 
   private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     const files = context.request.files || {}
-    const responses = await this.fileController.addFiles(values(files))
+    const responses = await this.fileController.addFiles(map(createStreamFromFile, values(files)))
 
     context.body = responses
     context.status = 200

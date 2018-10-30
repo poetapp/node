@@ -3,16 +3,17 @@ import fetch, { Response } from 'node-fetch'
 
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
-type getResponseText = (response: Response) => Promise<string>
-const getResponseText: getResponseText = response => response.text()
+const getResponseText = (x: Response) => x.text()
 
-type getFile = (ipfsUrl?: string) => (hash: string) => Promise<Response>
-const getFile: getFile = (ipfsUrl = IPFS_URL) => hash => fetch(`${ipfsUrl}/api/v0/cat?arg=${hash}`)
+const fetchFile = (url: string) => (hash: string) => fetch(`${url}/api/v0/cat?arg=${hash}`)
 
-interface FetchFileConfig {
-  port: number
-  host: string
+interface IPFSConfiguration {
+  readonly url?: string
 }
 
-type configureFetchFile = (config?: FetchFileConfig) => (hash: string) => Promise<string>
-export const configureFetchFile: configureFetchFile = () => asyncPipe(getFile(), getResponseText)
+export const createIPFS = ({ url = IPFS_URL }: IPFSConfiguration = {}) => {
+  return {
+    fetchFile: fetchFile(url),
+    fetchFileContent: asyncPipe(fetchFile(url), getResponseText),
+  }
+}

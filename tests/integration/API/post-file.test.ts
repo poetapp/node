@@ -2,32 +2,41 @@
 import { asyncPipe } from 'Helpers/asyncPipe'
 import * as fs from 'fs'
 import * as path from 'path'
-import { prop, identity, head } from 'ramda'
+import { prop, identity, head, map } from 'ramda'
 import { describe } from 'riteway'
 
-import { configurePostFileStream, getResponseJson } from '../../helpers/files'
-import { configureFetchFile } from '../../helpers/ipfs'
+import { createFileHelper } from '../../helpers/files'
+import { createIPFS } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
 
-const fetchIPFSFile = configureFetchFile()
-const postFileStream = configurePostFileStream(NODE_PORT)
+const ipfs = createIPFS()
+const fileHelper = createFileHelper({ port: NODE_PORT  })
 
 const getHash = prop('Hash')
 const getStatus = prop('status')
 
-type calcPath = (relPath: string) => string
-const calcPath: calcPath = relPath => path.resolve(__dirname, relPath)
+const calcPath = (relPath: string) => path.resolve(__dirname, relPath)
 
 const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-const testResponseHash = asyncPipe(fs.createReadStream, postFileStream, getResponseJson, head, getHash, fetchIPFSFile)
+const awaitAll = (xs: ReadonlyArray<Promise<any>>) => Promise.all(xs)
 
-const testResponseStatusCode = asyncPipe(fs.createReadStream, postFileStream, getStatus)
+/* tslint:disable:max-line-length */
+const testMultiPartFileStreamResponseHash = asyncPipe(
+  map(fs.createReadStream),
+  fileHelper.postFileStreams,
+  (x) => x.json(),
+  map(getHash),
+  map(ipfs.fetchFileContent),
+  awaitAll,
+)
+
+const testMultiPartFileStreamResponseStatusCode = asyncPipe(map(fs.createReadStream), fileHelper.postFileStreams, getStatus)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
@@ -38,14 +47,14 @@ describe('POST /files', async assert => {
     assert({
       given,
       should: 'return a hash that can be used to verify the file',
-      actual: await testResponseHash(files.utf8Markdown).catch(identity),
-      expected: fs.readFileSync(files.utf8Markdown).toString(),
+      actual: await testMultiPartFileStreamResponseHash([files.utf8Markdown]).catch(identity),
+      expected: [fs.readFileSync(files.utf8Markdown).toString()],
     })
 
     assert({
       given,
       should: 'return the correct status',
-      actual: await testResponseStatusCode(files.utf8Markdown).catch(identity),
+      actual: await testMultiPartFileStreamResponseStatusCode([files.utf8Markdown]).catch(identity),
       expected: 200,
     })
   }
