@@ -102,7 +102,7 @@ export class Messaging {
     })
   }
 
-  publishClaimsNotDownloaded = async (IPFSHashFailure: ReadonlyArray<IPFSHashFailure>) => {
-    return this.publish(this.exchanges.claimsNotDownloaded, IPFSHashFailure)
+  publishClaimsNotDownloaded = async (ipfsHashFailure: ReadonlyArray<IPFSHashFailure>) => {
+    return this.publish(this.exchanges.claimsNotDownloaded, ipfsHashFailure)
   }
 }
