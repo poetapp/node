@@ -1,2 +1,2 @@
 import './claim_with_data'
-import './health'
+import './endpoints'
