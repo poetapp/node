@@ -3,7 +3,7 @@ import { isNil } from 'ramda'
 import { describe } from 'riteway'
 
 import { app } from '../../src/app'
-import { ensureBitcoinBalance } from '../helpers/bitcoin'
+import { ensureBitcoinBalance, resetBitcoinServers } from '../helpers/bitcoin'
 import { getHealth } from '../helpers/health'
 import { delay, runtimeId, createDatabase } from '../helpers/utils'
 const Client = require('bitcoin-core')
@@ -33,6 +33,7 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
   })
 
   // Allow everything to finish starting.
+  await resetBitcoinServers()
   await delay(5 * 1000)
 
   {
@@ -78,15 +79,12 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
       expected: false,
     })
 
-    // TODO: Test that isBalanceLow returns true when balance is below LOW_WALLET_BALANCE_IN_BITCOIN:
-    // Currently if other tests run first they will likely raise the wallet balance above the minimum and return false.
-    //
-    // assert({
-    //   given: `a request to the health endpoint while the bitcoin balance is below LOW_WALLET_BALANCE_BTC`,
-    //   should: 'return walletInfo property isBalanceLow as true',
-    //   actual: walletInfo.isBalanceLow,
-    //   expected: true,
-    // })
+    assert({
+      given: `a request to the health endpoint while the bitcoin balance is below LOW_WALLET_BALANCE_BTC`,
+      should: 'return walletInfo property isBalanceLow as true',
+      actual: walletInfo.isBalanceLow,
+      expected: true,
+    })
   }
 
   // Make sure node has regtest coins: Genrate 101 blocks at 25BTC/block if none.
