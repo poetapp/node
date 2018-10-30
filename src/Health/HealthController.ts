@@ -5,9 +5,8 @@ import { pick, pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import { BlockchainInfo, WalletInfo, NetworkInfo, IPFSInfo } from './HealthDAO'
+import { BlockchainInfo, WalletInfo, NetworkInfo, IPFSInfo, HealthDAO } from './HealthDAO'
 
-import { HealthDAO } from './HealthDAO'
 import { IPFS } from './IPFS'
 
 enum LogTypes {

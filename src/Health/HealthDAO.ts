@@ -52,7 +52,7 @@ export class HealthDAO {
           blockchainInfo,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
 
   readonly updateWalletInfo: updateWalletInfo = walletInfo =>
@@ -63,7 +63,7 @@ export class HealthDAO {
           walletInfo,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
 
   readonly updateNetworkInfo: updateNetworkInfo = networkInfo =>
@@ -74,7 +74,7 @@ export class HealthDAO {
           networkInfo,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
 
   readonly updateIPFSInfo: updateIPFSInfo = ipfsInfo =>
@@ -85,6 +85,6 @@ export class HealthDAO {
           ipfsInfo,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
 }
