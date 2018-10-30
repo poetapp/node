@@ -89,7 +89,7 @@ export class HealthController {
       walletInfo,
       blockchainInfo,
       networkInfo,
-      estimatedSmartFeeInfo
+      estimatedSmartFeeInfo,
     }
   }
 }
