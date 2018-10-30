@@ -113,14 +113,9 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
   }
 
   {
-    let metricsData
 
-    try {
-      const response = await getMetrics(NODE_PORT)
-      metricsData = await response.json()
-    } catch (err) {
-      metricsData = {}
-    }
+    const response = await getMetrics(NODE_PORT)
+    const metricsData = await response.json()
     const { TotalWorkClaims } = metricsData
 
     assert({
