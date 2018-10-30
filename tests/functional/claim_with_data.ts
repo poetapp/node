@@ -31,7 +31,7 @@ const createVerifiableClaim = configureCreateVerifiableClaim({ issuer })
 const signVerifiableClaim = configureSignVerifiableClaim({ privateKey })
 const createClaim = pipeP(
   createVerifiableClaim,
-  signVerifiableClaim
+  signVerifiableClaim,
 )
 
 const { btcdClientA, btcdClientB }: any = bitcoindClients()

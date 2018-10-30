@@ -23,7 +23,7 @@ export class HealthService {
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('HealthServiceConfiguration') configuration: HealthServiceConfiguration,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration

@@ -19,6 +19,6 @@ describe('Router.isTraceError', async assert => {
       should: 'return the correct boolean',
       actual: isTraceError(err),
       expected: true,
-    })
+    }),
   )
 })

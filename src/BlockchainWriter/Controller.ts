@@ -31,7 +31,7 @@ export class Controller {
     @inject('Messaging') messaging: Messaging,
     @inject('BitcoinCore') bitcoinCore: BitcoinCore,
     @inject('ClaimControllerConfiguration') configuration: ControllerConfiguration,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
@@ -69,7 +69,7 @@ export class Controller {
           ipfsDirectoryHash,
           exception,
         },
-        'Unexpected Exception While Anchoring IPFS Directory Hash'
+        'Unexpected Exception While Anchoring IPFS Directory Hash',
       )
     }
   }
@@ -105,7 +105,7 @@ export class Controller {
       {
         rawTransaction,
       },
-      'Got rawTransaction from Bitcoin Core'
+      'Got rawTransaction from Bitcoin Core',
     )
 
     const fundedTransaction = await bitcoinCore.fundRawTransaction(rawTransaction).catch(translateFundTransactionError)
@@ -114,7 +114,7 @@ export class Controller {
       {
         fundedTransaction,
       },
-      'Got fundedTransaction from Bitcoin Core'
+      'Got fundedTransaction from Bitcoin Core',
     )
 
     const signedTransaction = await bitcoinCore.signRawTransaction(fundedTransaction.hex)
@@ -123,7 +123,7 @@ export class Controller {
       {
         signedTransaction,
       },
-      'Got signedTransaction from Bitcoin Core'
+      'Got signedTransaction from Bitcoin Core',
     )
 
     const sentTransaction = await bitcoinCore.sendRawTransaction(signedTransaction.hex)
@@ -132,7 +132,7 @@ export class Controller {
       {
         sentTransaction,
       },
-      'Got sentTransaction from Bitcoin Core'
+      'Got sentTransaction from Bitcoin Core',
     )
 
     return sentTransaction

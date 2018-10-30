@@ -21,7 +21,7 @@ export class IPFS {
 
   addFileToDirectory: addFileToDirectory = async (ipfsDirectoryHash, fileHash) => {
     const response = await fetch(
-      `${this.url}/api/v0/object/patch/add-link?arg=${ipfsDirectoryHash}&arg=${fileHash}&arg=${fileHash}`
+      `${this.url}/api/v0/object/patch/add-link?arg=${ipfsDirectoryHash}&arg=${fileHash}&arg=${fileHash}`,
     )
     const json = await response.json()
     return json.Hash
@@ -30,7 +30,7 @@ export class IPFS {
   addFilesToDirectory: addFilesToDirectory = ({ ipfsDirectoryHash = '', ipfsFileHashes = [] }) =>
     ipfsFileHashes.reduce(
       async (acc, cur) => await this.addFileToDirectory(await acc, cur),
-      Promise.resolve(ipfsDirectoryHash)
+      Promise.resolve(ipfsDirectoryHash),
     )
 
   createEmptyDirectory: createEmptyDirectory = async () => {

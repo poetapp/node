@@ -42,7 +42,7 @@ export class FileDAO {
   completeEntries: completeEntries = (entries = []) =>
     Promise.all(
       entries.map(({ ipfsFileHash, successTime, ipfsDirectoryHash }) =>
-        this.completeEntry({ ipfsFileHash, successTime, ipfsDirectoryHash })
-      )
+        this.completeEntry({ ipfsFileHash, successTime, ipfsDirectoryHash }),
+      ),
     )
 }

@@ -28,7 +28,7 @@ export class ClaimController {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DAOClaims') daoClaims: DAOClaims,
-    @inject('IPFS') ipfs: IPFS
+    @inject('IPFS') ipfs: IPFS,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.daoClaims = daoClaims
@@ -80,6 +80,6 @@ export class ClaimController {
     this.storeClaim,
     this.log(LogTypes.trace)('Adding IPFS hash to Claim Entry'),
     this.addIPFSHashToClaim,
-    this.log(LogTypes.trace)('Finished Storing Claim')
+    this.log(LogTypes.trace)('Finished Storing Claim'),
   )
 }

@@ -10,7 +10,7 @@ interface RequestValidationParams {
 
 export const RequestValidationMiddleware = (requestValidationParams: RequestValidationParams) => async (
   context: any,
-  next: () => Promise<any>
+  next: () => Promise<any>,
 ) => {
   try {
     const { query, body, params, options } = requestValidationParams

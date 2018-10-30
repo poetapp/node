@@ -15,13 +15,13 @@ const signMAWorkClaim = configureSignVerifiableClaim({ privateKey: privateKeyMA 
 
 export const createACDClaim = pipeP(
   createACDWorkClaim,
-  signACDWorkClaim
+  signACDWorkClaim,
 )
 export const createEAPClaim = pipeP(
   createEAPWorkClaim,
-  signEAPWorkClaim
+  signEAPWorkClaim,
 )
 export const createMAClaim = pipeP(
   createMAWorkClaim,
-  signMAWorkClaim
+  signMAWorkClaim,
 )

@@ -50,7 +50,7 @@ export interface VIn {
   vout?: number
   scriptSig?: {
     asm: string
-    hex: string
+    hex: string,
   }
 }
 
@@ -62,7 +62,7 @@ export interface VOut {
     hex: string
     type: string
     reqSigs: number
-    addresses: ReadonlyArray<string>
+    addresses: ReadonlyArray<string>,
   }
 }
 

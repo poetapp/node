@@ -20,7 +20,7 @@ export class Router {
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('WorkController') workController: WorkController,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
@@ -36,11 +36,11 @@ export class Router {
     await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
     await this.messaging.consume(
       this.exchange.batchReaderReadNextDirectorySuccess,
-      this.onBatchReaderReadNextDirectorySuccess
+      this.onBatchReaderReadNextDirectorySuccess,
     )
     await this.messaging.consume(
       this.exchange.batchWriterCreateNextBatchSuccess,
-      this.onBatchWriterCreateNextBatchSuccess
+      this.onBatchWriterCreateNextBatchSuccess,
     )
   }
 
@@ -91,7 +91,7 @@ export class Router {
         ipfsDirectoryHash,
         ipfsFileHashes,
       },
-      'Adding IPFS Directory Hash to claims'
+      'Adding IPFS Directory Hash to claims',
     )
 
     try {
@@ -107,7 +107,7 @@ export class Router {
           ipfsFileHashes,
           error,
         },
-        'Error setting IPFS Directory Hash'
+        'Error setting IPFS Directory Hash',
       )
     }
   }

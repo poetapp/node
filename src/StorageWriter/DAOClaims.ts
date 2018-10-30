@@ -14,7 +14,7 @@ const L = {
 }
 
 export const getClaimFromFindAndUpdateResponse = (
-  response: FindAndModifyWriteOpResultObject
+  response: FindAndModifyWriteOpResultObject,
 ): SignedVerifiableClaim | undefined => view(L.valueClaim, response)
 
 export const throwIfClaimNotFound = (claim: SignedVerifiableClaim): SignedVerifiableClaim => {
@@ -52,12 +52,12 @@ export class DAOClaims {
       {
         $inc: { storageAttempts: 1 },
         $set: { lastStorageAttemptTime: new Date().getTime() },
-      }
+      },
     )
 
   public readonly findNextClaim = pipeP(
     this.findClaimToStore,
     getClaimFromFindAndUpdateResponse,
-    throwIfClaimNotFound
+    throwIfClaimNotFound,
   )
 }

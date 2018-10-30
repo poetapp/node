@@ -1,3 +1,4 @@
+/* tslint:disable:max-line-length */
 export const allAsciiCharactersClaim = {
   id: 'af7b4ecbd1d719226b5b420190d8928cf6245d86470cc81ccda5801e5040f658',
   publicKey: '024cd0fe4c33231ca7c1d76f6fe00689f5872bcd4bc5557ab4cd2c5691b49c25a3',
@@ -23,7 +24,7 @@ export const nonAsciiCharactersClaim = {
     name: 'Test',
     author: 'Test stüff',
     content:
-      "these chars: öüäüüüüäüüüüßßä'üüßüääöüäööäääääßüüüßüüäüöüößüüöüüäöääüäööüüüüääüüüäöüäääöüü are causing me problem",
+      'these chars: öüäüüüüäüüüüßßä\'üüßüääöüäööäääääßüüüßüüäüöüößüüöüüäöääüäööüüüüääüüüäöüäääöüü are causing me problem',
   },
 }
 

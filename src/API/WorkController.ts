@@ -35,7 +35,7 @@ export class WorkController {
     @inject('Logger') logger: Pino.Logger,
     @inject('DB') db: Db,
     @inject('Messaging') messaging: Messaging,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db

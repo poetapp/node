@@ -23,14 +23,14 @@ export class Service {
     @inject('Logger') logger: Pino.Logger,
     @inject('ServiceConfiguration') configuration: ServiceConfiguration,
     @inject('Messaging') messaging: Messaging,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.exchange = exchange
     this.interval = new Interval(
       this.createNextBatch,
-      secondsToMiliseconds(configuration.batchCreationIntervalInSeconds)
+      secondsToMiliseconds(configuration.batchCreationIntervalInSeconds),
     )
   }
 

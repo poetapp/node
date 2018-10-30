@@ -37,7 +37,7 @@ export class ClaimController {
     ipfsDirectoryHash,
   }: {
     ipfsFileHashes: ReadonlyArray<string>
-    ipfsDirectoryHash: string
+    ipfsDirectoryHash: string,
   }) => {
     await this.fileDAO.completeEntries(ipfsFileHashes.map(ipfsFileHash => ({ ipfsFileHash, ipfsDirectoryHash })))
   }

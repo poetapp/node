@@ -376,7 +376,7 @@ export const SinginAndSwinginAndGettingMerryLikeChristmas: SignedVerifiableClaim
     'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
   issuanceDate: '2018-10-12T01:54:11.756Z',
   claim: {
-    name: "Singin' and Swingin' and Gettin' Merry Like Christmas",
+    name: 'Singin\' and Swingin\' and Gettin\' Merry Like Christmas',
     author: 'Maya Angelou',
     tags: 'autobiography',
     dateCreated: '1976-01-01T00:00:00.000Z',
@@ -490,7 +490,7 @@ export const AllGodsChildrenNeedTravelingShoes: SignedVerifiableClaim = {
     'data:;base64,eyJhbGdvcml0aG0iOiJFZDI1NTE5U2lnbmF0dXJlMjAxOCIsInB1YmxpY0tleSI6IjhRaU5GblJlN3BkcnhBOG5OM1hocUZGS3hieDY5b2JxR1RFYUZVQ0VKVWo2In0=',
   issuanceDate: '2018-10-12T01:54:11.799Z',
   claim: {
-    name: "All God's Children Need Traveling Shoes",
+    name: 'All God\'s Children Need Traveling Shoes',
     author: 'Maya Angelou',
     dateCreated: '1986-01-01T00:00:00.000Z',
     tags: 'autobiography',

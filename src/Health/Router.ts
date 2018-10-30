@@ -18,7 +18,7 @@ export class Router {
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('HealthController') controller: HealthController,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging

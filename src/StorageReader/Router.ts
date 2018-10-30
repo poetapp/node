@@ -18,7 +18,7 @@ export class Router {
     @inject('Logger') logger: Pino.Logger,
     @inject('Messaging') messaging: Messaging,
     @inject('ClaimController') claimController: ClaimController,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
@@ -29,7 +29,7 @@ export class Router {
   async start() {
     await this.messaging.consume(
       this.exchange.batchReaderReadNextDirectorySuccess,
-      this.onBatchReaderReadNextDirectorySuccess
+      this.onBatchReaderReadNextDirectorySuccess,
     )
   }
 

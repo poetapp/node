@@ -1,4 +1,5 @@
 /* tslint:disable:no-relative-imports */
+/* tslint:disable:max-line-length */
 import { SignedVerifiableClaim, isSignedVerifiableClaim } from '@po.et/poet-js'
 import { all, pickBy } from 'ramda'
 import { describe } from 'riteway'

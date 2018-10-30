@@ -18,7 +18,7 @@ const AnchorSectionsLengths = {
 
 const sumObjectValues = pipe(
   values,
-  sum
+  sum,
 )
 
 const anchorByteLength = sumObjectValues(AnchorSectionsLengths)
@@ -71,7 +71,7 @@ const dataToBuffer = (data: string): Buffer => {
 
 export const dataOutputToBuffer = pipe(
   dataOutputToData,
-  dataToBuffer
+  dataToBuffer,
 )
 
 export const isCorrectBufferLength = (buffer: Buffer) => buffer.byteLength >= anchorByteLength

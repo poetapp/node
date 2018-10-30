@@ -39,7 +39,7 @@ export class DAO {
           ...restOfEntry,
         },
       },
-      { upsert: true }
+      { upsert: true },
     )
   }
 

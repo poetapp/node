@@ -76,7 +76,7 @@ export class BlockchainWriter {
 const createContainer = (
   configuration: BlockchainWriterConfiguration,
   logger: Pino.Logger,
-  blockchainWriterCollection: Collection
+  blockchainWriterCollection: Collection,
 ) => {
   const container = new Container()
 

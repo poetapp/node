@@ -18,7 +18,7 @@ export const postWork = (port: string, host?: string) => (claim: SignedVerifiabl
   })
 
 export const postWorkWithDelay = (port: string, host?: string, delayValue: number = 10000) => async (
-  claim: SignedVerifiableClaim
+  claim: SignedVerifiableClaim,
 ) => {
   const postWorkToNode = postWork(port, host)
   const response = postWorkToNode(claim)

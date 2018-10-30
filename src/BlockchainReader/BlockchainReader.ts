@@ -82,7 +82,7 @@ export class BlockchainReader {
         network: this.configuration.bitcoinNetwork,
         username: this.configuration.bitcoinUsername,
         password: this.configuration.bitcoinPassword,
-      })
+      }),
     )
     this.container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
     this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
