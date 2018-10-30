@@ -69,19 +69,7 @@ export class HealthController {
   }
 
   private async updateBlockchainInfo(blockchainInfo: BlockchainInfo): Promise<BlockchainInfo> {
-<<<<<<< HEAD
     await this.healthDAO.updateBlockchainInfo(blockchainInfo)
-=======
-    await this.collection.updateOne(
-      { name: 'blockchainInfo' },
-      {
-        $set: {
-          blockchainInfo,
-        },
-      },
-      { upsert: true },
-    )
->>>>>>> master
     return blockchainInfo
   }
 
@@ -94,19 +82,7 @@ export class HealthController {
   }
 
   private async updateWalletInfo(walletInfo: WalletInfo): Promise<WalletInfo> {
-<<<<<<< HEAD
     await this.healthDAO.updateWalletInfo(walletInfo)
-=======
-    await this.collection.updateOne(
-      { name: 'walletInfo' },
-      {
-        $set: {
-          walletInfo,
-        },
-      },
-      { upsert: true },
-    )
->>>>>>> master
     return walletInfo
   }
 
@@ -115,19 +91,7 @@ export class HealthController {
   }
 
   private async updateNetworkInfo(networkInfo: NetworkInfo): Promise<NetworkInfo> {
-<<<<<<< HEAD
     await this.healthDAO.updateNetworkInfo(networkInfo)
-=======
-    await this.collection.updateOne(
-      { name: 'networkInfo' },
-      {
-        $set: {
-          networkInfo,
-        },
-      },
-      { upsert: true },
-    )
->>>>>>> master
     return networkInfo
   }
 
@@ -142,19 +106,7 @@ export class HealthController {
   }
 
   private async updateIPFSInfo(ipfsInfo: IPFSInfo): Promise<object> {
-<<<<<<< HEAD
     await this.healthDAO.updateIPFSInfo(ipfsInfo)
-=======
-    await this.collection.updateOne(
-      { name: 'ipfsInfo' },
-      {
-        $set: {
-          ipfsInfo,
-        },
-      },
-      { upsert: true },
-    )
->>>>>>> master
     return ipfsInfo
   }
 
