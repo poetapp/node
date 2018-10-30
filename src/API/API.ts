@@ -3,15 +3,22 @@ import { injectable, Container } from 'inversify'
 import { MongoClient, Db } from 'mongodb'
 import * as Pino from 'pino'
 
+import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { APIConfiguration } from './APIConfiguration'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { HealthController } from './HealthController'
 import { Router } from './Router'
-import { RouterConfiguration } from './RouterConfiguration'
+import { RouterConfiguration } from './Router'
 import { WorkController } from './WorkController'
+
+export interface APIConfiguration extends LoggingConfiguration {
+  readonly port: number
+  readonly dbUrl: string
+  readonly rabbitmqUrl: string
+  readonly exchanges: ExchangeConfiguration
+}
 
 @injectable()
 export class API {
