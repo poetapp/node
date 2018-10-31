@@ -45,7 +45,7 @@ export class FileController {
     this.collection = this.db.collection('files')
   }
 
-  private log = (logType: LogTypes) => (label: string) => <T extends any>(value?: T ): T => {
+  private log = (logType: LogTypes) => (label: string) => async <T extends any>(value?: T ) => {
     this.logger[logType]({ value }, label)
     return value
   }
@@ -71,10 +71,13 @@ export class FileController {
   }
 
   private handleFile = asyncPipe(
+    this.log(LogTypes.trace)('Adding file to ipfs'),
     this.addFileToIPFS,
     this.getResponseJson,
     convertJson,
+    this.log(LogTypes.trace)('Added file to ipfs, now saving the hash to the database'),
     this.storeIPFSHash,
+    this.log(LogTypes.trace)('Saved the hash to the database'),
   )
 
   // using Promise.all directly in asyncPipe results in TypeError
@@ -82,7 +85,9 @@ export class FileController {
   private awaitAll = (xs: Array<Promise<any>>) => Promise.all(xs)
 
   public addFiles = asyncPipe(
+    this.log(LogTypes.trace)('Adding files'),
     map(this.handleFile),
     this.awaitAll,
+    this.log(LogTypes.trace)('Added files'),
   )
 }
