@@ -41,7 +41,7 @@ describe('POST /files', async assert => {
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   {
-    const given = 'a single utf8 mardown file as a multipart file stream'
+    const given = 'a single utf8 markdown file as a multipart file stream'
 
     assert({
       given,
