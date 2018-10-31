@@ -153,7 +153,7 @@ Example:
 
 ```
 [
-  { name: '', hash: "QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT" }
+  { hash: "QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT" }
 ]
 ```
 
