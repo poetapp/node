@@ -8,6 +8,7 @@ import { map } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { asyncPipe } from 'Helpers/asyncPipe'
+import { minutesToMiliseconds  } from 'Helpers/Time'
 
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
@@ -56,7 +57,7 @@ export class FileController {
     return fetch(`${IPFS_URL}/api/v0/add`, {
       method: 'post',
       body: formData,
-      timeout: 1000 * 60 * 10,
+      timeout: minutesToMiliseconds(10) 
     })
   }
 
@@ -80,14 +81,10 @@ export class FileController {
     this.log(LogTypes.trace)('Saved the hash to the database'),
   )
 
-  // using Promise.all directly in asyncPipe results in TypeError
-  // "Promise.all called on non-object"
-  private awaitAll = (xs: Array<Promise<any>>) => Promise.all(xs)
-
   public addFiles = asyncPipe(
     this.log(LogTypes.trace)('Adding files'),
     map(this.handleFile),
-    this.awaitAll,
+    Promise.all.bind(Promise), // bind required else TypeError "Promise.all called on non-object"
     this.log(LogTypes.trace)('Added files'),
   )
 }

@@ -24,8 +24,6 @@ const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-const awaitAll = (xs: ReadonlyArray<Promise<any>>) => Promise.all(xs)
-
 /* tslint:disable:max-line-length */
 const testResponseHashes = asyncPipe(
   map(fs.createReadStream),
@@ -33,7 +31,7 @@ const testResponseHashes = asyncPipe(
   (x) => x.json(),
   map(getHash),
   map(ipfs.fetchFileContent),
-  awaitAll,
+  Promise.all.bind(Promise)
 )
 
 const testStatusCode = asyncPipe(map(fs.createReadStream), fileHelper.postFileStreams, getStatus)
