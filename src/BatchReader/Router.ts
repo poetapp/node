@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
+import { isNil } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { BlockDownloaded } from 'Messaging/Messages'
@@ -55,6 +56,7 @@ export class Router {
     )
 
     try {
+      if (isNil(poetBlockAnchors) || poetBlockAnchors.length === 0) return
       await this.claimController.addEntries(poetBlockAnchors)
     } catch (error) {
       logger.error({ error, poetBlockAnchors }, 'Failed to store directory hashes to DB collection')
