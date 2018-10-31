@@ -144,6 +144,19 @@ To use a custom instance of Bitcoin Core, the instance must be running with RPC 
 ## API
 Currently, the Node exposes four endpoints.
 
+### `POST /files`
+Takes a multipart file upload. Currently only allows 1 file to be uploaded at a time and accepts 1 field which is the file to upload.
+
+Returns an array with an object containing the hash of the file.
+
+Example:
+
+```
+[
+  { hash: "QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT" }
+]
+```
+
 ### `GET /works/:id`
 Returns a single signed verifiable work claim by its Id.
 

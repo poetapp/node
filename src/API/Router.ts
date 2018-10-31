@@ -6,6 +6,7 @@ import {
   isSignedVerifiableClaim,
   VerifiableClaimSigner,
 } from '@po.et/poet-js'
+import * as fs from 'fs'
 import * as http from 'http'
 import { injectable, inject } from 'inversify'
 import * as Joi from 'joi'
@@ -15,9 +16,11 @@ import * as KoaCors from 'koa-cors'
 import * as helmet from 'koa-helmet'
 import * as KoaRouter from 'koa-router'
 import * as Pino from 'pino'
+import { map, values, prop, pipe } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
+import { FileController } from './FileController'
 import { HealthController } from './HealthController'
 import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
 import { LoggerMiddleware } from './Middlewares/LoggerMiddleware'
@@ -29,12 +32,17 @@ export interface RouterConfiguration {
   readonly port: number
 }
 
+const getPath = prop('path')
+
+const createStreamFromFile = pipe(getPath, fs.createReadStream)
+
 @injectable()
 export class Router {
   private readonly logger: Pino.Logger
   private readonly configuration: RouterConfiguration
   private readonly koa = new Koa()
   private readonly koaRouter = new KoaRouter()
+  private readonly fileController: FileController
   private readonly workController: WorkController
   private readonly healthController: HealthController
   private server: http.Server
@@ -43,12 +51,14 @@ export class Router {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('RouterConfiguration') configuration: RouterConfiguration,
+    @inject('FileController') fileController: FileController,
     @inject('WorkController') workController: WorkController,
     @inject('HealthController') healthController: HealthController,
     @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
+    this.fileController = fileController
     this.workController = workController
     this.healthController = healthController
     this.verifiableClaimSigner = verifiableClaimSigner
@@ -67,6 +77,11 @@ export class Router {
       },
     }
 
+    this.koaRouter.post(
+      '/files',
+      KoaBody({ multipart: true, formidable: { multiples: false, maxFields: 1 } }),
+      this.postFile,
+    )
     this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), this.getWork)
     this.koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), this.getWorks)
     this.koaRouter.post('/works', KoaBody({ textLimit: 1000000 }), this.postWork)
@@ -88,6 +103,14 @@ export class Router {
   async stop() {
     this.logger.info('Stopping API Router...')
     await this.server.close()
+  }
+
+  private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    const files = context.request.files || {}
+    const responses = await this.fileController.addFiles(map(createStreamFromFile, values(files)))
+
+    context.body = responses
+    context.status = 200
   }
 
   private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
