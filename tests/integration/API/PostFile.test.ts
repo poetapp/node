@@ -5,8 +5,8 @@ import * as path from 'path'
 import { prop, identity, head, map } from 'ramda'
 import { describe } from 'riteway'
 
-import { FileHelper } from '../../helpers/Files'
-import { IPFS } from '../../helpers/IPFS'
+import { FileHelper } from '../../helpers/files'
+import { IPFS } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
