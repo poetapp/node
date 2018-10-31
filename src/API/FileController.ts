@@ -43,6 +43,7 @@ export class FileController {
   private readonly collection: Collection
   private readonly ipfsUrl: string
 
+  /* tslint:disable-next-line:max-line-length */
   constructor(@inject('Logger') logger: Pino.Logger, @inject('DB') db: Db, @inject('FileControllerConfiguration') configuration: FileControllerConfiguration) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
