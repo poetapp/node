@@ -30,7 +30,7 @@ enum LogTypes {
 }
 
 export const convertJson = (x: IPFSFileResponseJson) => ({
-  hash: x.Hash
+  hash: x.Hash,
 })
 
 @injectable()
