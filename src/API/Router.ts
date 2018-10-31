@@ -76,8 +76,8 @@ export class Router {
         limit: Joi.number().optional(),
       },
     }
-
-    this.koaRouter.post('/files', KoaBody({ multipart: true }), this.postFile)
+    /* tslint:disable-next-line:max-line-length */
+    this.koaRouter.post('/files', KoaBody({ multipart: true, formidable: { multiples: false, maxFields: 1 } }), this.postFile)
     this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), this.getWork)
     this.koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), this.getWorks)
     this.koaRouter.post('/works', KoaBody({ textLimit: 1000000 }), this.postWork)
