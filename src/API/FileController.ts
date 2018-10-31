@@ -10,8 +10,6 @@ import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds  } from 'Helpers/Time'
 import { asyncPipe } from 'Helpers/asyncPipe'
 
-const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
-
 interface IPFSFileResponseJson {
   readonly Hash: string
 }
@@ -30,6 +28,10 @@ enum LogTypes {
   error = 'error',
 }
 
+export interface FileControllerConfiguration {
+  readonly ipfsUrl: string
+}
+
 export const convertJson = (x: IPFSFileResponseJson) => ({
   hash: x.Hash,
 })
@@ -39,11 +41,13 @@ export class FileController {
   private readonly logger: Pino.Logger
   private readonly db: Db
   private readonly collection: Collection
+  private readonly ipfsUrl: string
 
-  constructor(@inject('Logger') logger: Pino.Logger, @inject('DB') db: Db) {
+  constructor(@inject('Logger') logger: Pino.Logger, @inject('DB') db: Db, @inject('FileControllerConfiguration') configuration: FileControllerConfiguration) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('files')
+    this.ipfsUrl = configuration.ipfsUrl
   }
 
   private log = (logType: LogTypes) => (label: string) => async <T extends any>(value?: T ) => {
@@ -54,7 +58,7 @@ export class FileController {
   private uploadStream = (stream: fs.ReadStream) => {
     const formData = new FormData()
     formData.append('file', stream)
-    return fetch(`${IPFS_URL}/api/v0/add`, {
+    return fetch(`${this.ipfsUrl}/api/v0/add`, {
       method: 'post',
       body: formData,
       timeout: minutesToMiliseconds(10),
