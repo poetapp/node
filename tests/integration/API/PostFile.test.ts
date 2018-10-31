@@ -27,7 +27,7 @@ const files = {
 const awaitAll = (xs: ReadonlyArray<Promise<any>>) => Promise.all(xs)
 
 /* tslint:disable:max-line-length */
-const testMultiPartFileStreamResponseHash = asyncPipe(
+const testResponseHashes = asyncPipe(
   map(fs.createReadStream),
   fileHelper.postFileStreams,
   (x) => x.json(),
@@ -36,25 +36,26 @@ const testMultiPartFileStreamResponseHash = asyncPipe(
   awaitAll,
 )
 
-const testMultiPartFileStreamResponseStatusCode = asyncPipe(map(fs.createReadStream), fileHelper.postFileStreams, getStatus)
+const testStatusCode = asyncPipe(map(fs.createReadStream), fileHelper.postFileStreams, getStatus)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
+
   {
     const given = 'a single utf8 mardown file as a multipart file stream'
 
     assert({
       given,
       should: 'return a hash that can be used to verify the file',
-      actual: await testMultiPartFileStreamResponseHash([files.utf8Markdown]).catch(identity),
+      actual: await testResponseHashes([files.utf8Markdown]).catch(identity),
       expected: [fs.readFileSync(files.utf8Markdown).toString()],
     })
 
     assert({
       given,
       should: 'return the correct status',
-      actual: await testMultiPartFileStreamResponseStatusCode([files.utf8Markdown]).catch(identity),
+      actual: await testStatusCode([files.utf8Markdown]).catch(identity),
       expected: 200,
     })
   }
