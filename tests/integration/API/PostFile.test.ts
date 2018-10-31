@@ -15,7 +15,7 @@ const NODE_PORT = '28081'
 const ipfs = IPFS()
 const fileHelper = FileHelper({ port: NODE_PORT  })
 
-const getHash= prop('Hash')
+const getHash = prop('hash')
 const getStatus = prop('status')
 
 const calcPath = (relPath: string) => path.resolve(__dirname, relPath)

@@ -11,8 +11,12 @@ import { asyncPipe } from 'Helpers/asyncPipe'
 
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
-interface FileResponseJson {
+interface IPFSFileResponseJson {
   readonly Hash: string
+}
+
+interface FileResponseJson {
+  readonly hash: string
 }
 
 interface File {
@@ -24,6 +28,10 @@ enum LogTypes {
   trace = 'trace',
   error = 'error',
 }
+
+export const convertJson = (x: IPFSFileResponseJson) => ({
+  hash: x.Hash
+})
 
 @injectable()
 export class FileController {
@@ -57,7 +65,7 @@ export class FileController {
   private addFileToIPFS = (fileStream: fs.ReadStream) => this.uploadStream(fileStream)
 
   private storeIPFSHash = async (response: FileResponseJson) => {
-    const { Hash: hash } = response
+    const { hash } = response
     await this.collection.insertOne({ hash })
     return response
   }
@@ -65,6 +73,7 @@ export class FileController {
   private handleFile = asyncPipe(
     this.addFileToIPFS,
     this.getResponseJson,
+    convertJson,
     this.storeIPFSHash,
   )
 
