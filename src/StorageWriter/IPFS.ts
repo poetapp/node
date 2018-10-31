@@ -2,6 +2,7 @@ import * as FormData from 'form-data'
 import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 import * as str from 'string-to-stream'
+import { minutesToMiliseconds } from 'Helpers/Time'
 
 export interface IPFSConfiguration {
   readonly ipfsUrl: string
@@ -36,5 +37,12 @@ export class IPFS {
     const json = await response.json()
 
     return json.Hash
+  }
+
+  cat = async (hash: string): Promise<string> => {
+    const response = await fetch(`${this.url}/api/v0/cat?arg=${hash}`, {
+      timeout: minutesToMiliseconds(10),
+    })
+    return response.text()
   }
 }
