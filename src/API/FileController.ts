@@ -18,10 +18,6 @@ interface FileResponseJson {
   readonly hash: string
 }
 
-interface File {
-  readonly path: string
-}
-
 enum LogTypes {
   info = 'info',
   trace = 'trace',
