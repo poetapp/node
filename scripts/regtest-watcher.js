@@ -6,7 +6,7 @@ const Client = require('bitcoin-core')
 const {
   BITCOIN_URL: host = 'bitcoind-1',
   BITCOIN_PORT: port = '18443',
-  BITCOIN_USER: username  = "bitcoinrpcuser",
+  BITCOIN_USERNAME: username = "bitcoinrpcuser",
   BITCOIN_PASSWORD: password = "bitcoinrpcpassword",
   BITCOIN_NEW_BLOCK_INTERVAL_MS: newBlockInterval = 60000,
 } = process.env
