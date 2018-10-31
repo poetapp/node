@@ -65,7 +65,7 @@
     "@types/amqplib": "0.5.9",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
-    "@types/joi": "13.6.2",
+    "@types/joi": "13.6.3",
     "@types/koa": "2.0.46",
     "@types/koa-helmet": "3.1.2",
     "@types/koa-router": "7.0.32",
