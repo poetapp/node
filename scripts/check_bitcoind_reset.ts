@@ -1,4 +1,13 @@
 /* tslint:disable:no-relative-imports */
+
+/*
+ * This is a utility script to verify that bitcoind reset is working on
+ * a local development machine.
+ *
+ * Make sure all services are up and running and then:
+ * $ docker-compose exec poet-node npx ts-node -r tsconfig-paths/register -r reflect-metadata --files * scripts/check_bitcoind_reset.ts
+ */
+
 import { bitcoindClients, resetBitcoinServers } from '../tests/helpers/bitcoin'
 
 const { btcdClientA }: any = bitcoindClients()
