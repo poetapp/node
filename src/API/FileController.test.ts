@@ -9,7 +9,7 @@ describe('convertJson', async assert => {
       Other: 'bar',
     }
     assert({
-      given: 'an ipfs json response',
+      given: 'an ipfs response',
       should: 'convert it to the correct response',
       actual: convertJson(input),
       expected: { hash: input.Hash },
