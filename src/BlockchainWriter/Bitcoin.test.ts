@@ -1,3 +1,4 @@
+import { PoetAnchor, StorageProtocol } from '@po.et/poet-js'
 import * as bs58 from 'bs58'
 import { describe, Try } from 'riteway'
 
@@ -5,28 +6,9 @@ import { IllegalPrefixLength, IllegalVersionLength, poetAnchorToData } from './B
 
 import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
-enum StorageProtocolRefactor {
-  IPFS = 0,
-}
-interface PoetAnchorRefactor {
-  readonly prefix: string
-  readonly version: number
-  readonly storageProtocol: StorageProtocolRefactor
-  readonly ipfsDirectoryHash: string
-}
-
-interface PoetTransactionAnchorRefactor extends PoetAnchorRefactor {
-  readonly transactionId: string
-}
-
-interface PoetBlockAnchorRefactor extends PoetTransactionAnchorRefactor {
-  readonly blockHeight: number
-  readonly blockHash: string
-}
-
 describe('Bitcoin.getData', async assert => {
   {
-    const testGetData = (poetAnchor: PoetAnchorRefactor) => {
+    const testGetData = (poetAnchor: PoetAnchor) => {
       const data = poetAnchorToData(poetAnchor)
       const buffer = Buffer.from(data, 'hex')
 
@@ -61,10 +43,10 @@ describe('Bitcoin.getData', async assert => {
       })
     }
 
-    const poetAnchor: PoetAnchorRefactor = {
+    const poetAnchor: PoetAnchor = {
       prefix: PREFIX_POET,
       version: 2,
-      storageProtocol: StorageProtocolRefactor.IPFS,
+      storageProtocol: StorageProtocol.IPFS,
       ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
     }
 
@@ -84,10 +66,10 @@ describe('Bitcoin.getData', async assert => {
   }
 
   {
-    const poetAnchor: PoetAnchorRefactor = {
+    const poetAnchor: PoetAnchor = {
       prefix: PREFIX_POET,
       version: 12,
-      storageProtocol: StorageProtocolRefactor.IPFS,
+      storageProtocol: StorageProtocol.IPFS,
       ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
     }
 
@@ -114,11 +96,11 @@ describe('Bitcoin.getData', async assert => {
       expected: false,
     })
 
-    // assert({
-    //   given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
-    //   should: 'fail with IllegalVersionLength',
-    //   actual: Try(poetAnchorToData, { ...poetAnchor, version: 234 }) instanceof IllegalVersionLength,
-    //   expected: true,
-    // })
+    assert({
+      given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
+      should: 'fail with IllegalVersionLength',
+      actual: Try(poetAnchorToData, { ...poetAnchor, version: 4294967296 }) instanceof IllegalVersionLength,
+      expected: true,
+    })
   }
 })

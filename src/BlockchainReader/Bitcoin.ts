@@ -1,27 +1,9 @@
+import { PoetAnchor, PoetBlockAnchor, PoetTransactionAnchor } from '@po.et/poet-js'
 import * as bs58 from 'bs58'
 import { equals, allPass, pipe, values, sum } from 'ramda'
 
 import { PREFIX_BARD, PREFIX_POET, Block, Transaction, VOut } from 'Helpers/Bitcoin'
 import { isTruthy } from 'Helpers/isTruthy'
-
-declare enum StorageProtocolRefactor {
-  IPFS = 0,
-}
-interface PoetAnchorRefactor {
-  readonly prefix: string
-  readonly version: number
-  readonly storageProtocol: StorageProtocolRefactor
-  readonly ipfsDirectoryHash: string
-}
-
-interface PoetTransactionAnchorRefactor extends PoetAnchorRefactor {
-  readonly transactionId: string
-}
-
-interface PoetBlockAnchorRefactor extends PoetTransactionAnchorRefactor {
-  readonly blockHeight: number
-  readonly blockHash: string
-}
 
 interface VOutWithTxId extends VOut {
   readonly transactionId: string
@@ -41,7 +23,7 @@ const sumObjectValues = pipe(
 
 const anchorByteLength = sumObjectValues(AnchorSectionsLengths)
 
-export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetAnchorRefactor> =>
+export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor> =>
   block.tx
     .map(transactionToDataOutput)
     .filter(isTruthy)
@@ -49,10 +31,7 @@ export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetAnchorRefact
     .filter(poetAnchorHasCorrectPrefix)
     .map(poetAnchorWithBlockData(block))
 
-const dataOutputToPoetTransactionAnchors = (
-  acc: ReadonlyArray<PoetTransactionAnchorRefactor>,
-  dataOutput: VOutWithTxId
-) => {
+const dataOutputToPoetTransactionAnchors = (acc: ReadonlyArray<PoetTransactionAnchor>, dataOutput: VOutWithTxId) => {
   const buffer = dataOutputToBuffer(dataOutput)
 
   return isCorrectBufferLength(buffer)
@@ -73,10 +52,7 @@ const transactionToOutputs = (transaction: Transaction): ReadonlyArray<VOutWithT
 
 const outputIsDataOutput = (output: VOut) => output.scriptPubKey.type === 'nulldata'
 
-const combineAnchorAndTransactionId = (
-  anchor: PoetAnchorRefactor,
-  output: VOutWithTxId
-): PoetTransactionAnchorRefactor => {
+const combineAnchorAndTransactionId = (anchor: PoetAnchor, output: VOutWithTxId): PoetTransactionAnchor => {
   return {
     ...anchor,
     transactionId: output.transactionId,
@@ -100,9 +76,9 @@ export const dataOutputToBuffer = pipe(
 
 export const isCorrectBufferLength = (buffer: Buffer) => buffer.byteLength >= anchorByteLength
 
-export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchorRefactor => {
+export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchor => {
   const prefix = buffer.slice(0, 4).toString()
-  const version = buffer.slice(4, 6).readUInt16BE(0)
+  const version = buffer.readUInt16BE(4)
   const storageProtocol = buffer.readInt8(6)
   const ipfsDirectoryHash = bs58.encode(buffer.slice(7))
 
@@ -114,19 +90,16 @@ export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchorRefactor => {
   }
 }
 
-const poetAnchorHasCorrectPrefix = (poetAnchor: PoetAnchorRefactor) =>
-  [PREFIX_BARD, PREFIX_POET].includes(poetAnchor.prefix)
+const poetAnchorHasCorrectPrefix = (poetAnchor: PoetAnchor) => [PREFIX_BARD, PREFIX_POET].includes(poetAnchor.prefix)
 
-const poetAnchorWithBlockData = (block: Block) => (
-  poetAnchor: PoetTransactionAnchorRefactor
-): PoetBlockAnchorRefactor => ({
+const poetAnchorWithBlockData = (block: Block) => (poetAnchor: PoetTransactionAnchor): PoetBlockAnchor => ({
   ...poetAnchor,
   blockHeight: block.height,
   blockHash: block.hash,
 })
 
-const anchorPrefixMatches = (prefix: string) => (anchor: PoetAnchorRefactor) => equals(anchor.prefix, prefix)
-const anchorVersionMatches = (version: number) => (anchor: PoetAnchorRefactor) => equals(anchor.version, version)
+const anchorPrefixMatches = (prefix: string) => (anchor: PoetAnchor) => equals(anchor.prefix, prefix)
+const anchorVersionMatches = (version: number) => (anchor: PoetAnchor) => equals(anchor.version, version)
 
 export const anchorPrefixAndVersionMatch = (prefix: string, version: number) =>
   allPass([anchorPrefixMatches(prefix), anchorVersionMatches(version)])
