@@ -24,7 +24,6 @@ const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-/* tslint:disable-next-line:max-line-length */
 const testResponseHashes = asyncPipe(
   map(fs.createReadStream),
   fileHelper.postFileStreams,
