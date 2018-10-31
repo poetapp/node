@@ -28,7 +28,7 @@ export interface FileControllerConfiguration {
   readonly ipfsUrl: string
 }
 
-export const convertJson = (x: IPFSFileResponseJson) => ({
+export const convertJson = (x: IPFSFileResponseJson): FileResponseJson => ({
   hash: x.Hash,
 })
 
