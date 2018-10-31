@@ -24,14 +24,14 @@ const files = {
   utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
 }
 
-/* tslint:disable:max-line-length */
+/* tslint:disable-next-line:max-line-length */
 const testResponseHashes = asyncPipe(
   map(fs.createReadStream),
   fileHelper.postFileStreams,
   (x) => x.json(),
   map(getHash),
   map(ipfs.fetchFileContent),
-  Promise.all.bind(Promise)
+  Promise.all.bind(Promise),
 )
 
 const testStatusCode = asyncPipe(map(fs.createReadStream), fileHelper.postFileStreams, getStatus)

@@ -7,8 +7,8 @@ import * as Pino from 'pino'
 import { map } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { asyncPipe } from 'Helpers/asyncPipe'
 import { minutesToMiliseconds  } from 'Helpers/Time'
+import { asyncPipe } from 'Helpers/asyncPipe'
 
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
@@ -57,7 +57,7 @@ export class FileController {
     return fetch(`${IPFS_URL}/api/v0/add`, {
       method: 'post',
       body: formData,
-      timeout: minutesToMiliseconds(10) 
+      timeout: minutesToMiliseconds(10),
     })
   }
 
