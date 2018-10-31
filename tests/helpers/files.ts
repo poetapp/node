@@ -22,7 +22,7 @@ interface FileHelperConfiguration {
   readonly host?: string
 }
 
-export const createFileHelper = ({ port, host }: FileHelperConfiguration) => {
+export const FileHelper = ({ port, host }: FileHelperConfiguration) => {
   const url = `${baseUrl(port, host)}/${FILES_PATH}`
 
   return {

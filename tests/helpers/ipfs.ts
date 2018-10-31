@@ -11,7 +11,7 @@ interface IPFSConfiguration {
   readonly url?: string
 }
 
-export const createIPFS = ({ url = IPFS_URL }: IPFSConfiguration = {}) => {
+export const IPFS = ({ url = IPFS_URL }: IPFSConfiguration = {}) => {
   return {
     fetchFile: fetchFile(url),
     fetchFileContent: asyncPipe(fetchFile(url), getResponseText),

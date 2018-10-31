@@ -5,17 +5,17 @@ import * as path from 'path'
 import { prop, identity, head, map } from 'ramda'
 import { describe } from 'riteway'
 
-import { createFileHelper } from '../../helpers/files'
-import { createIPFS } from '../../helpers/ipfs'
+import { FileHelper } from '../../helpers/Files'
+import { IPFS } from '../../helpers/IPFS'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
 
-const ipfs = createIPFS()
-const fileHelper = createFileHelper({ port: NODE_PORT  })
+const ipfs = IPFS()
+const fileHelper = FileHelper({ port: NODE_PORT  })
 
-const getHash = prop('Hash')
+const getHash= prop('Hash')
 const getStatus = prop('status')
 
 const calcPath = (relPath: string) => path.resolve(__dirname, relPath)
@@ -42,7 +42,7 @@ describe('POST /files', async assert => {
   // Setup Mongodb and the app server
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
   {
-    const given = 'a utf8 mardown file as a multipart file stream'
+    const given = 'a single utf8 mardown file as a multipart file stream'
 
     assert({
       given,
