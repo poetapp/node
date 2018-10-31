@@ -55,6 +55,7 @@ export async function app(localVars: any = {}) {
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
       newClaim: configuration.exchangeNewClaim,
     },
+    ipfsUrl: configuration.ipfsUrl,
   })
 
   try {

@@ -8,12 +8,13 @@ import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
+import { FileController, FileControllerConfiguration } from './FileController'
 import { HealthController } from './HealthController'
 import { Router } from './Router'
 import { RouterConfiguration } from './Router'
 import { WorkController } from './WorkController'
 
-export interface APIConfiguration extends LoggingConfiguration {
+export interface APIConfiguration extends LoggingConfiguration, FileControllerConfiguration {
   readonly port: number
   readonly dbUrl: string
   readonly rabbitmqUrl: string
@@ -65,10 +66,14 @@ export class API {
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<RouterConfiguration>('RouterConfiguration').toConstantValue({ port: this.configuration.port })
+    this.container.bind<FileController>('FileController').to(FileController)
     this.container.bind<WorkController>('WorkController').to(WorkController)
     this.container.bind<HealthController>('HealthController').to(HealthController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
     this.container.bind<VerifiableClaimSigner>('VerifiableClaimSigner').toConstantValue(getVerifiableClaimSigner())
+    this.container.bind<FileControllerConfiguration>('FileControllerConfiguration').toConstantValue({
+      ipfsUrl: this.configuration.ipfsUrl,
+    })
   }
 }
