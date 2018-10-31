@@ -50,7 +50,8 @@ export class IPFS {
 
   getDirectoryFileHashes: getDirectoryFileHashes = async (hash: string) => {
     const response = await this.ls(hash)
-    const validResponse = isNotNil(response.Objects) &&
+    const validResponse = isNotNil(response) &&
+      isNotNil(response.Objects) &&
       isNotNil(response.Objects[hash]) &&
       isNotNil(response.Objects[hash].Links)
     return validResponse ? response.Objects[hash].Links.map(x => x.Hash) : []
