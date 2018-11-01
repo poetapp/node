@@ -209,7 +209,7 @@ describe('Bitcoin.bufferToPoetAnchor', async assert => {
     prefix: string,
     version: number,
     storageProtocol: StorageProtocol,
-    ipfsDirectoryHash: string
+    ipfsDirectoryHash: string,
   ): Buffer =>
     Buffer.from(
       poetAnchorToData({
@@ -225,7 +225,7 @@ describe('Bitcoin.bufferToPoetAnchor', async assert => {
     given: 'Buffer from correct poet anchor with IPFS file hash',
     should: 'return true',
     actual: isCorrectBufferLength(
-      bufferFromAnchor('POET', 23, StorageProtocol.IPFS, 'QmPth96BuMUhHJDDiTNL6wphBMCXQWTDmm1uQe63VeGmPT')
+      bufferFromAnchor('POET', 23, StorageProtocol.IPFS, 'QmPth96BuMUhHJDDiTNL6wphBMCXQWTDmm1uQe63VeGmPT'),
     ),
     expected: true,
   })
@@ -234,7 +234,7 @@ describe('Bitcoin.bufferToPoetAnchor', async assert => {
     given: 'Buffer from correct poet anchor with IPFS directory hash',
     should: 'return true',
     actual: isCorrectBufferLength(
-      bufferFromAnchor('POET', 23, StorageProtocol.IPFS, 'Qmdrv2VoXKpzpSzS1iKpWMxfM9THEhGgBriKqbMyAiTF1U')
+      bufferFromAnchor('POET', 23, StorageProtocol.IPFS, 'Qmdrv2VoXKpzpSzS1iKpWMxfM9THEhGgBriKqbMyAiTF1U'),
     ),
     expected: true,
   })
