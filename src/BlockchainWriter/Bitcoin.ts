@@ -8,7 +8,7 @@ export class IllegalPrefixLength extends Error {}
 export class IllegalVersionLength extends Error {}
 
 const uint16ToBuffer = (version: number) => {
-  const buffer = Buffer.allocUnsafe(2)
+  const buffer = Buffer.alloc(2)
 
   try {
     buffer.writeUInt16BE(version, 0)
