@@ -1,8 +1,9 @@
-import { minutesToMiliseconds } from 'Helpers/Time'
 import * as FormData from 'form-data'
 import fetch, { Response } from 'node-fetch'
-import * as str from 'string-to-stream'
 import { prop } from 'ramda'
+import * as str from 'string-to-stream'
+
+import { minutesToMiliseconds } from './Time'
 
 const getHash = prop('Hash')
 
@@ -23,9 +24,9 @@ export const IPFS = ({
   }
 
   const addText = ({
-    timeout = minutesToMiliseconds(10)
+    timeout = minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (text: string): Promise<string> => {
-    const formData = new FormData() 
+    const formData = new FormData()
 
     formData.append('file', str(text), {
       knownLength: Buffer.from(text).length,
@@ -45,14 +46,13 @@ export const IPFS = ({
   }
 
   const cat = ({
-    timeout = minutesToMiliseconds(10)
+    timeout = minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (hash: string): Promise<string> => {
     const response = await fetch(`${paths.cat}?arg=${hash}`, {
       timeout,
     })
     return response.text()
   }
-
 
   return {
     addText,
