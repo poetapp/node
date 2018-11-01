@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
-import { Collection, Db, UpdateWriteOpResult, InsertOneWriteOpResult, FindOneAndReplaceOption, FindOperatorsUnordered, WriteOpResult } from 'mongodb'
+import { Collection, Db, UpdateWriteOpResult, WriteOpResult } from 'mongodb'
 
-import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
+import { IPFSHashFailure } from 'Interfaces'
 
 export interface BlockchainInfo {
   readonly blocks: number
@@ -38,12 +38,17 @@ type updateNetworkInfo = (x: NetworkInfo) => Promise<UpdateWriteOpResult>
 
 type updateIPFSInfo = (x: IPFSInfo) => Promise<UpdateWriteOpResult>
 
-type insertIPFSFailure = (x: IPFSHashFailure) => Promise<InsertOneWriteOpResult>
+type insertIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpResult>
 
 type findIPFSFailure = (x: string) => Promise<WriteOpResult>
 
 type updateNewIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpResult>
 
+type updateExistingIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpResult>
+
+type findByName = (x: string) => Promise<WriteOpResult>
+
+type removeIPFSFailure = (x: string) => Promise<UpdateWriteOpResult>
 @injectable()
 export class HealthDAO {
   private readonly collection: Collection
@@ -96,13 +101,21 @@ export class HealthDAO {
       { upsert: true },
     )
 
+  readonly findByName: findByName = name =>
+    this.collection.findOne({name})
+
   readonly insertIPFSFailure: insertIPFSFailure = ({ failureReason, failureType, ipfsFileHash, failureTime }) =>
-    this.collection.insertOne({
-      name: 'ipfsDownloadRetries',
-      ipfsDownloadRetries: [
+    this.collection.updateOne(
+      { name: 'ipfsDownloadRetries' },
+      {
+        $set: {
+          ipfsDownloadRetries: [
         { ipfsFileHash, failureReason, failureType, lastDownloadAttemptTime: failureTime, downloadAttempts: 1 },
       ],
-    })
+        },
+      },
+      { upsert: true },
+    )
 
   readonly findIPFSFailure: findIPFSFailure = ipfsFileHash =>
     this.collection.findOne({
@@ -123,8 +136,27 @@ export class HealthDAO {
             downloadAttempts: 1,
           },
         },
-      }
+      },
     )
 
-  readonly updateExistingIPFSFailure
+  readonly updateExistingIPFSFailure: updateExistingIPFSFailure = (
+    { ipfsFileHash, failureReason, failureType, failureTime },
+  ) =>
+    this.collection.updateOne(
+      { name: 'ipfsDownloadRetries', 'ipfsDownloadRetries.ipfsFileHash': ipfsFileHash },
+      {
+        $set: {
+          'ipfsDownloadRetries.$.failureReason': failureReason,
+          'ipfsDownloadRetries.$.failureType': failureType,
+          'ipfsDownloadRetries.$.lastDownloadAttemptTime': failureTime,
+        },
+        $inc: { 'ipfsDownloadRetries.$.downloadAttempts': 1 },
+      },
+    )
+
+  readonly removeIPFSFailure: removeIPFSFailure = ipfsFileHash =>
+    this.collection.updateOne(
+      { name: 'ipfsDownloadRetries' },
+      { $pull: { ipfsDownloadRetries: { ipfsFileHash } } },
+    )
 }

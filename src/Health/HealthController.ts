@@ -117,7 +117,7 @@ export class HealthController {
   private async insertIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
     this.logger.debug({ ipfsHashFailures }, 'Inserting IPFS Failures by IPFS Hash')
     await Promise.all(
-      ipfsHashFailures.map(this.healthDAO.insertIPFSFailure)
+      ipfsHashFailures.map(this.healthDAO.insertIPFSFailure),
     )
   }
 
@@ -127,7 +127,7 @@ export class HealthController {
       ipfsHashFailures.map(async ({ ipfsFileHash, failureType, failureReason, failureTime }) => {
         const hashExisting = await this.healthDAO.findIPFSFailure(ipfsFileHash)
         return { ipfsFileHash, failureType, failureReason, failureTime, hashExisting }
-      })
+      }),
     )
   }
 
@@ -143,18 +143,13 @@ export class HealthController {
             failureTime,
           })
         else
-          await this.collection.updateOne(
-            { name: 'ipfsDownloadRetries', 'ipfsDownloadRetries.ipfsFileHash': ipfsFileHash },
-            {
-              $set: {
-                'ipfsDownloadRetries.$.failureReason': failureReason,
-                'ipfsDownloadRetries.$.failureType': failureType,
-                'ipfsDownloadRetries.$.lastDownloadAttemptTime': failureTime,
-              },
-              $inc: { 'ipfsDownloadRetries.$.downloadAttempts': 1 },
-            }
-          )
-      }
+          await this.healthDAO.updateExistingIPFSFailure({
+            ipfsFileHash,
+            failureReason,
+            failureType,
+            failureTime,
+          })
+      },
     )
   }
 
@@ -194,7 +189,7 @@ export class HealthController {
 
   public async upsertIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
     this.logger.debug({ ipfsHashFailures }, 'Inserting IPFS Failures')
-    const existing = await this.collection.findOne({ name: 'ipfsDownloadRetries' })
+    const existing = await this.healthDAO.findByName('ipfsDownloadRetries')
     if (!existing) await this.insertIPFSFailures(ipfsHashFailures)
     else await this.updateIPFSFailures(await this.setExistingIPFSFailures(ipfsHashFailures))
   }
@@ -203,11 +198,8 @@ export class HealthController {
     this.logger.debug({ claimIPFSHashPair }, 'Removing IPFS Failure')
     await Promise.all(
       claimIPFSHashPair.map(async ({ ipfsFileHash }) => {
-        await this.collection.update(
-          { name: 'ipfsDownloadRetries' },
-          { $pull: { ipfsDownloadRetries: { ipfsFileHash } } }
-        )
-      })
+        await this.healthDAO.removeIPFSFailure(ipfsFileHash)
+      }),
     )
   }
 }
