@@ -112,6 +112,7 @@ This is what the default configuration looks like:
   rabbitmqUrl: 'amqp://localhost',
   mongodbUrl: 'mongodb://localhost:27017/poet',
   ipfsUrl: 'http://localhost:5001',
+  ipfsArchiveUrlPrefix: 'https://ipfs.io/ipfs',
   bitcoinUrl: '127.0.0.1',
   bitcoinPort: 18332,
   bitcoinNetwork: 'testnet',
@@ -147,13 +148,13 @@ Currently, the Node exposes four endpoints.
 ### `POST /files`
 Takes a multipart file upload. Currently only allows 1 file to be uploaded at a time and accepts 1 field which is the file to upload.
 
-Returns an array with an object containing the hash of the file.
+Returns an array with an object containing the hash and the archive URL of the file.
 
 Example:
 
 ```
 [
-  { hash: "QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT" }
+  { hash: "QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT", archiveUrl: "https://ipfs.io/ipfs/QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT" }
 ]
 ```
 
