@@ -34,7 +34,7 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
 
   // Allow everything to finish starting.
   await resetBitcoinServers()
-  await delay(5 * 1000)
+  await delay(10 * 1000)
 
   {
     // Check health.
@@ -42,7 +42,7 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     const response = await getHealth(NODE_PORT)
     const healthData = await response.json()
 
-    const { mongoIsConnected, ipfsInfo, blockchainInfo, networkInfo, walletInfo } = healthData
+    const { mongoIsConnected, ipfsInfo, blockchainInfo, networkInfo, walletInfo, estimatedSmartFeeInfo } = healthData
 
     assert({
       given: 'a request to the health endpoint',
@@ -80,17 +80,25 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     })
 
     assert({
+      given: 'a request to the health endpoint',
+      should: 'return object with property estimatedSmartFeeInfo',
+      actual: isNil(estimatedSmartFeeInfo),
+      expected: false,
+    })
+
+    assert({
       given: `a request to the health endpoint while the bitcoin balance is below LOW_WALLET_BALANCE_BTC`,
       should: 'return walletInfo property isBalanceLow as true',
       actual: walletInfo.isBalanceLow,
       expected: true,
     })
   }
+
   // Make sure node has regtest coins: Genrate 101 blocks at 25BTC/block if none.
   await ensureBitcoinBalance(bitcoindClient)
 
   // Make sure health service runs again.
-  await delay(5 * 1000)
+  await delay(10 * 1000)
 
   {
     // Check isBalanceLow is false.
