@@ -46,7 +46,7 @@
     "bs58": "4.0.1",
     "form-data": "2.3.3",
     "inversify": "5.0.1",
-    "joi": "14.0.2",
+    "joi": "14.0.3",
     "koa": "2.6.1",
     "koa-body": "4.0.4",
     "koa-cors": "0.0.16",
@@ -61,7 +61,7 @@
     "string-to-stream": "1.1.1"
   },
   "devDependencies": {
-    "@po.et/tslint-rules": "2.0.0",
+    "@po.et/tslint-rules": "2.0.1",
     "@types/amqplib": "0.5.9",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
