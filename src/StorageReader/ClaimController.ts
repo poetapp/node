@@ -255,7 +255,6 @@ export class ClaimController {
       }
     }
     const logger = this.logger.child({ method: 'downloadEntryClaim' })
-    throw new IPFSTimeoutError(ipfsFileHash)
 
     logger.trace({ ipfsFileHash }, 'Starting claim download')
 

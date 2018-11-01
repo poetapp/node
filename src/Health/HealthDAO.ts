@@ -49,6 +49,7 @@ type updateExistingIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpRe
 type findByName = (x: string) => Promise<WriteOpResult>
 
 type removeIPFSFailure = (x: string) => Promise<UpdateWriteOpResult>
+
 @injectable()
 export class HealthDAO {
   private readonly collection: Collection
