@@ -73,6 +73,7 @@ export interface ExchangeConfiguration {
   readonly exchangeIpfsHashTxId: string
   readonly exchangePoetAnchorDownloaded: string
   readonly exchangeClaimsDownloaded: string
+  readonly exchangeClaimsNotDownloaded: string
   readonly exchangeStorageWriterStoreNextClaim: string
   readonly exchangeGetHealth: string
 }
@@ -132,6 +133,7 @@ const defaultConfiguration: Configuration = {
   exchangeIpfsHashTxId: 'IPFS_HASH_TX_ID',
   exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
   exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
+  exchangeClaimsNotDownloaded: 'CLAIMS_NOT_DOWNLOADED',
   exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM',
   exchangeGetHealth: 'HEALTH::GET_HEALTH',
 }
@@ -174,6 +176,7 @@ const applyExchangePrefix = (configVars: any) => {
     'exchangeIpfsHashTxId',
     'exchangePoetAnchorDownloaded',
     'exchangeClaimsDownloaded',
+    'exchangeClaimsNotDownloaded',
     'exchangeStorageWriterStoreNextClaim',
     'exchangeGetHealth',
   ]

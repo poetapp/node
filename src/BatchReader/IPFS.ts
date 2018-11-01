@@ -1,6 +1,8 @@
 import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 
+import { isNotNil } from 'Helpers/isNotNil'
+
 enum Type {
   File = 'File',
   Directory = 'Directory',
@@ -48,7 +50,11 @@ export class IPFS {
 
   getDirectoryFileHashes: getDirectoryFileHashes = async (hash: string) => {
     const response = await this.ls(hash)
-    return response.Objects[hash].Links.map(x => x.Hash)
+    const validResponse = isNotNil(response) &&
+      isNotNil(response.Objects) &&
+      isNotNil(response.Objects[hash]) &&
+      isNotNil(response.Objects[hash].Links)
+    return validResponse ? response.Objects[hash].Links.map(x => x.Hash) : []
   }
 
   ls: ls = async (hash: string) => {

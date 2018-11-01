@@ -1,4 +1,5 @@
 /* tslint:disable:no-relative-imports */
+import '../../src/API/FileController.test.ts'
 import '../../src/API/HealthController.test'
 import '../../src/API/Middlewares/RequestValidationMiddleware.test'
 import '../../src/API/Middlewares/RequestValidationMiddleware.test.ts'
@@ -16,6 +17,7 @@ import '../../src/Helpers/Logging.test.ts'
 import '../../src/Helpers/Time.test.ts'
 import '../../src/Helpers/asyncPipe.test.ts'
 import '../../src/Helpers/camelCaseToScreamingSnakeCase.test'
+import '../../src/Helpers/isNotNil.test'
 import '../../src/Helpers/isTruthy.test'
 import '../../src/Helpers/to-promise.test.ts'
 import '../../src/Interfaces.test.ts'

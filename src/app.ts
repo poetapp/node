@@ -55,6 +55,7 @@ export async function app(localVars: any = {}) {
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
       newClaim: configuration.exchangeNewClaim,
     },
+    ipfsUrl: configuration.ipfsUrl,
   })
 
   try {
@@ -138,6 +139,7 @@ export async function app(localVars: any = {}) {
       batchReaderReadNextDirectorySuccess: configuration.exchangeBatchReaderReadNextDirectorySuccess,
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
+      claimsNotDownloaded: configuration.exchangeClaimsNotDownloaded,
     },
   })
   try {
