@@ -172,6 +172,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
       EXCHANGE_IPFS_HASH_TX_ID: 'override',
       EXCHANGE_POET_ANCHOR_DOWNLOADED: 'override',
       EXCHANGE_CLAIMS_DOWNLOADED: 'override',
+      EXCHANGE_CLAIMS_NOT_DOWNLOADED: 'override',
       EXCHANGE_GET_HEALTH: 'override',
     }
 
