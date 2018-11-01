@@ -15,6 +15,7 @@ interface IPFSFileResponseJson {
 }
 
 interface FileResponseJson {
+  readonly archiveUrl: string
   readonly hash: string
 }
 
@@ -25,18 +26,22 @@ enum LogTypes {
 }
 
 export interface FileControllerConfiguration {
+  readonly ipfsArchiveUrlPrefix: string
   readonly ipfsUrl: string
 }
 
-export const convertJson = (x: IPFSFileResponseJson): FileResponseJson => ({
-  hash: x.Hash,
-})
+export const convertJson = (archiveUrlPrefix: string) =>
+  (ipfsFileResponse: IPFSFileResponseJson): FileResponseJson => ({
+    hash: ipfsFileResponse.Hash,
+    archiveUrl: `${archiveUrlPrefix}/${ipfsFileResponse.Hash}`,
+  })
 
 @injectable()
 export class FileController {
   private readonly logger: Pino.Logger
   private readonly db: Db
   private readonly collection: Collection
+  private readonly ipfsArchiveUrlPrefix: string
   private readonly ipfsUrl: string
 
   constructor(
@@ -47,6 +52,7 @@ export class FileController {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('files')
+    this.ipfsArchiveUrlPrefix = configuration.ipfsArchiveUrlPrefix
     this.ipfsUrl = configuration.ipfsUrl
   }
 
@@ -79,7 +85,7 @@ export class FileController {
     this.log(LogTypes.trace)('Adding file to ipfs'),
     this.addFileToIPFS,
     this.getResponseJson,
-    convertJson,
+    convertJson(this.ipfsArchiveUrlPrefix),
     this.log(LogTypes.trace)('Added file to ipfs, now saving the hash to the database'),
     this.storeIPFSHash,
     this.log(LogTypes.trace)('Saved the hash to the database'),
