@@ -80,6 +80,13 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
     })
 
     assert({
+      given: 'a request to the health endpoint',
+      should: 'return object with property estimatedSmartFeeInfo',
+      actual: isNil(estimatedSmartFeeInfo),
+      expected: false,
+    })
+
+    assert({
       given: `a request to the health endpoint while the bitcoin balance is below LOW_WALLET_BALANCE_BTC`,
       should: 'return walletInfo property isBalanceLow as true',
       actual: walletInfo.isBalanceLow,
