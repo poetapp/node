@@ -24,6 +24,11 @@ export interface NetworkInfo {
   readonly warnings: string
 }
 
+export interface EstimatedSmartFeeInfo {
+  readonly feerate: number
+  readonly blocks: number
+}
+
 export interface IPFSInfo {
   readonly ipfsIsConnected: boolean
 }
@@ -35,6 +40,8 @@ type updateWalletInfo = (x: WalletInfo) => Promise<UpdateWriteOpResult>
 type updateNetworkInfo = (x: NetworkInfo) => Promise<UpdateWriteOpResult>
 
 type updateIPFSInfo = (x: IPFSInfo) => Promise<UpdateWriteOpResult>
+
+type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<UpdateWriteOpResult>
 
 @injectable()
 export class HealthDAO {
@@ -83,6 +90,17 @@ export class HealthDAO {
       {
         $set: {
           ipfsInfo,
+        },
+      },
+      { upsert: true },
+    )
+
+  readonly updateEstimatedSmartFeeInfo: updateEstimatedSmartFeeInfo = estimatedSmartFeeInfo =>
+    this.collection.updateOne(
+      { name: 'estimatedSmartFeeInfo' },
+      {
+        $set: {
+          estimatedSmartFeeInfo,
         },
       },
       { upsert: true },
