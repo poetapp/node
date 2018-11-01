@@ -34,7 +34,7 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
 
   // Allow everything to finish starting.
   await resetBitcoinServers()
-  await delay(5 * 1000)
+  await delay(10 * 1000)
 
   {
     // Check health.
@@ -98,7 +98,7 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
   await ensureBitcoinBalance(bitcoindClient)
 
   // Make sure health service runs again.
-  await delay(5 * 1000)
+  await delay(10 * 1000)
 
   {
     // Check isBalanceLow is false.
