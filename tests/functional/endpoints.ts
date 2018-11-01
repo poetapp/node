@@ -21,6 +21,10 @@ const bitcoindClient = new Client({
 
 describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
   const db = await createDatabase(PREFIX)
+
+  await resetBitcoinServers()
+  await delay(5 * 1000)
+
   const server = await app({
     BITCOIN_URL: process.env.BITCOIN_URL || 'bitcoind-1',
     API_PORT: NODE_PORT,
@@ -33,8 +37,8 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
   })
 
   // Allow everything to finish starting.
-  await resetBitcoinServers()
-  await delay(10 * 1000)
+
+  await delay(5 * 1000)
 
   {
     // Check health.
