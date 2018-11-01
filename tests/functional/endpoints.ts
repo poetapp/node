@@ -93,7 +93,7 @@ describe('Health Endpoint Returns the Correct Fields', async (assert: any) => {
       expected: true,
     })
   }
-  
+
   // Make sure node has regtest coins: Genrate 101 blocks at 25BTC/block if none.
   await ensureBitcoinBalance(bitcoindClient)
 
