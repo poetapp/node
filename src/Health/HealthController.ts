@@ -126,7 +126,7 @@ export class HealthController {
     return await Promise.all(
       ipfsHashFailures.map(async ({ ipfsFileHash, failureType, failureReason, failureTime }) => {
         const hashExisting = await this.healthDAO.findIPFSFailure(ipfsFileHash)
-        return { ipfsFileHash, failureType, failureReason, failureTime, hashExisting }
+        return { ipfsFileHash, failureType, failureReason, failureTime, hashExisting: !!hashExisting }
       }),
     )
   }
