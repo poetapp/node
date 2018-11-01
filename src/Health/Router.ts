@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
@@ -28,6 +29,8 @@ export class Router {
 
   async start() {
     await this.messaging.consume(this.exchange.getHealth, this.onGetHealth)
+    await this.messaging.consumeClaimsNotDownloaded(this.onClaimsNotDownloaded)
+    await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
   }
 
   onGetHealth = async () => {
@@ -39,6 +42,28 @@ export class Router {
       await this.controller.refreshIPFSInfo()
     } catch (error) {
       logger.error({ error }, 'Failed to getHealthInfo')
+    }
+  }
+
+  onClaimsNotDownloaded = async (ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) => {
+    const logger = this.logger.child({ method: 'onClaimsNotDownloaded' })
+
+    logger.trace({ ipfsHashFailures }, 'IPFS Download Failure')
+    try {
+      await this.controller.upsertIPFSFailures(ipfsHashFailures)
+    } catch (error) {
+      logger.error({ error }, 'Failed to upsert ipfsHashFailures on health')
+    }
+  }
+
+  onClaimsDownloaded = async (claimIPFSHashPair: ReadonlyArray<ClaimIPFSHashPair>) => {
+    const logger = this.logger.child({ method: 'onClaimsDownloaded' })
+
+    logger.trace({ claimIPFSHashPair }, 'IPFS Download Success')
+    try {
+      await this.controller.removeIPFSFailure(claimIPFSHashPair)
+    } catch (e) {
+      logger.error({ e }, 'Failed to remove IPFSHashFailue on health')
     }
   }
 }

@@ -1,5 +1,7 @@
 import { inject, injectable } from 'inversify'
-import { Collection, Db, UpdateWriteOpResult } from 'mongodb'
+import { Collection, Db, UpdateWriteOpResult, InsertOneWriteOpResult, FindOneAndReplaceOption, FindOperatorsUnordered, WriteOpResult } from 'mongodb'
+
+import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
 
 export interface BlockchainInfo {
   readonly blocks: number
@@ -35,6 +37,12 @@ type updateWalletInfo = (x: WalletInfo) => Promise<UpdateWriteOpResult>
 type updateNetworkInfo = (x: NetworkInfo) => Promise<UpdateWriteOpResult>
 
 type updateIPFSInfo = (x: IPFSInfo) => Promise<UpdateWriteOpResult>
+
+type insertIPFSFailure = (x: IPFSHashFailure) => Promise<InsertOneWriteOpResult>
+
+type findIPFSFailure = (x: string) => Promise<WriteOpResult>
+
+type updateNewIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpResult>
 
 @injectable()
 export class HealthDAO {
@@ -87,4 +95,36 @@ export class HealthDAO {
       },
       { upsert: true },
     )
+
+  readonly insertIPFSFailure: insertIPFSFailure = ({ failureReason, failureType, ipfsFileHash, failureTime }) =>
+    this.collection.insertOne({
+      name: 'ipfsDownloadRetries',
+      ipfsDownloadRetries: [
+        { ipfsFileHash, failureReason, failureType, lastDownloadAttemptTime: failureTime, downloadAttempts: 1 },
+      ],
+    })
+
+  readonly findIPFSFailure: findIPFSFailure = ipfsFileHash =>
+    this.collection.findOne({
+      name: 'ipfsDownloadRetries',
+      'ipfsDownloadRetries.ipfsFileHash': ipfsFileHash,
+    })
+
+  readonly updateNewIPFSFailure: updateNewIPFSFailure = ({ ipfsFileHash, failureReason, failureType, failureTime }) =>
+    this.collection.updateOne(
+      { name: 'ipfsDownloadRetries' },
+      {
+        $push: {
+          ipfsDownloadRetries: {
+            ipfsFileHash,
+            failureReason,
+            failureType,
+            lastDownloadAttemptTime: failureTime,
+            downloadAttempts: 1,
+          },
+        },
+      }
+    )
+
+  readonly updateExistingIPFSFailure
 }
