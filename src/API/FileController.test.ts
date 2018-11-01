@@ -8,11 +8,14 @@ describe('convertJson', async assert => {
       Name: 'foo',
       Other: 'bar',
     }
+
+    const ipfsUrlPrefix = 'https://ipfs.io/ipfs'
+
     assert({
-      given: 'an ipfs response',
+      given: 'an ipfsUrlPrefix, then an ipfs response',
       should: 'convert it to the correct response',
-      actual: convertJson(input),
-      expected: { hash: input.Hash },
+      actual: convertJson(ipfsUrlPrefix)(input),
+      expected: { hash: 'something', archiveUrl: 'https://ipfs.io/ipfs/something' },
     })
   }
 })

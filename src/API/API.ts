@@ -73,6 +73,7 @@ export class API {
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
     this.container.bind<VerifiableClaimSigner>('VerifiableClaimSigner').toConstantValue(getVerifiableClaimSigner())
     this.container.bind<FileControllerConfiguration>('FileControllerConfiguration').toConstantValue({
+      ipfsArchiveUrlPrefix: this.configuration.ipfsArchiveUrlPrefix,
       ipfsUrl: this.configuration.ipfsUrl,
     })
   }
