@@ -43,19 +43,19 @@ type updateNetworkInfo = (x: NetworkInfo) => Promise<UpdateWriteOpResult>
 
 type updateIPFSInfo = (x: IPFSInfo) => Promise<UpdateWriteOpResult>
 
-type insertIPFSFailure = (x: IPFSHashFailure) => void
+type insertIPFSFailure = (x: IPFSHashFailure) => Promise<void>
 
 type isIPFSFailureExisting = (x: string) => Promise<boolean>
 
-type updateNewIPFSFailure = (x: IPFSHashFailure) => void
+type updateNewIPFSFailure = (x: IPFSHashFailure) => Promise<void>
 
-type updateExistingIPFSFailure = (x: IPFSHashFailure) => void
+type updateExistingIPFSFailure = (x: IPFSHashFailure) => Promise<void>
 
 type isNameExisting = (x: string) => Promise<boolean>
 
-type removeIPFSFailure = (x: string) => void
+type removeIPFSFailure = (x: string) => Promise<void>
 
-type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => void
+type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<void>
 
 @injectable()
 export class HealthDAO {
@@ -109,8 +109,8 @@ export class HealthDAO {
       { upsert: true },
     )
 
-  readonly updateEstimatedSmartFeeInfo: updateEstimatedSmartFeeInfo = estimatedSmartFeeInfo =>
-    this.collection.updateOne(
+  readonly updateEstimatedSmartFeeInfo: updateEstimatedSmartFeeInfo = async estimatedSmartFeeInfo => {
+    await this.collection.updateOne(
       { name: 'estimatedSmartFeeInfo' },
       {
         $set: {
@@ -119,14 +119,15 @@ export class HealthDAO {
       },
       { upsert: true },
     )
+  }
 
   readonly isNameExisting: isNameExisting = async name => {
     const existing = await this.collection.findOne({ name })
     return !!existing
   }
 
-  readonly insertIPFSFailure: insertIPFSFailure = ({ failureReason, failureType, ipfsFileHash, failureTime }) =>
-    this.collection.updateOne(
+  readonly insertIPFSFailure: insertIPFSFailure = async ({ failureReason, failureType, ipfsFileHash, failureTime }) => {
+    await this.collection.updateOne(
       { name: 'ipfsDownloadRetries' },
       {
         $set: {
@@ -137,6 +138,7 @@ export class HealthDAO {
       },
       { upsert: true },
     )
+  }
 
   readonly isIPFSFailureExisting: isIPFSFailureExisting = async ipfsFileHash => {
     const existing = await this.collection.findOne({
@@ -146,8 +148,10 @@ export class HealthDAO {
     return !!existing
   }
 
-  readonly updateNewIPFSFailure: updateNewIPFSFailure = ({ ipfsFileHash, failureReason, failureType, failureTime }) =>
-    this.collection.updateOne(
+  readonly updateNewIPFSFailure: updateNewIPFSFailure = async (
+    { ipfsFileHash, failureReason, failureType, failureTime },
+  ) => {
+    await this.collection.updateOne(
       { name: 'ipfsDownloadRetries' },
       {
         $push: {
@@ -161,11 +165,12 @@ export class HealthDAO {
         },
       },
     )
+  }
 
-  readonly updateExistingIPFSFailure: updateExistingIPFSFailure = (
+  readonly updateExistingIPFSFailure: updateExistingIPFSFailure = async (
     { ipfsFileHash, failureReason, failureType, failureTime },
-  ) =>
-    this.collection.updateOne(
+  ) => {
+    await this.collection.updateOne(
       { name: 'ipfsDownloadRetries', 'ipfsDownloadRetries.ipfsFileHash': ipfsFileHash },
       {
         $set: {
@@ -176,10 +181,12 @@ export class HealthDAO {
         $inc: { 'ipfsDownloadRetries.$.downloadAttempts': 1 },
       },
     )
+  }
 
-  readonly removeIPFSFailure: removeIPFSFailure = ipfsFileHash =>
-    this.collection.updateOne(
+  readonly removeIPFSFailure: removeIPFSFailure = async ipfsFileHash => {
+    await this.collection.updateOne(
       { name: 'ipfsDownloadRetries' },
       { $pull: { ipfsDownloadRetries: { ipfsFileHash } } },
     )
+  }
 }
