@@ -21,7 +21,7 @@ interface ValidateStoredClaimData {
 }
 
 @injectable()
-export class ClaimValidator {
+export class ClaimIntegrityChecker {
   private readonly logger: Pino.Logger
   private readonly daoClaims: DAOClaims
   private readonly ipfs: IPFS
@@ -44,7 +44,7 @@ export class ClaimValidator {
 
   private loadDBClaim = async (x: ValidateStoredClaimData) => {
     const { ipfsFileHash } = x; 
-    const dbClaim = await this.daoClaims.getClaimByHash(ipfsFileHash) 
+    const dbClaim = await this.daoClaims.findClaimByHash(ipfsFileHash) 
     return {
       ...x,
       dbClaim 
@@ -67,7 +67,7 @@ export class ClaimValidator {
     }
   }
 
-  public validateStoredClaim = asyncPipe(
+  public checkClaimIntegrity = asyncPipe(
     this.loadDBClaim,
     this.downloadIPFSClaim,
     this.compareClaims

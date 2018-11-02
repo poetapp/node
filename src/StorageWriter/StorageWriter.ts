@@ -11,7 +11,7 @@ import { ClaimController } from './ClaimController'
 import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { IPFS, IPFSConfiguration } from './IPFS'
-import { ClaimValidator } from './ClaimValidator'
+import { ClaimIntegrityChecker } from './ClaimIntegrityChecker'
 import { Router } from './Router'
 import { Service, ServiceConfiguration } from './Service'
 
@@ -90,7 +90,7 @@ export class StorageWriter {
       ipfsUrl: this.configuration.ipfsUrl,
     })
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<ClaimValidator>('ClaimValidator').to(ClaimValidator)
+    this.container.bind<ClaimIntegrityChecker>('ClaimIntegrityChecker').to(ClaimIntegrityChecker)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
     this.container.bind<Service>('Service').to(Service)
