@@ -78,7 +78,7 @@ export const isCorrectBufferLength = (buffer: Buffer) => buffer.byteLength >= an
 
 export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchor => {
   const prefix = buffer.slice(0, 4).toString()
-  const version = parseInt(buffer.readUInt16BE(4).toString(16))
+  const version = buffer.slice(4, 6).readUInt16BE(0)
   const storageProtocol = buffer.readInt8(6)
   const ipfsDirectoryHash = bs58.encode(buffer.slice(7))
 

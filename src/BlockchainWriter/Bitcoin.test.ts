@@ -24,7 +24,7 @@ describe('Bitcoin.getData', async assert => {
       assert({
         given,
         should: 'match the version',
-        actual: parseInt(buffer.readUInt16BE(4).toString(16)),
+        actual: buffer.slice(4, 6).readUInt16BE(0),
         expected: poetAnchor.version,
       })
 
