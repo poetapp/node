@@ -7,7 +7,7 @@ import { minutesToMiliseconds } from './Time'
 
 const getHash = prop('Hash')
 
-interface IPFSConfiguration {
+export interface IPFSConfiguration {
   readonly url?: string
 }
 
