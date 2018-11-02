@@ -33,15 +33,15 @@ export interface IPFSInfo {
   readonly ipfsIsConnected: boolean
 }
 
-type updateBlockchainInfo = (x: BlockchainInfo) => Promise<UpdateWriteOpResult>
+type updateBlockchainInfo = (x: BlockchainInfo) => void
 
-type updateWalletInfo = (x: WalletInfo) => Promise<UpdateWriteOpResult>
+type updateWalletInfo = (x: WalletInfo) => void
 
-type updateNetworkInfo = (x: NetworkInfo) => Promise<UpdateWriteOpResult>
+type updateNetworkInfo = (x: NetworkInfo) => void
 
-type updateIPFSInfo = (x: IPFSInfo) => Promise<UpdateWriteOpResult>
+type updateIPFSInfo = (x: IPFSInfo) => void
 
-type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<UpdateWriteOpResult>
+type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => void
 
 @injectable()
 export class HealthDAO {
