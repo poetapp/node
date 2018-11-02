@@ -137,7 +137,6 @@ export class HealthDAO {
       },
       { upsert: true },
     )
-    
 
   readonly isIPFSFailureExisting: isIPFSFailureExisting = async ipfsFileHash => {
     const existing = await this.collection.findOne({
@@ -146,7 +145,6 @@ export class HealthDAO {
     })
     return !!existing
   }
-    
 
   readonly updateNewIPFSFailure: updateNewIPFSFailure = ({ ipfsFileHash, failureReason, failureType, failureTime }) =>
     this.collection.updateOne(
