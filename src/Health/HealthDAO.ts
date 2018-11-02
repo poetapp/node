@@ -43,7 +43,6 @@ type updateNetworkInfo = (x: NetworkInfo) => Promise<UpdateWriteOpResult>
 
 type updateIPFSInfo = (x: IPFSInfo) => Promise<UpdateWriteOpResult>
 
-<<<<<<< HEAD
 type insertIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpResult>
 
 type findIPFSFailure = (x: string) => Promise<WriteOpResult>
@@ -55,9 +54,8 @@ type updateExistingIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpRe
 type findByName = (x: string) => Promise<WriteOpResult>
 
 type removeIPFSFailure = (x: string) => Promise<UpdateWriteOpResult>
-=======
+
 type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<UpdateWriteOpResult>
->>>>>>> master
 
 @injectable()
 export class HealthDAO {
@@ -111,7 +109,17 @@ export class HealthDAO {
       { upsert: true },
     )
 
-<<<<<<< HEAD
+  readonly updateEstimatedSmartFeeInfo: updateEstimatedSmartFeeInfo = estimatedSmartFeeInfo =>
+    this.collection.updateOne(
+      { name: 'estimatedSmartFeeInfo' },
+      {
+        $set: {
+          estimatedSmartFeeInfo,
+        },
+      },
+      { upsert: true },
+    )
+
   readonly findByName: findByName = name =>
     this.collection.findOne({name})
 
@@ -121,21 +129,11 @@ export class HealthDAO {
       {
         $set: {
           ipfsDownloadRetries: [
-        { ipfsFileHash, failureReason, failureType, lastDownloadAttemptTime: failureTime, downloadAttempts: 1 },
-      ],
-=======
-  readonly updateEstimatedSmartFeeInfo: updateEstimatedSmartFeeInfo = estimatedSmartFeeInfo =>
-    this.collection.updateOne(
-      { name: 'estimatedSmartFeeInfo' },
-      {
-        $set: {
-          estimatedSmartFeeInfo,
->>>>>>> master
-        },
-      },
-      { upsert: true },
+            { ipfsFileHash, failureReason, failureType, lastDownloadAttemptTime: failureTime, downloadAttempts: 1 },
+          ],
+        }
+      }
     )
-<<<<<<< HEAD
 
   readonly findIPFSFailure: findIPFSFailure = ipfsFileHash =>
     this.collection.findOne({
@@ -179,6 +177,4 @@ export class HealthDAO {
       { name: 'ipfsDownloadRetries' },
       { $pull: { ipfsDownloadRetries: { ipfsFileHash } } },
     )
-=======
->>>>>>> master
 }
