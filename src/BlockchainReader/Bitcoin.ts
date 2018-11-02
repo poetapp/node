@@ -82,7 +82,6 @@ export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchor => {
   const storageProtocol = buffer.readInt8(6)
   const ipfsDirectoryHash = bs58.encode(buffer.slice(7))
 
-  
   return {
     storageProtocol,
     prefix,
