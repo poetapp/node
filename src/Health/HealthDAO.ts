@@ -24,17 +24,27 @@ export interface NetworkInfo {
   readonly warnings: string
 }
 
+export interface EstimatedSmartFeeInfo {
+  readonly feerate: number
+  readonly blocks: number
+}
+
 export interface IPFSInfo {
   readonly ipfsIsConnected: boolean
 }
 
-type updateBlockchainInfo = (x: BlockchainInfo) => Promise<UpdateWriteOpResult>
+function foo(a: string): boolean
+function foo(a: string) { return !a}
 
-type updateWalletInfo = (x: WalletInfo) => Promise<UpdateWriteOpResult>
+type updateBlockchainInfo = (x: BlockchainInfo) => Promise<void>
 
-type updateNetworkInfo = (x: NetworkInfo) => Promise<UpdateWriteOpResult>
+type updateWalletInfo = (x: WalletInfo) => Promise<void>
 
-type updateIPFSInfo = (x: IPFSInfo) => Promise<UpdateWriteOpResult>
+type updateNetworkInfo = (x: NetworkInfo) => Promise<void>
+
+type updateIPFSInfo = (x: IPFSInfo) => Promise<void>
+
+type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<void>
 
 @injectable()
 export class HealthDAO {
@@ -44,8 +54,8 @@ export class HealthDAO {
     this.collection = db.collection('health')
   }
 
-  readonly updateBlockchainInfo: updateBlockchainInfo = blockchainInfo =>
-    this.collection.updateOne(
+  readonly updateBlockchainInfo: updateBlockchainInfo = async blockchainInfo => {
+    await this.collection.updateOne(
       { name: 'blockchainInfo' },
       {
         $set: {
@@ -54,9 +64,10 @@ export class HealthDAO {
       },
       { upsert: true },
     )
+  }
 
-  readonly updateWalletInfo: updateWalletInfo = walletInfo =>
-    this.collection.updateOne(
+  readonly updateWalletInfo: updateWalletInfo = async walletInfo => {
+    await this.collection.updateOne(
       { name: 'walletInfo' },
       {
         $set: {
@@ -65,9 +76,10 @@ export class HealthDAO {
       },
       { upsert: true },
     )
+  }
 
-  readonly updateNetworkInfo: updateNetworkInfo = networkInfo =>
-    this.collection.updateOne(
+  readonly updateNetworkInfo: updateNetworkInfo = async networkInfo => {
+    await this.collection.updateOne(
       { name: 'networkInfo' },
       {
         $set: {
@@ -76,9 +88,10 @@ export class HealthDAO {
       },
       { upsert: true },
     )
+  }
 
-  readonly updateIPFSInfo: updateIPFSInfo = ipfsInfo =>
-    this.collection.updateOne(
+  readonly updateIPFSInfo: updateIPFSInfo = async ipfsInfo => {
+    await this.collection.updateOne(
       { name: 'ipfsInfo' },
       {
         $set: {
@@ -87,4 +100,17 @@ export class HealthDAO {
       },
       { upsert: true },
     )
+  }
+
+  readonly updateEstimatedSmartFeeInfo: updateEstimatedSmartFeeInfo = async estimatedSmartFeeInfo => {
+    await this.collection.updateOne(
+      { name: 'estimatedSmartFeeInfo' },
+      {
+        $set: {
+          estimatedSmartFeeInfo,
+        },
+      },
+      { upsert: true },
+    )
+  }
 }
