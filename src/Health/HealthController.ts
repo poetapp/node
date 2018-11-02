@@ -6,7 +6,7 @@ import { pick, pipeP } from 'ramda'
 import { childWithFileName } from 'Helpers/Logging'
 import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
 
-import { BlockchainInfo, WalletInfo, NetworkInfo, IPFSInfo, HealthDAO } from './HealthDAO'
+import { BlockchainInfo, WalletInfo, NetworkInfo, IPFSInfo, EstimatedSmartFeeInfo, HealthDAO } from './HealthDAO'
 
 import { IPFS } from './IPFS'
 
@@ -22,6 +22,7 @@ interface IPFSHashFailureHashExisting extends IPFSHashFailure {
 
 export interface HealthControllerConfiguration {
   readonly lowWalletBalanceInBitcoin: number
+  readonly feeEstimateMinTargetBlock: number
 }
 
 const blockchainInfoKeys = ['blocks', 'verificationprogress', 'bestblockhash', 'warnings', 'size_on_disk']
@@ -99,6 +100,15 @@ export class HealthController {
     return networkInfo
   }
 
+  private async getEstimatedSmartFee(): Promise<EstimatedSmartFeeInfo> {
+    return await this.bitcoinCore.estimateSmartFee(this.configuration.feeEstimateMinTargetBlock)
+  }
+
+  private async updateEstimatedSmartFee(estimatedSmartFeeInfo: EstimatedSmartFeeInfo): Promise<EstimatedSmartFeeInfo> {
+    await this.healthDAO.updateEstimatedSmartFeeInfo(estimatedSmartFeeInfo)
+    return estimatedSmartFeeInfo
+  }
+
   private async checkIPFSConnection(): Promise<IPFSInfo> {
     try {
       const ipfsConnection = await this.ipfs.getVersion()
@@ -159,6 +169,14 @@ export class HealthController {
     this.log(LogTypes.trace)('new info gathered, saving blockchain info'),
     this.updateBlockchainInfo,
     this.log(LogTypes.trace)('refreshed blockchain info'),
+  )
+
+  public refreshEstimatedSmartFee = pipeP(
+    this.log(LogTypes.trace)('refreshing transaction fee info'),
+    this.getEstimatedSmartFee,
+    this.log(LogTypes.trace)('new info gathered, saving transaction fee info'),
+    this.updateEstimatedSmartFee,
+    this.log(LogTypes.trace)('refreshed transaction fee info'),
   )
 
   public refreshWalletInfo = pipeP(

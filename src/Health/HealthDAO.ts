@@ -26,6 +26,11 @@ export interface NetworkInfo {
   readonly warnings: string
 }
 
+export interface EstimatedSmartFeeInfo {
+  readonly feerate: number
+  readonly blocks: number
+}
+
 export interface IPFSInfo {
   readonly ipfsIsConnected: boolean
 }
@@ -38,6 +43,7 @@ type updateNetworkInfo = (x: NetworkInfo) => Promise<UpdateWriteOpResult>
 
 type updateIPFSInfo = (x: IPFSInfo) => Promise<UpdateWriteOpResult>
 
+<<<<<<< HEAD
 type insertIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpResult>
 
 type findIPFSFailure = (x: string) => Promise<WriteOpResult>
@@ -49,6 +55,9 @@ type updateExistingIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpRe
 type findByName = (x: string) => Promise<WriteOpResult>
 
 type removeIPFSFailure = (x: string) => Promise<UpdateWriteOpResult>
+=======
+type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<UpdateWriteOpResult>
+>>>>>>> master
 
 @injectable()
 export class HealthDAO {
@@ -102,6 +111,7 @@ export class HealthDAO {
       { upsert: true },
     )
 
+<<<<<<< HEAD
   readonly findByName: findByName = name =>
     this.collection.findOne({name})
 
@@ -113,10 +123,19 @@ export class HealthDAO {
           ipfsDownloadRetries: [
         { ipfsFileHash, failureReason, failureType, lastDownloadAttemptTime: failureTime, downloadAttempts: 1 },
       ],
+=======
+  readonly updateEstimatedSmartFeeInfo: updateEstimatedSmartFeeInfo = estimatedSmartFeeInfo =>
+    this.collection.updateOne(
+      { name: 'estimatedSmartFeeInfo' },
+      {
+        $set: {
+          estimatedSmartFeeInfo,
+>>>>>>> master
         },
       },
       { upsert: true },
     )
+<<<<<<< HEAD
 
   readonly findIPFSFailure: findIPFSFailure = ipfsFileHash =>
     this.collection.findOne({
@@ -160,4 +179,6 @@ export class HealthDAO {
       { name: 'ipfsDownloadRetries' },
       { $pull: { ipfsDownloadRetries: { ipfsFileHash } } },
     )
+=======
+>>>>>>> master
 }

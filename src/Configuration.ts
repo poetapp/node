@@ -20,6 +20,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly mongodbDatabase: string
   readonly mongodbUrl: string
   readonly ipfsUrl: string
+  readonly ipfsArchiveUrlPrefix: string
 
   readonly apiPort: number
 
@@ -35,6 +36,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
 
   readonly healthIntervalInSeconds: number
   readonly lowWalletBalanceInBitcoin: number
+  readonly feeEstimateMinTargetBlock: number
 
   readonly downloadIntervalInSeconds: number
   readonly downloadRetryDelayInMinutes: number
@@ -87,6 +89,7 @@ const defaultConfiguration: Configuration = {
   mongodbDatabase: 'poet',
   mongodbUrl: defaultMongodbUrl,
   ipfsUrl: 'http://localhost:5001',
+  ipfsArchiveUrlPrefix: 'https://ipfs.io/ipfs',
   bitcoinUrl: '127.0.0.1',
   bitcoinPort: 18443,
   bitcoinNetwork: 'regtest',
@@ -104,6 +107,7 @@ const defaultConfiguration: Configuration = {
 
   healthIntervalInSeconds: 30,
   lowWalletBalanceInBitcoin: 1,
+  feeEstimateMinTargetBlock: 1,
 
   downloadIntervalInSeconds: 5,
   downloadRetryDelayInMinutes: 10,
