@@ -131,8 +131,8 @@ export class HealthDAO {
           ipfsDownloadRetries: [
             { ipfsFileHash, failureReason, failureType, lastDownloadAttemptTime: failureTime, downloadAttempts: 1 },
           ],
-        }
-      }
+        },
+      },
     )
 
   readonly findIPFSFailure: findIPFSFailure = ipfsFileHash =>
