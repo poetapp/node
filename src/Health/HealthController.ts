@@ -135,8 +135,8 @@ export class HealthController {
     this.logger.debug({ ipfsHashFailures }, 'Setting IPFS Failures hashExisting')
     return await Promise.all(
       ipfsHashFailures.map(async ({ ipfsFileHash, failureType, failureReason, failureTime }) => {
-        const hashExisting = await this.healthDAO.findIPFSFailure(ipfsFileHash)
-        return { ipfsFileHash, failureType, failureReason, failureTime, hashExisting: !!hashExisting }
+        const hashExisting = await this.healthDAO.isIPFSFailureExisting(ipfsFileHash)
+        return { ipfsFileHash, failureType, failureReason, failureTime, hashExisting }
       }),
     )
   }
@@ -207,7 +207,7 @@ export class HealthController {
 
   public async upsertIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
     this.logger.debug({ ipfsHashFailures }, 'Inserting IPFS Failures')
-    const existing = await this.healthDAO.findByName('ipfsDownloadRetries')
+    const existing = await this.healthDAO.isNameExisting('ipfsDownloadRetries')
     if (!existing) await this.insertIPFSFailures(ipfsHashFailures)
     else await this.updateIPFSFailures(await this.setExistingIPFSFailures(ipfsHashFailures))
   }

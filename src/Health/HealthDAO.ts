@@ -43,19 +43,19 @@ type updateNetworkInfo = (x: NetworkInfo) => Promise<UpdateWriteOpResult>
 
 type updateIPFSInfo = (x: IPFSInfo) => Promise<UpdateWriteOpResult>
 
-type insertIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpResult>
+type insertIPFSFailure = (x: IPFSHashFailure) => void
 
-type findIPFSFailure = (x: string) => Promise<WriteOpResult>
+type isIPFSFailureExisting = (x: string) => Promise<boolean>
 
-type updateNewIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpResult>
+type updateNewIPFSFailure = (x: IPFSHashFailure) => void
 
-type updateExistingIPFSFailure = (x: IPFSHashFailure) => Promise<UpdateWriteOpResult>
+type updateExistingIPFSFailure = (x: IPFSHashFailure) => void
 
-type findByName = (x: string) => Promise<WriteOpResult>
+type isNameExisting = (x: string) => Promise<boolean>
 
-type removeIPFSFailure = (x: string) => Promise<UpdateWriteOpResult>
+type removeIPFSFailure = (x: string) => void
 
-type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<UpdateWriteOpResult>
+type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => void
 
 @injectable()
 export class HealthDAO {
@@ -120,8 +120,10 @@ export class HealthDAO {
       { upsert: true },
     )
 
-  readonly findByName: findByName = name =>
-    this.collection.findOne({name})
+  readonly isNameExisting: isNameExisting = async name => {
+    const existing = await this.collection.findOne({ name })
+    return !!existing
+  }
 
   readonly insertIPFSFailure: insertIPFSFailure = ({ failureReason, failureType, ipfsFileHash, failureTime }) =>
     this.collection.updateOne(
@@ -133,13 +135,18 @@ export class HealthDAO {
           ],
         },
       },
+      { upsert: true },
     )
+    
 
-  readonly findIPFSFailure: findIPFSFailure = ipfsFileHash =>
-    this.collection.findOne({
+  readonly isIPFSFailureExisting: isIPFSFailureExisting = async ipfsFileHash => {
+    const existing = await this.collection.findOne({
       name: 'ipfsDownloadRetries',
       'ipfsDownloadRetries.ipfsFileHash': ipfsFileHash,
     })
+    return !!existing
+  }
+    
 
   readonly updateNewIPFSFailure: updateNewIPFSFailure = ({ ipfsFileHash, failureReason, failureType, failureTime }) =>
     this.collection.updateOne(
