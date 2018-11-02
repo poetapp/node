@@ -3,7 +3,11 @@ import fetch from 'node-fetch'
 import { describe } from 'riteway'
 
 import { IPFS } from '../../../src/StorageWriter/IPFS'
-import { allAsciiCharactersClaim, nonAsciiCharactersClaim, longWithNonAsciiCharactersClaim } from './claimData'
+import {
+  allAsciiCharactersClaim,
+  nonAsciiCharactersClaim,
+  longWithNonAsciiCharactersClaim,
+} from '../../fixtures/claimData'
 
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
