@@ -2,7 +2,7 @@
 import fetch from 'node-fetch'
 import { describe } from 'riteway'
 
-import { IPFS } from '../../../src/Helpers/IPFS'
+import { createIPFS } from '../../../src/Helpers/IPFS'
 import {
   allAsciiCharactersClaim,
   nonAsciiCharactersClaim,
@@ -11,8 +11,8 @@ import {
 
 const IPFS_URL = process.env.IPFS_URL || 'http://localhost:5001'
 
-const createIPFS = ({ url = IPFS_URL } = {}) => {
-  return IPFS({
+const setupIPFS = ({ url = IPFS_URL } = {}) => {
+  return createIPFS({
     url,
   })
 }
@@ -24,7 +24,7 @@ const fetchFile = async (hash: string): Promise<string> => {
 
 describe('IPFS.addText', async assert => {
   {
-    const ipfs = createIPFS()
+    const ipfs = setupIPFS()
     const claim = allAsciiCharactersClaim
     const hash = await ipfs.addText()(JSON.stringify(claim))
     const claimFromIPFS = JSON.parse(await fetchFile(hash))
@@ -38,7 +38,7 @@ describe('IPFS.addText', async assert => {
   }
 
   {
-    const ipfs = createIPFS()
+    const ipfs = setupIPFS()
     const claim = nonAsciiCharactersClaim
     const hash = await ipfs.addText()(JSON.stringify(claim))
     const claimFromIPFS = JSON.parse(await fetchFile(hash))
@@ -52,7 +52,7 @@ describe('IPFS.addText', async assert => {
   }
 
   {
-    const ipfs = createIPFS()
+    const ipfs = setupIPFS()
     const claim = longWithNonAsciiCharactersClaim
     const hash = await ipfs.addText()(JSON.stringify(claim))
     const claimFromIPFS = JSON.parse(await fetchFile(hash))
