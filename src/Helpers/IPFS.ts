@@ -23,7 +23,7 @@ export interface IPFS {
   cat: cat
 }
 
-export const IPFSS = ({
+export const IPFS = ({
   url = 'http://localhost:5001',
 }: IPFSConfiguration = {}) => {
   const paths = {
