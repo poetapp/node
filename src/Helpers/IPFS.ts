@@ -19,7 +19,7 @@ type addText = (config?: FetchOptions) => (text: string) => Promise<string>
 type cat = (options?: FetchOptions) => (hash: string) => Promise<string>
 
 export interface IPFS {
-  addText: addText,
+  addText: addText
   cat: cat
 }
 
