@@ -52,6 +52,8 @@ export class StorageWriter {
     await this.messaging.start()
 
     this.initializeContainer()
+    
+    this.ipfs = IPFS(this.configuration.ipfs)
 
     this.router = this.container.get('Router')
     await this.router.start()
@@ -61,8 +63,6 @@ export class StorageWriter {
 
     this.daoClaims = this.container.get('DAOClaims')
     await this.daoClaims.start()
-
-    this.ipfs = IPFS(this.configuration.ipfs)
 
     this.logger.info('StorageWriter Started')
   }
