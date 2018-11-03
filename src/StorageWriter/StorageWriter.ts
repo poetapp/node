@@ -7,7 +7,8 @@ import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { ClaimController, ClaimControllerConfiguration } from './ClaimController'
+import { createIPFS, IPFS, IPFSConfiguration } from 'Helpers/IPFS'
+import { ClaimController } from './ClaimController'
 import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
@@ -17,7 +18,7 @@ export interface StorageWriterConfiguration
   extends LoggingConfiguration,
     ServiceConfiguration,
     DAOClaimsConfiguration {
-  readonly claimController: ClaimControllerConfiguration,
+  readonly ipfs: IPFSConfiguration,
   readonly dbUrl: string
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
@@ -34,6 +35,7 @@ export class StorageWriter {
   private messaging: Messaging
   private service: Service
   private daoClaims: DAOClaims
+  private ipfs: IPFS
 
   constructor(configuration: StorageWriterConfiguration) {
     this.configuration = configuration
@@ -60,6 +62,8 @@ export class StorageWriter {
     this.daoClaims = this.container.get('DAOClaims')
     await this.daoClaims.start()
 
+    this.ipfs = createIPFS(this.configuration.ipfs)
+
     this.logger.info('StorageWriter Started')
   }
 
@@ -82,9 +86,8 @@ export class StorageWriter {
       maxStorageAttempts: this.configuration.maxStorageAttempts,
     })
     this.container.bind<Router>('Router').to(Router)
+    this.container.bind<IPFS>('IPFS').toConstantValue(this.ipfs)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration')
-      .toConstantValue(this.configuration.claimController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
     this.container.bind<Service>('Service').to(Service)

@@ -5,7 +5,7 @@ import { pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 
-import { createIPFS, IPFS, IPFSConfiguration } from 'Helpers/IPFS'
+import { IPFS } from 'Helpers/IPFS'
 import { DAOClaims } from './DAOClaims'
 
 enum LogTypes {
@@ -19,27 +19,20 @@ interface StoreNextClaimData {
   readonly ipfsFileHash?: string
 }
 
-export interface ClaimControllerConfiguration {
-  ipfs: IPFSConfiguration
-}
-
 @injectable()
 export class ClaimController {
-  private readonly configuration: ClaimControllerConfiguration
   private readonly logger: Pino.Logger
   private readonly daoClaims: DAOClaims
   private readonly ipfs: IPFS
 
   constructor(
-    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
     @inject('Logger') logger: Pino.Logger,
     @inject('DAOClaims') daoClaims: DAOClaims,
     @inject('IPFS') ipfs: IPFS,
   ) {
-    this.configuration = configuration
     this.logger = childWithFileName(logger, __filename)
     this.daoClaims = daoClaims
-    this.ipfs = createIPFS(this.configuration.ipfs)
+    this.ipfs = ipfs
   }
 
   private readonly log = (level: LogTypes) => (message: string) => async (value: any) => {
