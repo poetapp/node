@@ -87,7 +87,6 @@ export class StorageWriter {
     })
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<IPFS>('IPFS').toConstantValue(this.ipfs)
-    this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue(this.configuration.ipfs)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
