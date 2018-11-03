@@ -6,8 +6,8 @@ import { pick } from 'ramda'
 import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
-
 import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
+
 import { ClaimController } from './ClaimController'
 import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
