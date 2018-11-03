@@ -52,7 +52,7 @@ export class StorageWriter {
     await this.messaging.start()
 
     this.initializeContainer()
-    
+
     this.ipfs = IPFS(this.configuration.ipfs)
 
     this.router = this.container.get('Router')
