@@ -7,25 +7,33 @@ import { minutesToMiliseconds } from './Time'
 
 const getHash = prop('Hash')
 
-export interface IPFSConfiguration {
-  readonly url?: string
-}
-
 interface FetchOptions {
   readonly timeout?: number
 }
 
+export interface IPFSConfiguration {
+  readonly url?: string
+}
+
+type addText = (config?: FetchOptions) => (text: string) => Promise<string>
+type cat = (options?: FetchOptions) => (hash: string) => Promise<string>
+
+export interface IPFS {
+  addText: addText
+  cat: cat
+}
+
 export const IPFS = ({
   url = 'http://localhost:5001',
-}: IPFSConfiguration) => {
+}: IPFSConfiguration = {}) => {
   const paths = {
     add: `${url}/api/v0/add`,
     cat: `${url}/api/v0/cat`,
   }
 
-  const addText = ({
+  const addText: addText = ({
     timeout = minutesToMiliseconds(10),
-  }: FetchOptions = {}) => async (text: string): Promise<string> => {
+  }: FetchOptions = {}) => async (text) => {
     const formData = new FormData()
 
     formData.append('file', str(text), {
@@ -45,9 +53,9 @@ export const IPFS = ({
     return getHash(json)
   }
 
-  const cat = ({
+  const cat: cat = ({
     timeout = minutesToMiliseconds(10),
-  }: FetchOptions = {}) => async (hash: string): Promise<string> => {
+  }: FetchOptions = {}) => async (hash) => {
     const response = await fetch(`${paths.cat}?arg=${hash}`, {
       timeout,
     })
