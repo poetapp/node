@@ -23,11 +23,9 @@ export interface IPFS {
   cat: cat
 }
 
-type createIPFS = (config?: IPFSConfiguration) => IPFS
-
-export const createIPFS: createIPFS = ({
+export const IPFSS = ({
   url = 'http://localhost:5001',
-} = {}) => {
+}: IPFSConfiguration = {}) => {
   const paths = {
     add: `${url}/api/v0/add`,
     cat: `${url}/api/v0/cat`,
