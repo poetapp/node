@@ -7,7 +7,7 @@ import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { createIPFS, IPFS, IPFSConfiguration } from 'Helpers/IPFS'
+import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 import { ClaimController } from './ClaimController'
 import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
@@ -62,7 +62,7 @@ export class StorageWriter {
     this.daoClaims = this.container.get('DAOClaims')
     await this.daoClaims.start()
 
-    this.ipfs = createIPFS(this.configuration.ipfs)
+    this.ipfs = IPFS(this.configuration.ipfs)
 
     this.logger.info('StorageWriter Started')
   }
