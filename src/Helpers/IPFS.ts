@@ -3,7 +3,6 @@ import fetch, { Response } from 'node-fetch'
 import { prop } from 'ramda'
 import * as str from 'string-to-stream'
 
-
 export const minutesToMiliseconds = (minutes: number) => 1000 * 60 * minutes
 
 const getHash = prop('Hash')

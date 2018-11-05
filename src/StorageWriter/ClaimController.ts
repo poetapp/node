@@ -33,7 +33,7 @@ export class ClaimController {
     @inject('Logger') logger: Pino.Logger,
     @inject('DAOClaims') daoClaims: DAOClaims,
     @inject('IPFS') ipfs: IPFS,
-    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration
+    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.daoClaims = daoClaims
