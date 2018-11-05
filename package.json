@@ -78,7 +78,7 @@
     "babel-plugin-module-resolver": "3.1.1",
     "concurrently": "4.0.1",
     "ipfs-api": "26.1.0",
-    "nodemon": "1.18.5",
+    "nodemon": "1.18.6",
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "3.0.1",
     "semantic-release": "15.10.6",
