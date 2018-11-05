@@ -57,10 +57,7 @@ export class ClaimController {
     return { claim }
   }
 
-  private readonly uploadClaim = asyncPipe(
-    JSON.stringify,
-    this.ipfs.addText(),
-  )
+  private readonly uploadClaim = (claim: SignedVerifiableClaim) => this.ipfs.addText()(JSON.stringify(claim))
 
   private readonly storeClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {
     const { claim } = data
