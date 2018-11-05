@@ -5,6 +5,7 @@ import { pipeP } from 'ramda'
 
 import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 import { childWithFileName } from 'Helpers/Logging'
+import { asyncPipe } from 'Helpers/asyncPipe'
 
 import { DAOClaims } from './DAOClaims'
 
@@ -60,7 +61,10 @@ export class ClaimController {
     return { claim }
   }
 
-  private readonly uploadClaim = (claim: SignedVerifiableClaim) => this.ipfs.addText()(JSON.stringify(claim))
+  private readonly uploadClaim = asyncPipe(
+    JSON.stringify,
+    this.ipfs.addText(),
+  )
 
   private readonly storeClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {
     const { claim } = data
