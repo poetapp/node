@@ -4,9 +4,9 @@ import * as Pino from 'pino'
 import { pick } from 'ramda'
 
 import { LoggingConfiguration } from 'Configuration'
+import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
-import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 
 import { ClaimController } from './ClaimController'
 import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
@@ -40,6 +40,7 @@ export class StorageWriter {
   constructor(configuration: StorageWriterConfiguration) {
     this.configuration = configuration
     this.logger = createModuleLogger(configuration, __dirname)
+    this.ipfs = IPFS(configuration.ipfs)
   }
 
   async start() {
@@ -52,8 +53,6 @@ export class StorageWriter {
     await this.messaging.start()
 
     this.initializeContainer()
-
-    this.ipfs = IPFS(this.configuration.ipfs)
 
     this.router = this.container.get('Router')
     await this.router.start()

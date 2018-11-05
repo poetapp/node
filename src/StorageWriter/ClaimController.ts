@@ -3,8 +3,8 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { pipeP } from 'ramda'
 
-import { childWithFileName } from 'Helpers/Logging'
 import { IPFS } from 'Helpers/IPFS'
+import { childWithFileName } from 'Helpers/Logging'
 
 import { DAOClaims } from './DAOClaims'
 
