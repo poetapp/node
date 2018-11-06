@@ -1,6 +1,12 @@
 import { inject, injectable } from 'inversify'
 import { Collection } from 'mongodb'
 
+interface Entry {
+  ipfsDirectoryHash: string
+  txId?: string,
+  transactionCreationDate?: string
+}
+
 @injectable()
 export class DAO {
   private readonly blockchainWriterCollection: Collection
@@ -21,13 +27,10 @@ export class DAO {
 
   readonly findTransactionlessEntry = () => this.blockchainWriterCollection.findOne({ txId: null })
 
-  readonly setTransactionId = (
-    ipfsDirectoryHash: string,
-    txId: string,
-    transactionCreationDate = new Date().toISOString(),
-  ) => this.blockchainWriterCollection.updateOne(
-    { ipfsDirectoryHash },
-    { $set: { txId, transactionCreationDate } },
-    { upsert: true },
-  )
+  readonly findAndUpdateByIPFSDirectoryHash = ({ ipfsDirectoryHash, ...updates }: Entry) =>
+    this.blockchainWriterCollection.updateOne(
+      { ipfsDirectoryHash },
+      { $set : updates },
+      { upsert: true },
+    )
 }
