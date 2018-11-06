@@ -1,7 +1,5 @@
 import { inject, injectable } from 'inversify'
-import { Collection, Db, UpdateWriteOpResult, WriteOpResult } from 'mongodb'
-
-import { IPFSHashFailure } from 'Interfaces'
+import { Collection, Db } from 'mongodb'
 
 export interface BlockchainInfo {
   readonly blocks: number
