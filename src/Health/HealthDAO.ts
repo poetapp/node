@@ -120,9 +120,9 @@ export class HealthDAO {
     await this.collection.updateOne(
       { name: 'ipfsDownloadRetries' },
       {
-        $inc: { 'hardFailures': 1 },
+        $inc: { hardFailures: 1 },
       },
-      { upsert: true }
+      { upsert: true },
     )
   }
 
@@ -130,9 +130,9 @@ export class HealthDAO {
     await this.collection.updateOne(
       { name: 'ipfsDownloadRetries' },
       {
-        $inc: { 'softFailures': 1 },
+        $inc: { softFailures: 1 },
       },
-      { upsert: true }
+      { upsert: true },
     )
   }
 }

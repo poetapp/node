@@ -48,11 +48,11 @@ export class Router {
   onClaimsNotDownloaded = async (ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) => {
     const logger = this.logger.child({ method: 'onClaimsNotDownloaded' })
 
-    logger.trace({ ipfsHashFailures }, 'IPFS Download Failure')
+    logger.trace({ ipfsHashFailures }, 'IPFS Download Failure, updating IFPS Failure count')
     try {
       await this.controller.updateIPFSFailures(ipfsHashFailures)
     } catch (error) {
-      logger.error({ error }, 'Failed to upsert ipfsHashFailures on health')
+      logger.error({ error }, 'Failed to update ipfsHashFailures on health')
     }
   }
 }
