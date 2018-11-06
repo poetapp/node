@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { pipeP } from 'ramda'
 
-import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
+import { IPFS } from 'Helpers/IPFS'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { DAOClaims } from './DAOClaims'
@@ -19,10 +19,6 @@ interface StoreNextClaimData {
   readonly ipfsFileHash?: string
 }
 
-export interface ClaimControllerConfiguration {
-  ipfs: IPFSConfiguration
-}
-
 @injectable()
 export class ClaimController {
   private readonly logger: Pino.Logger
@@ -32,11 +28,11 @@ export class ClaimController {
   constructor(
     @inject('Logger') logger: Pino.Logger,
     @inject('DAOClaims') daoClaims: DAOClaims,
-    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
+    @inject('IPFS') ipfs: IPFS,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.daoClaims = daoClaims
-    this.ipfs = IPFS(configuration.ipfs)
+    this.ipfs = ipfs
   }
 
   private readonly log = (level: LogTypes) => (message: string) => async (value: any) => {
