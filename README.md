@@ -64,7 +64,7 @@ https://github.com/poetapp/node/blob/master/src/Configuration.ts#L82-L141
 
 By default, anchoring to the blockchain is disabled (`enableTimestamping: false`). If you want to enable blockchain anchoring, you will need to the Bitcoin Core dependency to be running with a funded wallet so that it can pay the Bitcoin network transaction fees (either for testnet or real Bitcoin for mainnet).
 
-You can change any configuration by passing configuration values via environment variables. The keys of these environment variables are always the SCREAMING_SNAKE_CASE equivalent of the configuration options listed in the default configuration. For example, the RabbitMQ URL can be set with a `rabbitmqUrl` entry in `~/.po.et/configuration.json` or with the `RABBITMQ_URL` environment variable.
+You can change any configuration by passing configuration values via environment variables. The keys of these environment variables are always the SCREAMING_SNAKE_CASE equivalent of the configuration options listed in the default configuration. For example, the RabbitMQ URL (`rabbitmqUrl`) can be set with the `RABBITMQ_URL` environment variable.
 
 > **Note**: Po.et will NOT reload the configuration while it's running if you change it. You will need to restart the Node for configuration changes to apply.
 
@@ -97,7 +97,10 @@ Example:
 
 ```
 [
-  { hash: "QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT", archiveUrl: "https://ipfs.io/ipfs/QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT" }
+  {
+    hash: "QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT",
+    archiveUrl: "https://ipfs.io/ipfs/QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT"
+  }
 ]
 ```
 
