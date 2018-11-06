@@ -23,6 +23,7 @@ export class DAO {
     this.blockchainWriterCollection.insertOne({
       ipfsDirectoryHash,
       txId: null,
+      transactionCreationDate: null,
     })
 
   readonly findTransactionlessEntry = () => this.blockchainWriterCollection.findOne({ txId: null })
