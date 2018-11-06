@@ -2,9 +2,9 @@ import { inject, injectable } from 'inversify'
 import { Collection } from 'mongodb'
 
 interface Entry {
-  ipfsDirectoryHash: string
-  txId?: string,
-  transactionCreationDate?: string
+  readonly ipfsDirectoryHash: string
+  readonly txId?: string,
+  readonly transactionCreationDate?: string
 }
 
 @injectable()
