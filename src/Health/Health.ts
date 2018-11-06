@@ -47,7 +47,7 @@ export class Health {
     this.dbConnection = await this.mongoClient.db()
 
     const exchangesMessaging = pick(
-      ['getHealth', 'claimsNotDownloaded', 'claimsDownloaded'],
+      ['getHealth', 'claimsNotDownloaded'],
       this.configuration.exchanges,
     )
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
