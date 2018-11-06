@@ -41,6 +41,8 @@ export const addWalletIsBalanceLow = (lowBalanceAmount: number) => (walletInfo: 
   return balance < lowBalanceAmount ? { ...walletInfo, isBalanceLow: true } : { ...walletInfo, isBalanceLow: false }
 }
 
+export const isFailureHard = (failureType: string) => failureType === 'HARD'
+
 @injectable()
 export class HealthController {
   private readonly configuration: HealthControllerConfiguration
@@ -124,42 +126,13 @@ export class HealthController {
     return ipfsInfo
   }
 
-  private async insertIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
-    this.logger.debug({ ipfsHashFailures }, 'Inserting IPFS Failures by IPFS Hash')
-    await Promise.all(
-      ipfsHashFailures.map(this.healthDAO.insertIPFSFailure),
-    )
-  }
-
-  private async setExistingIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
-    this.logger.debug({ ipfsHashFailures }, 'Setting IPFS Failures hashExisting')
-    return await Promise.all(
-      ipfsHashFailures.map(async ({ ipfsFileHash, failureType, failureReason, failureTime }) => {
-        const hashExisting = await this.healthDAO.isIPFSFailureExisting(ipfsFileHash)
-        return { ipfsFileHash, failureType, failureReason, failureTime, hashExisting }
-      }),
-    )
-  }
-
-  private async updateIPFSFailures(ipfsHashFailuresHashExisting: ReadonlyArray<IPFSHashFailureHashExisting>) {
-    this.logger.debug({ ipfsHashFailuresHashExisting }, 'Updating IPFS Failures by IPFS Hash')
-    await ipfsHashFailuresHashExisting.map(
-      async ({ ipfsFileHash, failureReason, failureType, failureTime, hashExisting }) => {
-        if (!hashExisting)
-          await this.healthDAO.updateNewIPFSFailure({
-            ipfsFileHash,
-            failureReason,
-            failureType,
-            failureTime,
-          })
-        else
-          await this.healthDAO.updateExistingIPFSFailure({
-            ipfsFileHash,
-            failureReason,
-            failureType,
-            failureTime,
-          })
-      },
+  public async updateIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
+    this.logger.debug({ ipfsHashFailures }, 'Updating IPFS Failures by IPFS Hash')
+    await ipfsHashFailures.map(
+      async ({ failureType }) => {
+        if(isFailureHard(failureType)) await this.healthDAO.updateHardIPFSFailure()
+        else await this.healthDAO.updateSoftIPFSFailure()
+      }
     )
   }
 
@@ -204,20 +177,4 @@ export class HealthController {
     this.updateIPFSInfo,
     this.log(LogTypes.trace)('refreshed IPFS info'),
   )
-
-  public async upsertIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
-    this.logger.debug({ ipfsHashFailures }, 'Inserting IPFS Failures')
-    const existing = await this.healthDAO.isNameExisting('ipfsDownloadRetries')
-    if (!existing) await this.insertIPFSFailures(ipfsHashFailures)
-    else await this.updateIPFSFailures(await this.setExistingIPFSFailures(ipfsHashFailures))
-  }
-
-  public async removeIPFSFailure(claimIPFSHashPair: ReadonlyArray<ClaimIPFSHashPair>) {
-    this.logger.debug({ claimIPFSHashPair }, 'Removing IPFS Failure')
-    await Promise.all(
-      claimIPFSHashPair.map(async ({ ipfsFileHash }) => {
-        await this.healthDAO.removeIPFSFailure(ipfsFileHash)
-      }),
-    )
-  }
 }

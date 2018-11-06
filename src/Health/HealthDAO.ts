@@ -44,18 +44,6 @@ type updateWalletInfo = (x: WalletInfo) => Promise<void>
 
 type updateNetworkInfo = (x: NetworkInfo) => Promise<void>
 
-type insertIPFSFailure = (x: IPFSHashFailure) => Promise<void>
-
-type isIPFSFailureExisting = (x: string) => Promise<boolean>
-
-type updateNewIPFSFailure = (x: IPFSHashFailure) => Promise<void>
-
-type updateExistingIPFSFailure = (x: IPFSHashFailure) => Promise<void>
-
-type isNameExisting = (x: string) => Promise<boolean>
-
-type removeIPFSFailure = (x: string) => Promise<void>
-
 type updateIPFSInfo = (x: IPFSInfo) => Promise<void>
 
 type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<void>
@@ -128,72 +116,23 @@ export class HealthDAO {
     )
   }
 
-  readonly isNameExisting: isNameExisting = async name => {
-    const existing = await this.collection.findOne({ name })
-    return !!existing
-  }
-
-  readonly insertIPFSFailure: insertIPFSFailure = async ({ failureReason, failureType, ipfsFileHash, failureTime }) => {
+  readonly updateHardIPFSFailure = async (): Promise<void> => {
     await this.collection.updateOne(
       { name: 'ipfsDownloadRetries' },
       {
-        $set: {
-          ipfsDownloadRetries: [
-            { ipfsFileHash, failureReason, failureType, lastDownloadAttemptTime: failureTime, downloadAttempts: 1 },
-          ],
-        },
+        $inc: { 'hardFailures': 1 },
       },
-      { upsert: true },
+      { upsert: true }
     )
   }
 
-  readonly isIPFSFailureExisting: isIPFSFailureExisting = async ipfsFileHash => {
-    const existing = await this.collection.findOne({
-      name: 'ipfsDownloadRetries',
-      'ipfsDownloadRetries.ipfsFileHash': ipfsFileHash,
-    })
-    return !!existing
-  }
-
-  readonly updateNewIPFSFailure: updateNewIPFSFailure = async (
-    { ipfsFileHash, failureReason, failureType, failureTime },
-  ) => {
+  readonly updateSoftIPFSFailure = async (): Promise<void> => {
     await this.collection.updateOne(
       { name: 'ipfsDownloadRetries' },
       {
-        $push: {
-          ipfsDownloadRetries: {
-            ipfsFileHash,
-            failureReason,
-            failureType,
-            lastDownloadAttemptTime: failureTime,
-            downloadAttempts: 1,
-          },
-        },
+        $inc: { 'softFailures': 1 },
       },
-    )
-  }
-
-  readonly updateExistingIPFSFailure: updateExistingIPFSFailure = async (
-    { ipfsFileHash, failureReason, failureType, failureTime },
-  ) => {
-    await this.collection.updateOne(
-      { name: 'ipfsDownloadRetries', 'ipfsDownloadRetries.ipfsFileHash': ipfsFileHash },
-      {
-        $set: {
-          'ipfsDownloadRetries.$.failureReason': failureReason,
-          'ipfsDownloadRetries.$.failureType': failureType,
-          'ipfsDownloadRetries.$.lastDownloadAttemptTime': failureTime,
-        },
-        $inc: { 'ipfsDownloadRetries.$.downloadAttempts': 1 },
-      },
-    )
-  }
-
-  readonly removeIPFSFailure: removeIPFSFailure = async ipfsFileHash => {
-    await this.collection.updateOne(
-      { name: 'ipfsDownloadRetries' },
-      { $pull: { ipfsDownloadRetries: { ipfsFileHash } } },
+      { upsert: true }
     )
   }
 }

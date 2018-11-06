@@ -30,7 +30,6 @@ export class Router {
   async start() {
     await this.messaging.consume(this.exchange.getHealth, this.onGetHealth)
     await this.messaging.consumeClaimsNotDownloaded(this.onClaimsNotDownloaded)
-    await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
   }
 
   onGetHealth = async () => {
@@ -51,20 +50,9 @@ export class Router {
 
     logger.trace({ ipfsHashFailures }, 'IPFS Download Failure')
     try {
-      await this.controller.upsertIPFSFailures(ipfsHashFailures)
+      await this.controller.updateIPFSFailures(ipfsHashFailures)
     } catch (error) {
       logger.error({ error }, 'Failed to upsert ipfsHashFailures on health')
-    }
-  }
-
-  onClaimsDownloaded = async (claimIPFSHashPair: ReadonlyArray<ClaimIPFSHashPair>) => {
-    const logger = this.logger.child({ method: 'onClaimsDownloaded' })
-
-    logger.trace({ claimIPFSHashPair }, 'IPFS Download Success')
-    try {
-      await this.controller.removeIPFSFailure(claimIPFSHashPair)
-    } catch (e) {
-      logger.error({ e }, 'Failed to remove IPFSHashFailue on health')
     }
   }
 }
