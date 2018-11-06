@@ -20,7 +20,7 @@ declare module 'bitcoin-core' {
     getWalletInfo(): any
     createRawTransaction(inputs: any, outputs: any): Promise<string>
     fundRawTransaction(hexstring: string): Promise<FundRawTransactionResponse>
-    signRawTransaction(hexstring: string): Promise<SignRawTransactionResponse>
+    signRawTransactionWithWallet(hexstring: string): Promise<SignRawTransactionResponse>
     sendRawTransaction(hexstring: string): Promise<string>
     estimateSmartFee(blocks: number): Promise<EstimateSmartFeeResponse>
   }
