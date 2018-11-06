@@ -16,10 +16,6 @@ enum LogTypes {
   error = 'error',
 }
 
-interface IPFSHashFailureHashExisting extends IPFSHashFailure {
-  readonly hashExisting: boolean
-}
-
 export interface HealthControllerConfiguration {
   readonly lowWalletBalanceInBitcoin: number
   readonly feeEstimateMinTargetBlock: number
