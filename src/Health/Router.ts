@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
+import { IPFSHashFailure } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
