@@ -21,6 +21,13 @@ export class DAO {
 
   readonly findTransactionlessEntry = () => this.blockchainWriterCollection.findOne({ txId: null })
 
-  readonly setTransactionId = (ipfsDirectoryHash: string, txId: string, transactionCreationDate = new Date().toISOString()) =>
-    this.blockchainWriterCollection.updateOne({ ipfsDirectoryHash }, { $set: { txId, transactionCreationDate } }, { upsert: true })
+  readonly setTransactionId = (
+    ipfsDirectoryHash: string,
+    txId: string,
+    transactionCreationDate = new Date().toISOString(),
+  ) => this.blockchainWriterCollection.updateOne(
+    { ipfsDirectoryHash },
+    { $set: { txId, transactionCreationDate } },
+    { upsert: true },
+  )
 }
