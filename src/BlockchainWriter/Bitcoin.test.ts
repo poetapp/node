@@ -4,8 +4,8 @@ import { describe, Try } from 'riteway'
 
 import { IllegalPrefixLength, IllegalVersionLength, poetAnchorToData } from './Bitcoin'
 
-export const PREFIX_POET = 'POET'
-export const PREFIX_BARD = 'BARD'
+const PREFIX_POET = 'POET'
+const PREFIX_BARD = 'BARD'
 
 describe('Bitcoin.getData', async assert => {
   {
