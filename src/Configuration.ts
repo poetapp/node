@@ -245,4 +245,5 @@ function validatePoetVersion(poetVersion: any) {
 
 function validatePoetNetwork(poetNetwork: any) {
   assert(typeof poetNetwork === 'string', 'Field poetNetwork must be a string')
+  assert(poetNetwork.length === 4, 'Field poetNetwork must have a length of 4')
 }
