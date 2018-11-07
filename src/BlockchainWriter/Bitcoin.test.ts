@@ -98,9 +98,9 @@ describe('Bitcoin.getData', async assert => {
 
     assert({
       given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
-      should: 'fail with IllegalVersionLength',
-      actual: Try(poetAnchorToData, { ...poetAnchor, version: 4294967296 }) instanceof IllegalVersionLength,
-      expected: true,
+      should: 'fail with the message out of range',
+      actual: Try(poetAnchorToData, { ...poetAnchor, version: 4294967296 }).message,
+      expected: 'The value of "value" is out of range. It must be >= 0 and <= 4294967295. Received 4294967296',
     })
   }
 })

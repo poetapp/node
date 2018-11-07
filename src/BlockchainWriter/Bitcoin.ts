@@ -9,13 +9,7 @@ export class IllegalVersionLength extends Error {}
 
 const uint16ToBuffer = (version: number) => {
   const buffer = Buffer.alloc(2)
-
-  try {
-    buffer.writeUInt16BE(version, 0)
-  } catch {
-    throw new IllegalVersionLength()
-  }
-
+  buffer.writeUInt16BE(version, 0)
   return buffer
 }
 
