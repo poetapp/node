@@ -26,12 +26,12 @@ const postStringStreams = (url: string) => (xs: ReadonlyArray<string>) => {
         knownLength: Buffer.from(s).length,
         filename: `file-${index}`,
         contentType: 'plain/text',
-      }
-    )
+      },
+    ),
   )
   return fetch(url, {
     method: 'post',
-    body: formData
+    body: formData,
   })
 }
 
@@ -47,6 +47,6 @@ export const FileHelper = ({ port, host }: FileHelperConfiguration) => {
 
   return {
     postFileStreams: postFileStreams(url),
-    postStringStreams: postStringStreams(url)
+    postStringStreams: postStringStreams(url),
   }
 }

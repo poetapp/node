@@ -4,15 +4,15 @@ import * as path from 'path'
 import { prop, identity, head, map } from 'ramda'
 import { describe } from 'riteway'
 
+import { utf8Markdown } from '../../fixtures/file-text'
 import { FileHelper } from '../../helpers/files'
 import { IPFS } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
-import { utf8Markdown } from '../../fixtures/file-text'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
 
-const IPFS_ARCHIVE_URL_PREFIX= process.env.IPFS_ARCHIVE_URL_PREFIX || 'https://ipfs.io/ipfs'
+const IPFS_ARCHIVE_URL_PREFIX = process.env.IPFS_ARCHIVE_URL_PREFIX || 'https://ipfs.io/ipfs'
 
 const ipfs = IPFS()
 const fileHelper = FileHelper({ port: NODE_PORT  })
