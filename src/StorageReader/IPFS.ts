@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 
-import { secondsToMiliseconds } from 'Helpers/Time'
+import * as Time from 'Helpers/Time'
 
 export interface IPFSConfiguration {
   readonly ipfsUrl: string
@@ -23,7 +23,7 @@ export class IPFS {
 
   cat = async (hash: string): Promise<string> => {
     const response = await fetch(`${this.url}/api/v0/cat?arg=${hash}`, {
-      timeout: secondsToMiliseconds(this.downloadTimeoutInSeconds),
+      timeout: Time.secondsToMiliseconds(this.downloadTimeoutInSeconds),
     })
     return response.text()
   }

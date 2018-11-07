@@ -7,7 +7,7 @@ import * as Pino from 'pino'
 import { map } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { minutesToMiliseconds  } from 'Helpers/Time'
+import * as Time from 'Helpers/Time'
 import { asyncPipe } from 'Helpers/asyncPipe'
 
 interface IPFSFileResponseJson {
@@ -67,7 +67,7 @@ export class FileController {
     return fetch(`${this.ipfsUrl}/api/v0/add`, {
       method: 'post',
       body: formData,
-      timeout: minutesToMiliseconds(10),
+      timeout: Time.minutesToMiliseconds(10),
     })
   }
 

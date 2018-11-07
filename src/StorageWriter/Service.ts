@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { secondsToMiliseconds } from 'Helpers/Time'
+import * as Time from 'Helpers/Time'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
@@ -29,7 +29,7 @@ export class Service {
     this.logger = childWithFileName(logger, __filename)
     this.uploadNextClaimInterval = new Interval(
       this.uploadNextClaim,
-      secondsToMiliseconds(configuration.uploadClaimIntervalInSeconds),
+      Time.secondsToMiliseconds(configuration.uploadClaimIntervalInSeconds),
     )
     this.exchange = exchange
   }

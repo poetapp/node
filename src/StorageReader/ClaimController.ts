@@ -7,7 +7,7 @@ import { pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { ErrorCodes } from 'Helpers/MongoDB'
-import { minutesToMiliseconds } from 'Helpers/Time'
+import * as Time from 'Helpers/Time'
 import { ClaimIdIPFSHashPair } from 'Interfaces'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -77,7 +77,7 @@ export class ClaimController {
   }
 
   async downloadNextHash({
-    retryDelay = minutesToMiliseconds(this.configuration.downloadRetryDelayInMinutes),
+    retryDelay = Time.minutesToMiliseconds(this.configuration.downloadRetryDelayInMinutes),
     maxAttempts = this.configuration.downloadMaxAttempts,
   }: {
     retryDelay?: number

@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { secondsToMiliseconds } from 'Helpers/Time'
+import * as Time from 'Helpers/Time'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
@@ -30,7 +30,7 @@ export class Service {
     this.exchange = exchange
     this.interval = new Interval(
       this.createNextBatch,
-      secondsToMiliseconds(configuration.batchCreationIntervalInSeconds),
+      Time.secondsToMiliseconds(configuration.batchCreationIntervalInSeconds),
     )
   }
 

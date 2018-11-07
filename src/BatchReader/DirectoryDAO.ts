@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import { Collection, InsertWriteOpResult, UpdateWriteOpResult } from 'mongodb'
 
 import { ErrorCodes } from 'Helpers/MongoDB'
-import { minutesToMiliseconds } from 'Helpers/Time'
+import * as Time from 'Helpers/Time'
 
 export interface Entry {
   _id?: string
@@ -59,7 +59,7 @@ export class DirectoryDAO {
 
   readonly findNextEntry: findNextEntry = ({
     currentTime = new Date().getTime(),
-    retryDelay = minutesToMiliseconds(20),
+    retryDelay = Time.minutesToMiliseconds(20),
     maxAttempts = 20,
   } = {}) =>
     this.directoryCollection.findOne({
