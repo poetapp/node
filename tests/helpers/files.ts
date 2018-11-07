@@ -1,6 +1,7 @@
 import * as FormData from 'form-data'
 import * as fs from 'fs'
 import fetch, { Response } from 'node-fetch'
+import * as stringToStream from 'string-to-stream'
 
 const FILES_PATH = 'files'
 
@@ -9,6 +10,25 @@ const baseUrl = (port: string, host: string = 'localhost') => `http://${host}:${
 const postFileStreams = (url: string) => (fileStreams: ReadonlyArray<fs.ReadStream>) => {
   const formData = new FormData()
   fileStreams.map((stream, index) => formData.append(`file-${index}`, stream))
+  return fetch(url, {
+    method: 'post',
+    body: formData,
+  })
+}
+
+const postStringStreams = (url: string) => (xs: ReadonlyArray<string>) => {
+  const formData = new FormData()
+  xs.map(
+    (s, index) => formData.append(
+      `file-${index}`,
+      stringToStream(s),
+      {
+        knownLength: Buffer.from(s).length,
+        filename: `file-${index}`,
+        contentType: 'plain/text',
+      },
+    ),
+  )
   return fetch(url, {
     method: 'post',
     body: formData,
@@ -27,5 +47,6 @@ export const FileHelper = ({ port, host }: FileHelperConfiguration) => {
 
   return {
     postFileStreams: postFileStreams(url),
+    postStringStreams: postStringStreams(url),
   }
 }

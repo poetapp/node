@@ -1,16 +1,18 @@
 /* tslint:disable:no-relative-imports */
 import { asyncPipe } from 'Helpers/asyncPipe'
-import * as fs from 'fs'
 import * as path from 'path'
 import { prop, identity, head, map } from 'ramda'
 import { describe } from 'riteway'
 
+import { utf8Markdown } from '../../fixtures/file-text'
 import { FileHelper } from '../../helpers/files'
 import { IPFS } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
+
+const IPFS_ARCHIVE_URL_PREFIX = process.env.IPFS_ARCHIVE_URL_PREFIX || 'https://ipfs.io/ipfs'
 
 const ipfs = IPFS()
 const fileHelper = FileHelper({ port: NODE_PORT  })
@@ -19,15 +21,8 @@ const getHash = prop('hash')
 const getArchiveUrl  = prop('archiveUrl')
 const getStatus = prop('status')
 
-const calcPath = (relPath: string) => path.resolve(__dirname, relPath)
-
-const files = {
-  utf8Markdown: calcPath('../../fixtures/files/utf8.md'),
-}
-
 const testResponseHashes = asyncPipe(
-  map(fs.createReadStream),
-  fileHelper.postFileStreams,
+  fileHelper.postStringStreams,
   (x) => x.json(),
   map(getHash),
   map(ipfs.fetchFileContent),
@@ -35,14 +30,13 @@ const testResponseHashes = asyncPipe(
 )
 
 const testArchiveUrl = asyncPipe(
-  map(fs.createReadStream),
-  fileHelper.postFileStreams,
+  fileHelper.postStringStreams,
   (x) => x.json(),
   map(getArchiveUrl),
   Promise.all.bind(Promise),
 )
 
-const testStatusCode = asyncPipe(map(fs.createReadStream), fileHelper.postFileStreams, getStatus)
+const testStatusCode = asyncPipe(fileHelper.postStringStreams, getStatus)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
@@ -54,21 +48,21 @@ describe('POST /files', async assert => {
     assert({
       given,
       should: 'return a hash that can be used to verify the file',
-      actual: await testResponseHashes([files.utf8Markdown]).catch(identity),
-      expected: [fs.readFileSync(files.utf8Markdown).toString()],
+      actual: await testResponseHashes([utf8Markdown]).catch(identity),
+      expected: [utf8Markdown],
     })
 
     assert({
       given,
       should: 'return an archiveUrl for the file',
-      actual: await testArchiveUrl([files.utf8Markdown]).catch(identity),
-      expected: [`http://ipfs:8080/ipfs/QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT`],
+      actual: await testArchiveUrl([utf8Markdown]).catch(identity),
+      expected: [`${IPFS_ARCHIVE_URL_PREFIX}/QmPCJLnAR1eTxcSTz6fXf9LZ5MecgatTkut93RtiYRCKq1`],
     })
 
     assert({
       given,
       should: 'return the correct status',
-      actual: await testStatusCode([files.utf8Markdown]).catch(identity),
+      actual: await testStatusCode([utf8Markdown]).catch(identity),
       expected: 200,
     })
   }

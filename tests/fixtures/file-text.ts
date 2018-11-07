@@ -1,3 +1,5 @@
+/*tslint:disable:max-line-length*/
+export const utf8Markdown = `
 ## Arabic
 تقوم Po.et ببناء دفتر أستاذ عالمي مفتوح يسجل المعلومات الثابتة وغير المحدثة حول المحتوى الإبداعي الخاص بك ويستخدم بروتوكولاتنا المفتوحة المصممة للتوافق مع معايير الصناعة الحالية في الإعلام والنشر.
 
@@ -21,5 +23,4 @@ Po.et está creando un libro de cuentas abierto y universal que registra informa
 
 ## Swedish
 Po.et bygger en öppen, universell storger som registrerar oföränderlig och tidstämplad information om ditt kreativa innehåll och använder våra öppna protokoll för interoperabilitet med nuvarande branschstandarder i media och publicering.
-
-
+`
