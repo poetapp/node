@@ -81,11 +81,14 @@ export class FileController {
     return response
   }
 
+  private convertResponse = (ipfsFileResponse: IPFSFileResponseJson): FileResponseJson =>
+    convertJson(this.ipfsArchiveUrlPrefix)(ipfsFileResponse)
+
   private handleFile = asyncPipe(
     this.log(LogTypes.trace)('Adding file to ipfs'),
     this.addFileToIPFS,
     this.getResponseJson,
-    convertJson(this.ipfsArchiveUrlPrefix),
+    this.convertResponse,
     this.log(LogTypes.trace)('Added file to ipfs, now saving the hash to the database'),
     this.storeIPFSHash,
     this.log(LogTypes.trace)('Saved the hash to the database'),
