@@ -3,7 +3,7 @@ import fetch, { Response } from 'node-fetch'
 import { prop } from 'ramda'
 import * as str from 'string-to-stream'
 
-import { minutesToMiliseconds } from './Time'
+import * as Time from './Time'
 
 const getHash = prop('Hash')
 
@@ -32,7 +32,7 @@ export const IPFS = ({
   }
 
   const addText: addText = ({
-    timeout = minutesToMiliseconds(10),
+    timeout = Time.minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (text) => {
     const formData = new FormData()
 
@@ -54,7 +54,7 @@ export const IPFS = ({
   }
 
   const cat: cat = ({
-    timeout = minutesToMiliseconds(10),
+    timeout = Time.minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (hash) => {
     const response = await fetch(`${paths.cat}?arg=${hash}`, {
       timeout,
