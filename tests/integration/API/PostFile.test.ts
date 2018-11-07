@@ -16,6 +16,7 @@ const ipfs = IPFS()
 const fileHelper = FileHelper({ port: NODE_PORT  })
 
 const getHash = prop('hash')
+const getArchiveUrl  = prop('archiveUrl')
 const getStatus = prop('status')
 
 const calcPath = (relPath: string) => path.resolve(__dirname, relPath)
@@ -33,6 +34,14 @@ const testResponseHashes = asyncPipe(
   Promise.all.bind(Promise),
 )
 
+const testArchiveUrl = asyncPipe(
+  map(fs.createReadStream),
+  fileHelper.postFileStreams,
+  (x) => x.json(),
+  map(getArchiveUrl),
+  Promise.all.bind(Promise),
+)
+
 const testStatusCode = asyncPipe(map(fs.createReadStream), fileHelper.postFileStreams, getStatus)
 
 describe('POST /files', async assert => {
@@ -47,6 +56,13 @@ describe('POST /files', async assert => {
       should: 'return a hash that can be used to verify the file',
       actual: await testResponseHashes([files.utf8Markdown]).catch(identity),
       expected: [fs.readFileSync(files.utf8Markdown).toString()],
+    })
+
+    assert({
+      given,
+      should: 'return an archiveUrl for the file',
+      actual: await testArchiveUrl([files.utf8Markdown]).catch(identity),
+      expected: [`http://ipfs:8080/ipfs/QmS1s76raH43mLT3dSsMt7Nev1t9bM33GTFTZ9foXJV4ZT`],
     })
 
     assert({
