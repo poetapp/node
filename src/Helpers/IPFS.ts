@@ -1,9 +1,7 @@
-// import * as FormData from 'form-data'
-const FormData = require('form-data')
+import * as FormData from 'form-data'
 import fetch, { Response } from 'node-fetch'
 import { prop } from 'ramda'
-// import * as str from 'string-to-stream'
-const str = require('string-to-stream')
+import * as str from 'string-to-stream'
 
 import { minutesToMiliseconds } from './Time'
 
@@ -34,7 +32,7 @@ export const IPFS = ({
   }
 
   const addText: addText = ({
-    timeout = 10,
+    timeout = minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (text) => {
     const formData = new FormData()
 
@@ -56,7 +54,7 @@ export const IPFS = ({
   }
 
   const cat: cat = ({
-    timeout = 10,
+    timeout = minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (hash) => {
     const response = await fetch(`${paths.cat}?arg=${hash}`, {
       timeout,
