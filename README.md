@@ -72,7 +72,13 @@ You can change any configuration by passing configuration values via environment
 Currently, the Node exposes four endpoints.
 
 ### `GET /works?issuer=xxx&limit=x&offset=x`
-Returns a paginated array of signed verifiable claims, all belonging to the passed issuer (if an issuer is passed). Default limit per request is 10 claims. This is configurable with limit and offset paramaters where offset is the number of claims to skip and limit is the number of claims returned per request.
+Returns a paginated array of signed verifiable work claims.
+
+Accepts the following query parameters:
+
+- `issuer`: string. If present, will only return works issued by this issuer.
+- `limit`: number. Maximum number of results to return per request. Defaults to 10.
+- `offset`: number. Number of claims to skip.
 
 ### `GET /works/:id`
 Returns a single signed verifiable work claim by its Id.
