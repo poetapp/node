@@ -97,7 +97,7 @@ const defaultConfiguration: Configuration = {
   bitcoinPassword: 'bitcoinrpcpassword',
 
   apiPort: 18080,
-  poetNetwork: 'BARD',
+  poetNetwork: 'POET',
   poetVersion: [0, 0],
   minimumBlockHeight: 1279550, // Less than 24 hours before Feb 8th, 2018 - Frost's Release
   blockchainReaderIntervalInSeconds: 5,
@@ -200,7 +200,7 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
 
   const configuration = JSON.parse(readFileSync(configPath, 'utf8'))
 
-  if (typeof configuration.poetNetwork === 'string') validatePoetNetwork(configuration.poetNetwork)
+  validatePoetNetwork(configuration.poetNetwork)
   if (typeof configuration.poetVersion === 'object') validatePoetVersion(configuration.poetVersion)
 
   return configuration
@@ -244,5 +244,5 @@ function validatePoetVersion(poetVersion: any) {
 }
 
 function validatePoetNetwork(poetNetwork: any) {
-  assert(poetNetwork === 'BARD' || poetNetwork === 'POET', 'Field poetNetwork must be equal to BARD or POET')
+  assert(typeof poetNetwork === 'string', 'Field poetNetwork must be a string')
 }
