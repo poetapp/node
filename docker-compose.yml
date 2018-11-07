@@ -91,6 +91,7 @@ services:
       - MONGODB_USER=poet
       - MONGODB_PASSWORD=poetPass
       - IPFS_URL=http://ipfs:5001
+      - IPFS_ARCHIVE_URL_PREFIX=http://ipfs:8080/ipfs
       - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
       - GH_TOKEN=${GH_TOKEN:-''}
       - NPM_TOKEN=${NPM_TOKEN:-''}
