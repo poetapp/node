@@ -236,7 +236,7 @@ function loadConfigurationFromEnv(env: any): Partial<Configuration> {
 function validatePoetVersion(poetVersion: number) {
   assert(
     Number.isInteger(poetVersion) && 0 <= poetVersion && poetVersion <= 0xFFFF,
-    'poetVersion must be an integer between 0 and 4294967296',
+    'poetVersion must be an integer between 0 and 65535',
   )
 }
 
