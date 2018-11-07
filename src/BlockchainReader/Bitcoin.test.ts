@@ -30,66 +30,57 @@ describe('Bitcoin.blockToPoetAnchors', async assert => {
   const ipfsDirectoryHashes = ['QmVW4EyxJk77qU2VwpKnvFL8YAXQhj4HBKmq5SfMWy35JW']
 
   {
-    const poetAnchors = blockToPoetAnchors(TestBlock as any) // as any: see footer note
+    const anchors = blockToPoetAnchors(TestBlock as any) // as any: see footer note
 
     const isBardAnchor = (poetAnchor: PoetBlockAnchor) => poetAnchor.prefix === PREFIX_BARD
     const anchorIsVersion03 = (poetAnchor: PoetBlockAnchor) => equals(poetAnchor.version, [0, 3])
     const anchorIsBlockHash = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHash === TestBlock.hash
     const anchorIsBlockHeight = (poetAnchor: PoetBlockAnchor) => poetAnchor.blockHeight === TestBlock.height
-    const anchorHasUnexpectedIpfsHash = (poetAnchor: PoetBlockAnchor) =>
-      !ipfsDirectoryHashes.includes(poetAnchor.ipfsDirectoryHash)
-
-    const anchorsIpfsHashes = poetAnchors.map(poetAnchor => poetAnchor.ipfsDirectoryHash)
+    const anchorHasExpectedIpfsHash = (poetAnchor: PoetBlockAnchor) =>
+      ipfsDirectoryHashes.includes(poetAnchor.ipfsDirectoryHash)
 
     const given = 'a test block with Po.et anchors'
 
     assert({
       given,
-      should: 'return 1 Po.et Anchor',
-      actual: poetAnchors.length,
-      expected: 1,
+      should: 'return 4 Po.et-like anchors',
+      actual: anchors.length,
+      expected: 4,
     })
 
     assert({
       given,
-      should: 'return prefix BARD anchors only',
-      actual: poetAnchors.filter(isBardAnchor).length,
-      expected: poetAnchors.length,
+      should: 'return have a prefix BARD anchor',
+      actual: anchors.some(isBardAnchor),
+      expected: true,
     })
 
     assert({
       given,
-      should: 'return version 0.3 anchors only',
-      actual: poetAnchors.filter(anchorIsVersion03).length,
-      expected: poetAnchors.length,
+      should: 'return a version 0.3 anchor',
+      actual: anchors.some(anchorIsVersion03),
+      expected: true,
+    })
+
+    assert({
+      given,
+      should: 'return an anchor with an expected IPFS Directory Hash',
+      actual: anchors.some(anchorHasExpectedIpfsHash),
+      expected: true,
     })
 
     assert({
       given,
       should: 'all returned elements should have the blockHash set correctly',
-      actual: poetAnchors.filter(anchorIsBlockHash).length,
-      expected: poetAnchors.length,
+      actual: anchors.filter(anchorIsBlockHash).length,
+      expected: anchors.length,
     })
 
     assert({
       given,
       should: 'all returned elements should have the blockHeight set correctly',
-      actual: poetAnchors.filter(anchorIsBlockHeight).length,
-      expected: poetAnchors.length,
-    })
-
-    assert({
-      given,
-      should: 'all returned elements should have an expected IPFS Directory Hash',
-      actual: poetAnchors.find(anchorHasUnexpectedIpfsHash),
-      expected: undefined,
-    })
-
-    assert({
-      given,
-      should: 'all expected IPFS Directory hashes should be in the returned anchors',
-      actual: equals(anchorsIpfsHashes.sort(localeCompare), ipfsDirectoryHashes.sort(localeCompare)),
-      expected: true,
+      actual: anchors.filter(anchorIsBlockHeight).length,
+      expected: anchors.length,
     })
   }
 
