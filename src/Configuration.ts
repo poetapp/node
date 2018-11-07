@@ -200,7 +200,7 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
 
   const configuration = JSON.parse(readFileSync(configPath, 'utf8'))
 
-  validatePoetNetwork(configuration.poetNetwork)
+  if (configuration.poetNetwork) validatePoetNetwork(configuration.poetNetwork)
   if (typeof configuration.poetVersion === 'object') validatePoetVersion(configuration.poetVersion)
 
   return configuration
