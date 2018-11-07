@@ -28,7 +28,7 @@ export class DAO {
 
   readonly findTransactionlessEntry = () => this.blockchainWriterCollection.findOne({ txId: null })
 
-  readonly findAndUpdateByIPFSDirectoryHash = async ({ ipfsDirectoryHash, ...updates }: Entry) => {
+  readonly updateByIPFSDirectoryHash = async ({ ipfsDirectoryHash, ...updates }: Entry) => {
     await this.blockchainWriterCollection.updateOne(
       { ipfsDirectoryHash },
       { $set : updates },
