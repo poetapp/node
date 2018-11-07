@@ -4,7 +4,7 @@ import { Collection } from 'mongodb'
 interface Entry {
   readonly ipfsDirectoryHash: string
   readonly txId?: string,
-  readonly transactionCreationDate?: string
+  readonly transactionCreationDate?: Date
 }
 
 @injectable()
@@ -28,10 +28,11 @@ export class DAO {
 
   readonly findTransactionlessEntry = () => this.blockchainWriterCollection.findOne({ txId: null })
 
-  readonly findAndUpdateByIPFSDirectoryHash = ({ ipfsDirectoryHash, ...updates }: Entry) =>
-    this.blockchainWriterCollection.updateOne(
+  readonly findAndUpdateByIPFSDirectoryHash = async ({ ipfsDirectoryHash, ...updates }: Entry) => {
+    await this.blockchainWriterCollection.updateOne(
       { ipfsDirectoryHash },
       { $set : updates },
       { upsert: true },
     )
+  }
 }

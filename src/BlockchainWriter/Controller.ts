@@ -90,7 +90,7 @@ export class Controller {
     await dao.findAndUpdateByIPFSDirectoryHash({
       ipfsDirectoryHash,
       txId,
-      transactionCreationDate: new Date().toISOString(),
+      transactionCreationDate: new Date(),
     })
 
     await messaging.publish(this.exchange.ipfsHashTxId, {
