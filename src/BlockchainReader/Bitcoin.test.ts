@@ -3,12 +3,14 @@ import { allPass, equals } from 'ramda'
 import { describe } from 'riteway'
 
 import { poetAnchorToData } from 'BlockchainWriter/Bitcoin'
-import { PREFIX_BARD, PREFIX_POET } from 'Helpers/Bitcoin'
 
 import { anchorPrefixAndVersionMatch, blockToPoetAnchors, bufferToPoetAnchor, isCorrectBufferLength } from './Bitcoin'
 
 import * as TestBlock from './TestData/block-000000000000f29b1e2d33590208811f3cd2b2c190596424617a18460d878288.json'
 import * as TestBlock1 from './TestData/block-00000000f8b690cb98c5bf9e221b47b493a27523e8e8b94a18022abd3e51fb42.json'
+
+export const PREFIX_POET = 'POET'
+export const PREFIX_BARD = 'BARD'
 
 describe('Bitcoin.blockToPoetAnchors', async assert => {
   assert({
