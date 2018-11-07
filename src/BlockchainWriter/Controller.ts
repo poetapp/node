@@ -87,7 +87,7 @@ export class Controller {
     const data = poetAnchorToData(poetAnchor)
     const txId = await anchorData(data)
 
-    await dao.findAndUpdateByIPFSDirectoryHash({
+    await dao.updateByIPFSDirectoryHash({
       ipfsDirectoryHash,
       txId,
       transactionCreationDate: new Date(),
