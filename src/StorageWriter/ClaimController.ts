@@ -58,6 +58,14 @@ export class ClaimController {
 
   private readonly downloadClaim = (ipfsFileHash: string) => this.ipfs.cat()(ipfsFileHash)
 
+  private readonly integrityCheck = async (data: StoreNextClaimData) => {
+    const { ipfsFileHash } = data
+    const claimFromIPFS = await this.downloadClaim(ipfsFileHash)
+    const claimFromDB = await this.daoClaims.findClaimByHash(ipfsFileHash)
+    if (claimFromIPFS !== claimFromDB) throw new Error()
+    return data
+  }
+
   private readonly uploadClaim = (claim: SignedVerifiableClaim) => this.ipfs.addText()(JSON.stringify(claim))
 
   private readonly storeClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {
