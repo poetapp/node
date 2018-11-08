@@ -25,7 +25,7 @@ describe('Bitcoin.getData', async assert => {
       assert({
         given,
         should: 'match the version',
-        actual: Array.from(buffer.slice(4, 6)),
+        actual: buffer.readUInt16BE(4),
         expected: poetAnchor.version,
       })
 
@@ -46,7 +46,7 @@ describe('Bitcoin.getData', async assert => {
 
     const poetAnchor: PoetAnchor = {
       prefix: PREFIX_POET,
-      version: [0, 2],
+      version: 2,
       storageProtocol: StorageProtocol.IPFS,
       ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
     }
@@ -57,11 +57,11 @@ describe('Bitcoin.getData', async assert => {
       prefix: PREFIX_BARD,
       ipfsDirectoryHash: 'Qmed52rzQ2C71mZbLscqQBQEhqcYZ1qjDX3Ugm6UHTasCY',
     })
-    testGetData({ ...poetAnchor, prefix: PREFIX_BARD, version: [2, 1] })
+    testGetData({ ...poetAnchor, prefix: PREFIX_BARD, version: 21 })
     testGetData({
       ...poetAnchor,
       prefix: PREFIX_BARD,
-      version: [2, 1],
+      version: 21,
       ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
     })
   }
@@ -69,7 +69,7 @@ describe('Bitcoin.getData', async assert => {
   {
     const poetAnchor: PoetAnchor = {
       prefix: PREFIX_POET,
-      version: [1, 2],
+      version: 12,
       storageProtocol: StorageProtocol.IPFS,
       ipfsDirectoryHash: 'QmWvm25gWNrtmZRmPw8n7okH71ComnmtBgss1KCseGHqjn',
     }
@@ -99,9 +99,9 @@ describe('Bitcoin.getData', async assert => {
 
     assert({
       given: 'a bitcoin-encoded Po.et data buffer with incorrect version length',
-      should: 'fail with IllegalVersionLength',
-      actual: Try(poetAnchorToData, { ...poetAnchor, version: [2, 3, 4] }) instanceof IllegalVersionLength,
-      expected: true,
+      should: 'fail with the message out of range',
+      actual: Try(poetAnchorToData, { ...poetAnchor, version: 4294967296 }).message,
+      expected: 'The value of "value" is out of range. It must be >= 0 and <= 4294967295. Received 4294967296',
     })
   }
 })

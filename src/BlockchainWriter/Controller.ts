@@ -13,7 +13,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export interface ControllerConfiguration {
   readonly poetNetwork: string
-  readonly poetVersion: ReadonlyArray<number>
+  readonly poetVersion: number
 }
 
 @injectable()
