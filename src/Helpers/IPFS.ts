@@ -2,7 +2,8 @@
 const FormData = require('form-data')
 import fetch, { Response } from 'node-fetch'
 import { prop } from 'ramda'
-import * as str from 'string-to-stream'
+// import * as str from 'string-to-stream'
+const str = require('string-to-stream')
 
 import { minutesToMiliseconds } from './Time'
 
