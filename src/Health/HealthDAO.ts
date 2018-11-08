@@ -114,7 +114,7 @@ export class HealthDAO {
     )
   }
 
-  readonly updateHardIPFSFailure = async (): Promise<void> => {
+  readonly increaseHardIPFSFailure = async (): Promise<void> => {
     await this.collection.updateOne(
       { name: 'ipfsDownloadRetries' },
       {
@@ -124,7 +124,7 @@ export class HealthDAO {
     )
   }
 
-  readonly updateSoftIPFSFailure = async (): Promise<void> => {
+  readonly increaseSoftIPFSFailure = async (): Promise<void> => {
     await this.collection.updateOne(
       { name: 'ipfsDownloadRetries' },
       {
