@@ -5,7 +5,7 @@ import { isBlockDownloaded } from './Messages'
 describe('Messages.isBlockDownloaded', async assert => {
   const validBlockAnchor = {
     prefix: 'BARD',
-    version: [1, 2],
+    version: 12,
     storageProtocol: 0,
     ipfsDirectoryHash: 'asd',
     transactionId: 'asd',

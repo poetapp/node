@@ -1,6 +1,3 @@
-export const PREFIX_POET = 'POET'
-export const PREFIX_BARD = 'BARD'
-
 // Interfaces and Enums used with Bitcoin Core's RPC.
 
 export enum GetBlockVerbosity {
