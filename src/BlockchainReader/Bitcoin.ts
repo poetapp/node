@@ -2,7 +2,7 @@ import { PoetAnchor, PoetBlockAnchor, PoetTransactionAnchor } from '@po.et/poet-
 import * as bs58 from 'bs58'
 import { equals, allPass, pipe, values, sum } from 'ramda'
 
-import { PREFIX_BARD, PREFIX_POET, Block, Transaction, VOut } from 'Helpers/Bitcoin'
+import { Block, Transaction, VOut } from 'Helpers/Bitcoin'
 import { isTruthy } from 'Helpers/isTruthy'
 
 interface VOutWithTxId extends VOut {
@@ -28,7 +28,6 @@ export const blockToPoetAnchors = (block: Block): ReadonlyArray<PoetBlockAnchor>
     .map(transactionToDataOutput)
     .filter(isTruthy)
     .reduce(dataOutputToPoetTransactionAnchors, [])
-    .filter(poetAnchorHasCorrectPrefix)
     .map(poetAnchorWithBlockData(block))
 
 const dataOutputToPoetTransactionAnchors = (acc: ReadonlyArray<PoetTransactionAnchor>, dataOutput: VOutWithTxId) => {
@@ -89,8 +88,6 @@ export const bufferToPoetAnchor = (buffer: Buffer): PoetAnchor => {
     ipfsDirectoryHash,
   }
 }
-
-const poetAnchorHasCorrectPrefix = (poetAnchor: PoetAnchor) => [PREFIX_BARD, PREFIX_POET].includes(poetAnchor.prefix)
 
 const poetAnchorWithBlockData = (block: Block) => (poetAnchor: PoetTransactionAnchor): PoetBlockAnchor => ({
   ...poetAnchor,
