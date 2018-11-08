@@ -26,7 +26,9 @@
     "test-prepare-db": "node dist/babel/test/PrepareDB.js",
     "prepublishOnly": "npm run build && npm test",
     "semantic-release": "semantic-release",
-    "create-claim": "ts-node scripts/CreateClaim"
+    "create-claim": "ts-node scripts/CreateClaim",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "files": [
     "dist/babel/src"
@@ -58,7 +60,8 @@
     "protobufjs": "6.8.8",
     "ramda": "0.25.0",
     "reflect-metadata": "0.1.12",
-    "string-to-stream": "1.1.1"
+    "string-to-stream": "1.1.1",
+    "snyk": "^1.108.0"
   },
   "devDependencies": {
     "@po.et/tslint-rules": "2.0.2",
@@ -86,5 +89,6 @@
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.6.0",
     "typescript": "3.1.6"
-  }
+  },
+  "snyk": true
 }
