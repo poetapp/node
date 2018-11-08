@@ -6,7 +6,8 @@ import { prop } from 'ramda'
 // import * as str from 'string-to-stream'
 const str = require('string-to-stream')
 
-import { minutesToMiliseconds } from './Time'
+// import { minutesToMiliseconds } from './Time'
+const Time = require('.(Time')
 
 const getHash = prop('Hash')
 
@@ -35,7 +36,7 @@ export const IPFS = ({
   }
 
   const addText: addText = ({
-    timeout = minutesToMiliseconds(10),
+    timeout = Time.minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (text) => {
     const formData = new FormData()
 
@@ -57,7 +58,7 @@ export const IPFS = ({
   }
 
   const cat: cat = ({
-    timeout = minutesToMiliseconds(10),
+    timeout = Time.minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (hash) => {
     const response = await fetch(`${paths.cat}?arg=${hash}`, {
       timeout,
