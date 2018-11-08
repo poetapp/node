@@ -100,7 +100,6 @@ const defaultConfiguration: Configuration = {
   poetNetwork: 'POET',
   poetVersion: 0,
   minimumBlockHeight: 100,
-
   blockchainReaderIntervalInSeconds: 5,
 
   enableTimestamping: false,
