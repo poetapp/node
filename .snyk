@@ -1,0 +1,8 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:lodash:20180130':
+    - '@po.et/poet-js > jsonld-signatures > bitcore-message > bitcore-lib > lodash':
+        patched: '2018-11-08T13:14:39.158Z'
