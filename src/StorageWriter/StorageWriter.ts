@@ -9,9 +9,9 @@ import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
+import { ClaimIntegrityChecker } from './ClaimIntegrityChecker'
 import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { ClaimIntegrityChecker } from './ClaimIntegrityChecker'
 import { Router } from './Router'
 import { Service, ServiceConfiguration } from './Service'
 

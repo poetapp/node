@@ -45,7 +45,7 @@ export class DAOClaims {
   }
 
   public readonly findClaimByHash = (ipfsFileHash: string) => {
-    return this.collection.findOne({ ipfsFileHash  }) 
+    return this.collection.findOne({ ipfsFileHash  })
   }
 
   private readonly findClaimToStore = () =>
