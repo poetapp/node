@@ -12,7 +12,7 @@ import { DAO } from './DAO'
 
 export interface ControllerConfiguration {
   readonly poetNetwork: string
-  readonly poetVersion: ReadonlyArray<number>
+  readonly poetVersion: number
 }
 
 @injectable()
