@@ -152,7 +152,7 @@ export async function app(localVars: any = {}) {
   const storageWriter = new StorageWriter({
     ...loggingConfiguration,
     dbUrl: configuration.mongodbUrl,
-    ipfsUrl: configuration.ipfsUrl,
+    ipfs: { url: configuration.ipfsUrl },
     rabbitmqUrl: configuration.rabbitmqUrl,
     uploadClaimIntervalInSeconds: configuration.uploadClaimIntervalInSeconds,
     maxStorageAttempts: configuration.uploadClaimMaxAttempts,

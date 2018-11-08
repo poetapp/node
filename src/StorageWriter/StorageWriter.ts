@@ -4,22 +4,21 @@ import * as Pino from 'pino'
 import { pick } from 'ramda'
 
 import { LoggingConfiguration } from 'Configuration'
+import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
 import { Service, ServiceConfiguration } from './Service'
 
 export interface StorageWriterConfiguration
   extends LoggingConfiguration,
-    IPFSConfiguration,
     ServiceConfiguration,
     DAOClaimsConfiguration {
-  readonly ipfsUrl: string
+  readonly ipfs: IPFSConfiguration
   readonly dbUrl: string
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
@@ -84,11 +83,8 @@ export class StorageWriter {
       maxStorageAttempts: this.configuration.maxStorageAttempts,
     })
     this.container.bind<Router>('Router').to(Router)
-    this.container.bind<IPFS>('IPFS').to(IPFS)
-    this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
-      ipfsUrl: this.configuration.ipfsUrl,
-    })
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
+    this.container.bind<IPFS>('IPFS').toConstantValue(IPFS(this.configuration.ipfs))
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
     this.container.bind<Service>('Service').to(Service)

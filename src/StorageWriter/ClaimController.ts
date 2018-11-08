@@ -3,10 +3,10 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { pipeP } from 'ramda'
 
+import { IPFS } from 'Helpers/IPFS'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { DAOClaims } from './DAOClaims'
-import { IPFS } from './IPFS'
 
 enum LogTypes {
   info = 'info',
@@ -56,7 +56,7 @@ export class ClaimController {
     return { claim }
   }
 
-  private readonly uploadClaim = (claim: SignedVerifiableClaim) => this.ipfs.addText(JSON.stringify(claim))
+  private readonly uploadClaim = (claim: SignedVerifiableClaim) => this.ipfs.addText()(JSON.stringify(claim))
 
   private readonly storeClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {
     const { claim } = data
