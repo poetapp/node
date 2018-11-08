@@ -1,6 +1,7 @@
 // import * as FormData from 'form-data'
 const FormData = require('form-data')
-import fetch, { Response } from 'node-fetch'
+// import fetch, { Response } from 'node-fetch'
+const fetch = require('node-fetch')
 import { prop } from 'ramda'
 // import * as str from 'string-to-stream'
 const str = require('string-to-stream')
