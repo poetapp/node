@@ -14,9 +14,7 @@ export interface LightBlock {
 
 const PoetBlockAnchorJoiSchema = Joi.object({
   prefix: Joi.string().required(),
-  version: Joi.array()
-    .length(2)
-    .items(Joi.number()),
+  version: Joi.number().required(),
   storageProtocol: Joi.number().required(),
   ipfsDirectoryHash: Joi.string().required(),
   transactionId: Joi.string().required(),

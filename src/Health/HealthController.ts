@@ -4,6 +4,7 @@ import * as Pino from 'pino'
 import { pick, pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
 
 import { BlockchainInfo, WalletInfo, NetworkInfo, IPFSInfo, EstimatedSmartFeeInfo, HealthDAO } from './HealthDAO'
 
@@ -35,6 +36,8 @@ export const addWalletIsBalanceLow = (lowBalanceAmount: number) => (walletInfo: 
   const { balance } = walletInfo
   return balance < lowBalanceAmount ? { ...walletInfo, isBalanceLow: true } : { ...walletInfo, isBalanceLow: false }
 }
+
+export const isFailureHard = (failureType: string) => failureType === 'HARD'
 
 @injectable()
 export class HealthController {
@@ -117,6 +120,16 @@ export class HealthController {
   private async updateIPFSInfo(ipfsInfo: IPFSInfo): Promise<object> {
     await this.healthDAO.updateIPFSInfo(ipfsInfo)
     return ipfsInfo
+  }
+
+  public async updateIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
+    this.logger.debug({ ipfsHashFailures }, 'Updating IPFS Failure Count by failureType')
+    await ipfsHashFailures.map(
+      async ({ failureType }) => {
+        if (isFailureHard(failureType)) await this.healthDAO.increaseHardIPFSFailure()
+        else await this.healthDAO.increaseSoftIPFSFailure()
+      },
+    )
   }
 
   public refreshBlockchainInfo = pipeP(
