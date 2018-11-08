@@ -56,6 +56,8 @@ export class ClaimController {
     return { claim }
   }
 
+  private readonly downloadClaim = (ipfsFileHash:string) => this.ipfs.cat()(ipfsFileHash)
+
   private readonly uploadClaim = (claim: SignedVerifiableClaim) => this.ipfs.addText()(JSON.stringify(claim))
 
   private readonly storeClaim = async (data: StoreNextClaimData): Promise<StoreNextClaimData> => {

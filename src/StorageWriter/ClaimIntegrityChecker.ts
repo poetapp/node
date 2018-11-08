@@ -6,7 +6,8 @@ import { asyncPipe } from 'Helpers/asyncPipe'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { DAOClaims } from './DAOClaims'
-import { IPFS } from './IPFS'
+import { IPFS } from 'Helpers/IPFS'
+import { minutesToMiliseconds } from 'Helpers/Time'
 
 enum LogTypes {
   info = 'info',
@@ -51,23 +52,25 @@ export class ClaimIntegrityChecker {
     }
   }
 
-  private downloadIPFSClaim = async (x: ValidateStoredClaimData) => {
+  private readonly configureDownloadClaim = ({ timeout = minutesToMiliseconds(10)  } = {}) => this.ipfs.cat({ timeout })
+
+  private readonly downloadIPFSClaim = async (x: ValidateStoredClaimData) => {
     const { ipfsFileHash  } = x
-    const ipfsClaim = await this.ipfs.cat(ipfsFileHash)
+    const ipfsClaim = await this.configureDownloadClaim()(ipfsFileHash)
     return {
       ...x,
       ipfsFileHash
     }
   }
 
-  private compareClaims = (x: ValidateStoredClaimData) => {
+  private readonly compareClaims = (x: ValidateStoredClaimData) => {
     const { ipfsClaim, dbClaim } = x
     if (ipfsClaim !== dbClaim) {
       
     }
   }
 
-  public checkClaimIntegrity = asyncPipe(
+  public readonly checkClaimIntegrity = asyncPipe(
     this.loadDBClaim,
     this.downloadIPFSClaim,
     this.compareClaims
