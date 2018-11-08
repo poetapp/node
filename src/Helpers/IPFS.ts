@@ -35,7 +35,7 @@ export const IPFS = ({
   }
 
   const addText: addText = ({
-    timeout = 10,
+    timeout = minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (text) => {
     const formData = new FormData()
 
@@ -57,7 +57,7 @@ export const IPFS = ({
   }
 
   const cat: cat = ({
-    timeout = 10,
+    timeout = minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (hash) => {
     const response = await fetch(`${paths.cat}?arg=${hash}`, {
       timeout,
