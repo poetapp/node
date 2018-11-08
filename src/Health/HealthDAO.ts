@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify'
-import { Collection, Db, UpdateWriteOpResult } from 'mongodb'
+import { Collection, Db } from 'mongodb'
 
 export interface BlockchainInfo {
   readonly blocks: number
@@ -109,6 +109,26 @@ export class HealthDAO {
         $set: {
           estimatedSmartFeeInfo,
         },
+      },
+      { upsert: true },
+    )
+  }
+
+  readonly increaseHardIPFSFailure = async (): Promise<void> => {
+    await this.collection.updateOne(
+      { name: 'ipfsDownloadRetries' },
+      {
+        $inc: { hardFailures: 1 },
+      },
+      { upsert: true },
+    )
+  }
+
+  readonly increaseSoftIPFSFailure = async (): Promise<void> => {
+    await this.collection.updateOne(
+      { name: 'ipfsDownloadRetries' },
+      {
+        $inc: { softFailures: 1 },
       },
       { upsert: true },
     )

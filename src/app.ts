@@ -239,6 +239,7 @@ export async function app(localVars: any = {}) {
     feeEstimateMinTargetBlock: configuration.feeEstimateMinTargetBlock,
     exchanges: {
       getHealth: configuration.exchangeGetHealth,
+      claimsNotDownloaded: configuration.exchangeClaimsNotDownloaded,
     },
   })
 

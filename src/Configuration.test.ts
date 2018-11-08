@@ -145,6 +145,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
       exchangeIpfsHashTxId: 'IPFS_HASH_TX_ID',
       exchangePoetAnchorDownloaded: 'POET_ANCHOR_DOWNLOADED',
       exchangeClaimsDownloaded: 'CLAIMS_DOWNLOADED',
+      exchangeClaimsNotDownloaded: 'CLAIMS_NOT_DOWNLOADED',
       exchangeGetHealth: 'HEALTH::GET_HEALTH',
     }
 
@@ -171,6 +172,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
       EXCHANGE_IPFS_HASH_TX_ID: 'override',
       EXCHANGE_POET_ANCHOR_DOWNLOADED: 'override',
       EXCHANGE_CLAIMS_DOWNLOADED: 'override',
+      EXCHANGE_CLAIMS_NOT_DOWNLOADED: 'override',
       EXCHANGE_GET_HEALTH: 'override',
     }
 
@@ -184,6 +186,7 @@ describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
       exchangeIpfsHashTxId: 'override',
       exchangePoetAnchorDownloaded: 'override',
       exchangeClaimsDownloaded: 'override',
+      exchangeClaimsNotDownloaded: 'override',
       exchangeGetHealth: 'override',
     }
 

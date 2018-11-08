@@ -1,6 +1,6 @@
 import { describe } from 'riteway'
 
-import { isStatus200, addWalletIsBalanceLow } from './HealthController'
+import { isStatus200, addWalletIsBalanceLow, isFailureHard } from './HealthController'
 
 describe('isStatus200()', async assert => {
   assert({
@@ -54,4 +54,21 @@ describe('addWalletIsBalanceLow()', async assert => {
       expected: { ...walletInfo, isBalanceLow: true },
     })
   }
+})
+
+describe('isFailureHard()', async assert => {
+
+  assert({
+    given: 'the string HARD',
+    should: 'return true',
+    actual: isFailureHard('HARD'),
+    expected: true,
+  })
+
+  assert({
+    given: 'a string other than HARD',
+    should: 'return false',
+    actual: isFailureHard('SOFT'),
+    expected: false,
+  })
 })

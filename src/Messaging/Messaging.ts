@@ -1,7 +1,7 @@
 /* tslint:disable:no-console */
 import { Connection, connect, Channel } from 'amqplib'
 
-import { ClaimIPFSHashPair, isClaimIPFSHashPair, IPFSHashFailure } from 'Interfaces'
+import { ClaimIPFSHashPair, isClaimIPFSHashPair, IPFSHashFailure, isIPFSHashFailure } from 'Interfaces'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { BlockDownloaded, isBlockDownloaded } from './Messages'
@@ -104,5 +104,32 @@ export class Messaging {
 
   publishClaimsNotDownloaded = async (ipfsHashFailure: ReadonlyArray<IPFSHashFailure>) => {
     return this.publish(this.exchanges.claimsNotDownloaded, ipfsHashFailure)
+  }
+
+  consumeClaimsNotDownloaded = async (consume: (ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) => void) => {
+    await this.consume(this.exchanges.claimsNotDownloaded, (message: any) => {
+      const messageContent = message.content.toString()
+      const ipfsHashFailures = JSON.parse(messageContent)
+
+      if (!Array.isArray(ipfsHashFailures)) {
+        console.log({
+          action: 'consumeClaimsNotDownloaded',
+          message: 'Expected ipfsHashFailures to be an Array.',
+          ipfsHashFailures,
+        })
+        return
+      }
+
+      if (ipfsHashFailures.map(isClaimIPFSHashPair).find(_ => !_)) {
+        console.log({
+          action: 'consumeClaimsNotDownloaded',
+          message: 'Expected ipfsHashFailures to be an Array<IPFSHashFailure>.',
+          offendingElements: ipfsHashFailures.map(isIPFSHashFailure).filter(_ => !_),
+        })
+        return
+      }
+
+      consume(ipfsHashFailures)
+    })
   }
 }
