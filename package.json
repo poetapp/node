@@ -40,7 +40,7 @@
     "url": "https://github.com/poetapp/node/issues"
   },
   "dependencies": {
-    "@po.et/poet-js": "5.0.7",
+    "@po.et/poet-js": "5.1.5",
     "amqplib": "0.5.2",
     "bitcoin-core": "2.0.0",
     "bs58": "4.0.1",
@@ -80,7 +80,7 @@
     "ipfs-api": "26.1.2",
     "nodemon": "1.18.6",
     "nyc": "poetapp/nyc#fbc2ed1",
-    "riteway": "3.0.1",
+    "riteway": "4.0.0",
     "semantic-release": "15.10.8",
     "sinon": "7.1.1",
     "ts-node": "7.0.1",

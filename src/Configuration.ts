@@ -25,7 +25,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly apiPort: number
 
   readonly poetNetwork: string
-  readonly poetVersion: ReadonlyArray<number>
+  readonly poetVersion: number
 
   readonly blockchainReaderIntervalInSeconds: number
   readonly minimumBlockHeight: number
@@ -98,7 +98,7 @@ const defaultConfiguration: Configuration = {
 
   apiPort: 18080,
   poetNetwork: 'POET',
-  poetVersion: [0, 0],
+  poetVersion: 0,
   minimumBlockHeight: 100,
   blockchainReaderIntervalInSeconds: 5,
 
@@ -201,7 +201,7 @@ function loadConfigurationFromFile(configPath: string): Configuration | {} {
   const configuration = JSON.parse(readFileSync(configPath, 'utf8'))
 
   if (configuration.poetNetwork) validatePoetNetwork(configuration.poetNetwork)
-  if (typeof configuration.poetVersion === 'object') validatePoetVersion(configuration.poetVersion)
+  if (configuration.poetVersion) validatePoetVersion(configuration.poetVersion)
 
   return configuration
 }
@@ -232,14 +232,10 @@ function loadConfigurationFromEnv(env: any): Partial<Configuration> {
   return configurationFromEnv
 }
 
-function validatePoetVersion(poetVersion: any) {
-  assert(Array.isArray(poetVersion), 'Field poetVersion must be an Array')
-  assert(poetVersion.length === 4, 'Field poetVersion must have 4 elements')
-  poetVersion.forEach((element: any) =>
-    assert(
-      Number.isInteger(element) && 0 <= element && element < 256,
-      'Each member of poetVersion must be an integer between 0 and 255',
-    ),
+function validatePoetVersion(poetVersion: number) {
+  assert(
+    Number.isInteger(poetVersion) && 0 <= poetVersion && poetVersion <= 0xFFFF,
+    'poetVersion must be an integer between 0 and 65535',
   )
 }
 
