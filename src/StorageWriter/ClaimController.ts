@@ -108,6 +108,7 @@ export class ClaimController {
     this.findNextClaim,
     this.log(LogTypes.trace)('Storing Claim'),
     this.storeClaim,
+    this.log(LogTypes.trace)('Checking integrity of stored claim'),
     this.integrityCheck,
     this.log(LogTypes.trace)('Adding IPFS hash to Claim Entry'),
     this.addIPFSHashToClaim,
