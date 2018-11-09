@@ -5,7 +5,6 @@ const main = async () => {
   const app = new Koa();
 
   app.use(async (ctx: any) => {
-    ctx.body = 'Hello Koa';
     const attributes = {
       name: `testing claim ${Date.now()}`,
       author: 'the tester',
