@@ -68,7 +68,7 @@ export class ClaimController {
     ipfsResult: string,
     message: string,
   ) => {
-    await this.daoIntegrityCheckFailures.addFailure(claim, ipfsResult)
+    await this.daoIntegrityCheckFailures.addFailure(claim, ipfsResult, message)
     throw new IntegrityCheckFailure(message)
   }
 

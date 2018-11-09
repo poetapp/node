@@ -15,7 +15,7 @@ export class DAOIntegrityCheckFailures {
   public readonly addFailure = async (
     claim: SignedVerifiableClaim,
     ipfsResponse: string,
-    message = '',
+    message: string,
     failureTime = new Date(),
   ) => {
     await this.collection.insertOne({ claim, ipfsResponse, message, failureTime })
