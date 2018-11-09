@@ -44,10 +44,6 @@ export class DAOClaims {
     await this.collection.updateOne({ 'claim.id': claimId }, { $set: { ipfsFileHash } })
   }
 
-  public readonly findClaimByHash = (ipfsFileHash: string) => {
-    return this.collection.findOne({ ipfsFileHash  })
-  }
-
   private readonly findClaimToStore = () =>
     this.collection.findOneAndUpdate(
       {
