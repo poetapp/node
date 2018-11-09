@@ -11,7 +11,7 @@ export default function() {
   const res = http.post(url, payload, params)
 
   check(res, {
-    "is status 202": (r) => r.status === 202
+    'is status 202': (r) => r.status === 202
   });
 
   sleep(1)
