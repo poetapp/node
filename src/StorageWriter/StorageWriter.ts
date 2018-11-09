@@ -9,8 +9,8 @@ import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
-import { ClaimIntegrityChecker } from './ClaimIntegrityChecker'
 import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
+import { DAOIntegrityCheckFailures } from './DAOIntegrityCheckFailures'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { Service, ServiceConfiguration } from './Service'
@@ -36,6 +36,7 @@ export class StorageWriter {
   private messaging: Messaging
   private service: Service
   private daoClaims: DAOClaims
+  private daoIntegrityCheckFailures: DAOIntegrityCheckFailures
 
   constructor(configuration: StorageWriterConfiguration) {
     this.configuration = configuration
@@ -83,9 +84,9 @@ export class StorageWriter {
     this.container.bind<DAOClaimsConfiguration>('DAOClaimsConfiguration').toConstantValue({
       maxStorageAttempts: this.configuration.maxStorageAttempts,
     })
+    this.container.bind<DAOIntegrityCheckFailures>('DAOIntegrityCheckFailures').to(DAOIntegrityCheckFailures)
     this.container.bind<Router>('Router').to(Router)
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<ClaimIntegrityChecker>('ClaimIntegrityChecker').to(ClaimIntegrityChecker)
     this.container.bind<IPFS>('IPFS').toConstantValue(IPFS(this.configuration.ipfs))
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
