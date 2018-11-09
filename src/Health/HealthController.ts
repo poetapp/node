@@ -126,7 +126,6 @@ export class HealthController {
     this.logger.debug({ ipfsHashFailures }, 'Updating IPFS Failure Count by failureType')
     await ipfsHashFailures.map(
       async ({ failureType }) => {
-        console.log('alsjdflkasjdflkajsdflkajsdfkjasd', failureType)
         if (isFailureHard(failureType)) await this.healthDAO.increaseHardIPFSFailure()
         else await this.healthDAO.increaseSoftIPFSFailure()
       },

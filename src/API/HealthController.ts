@@ -79,7 +79,10 @@ export class HealthController {
 
   private async getIPFSRetryInfo(): Promise<object> {
     try {
-      const { hardFailures = 0, softFailures = 0 } = await this.collection.findOne({ name: 'ipfsDownloadRetries' }) || {}
+      const {
+        hardFailures = 0,
+        softFailures = 0,
+      } = await this.collection.findOne({ name: 'ipfsDownloadRetries' }) || {}
       const ipfsRetryInfo = { hardFailures, softFailures }
       return ipfsRetryInfo
     } catch (e) {
@@ -102,7 +105,7 @@ export class HealthController {
       blockchainInfo,
       networkInfo,
       estimatedSmartFeeInfo,
-      ipfsRetryInfo
+      ipfsRetryInfo,
     }
   }
 }
