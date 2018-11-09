@@ -26,7 +26,8 @@
     "test-prepare-db": "node dist/babel/test/PrepareDB.js",
     "prepublishOnly": "npm run build && npm test",
     "semantic-release": "semantic-release",
-    "create-claim": "ts-node scripts/CreateClaim"
+    "create-claim": "ts-node scripts/CreateClaim",
+    "create-claim-api": "ts-node tests/stress/createClaimAPI.ts"
   },
   "files": [
     "dist/babel/src"
