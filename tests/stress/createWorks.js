@@ -1,7 +1,6 @@
 import http from 'k6/http'
 import { check, sleep } from 'k6'
 
-
 const CLAIM_HOST = __ENV.CLAIM_HOST || 'http://localhost:3002' 
 const NODE_HOST = __ENV.NODE_HOST || 'http://localhost:18080'
 
