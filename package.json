@@ -41,13 +41,13 @@
     "url": "https://github.com/poetapp/node/issues"
   },
   "dependencies": {
-    "@po.et/poet-js": "5.1.7",
+    "@po.et/poet-js": "5.1.8",
     "amqplib": "0.5.2",
     "bitcoin-core": "2.0.0",
     "bs58": "4.0.1",
     "form-data": "2.3.3",
     "inversify": "5.0.1",
-    "joi": "14.0.4",
+    "joi": "14.0.6",
     "koa": "2.6.2",
     "koa-body": "4.0.4",
     "koa-cors": "0.0.16",
@@ -85,7 +85,7 @@
     "semantic-release": "15.10.8",
     "sinon": "7.1.1",
     "ts-node": "7.0.1",
-    "tsconfig-paths": "3.6.0",
+    "tsconfig-paths": "3.7.0",
     "typescript": "3.1.6"
   }
 }
