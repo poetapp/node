@@ -10,6 +10,7 @@ interface HealthObject {
   readonly blockchainInfo: object
   readonly networkInfo: object
   readonly estimatedSmartFeeInfo: object
+  readonly ipfsRetryInfo: object
 }
 
 @injectable()
@@ -76,6 +77,19 @@ export class HealthController {
     }
   }
 
+  private async getIPFSRetryInfo(): Promise<object> {
+    try {
+      const {
+        hardFailures = 0,
+        softFailures = 0,
+      } = await this.collection.findOne({ name: 'ipfsDownloadRetries' }) || {}
+      const ipfsRetryInfo = { hardFailures, softFailures }
+      return ipfsRetryInfo
+    } catch (e) {
+      return { error: 'Error retrieving ipfsRetryInfo...' }
+    }
+  }
+
   async getHealth(): Promise<HealthObject> {
     const mongoIsConnected = await this.checkMongo()
     const ipfsInfo = await this.getIPFSInfo()
@@ -83,6 +97,7 @@ export class HealthController {
     const blockchainInfo = await this.getBlockchainInfo()
     const networkInfo = await this.getNetworkInfo()
     const estimatedSmartFeeInfo = await this.getEstimatedSmartFeeInfo()
+    const ipfsRetryInfo = await this.getIPFSRetryInfo()
     return {
       mongoIsConnected,
       ipfsInfo,
@@ -90,6 +105,7 @@ export class HealthController {
       blockchainInfo,
       networkInfo,
       estimatedSmartFeeInfo,
+      ipfsRetryInfo,
     }
   }
 }
