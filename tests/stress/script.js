@@ -6,8 +6,8 @@ export default function() {
   const requestClaim = http.get('http://localhost:3000')
 
   const url = 'http://localhost:18080/works'
-  var payload = requestClaim.body
-  var params =  { headers: { 'Content-Type': 'application/json' } }
+  const payload = requestClaim.body
+  const params =  { headers: { 'Content-Type': 'application/json' } }
   const res = http.post(url, payload, params)
 
   check(res, {
