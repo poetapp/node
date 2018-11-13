@@ -74,8 +74,6 @@ services:
 
   k6:
     build: ./tests/stress
-    depends_on:
-      - poet-node
     environment:
       - NODE_HOST=http://poet-node:18080
     volumes:
