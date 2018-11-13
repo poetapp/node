@@ -15,6 +15,7 @@ const main = async () => {
     ctx.body = await createACDClaim(attributes)
   })
 
+  // tslint:disable:no-console
   app.listen(PORT, () => console.log(`Koa app listening on http://localhost:${PORT}`))
 }
 
