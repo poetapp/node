@@ -8,7 +8,7 @@ The stress tests are written with [K6](https://k6.io/)
 docker-compose up
 ```
 
-If your test is the endpoint `create work`, you need to run this line
+If your test is the `create work` endpoint, you need to run this line
 
 ```bash
 docker-compose exec k6 npm run create-claim-api
