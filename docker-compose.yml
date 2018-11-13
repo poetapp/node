@@ -72,6 +72,11 @@ services:
       -rpcallowip=::/0
       -deprecatedrpc=signrawtransaction
 
+  k6:
+    build: ./tests/stress
+    volumes:
+      - .:/usr/src/app
+
   poet-node:
     build: .
     ports:

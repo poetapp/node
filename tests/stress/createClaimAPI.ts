@@ -1,7 +1,7 @@
 const Koa = require('koa')
 const { createACDClaim } = require('../helpers/createClaims')
 
-const PORT = process.env.HOST || 3002
+const PORT = process.env.PORT || 3002
 
 const main = async () => {
   const app = new Koa()
@@ -15,7 +15,7 @@ const main = async () => {
     ctx.body = await createACDClaim(attributes)
   })
 
-  app.listen(PORT)
+  app.listen(PORT, () => console.log(`Koa app listening on http://localhost:${PORT}`))
 }
 
 // tslint:disable:no-console
