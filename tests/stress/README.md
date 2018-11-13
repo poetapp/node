@@ -43,5 +43,5 @@ k6 run ./tests/stress/createWorks.js
 
 ## Environment variables:
 
-NODE_HOST: The node Po.et location
-CLAIM_HOST: The Api for create a Claim
+- NODE_HOST: The node Po.et location
+- CLAIM_HOST: The Api for create a Claim
