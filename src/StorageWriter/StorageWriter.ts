@@ -1,5 +1,5 @@
 import { injectable, Container } from 'inversify'
-import { Db, MongoClient } from 'mongodb'
+import { Collection, Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
@@ -32,6 +32,7 @@ export class StorageWriter {
   private readonly container = new Container()
   private mongoClient: MongoClient
   private dbConnection: Db
+  private integrityCheckFailuresCollection: Collection
   private router: Router
   private messaging: Messaging
   private service: Service
@@ -46,7 +47,9 @@ export class StorageWriter {
   async start() {
     this.logger.info({ configuration: this.configuration }, 'StorageWriter Starting')
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await this.mongoClient.db()
+    const db = this.dbConnection = await this.mongoClient.db()
+
+    this.integrityCheckFailuresCollection = db.collection('storageWriterIntegrityCheckFailures')
 
     const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
@@ -80,6 +83,8 @@ export class StorageWriter {
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
+    this.container.bind<Collection>('integrityCheckFailuresCollection')
+      .toConstantValue(this.integrityCheckFailuresCollection)
     this.container.bind<DAOClaims>('DAOClaims').to(DAOClaims)
     this.container.bind<DAOClaimsConfiguration>('DAOClaimsConfiguration').toConstantValue({
       maxStorageAttempts: this.configuration.maxStorageAttempts,

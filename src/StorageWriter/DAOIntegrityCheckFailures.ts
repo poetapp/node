@@ -1,15 +1,15 @@
 import { SignedVerifiableClaim } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
-import { Collection, Db} from 'mongodb'
+import { Collection } from 'mongodb'
 
 @injectable()
 export class DAOIntegrityCheckFailures {
   private readonly collection: Collection
 
   constructor(
-    @inject('DB') db: Db,
+    @inject('integrityCheckCollectionFailures') collection: Collection,
   ) {
-    this.collection = db.collection('storageWriterIntegrityCheckFailures')
+    this.collection = collection
   }
 
   public readonly addFailure = async (
