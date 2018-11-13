@@ -1,33 +1,26 @@
 # The Po.et Node Stress Tests
 
-The stress test are written with [K6](https://k6.io/)
+The stress tests are written with [K6](https://k6.io/)
 
 
-## Installation:
+## Running Local K6:
 
-https://docs.k6.io/docs/installation
-
-
-## Running K6:
-
-https://docs.k6.io/docs/running-k6
-
-
-```
+```bash
 docker-compose up
-npm run create-claim-api // only for creating works
 ```
 
-Alternatives to run the tests:
+If you test the endpoint create work, you requires run this line
 
-Docker 
+```bash
+docker-compose exec k6 npm run create-claim-api
+```
 
-`docker run -i loadimpact/k6 run - <script.js`
+```bash
+docker-compose exec k6 bash
+```
 
-CLI
+Example:
 
-`k6 run -e CLAIM_HOST=http://localhost:9000 ./tests/stress/createWorks.js`
-
-Options:
-
---vus 10 --duration 30s
+```bash
+k6 run ./tests/stress/createWorks.js
+```
