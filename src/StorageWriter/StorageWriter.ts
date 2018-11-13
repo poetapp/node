@@ -1,25 +1,25 @@
 import { injectable, Container } from 'inversify'
-import { Db, MongoClient } from 'mongodb'
+import { Collection, Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
 import { LoggingConfiguration } from 'Configuration'
+import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
+import { DAOIntegrityCheckFailures } from './DAOIntegrityCheckFailures'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
 import { Service, ServiceConfiguration } from './Service'
 
 export interface StorageWriterConfiguration
   extends LoggingConfiguration,
-    IPFSConfiguration,
     ServiceConfiguration,
     DAOClaimsConfiguration {
-  readonly ipfsUrl: string
+  readonly ipfs: IPFSConfiguration
   readonly dbUrl: string
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
@@ -32,10 +32,12 @@ export class StorageWriter {
   private readonly container = new Container()
   private mongoClient: MongoClient
   private dbConnection: Db
+  private integrityCheckFailuresCollection: Collection
   private router: Router
   private messaging: Messaging
   private service: Service
   private daoClaims: DAOClaims
+  private daoIntegrityCheckFailures: DAOIntegrityCheckFailures
 
   constructor(configuration: StorageWriterConfiguration) {
     this.configuration = configuration
@@ -45,7 +47,9 @@ export class StorageWriter {
   async start() {
     this.logger.info({ configuration: this.configuration }, 'StorageWriter Starting')
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await this.mongoClient.db()
+    const db = this.dbConnection = await this.mongoClient.db()
+
+    this.integrityCheckFailuresCollection = db.collection('storageWriterIntegrityCheckFailures')
 
     const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
@@ -79,16 +83,16 @@ export class StorageWriter {
   initializeContainer() {
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
+    this.container.bind<Collection>('integrityCheckFailuresCollection')
+      .toConstantValue(this.integrityCheckFailuresCollection)
     this.container.bind<DAOClaims>('DAOClaims').to(DAOClaims)
     this.container.bind<DAOClaimsConfiguration>('DAOClaimsConfiguration').toConstantValue({
       maxStorageAttempts: this.configuration.maxStorageAttempts,
     })
+    this.container.bind<DAOIntegrityCheckFailures>('DAOIntegrityCheckFailures').to(DAOIntegrityCheckFailures)
     this.container.bind<Router>('Router').to(Router)
-    this.container.bind<IPFS>('IPFS').to(IPFS)
-    this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
-      ipfsUrl: this.configuration.ipfsUrl,
-    })
     this.container.bind<ClaimController>('ClaimController').to(ClaimController)
+    this.container.bind<IPFS>('IPFS').toConstantValue(IPFS(this.configuration.ipfs))
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
     this.container.bind<Service>('Service').to(Service)
