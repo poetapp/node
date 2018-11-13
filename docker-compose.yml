@@ -76,8 +76,6 @@ services:
     build: ./tests/stress
     depends_on:
       - poet-node
-    links:
-      - poet-node
     environment:
       - NODE_HOST=http://poet-node:18080
     volumes:
