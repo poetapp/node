@@ -7,7 +7,7 @@ export class DAOIntegrityCheckFailures {
   private readonly collection: Collection
 
   constructor(
-    @inject('integrityCheckCollectionFailures') collection: Collection,
+    @inject('integrityCheckFailuresCollection') collection: Collection,
   ) {
     this.collection = collection
   }
