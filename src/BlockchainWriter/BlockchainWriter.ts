@@ -47,7 +47,12 @@ export class BlockchainWriter {
     const blockchainWriterCollection = db.collection('blockchainWriter')
     const blockchainInfoCollection = db.collection('blockchainInfo')
 
-    const container = createContainer(this.configuration, this.logger, blockchainWriterCollection, blockchainInfoCollection)
+    const container = createContainer(
+      this.configuration,
+      this.logger,
+      blockchainWriterCollection,
+      blockchainInfoCollection,
+    )
 
     this.messaging = container.get('Messaging') as Messaging
     await this.messaging.start()
