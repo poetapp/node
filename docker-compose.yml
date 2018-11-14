@@ -95,15 +95,13 @@ services:
       - INTEGRATION_TEST_NODE_URL=http://poet-node:18080
       - GH_TOKEN=${GH_TOKEN:-''}
       - NPM_TOKEN=${NPM_TOKEN:-''}
+    volumes:
+      - ./scripts/wait-for-it.sh:/wait-for-it.sh
     links:
       - mongo
       - rabbit
       - ipfs
-    command: >
-      /bin/bash -c "
-        sleep 10;
-        npm start;
-        "
+    command: /wait-for-it.sh -h rabbit -p 5672 -t 30 -- /wait-for-it.sh -h mongo -p 27017 -- npm start
 
 volumes:
   db:
