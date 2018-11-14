@@ -1,6 +1,6 @@
 /* tslint:disable:no-console */
 /* tslint:disable:no-relative-imports */
-import { Collection, MongoClient } from 'mongodb'
+import { MongoClient } from 'mongodb'
 import { pipeP } from 'ramda'
 
 import { loadConfigurationWithDefaults } from '../../src/Configuration'
@@ -11,19 +11,18 @@ export const dbHelper = () => {
   let setupCalled = false
   let tempDbName: string
 
-  const mongodbUrl = loadConfigurationWithDefaults({
-    MONGODB_USER: 'root',
-    MONGODB_PASSWORD: 'rootPass',
-    MONGODB_DATABASE: tempDbName,
-  }).mongodbUrl
-
-  const getMongoClient = async () => await MongoClient.connect(
-    mongodbUrl,
-    { authSource: 'admin' },
-  )
   const dbExecute = async (...fns: any) => {
+    const mongodbUrl = loadConfigurationWithDefaults({
+      MONGODB_USER: 'root',
+      MONGODB_PASSWORD: 'rootPass',
+      MONGODB_DATABASE: tempDbName,
+    }).mongodbUrl
+
     console.log(`Connecting to temporary DB (${mongodbUrl})...`)
-    const mongoClient = await getMongoClient()
+    const mongoClient = await MongoClient.connect(
+      mongodbUrl,
+      { authSource: 'admin' },
+    )
 
     try {
       const db = await mongoClient.db()
@@ -34,22 +33,6 @@ export const dbHelper = () => {
 
     await delay(1300)
     await mongoClient.close()
-  }
-
-  const dbCreateWithClient = async (...fns: any): Promise<any> => {
-    console.log(`Client created`)
-    const mongoClient = await getMongoClient()
-
-    let result: any
-
-    try {
-      const db = mongoClient.db()
-      result = await pipeP(...fns)(db)
-    } catch (err) {
-      console.log(err)
-    }
-    await delay(1300)
-    return { result, mongoClient }
   }
 
   return {
@@ -69,15 +52,12 @@ export const dbHelper = () => {
         tempDbPassword,
       }
     },
-    collection: async (collectionName: string): Promise<{result: Collection, mongoClient: MongoClient}> => {
-      if (setupCalled) return await dbCreateWithClient(async (db: any) => db.collection(collectionName))
-      else console.log('ERROR: setup() must be called before collection()')
-    },
+
     teardown: async () => {
       if (setupCalled) {
         console.log(`Deleting temporary DB (${tempDbName})...`)
         await dbExecute(async (db: any) => db.dropDatabase())
-      } else console.log('ERROR: setup() must be called before teardown()')
+      } else console.log('ERROR: setup() must be called vefore teardown()')
     },
   }
 }
