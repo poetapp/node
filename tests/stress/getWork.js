@@ -3,7 +3,7 @@ import { check, sleep } from 'k6'
 
 const NODE_HOST = __ENV.NODE_HOST || 'http://0.0.0.0:18080'
 
-export function setup() {
+export const setup = () => {
   const url = `${NODE_HOST}/works`
   let res = http.get(url)
 
@@ -11,7 +11,7 @@ export function setup() {
 }
 
 
-export default function(data) {
+export default (data) => {
   const { id } = data
   const url = `${NODE_HOST}/works/${id}`
   const res = http.get(url)
