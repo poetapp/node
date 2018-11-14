@@ -101,7 +101,7 @@ services:
       - ipfs
     command: >
       /bin/bash -c "
-        sleep 10;
+        sleep 15;
         npm start;
         "
 
