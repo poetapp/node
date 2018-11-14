@@ -4,7 +4,7 @@ import { check, sleep } from 'k6'
 const CLAIM_HOST = __ENV.CLAIM_HOST || 'http://0.0.0.0:3002' 
 const NODE_HOST = __ENV.NODE_HOST || 'http://0.0.0.0:18080'
 
-export default function() {
+export default () => {
 
   const requestClaim = http.get(`${CLAIM_HOST}`)
 
