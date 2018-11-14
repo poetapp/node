@@ -3,7 +3,7 @@ import { check, sleep } from 'k6'
 
 const NODE_HOST = __ENV.NODE_HOST || 'http://0.0.0.0:18080'
 
-export default function() {
+export default () => {
   const url = `${NODE_HOST}/works`
   const res = http.get(url)
 
