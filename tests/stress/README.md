@@ -41,7 +41,24 @@ npm run create-claim-api &
 k6 run ./tests/stress/createWorks.js
 ```
 
+## Options K6
+
+--vus (int): k6 works with the concept of virtual users (VUs), which run scripts - they're essentially glorified, parallel while(true) loops.
+
+Example:
+
+`k6 run --vus 10 script.js`
+
+--duration (int)s: Running a 30-second, 10-VU load test
+
+Example:
+
+`k6 run --vus 10 --duration 30s script.js`
+
+More options on: https://docs.k6.io/docs/options
+
 ## Environment variables:
 
 - NODE_HOST: The node Po.et location
 - CLAIM_HOST: The Api for create a Claim
+
