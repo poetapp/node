@@ -1,7 +1,7 @@
 /* tslint:disable:no-relative-imports */
 import { describe } from 'riteway'
-import { runtimeId, setUpDb } from '../../tests/helpers/utils'
-import { BlockInfoDAO } from './BlockInfoDAO'
+import { BlockInfoDAO } from '../../../src/BlockchainWriter/BlockInfoDAO'
+import { runtimeId, setUpDb } from '../../helpers/utils'
 
 const prefix = runtimeId()
 
