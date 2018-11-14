@@ -1,4 +1,4 @@
-FROM node:10.12.0
+FROM node:10.13.0
 
 RUN apt-get update -y
 RUN apt-get install curl apt-transport-https -y 
