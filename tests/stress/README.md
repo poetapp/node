@@ -29,7 +29,7 @@ k6 run ./tests/stress/createWorks.js
 ## Running against an External Domain:
 
 ```bash
-docker-compose run -e NODE_HOST=https://regtest.qa.poetnetwork.net k6 bash
+docker-compose run -e NODE_HOST=https://domain k6 bash
 ```
 
 Inside the docker you can use the tool `K6`. 
