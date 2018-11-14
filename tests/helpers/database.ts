@@ -35,7 +35,35 @@ export const dbHelper = () => {
     await mongoClient.close()
   }
 
+  const dbExecuteWithClient = async (...fns: any) => {
+    const mongodbUrl = loadConfigurationWithDefaults({
+      MONGODB_USER: 'root',
+      MONGODB_PASSWORD: 'rootPass',
+      MONGODB_DATABASE: tempDbName,
+    }).mongodbUrl
+
+    console.log(`Connecting to temporary DB (${mongodbUrl})...`)
+    const mongoClient = await MongoClient.connect(
+      mongodbUrl,
+      { authSource: 'admin' },
+    )
+    let result
+
+    try {
+      const db = await mongoClient.db()
+      result = await pipeP(...fns)(db)
+    } catch (err) {
+      console.log(err)
+    }
+    return { result, mongoClient }
+  }
+
   return {
+    collection: async (collection: string = 'poet') => {
+      if (setupCalled) return await dbExecuteWithClient(async (db: any) => db.collection(collection))
+      else console.log('ERROR: setup() must be called before collection()')
+      return
+    },
     setup: async (dbNamePrefix: string = null, dbUser: string = null, dbPassword: string = null) => {
       tempDbName = dbNamePrefix || id
       const tempDbUser = dbUser || `test-${id}`
@@ -57,7 +85,7 @@ export const dbHelper = () => {
       if (setupCalled) {
         console.log(`Deleting temporary DB (${tempDbName})...`)
         await dbExecute(async (db: any) => db.dropDatabase())
-      } else console.log('ERROR: setup() must be called vefore teardown()')
+      } else console.log('ERROR: setup() must be called before teardown()')
     },
   }
 }

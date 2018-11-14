@@ -45,8 +45,14 @@ export class BlockchainWriter {
     const db = await this.mongoClient.db()
 
     const blockchainWriterCollection = db.collection('blockchainWriter')
+    const blockchainInfoCollection = db.collection('blockchainInfo')
 
-    const container = createContainer(this.configuration, this.logger, blockchainWriterCollection)
+    const container = createContainer(
+      this.configuration,
+      this.logger,
+      blockchainWriterCollection,
+      blockchainInfoCollection,
+    )
 
     this.messaging = container.get('Messaging') as Messaging
     await this.messaging.start()
@@ -77,6 +83,7 @@ const createContainer = (
   configuration: BlockchainWriterConfiguration,
   logger: Pino.Logger,
   blockchainWriterCollection: Collection,
+  blockchainInfo: Collection,
 ) => {
   const container = new Container()
 
@@ -86,7 +93,12 @@ const createContainer = (
   container.bind<DAO>('DAO').to(DAO)
 
   container.bind<Pino.Logger>('Logger').toConstantValue(logger)
-  container.bind<Collection>('BlockchainWriterCollection').toConstantValue(blockchainWriterCollection)
+  container
+    .bind<Collection>('BlockchainWriterCollection')
+    .toConstantValue(blockchainWriterCollection)
+  container
+    .bind<Collection>('BlockchainInfoCollection')
+    .toConstantValue(blockchainInfo)
 
   const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
   container.bind<Messaging>('Messaging').toConstantValue(new Messaging(configuration.rabbitmqUrl, exchangesMessaging))
