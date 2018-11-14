@@ -13,6 +13,7 @@ export const createDatabase = async (prefix: string) => {
   return {
     teardown: db.teardown,
     settings: await db.setup(prefix),
+    collection: db.collection,
   }
 }
 
@@ -22,6 +23,10 @@ const defaultBlockchainSettings = {
   BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
   READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
   UPLOAD_CLAIM_INTERVAL_IN_SECONDS: 5,
+}
+
+export const setUpDb = async (prefix: string) => {
+  return await createDatabase(prefix)
 }
 
 export const setUpServerAndDb = async ({
