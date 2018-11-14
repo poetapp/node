@@ -73,7 +73,9 @@ services:
       -deprecatedrpc=signrawtransaction
 
   k6:
-    build: ./tests/stress
+    build:
+      context: .
+      dockerfile: ./Docker/Dockerfile.stress
     environment:
       - NODE_HOST=http://poet-node:18080
     volumes:
