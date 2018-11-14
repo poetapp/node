@@ -20,4 +20,3 @@ screenshots
 temp.text
 vault.json
 docker-compose.override.yml
-wait-for-it.sh
