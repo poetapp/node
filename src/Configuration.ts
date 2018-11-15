@@ -44,6 +44,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly downloadTimeoutInSeconds: number
 
   readonly batchCreationIntervalInSeconds: number
+  readonly transactionMaxAgeInSeconds: number
 
   readonly readDirectoryIntervalInSeconds: number
 
@@ -118,6 +119,7 @@ const defaultConfiguration: Configuration = {
   loggingPretty: true,
 
   batchCreationIntervalInSeconds: 600,
+  transactionMaxAgeInSeconds: 1800,
 
   readDirectoryIntervalInSeconds: 30,
 
