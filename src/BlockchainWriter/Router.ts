@@ -1,11 +1,16 @@
+import { PoetBlockAnchor } from '@po.et/poet-js'
 import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
+import { pluck } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { BlockDownloaded } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { Controller } from './Controller'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
+
+const getTxnIds = pluck('transactionId')
 
 @injectable()
 export class Router {
@@ -28,6 +33,14 @@ export class Router {
 
   async start() {
     await this.messaging.consume(this.exchange.batchWriterCreateNextBatchSuccess, this.onCreateBatchSuccess)
+    await this.messaging.consumeBlockDownloaded(this.blockDownloadedConsumer)
+  }
+
+  blockDownloadedConsumer = async (blockDownloaded: BlockDownloaded): Promise<void> => {
+    await this.claimController.setBlockInformationForTransactions(
+      getTxnIds(blockDownloaded.poetBlockAnchors),
+      blockDownloaded.block,
+    )
   }
 
   onCreateBatchSuccess = async (message: any): Promise<void> => {
