@@ -7,12 +7,22 @@ import { Entry } from './DAO'
 
 describe('convertLightBlockToEntry', async assert => {
   {
-    const expected: Entry = {blockHash: 'this-is-a-hash', blockHeight: 123}
+
+    const lightBlock: LightBlock = {
+      hash: 'this-is-a-hash',
+      height: 123,
+      previousHash: 'parent-hash',
+    }
+
+    const expected: Entry = {
+      blockHash: lightBlock.hash,
+      blockHeight: lightBlock.height,
+    }
 
     assert({
       given: 'a valid LightBlock',
       should: 'return a valid Entry',
-      actual: convertLightBlockToEntry({hash: 'this-is-a-hash', height: 123, previousHash: 'parent-hash'}),
+      actual: convertLightBlockToEntry(lightBlock),
       expected,
     })
   }
