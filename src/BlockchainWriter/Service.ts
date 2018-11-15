@@ -13,7 +13,7 @@ export interface ServiceConfiguration {
 
 @injectable()
 export class Service {
-  private readonly anchorInterval: Interval
+  private readonly interval: Interval
   private readonly exchange: ExchangeConfiguration
   private readonly logger: Pino.Logger
   private readonly messaging: Messaging
@@ -27,15 +27,15 @@ export class Service {
     this.exchange = exchange
     this.messaging = messaging
     this.logger = childWithFileName(logger, __filename)
-    this.anchorInterval = new Interval(this.anchorNextHash, 1000 * configuration.anchorIntervalInSeconds)
+    this.interval = new Interval(this.anchorNextHash, 1000 * configuration.anchorIntervalInSeconds)
   }
 
   async start() {
-    this.anchorInterval.start()
+    this.interval.start()
   }
 
   stop() {
-    this.anchorInterval.stop()
+    this.interval.stop()
   }
 
   private anchorNextHash = async () => {
