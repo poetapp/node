@@ -68,7 +68,7 @@
     "@types/joi": "14.0.0",
     "@types/koa": "2.0.46",
     "@types/koa-helmet": "3.1.2",
-    "@types/koa-router": "7.0.33",
+    "@types/koa-router": "7.0.34",
     "@types/mongodb": "3.1.14",
     "@types/node-fetch": "1.6.9",
     "@types/pino": "4.16.1",
