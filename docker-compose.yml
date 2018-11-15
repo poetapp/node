@@ -72,6 +72,15 @@ services:
       -rpcallowip=::/0
       -deprecatedrpc=signrawtransaction
 
+  k6:
+    build:
+      context: .
+      dockerfile: ./Docker/Dockerfile.stress
+    environment:
+      - NODE_HOST=http://poet-node:18080
+    volumes:
+      - .:/usr/src/app
+
   poet-node:
     build: .
     ports:
