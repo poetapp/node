@@ -37,7 +37,6 @@ export class DAO {
     await this.blockchainWriterCollection.updateMany(
       { txId: { $in: txIds} },
       { $set : entry },
-      { upsert: true },
     )
   }
 
