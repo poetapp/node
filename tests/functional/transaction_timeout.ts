@@ -76,7 +76,8 @@ describe('Transaction timout will reset the transaction id for the claim', async
   const firstGet = await firstResponse.json()
   const firstTxId = getTransactionId(firstGet)
 
-  const hasValidTxId = allPass([is(String), (txId: string) => txId.length > 1])
+  const lengthIsGreaterThan0 = (s: string) => s.length > 0
+  const hasValidTxId = allPass([is(String), lengthIsGreaterThan0])
 
   assert({
     given: 'a newly created claim',
