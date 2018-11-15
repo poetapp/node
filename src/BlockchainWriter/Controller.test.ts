@@ -1,5 +1,6 @@
 /* tslint:disable:no-relative-imports */
 import { describe } from 'riteway'
+
 import { LightBlock } from '../Messaging/Messages'
 import { convertLightBlockToEntry } from './Controller'
 import { Entry } from './DAO'
