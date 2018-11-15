@@ -42,6 +42,9 @@ const getTransactionId = view(transactionId)
 const getBlockHash = view(blockHash)
 const getBlockHeight = view(blockHeight)
 
+const lengthIsGreaterThan0 = (s: string) => s.length > 0
+const hasValidTxId = allPass([is(String), lengthIsGreaterThan0])
+
 describe('Transaction timout will reset the transaction id for the claim', async assert => {
   await resetBitcoinServers()
   await delay(5 * 1000)
@@ -75,9 +78,6 @@ describe('Transaction timout will reset the transaction id for the claim', async
   const firstResponse = await getWorkFromNode(claim.id)
   const firstGet = await firstResponse.json()
   const firstTxId = getTransactionId(firstGet)
-
-  const lengthIsGreaterThan0 = (s: string) => s.length > 0
-  const hasValidTxId = allPass([is(String), lengthIsGreaterThan0])
 
   assert({
     given: 'a newly created claim',
