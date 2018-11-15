@@ -35,7 +35,7 @@ export class DAO {
 
   readonly updateAllByTransactionId =  async (txIds: ReadonlyArray<string>, entry: Entry) => {
     await this.blockchainWriterCollection.updateMany(
-      { txId: { $in: txIds} },
+      { txId: { $in: txIds } },
       { $set : entry },
     )
   }
