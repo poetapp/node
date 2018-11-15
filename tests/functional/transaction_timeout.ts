@@ -109,6 +109,13 @@ describe('Transaction timout will reset the transaction id for the claim', async
   assert({
     given: 'transaction age max reached',
     should: 'create a new transaction id for the claim',
+    actual: hasValidTxId(secondTxId),
+    expected: true,
+  })
+
+  assert({
+    given: 'transaction age max reached',
+    should: 'create a new transaction id for the claim',
     actual: secondTxId !== firstTxId,
     expected: true,
   })
