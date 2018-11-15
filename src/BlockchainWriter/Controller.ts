@@ -17,12 +17,10 @@ export interface ControllerConfiguration {
   readonly poetVersion: number
 }
 
-export const convertLightBlockToEntry = (lightBlock: LightBlock): Entry => (
-  {
-    blockHeight: lightBlock.height,
-    blockHash: lightBlock.hash,
-  }
-)
+export const convertLightBlockToEntry = (lightBlock: LightBlock): Entry => ({
+  blockHeight: lightBlock.height,
+  blockHash: lightBlock.hash,
+})
 
 @injectable()
 export class Controller {
