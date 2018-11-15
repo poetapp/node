@@ -97,7 +97,7 @@ describe('loadConfigurationWithDefaults', async (assert: any) => {
     expected: {
       ...withoutLocalOverrides,
       apiPort: 4321,
-      enableTimestamping: true,
+      enableAnchoring: true,
       rabbitmqUrl: 'foo',
     },
   })
