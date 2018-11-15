@@ -66,7 +66,7 @@ describe('Transaction timout will reset the transaction id for the claim', async
     name: 'Author Name',
   })
 
-  const postedClaim = await postWorkToNode(claim)
+  await postWorkToNode(claim)
 
   // Wait for a claim batch to be submitted to the blockchain.
   await delay((blockchainSettings.ANCHOR_INTERVAL_IN_SECONDS +
@@ -111,12 +111,6 @@ describe('Transaction timout will reset the transaction id for the claim', async
     actual: secondTxId !== firstTxId,
     expected: true,
   })
-
-  // mine N confirmation blocks on bitcoindA.
-  // await btcdClientA.generate(1)
-
-  // Wait for claim batches to be read from the blockchain.
-  // await delay(30 * 1000)
 
   await server.stop()
   await db.teardown()
