@@ -185,6 +185,7 @@ export async function app(localVars: any = {}) {
         bitcoinUsername: configuration.bitcoinUsername,
         bitcoinPassword: configuration.bitcoinPassword,
         exchanges: {
+          anchorNextHashRequest: configuration.exchangeAnchorNextHashRequest,
           ipfsHashTxId: configuration.exchangeIpfsHashTxId,
           batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
           poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,

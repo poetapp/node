@@ -3,8 +3,9 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { Messaging } from 'Messaging/Messaging'
 
-import { Controller } from './Controller'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export interface ServiceConfiguration {
   readonly anchorIntervalInSeconds: number
@@ -12,17 +13,20 @@ export interface ServiceConfiguration {
 
 @injectable()
 export class Service {
-  private readonly logger: Pino.Logger
-  private readonly claimController: Controller
   private readonly interval: Interval
+  private readonly exchange: ExchangeConfiguration
+  private readonly logger: Pino.Logger
+  private readonly messaging: Messaging
 
   constructor(
+    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
     @inject('Logger') logger: Pino.Logger,
-    @inject('Controller') claimController: Controller,
+    @inject('Messaging') messaging: Messaging,
     @inject('ServiceConfiguration') configuration: ServiceConfiguration,
   ) {
+    this.exchange = exchange
+    this.messaging = messaging
     this.logger = childWithFileName(logger, __filename)
-    this.claimController = claimController
     this.interval = new Interval(this.anchorNextHash, 1000 * configuration.anchorIntervalInSeconds)
   }
 
@@ -40,7 +44,7 @@ export class Service {
     logger.trace('Requesting anchoring of next hash')
 
     try {
-      await this.claimController.anchorNextIPFSDirectoryHash()
+      await this.messaging.publish(this.exchange.anchorNextHashRequest, '')
     } catch (error) {
       logger.error(
         {
