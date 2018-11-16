@@ -3,9 +3,11 @@ import { asyncPipe } from 'Helpers/asyncPipe'
 import * as path from 'path'
 import { prop, identity, head, map } from 'ramda'
 import { describe } from 'riteway'
+import * as fetch from 'node-fetch'
+import * as FormData from 'form-data'
 
 import { utf8Markdown } from '../../fixtures/file-text'
-import { FileHelper } from '../../helpers/files'
+import { FileHelper, getResponseJson } from '../../helpers/files'
 import { IPFS } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
 
@@ -20,6 +22,7 @@ const fileHelper = FileHelper({ port: NODE_PORT  })
 const getHash = prop('hash')
 const getArchiveUrl  = prop('archiveUrl')
 const getStatus = prop('status')
+const getMessage = prop('message')
 
 const testResponseHashes = asyncPipe(
   fileHelper.postStringStreams,
@@ -37,6 +40,16 @@ const testArchiveUrl = asyncPipe(
 )
 
 const testStatusCode = asyncPipe(fileHelper.postStringStreams, getStatus)
+
+const testInvalidBodies = asyncPipe(
+  fileHelper.postFile,
+  getResponseJson,
+)
+
+const getResponseMessage = asyncPipe(
+  getResponseJson,
+  getMessage
+)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
@@ -67,6 +80,29 @@ describe('POST /files', async assert => {
     })
   }
 
+  {
+    const given = 'no files in multipart form data'
+
+    const formData = new FormData()
+    const response = await fileHelper.postFile(formData).catch(identity)
+
+
+    assert({
+      given,
+      should: 'return status of 400',
+      actual: getStatus(response), 
+      expected: 400
+    })
+
+    assert({
+      given,
+      should: 'return a descriptive message',
+      actual: await getResponseMessage(response).catch(identity),
+      expected: 'No file found in multipart-form'
+    })
+
+  }
   await server.stop()
   await db.teardown()
 })
+

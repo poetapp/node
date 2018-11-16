@@ -106,7 +106,18 @@ export class Router {
   }
 
   private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    await next()
+
     const files = context.request.files || {}
+    if (values(files).length <= 0) {
+
+
+      context.status = 400
+      context.body = {
+        message: 'No file found in multipart-form'
+      }
+      return 
+    }
     const responses = await this.fileController.addFiles(map(createStreamFromFile, values(files)))
 
     context.body = responses
