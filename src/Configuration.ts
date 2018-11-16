@@ -33,6 +33,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
 
   readonly enableAnchoring: boolean
   readonly anchorIntervalInSeconds: number
+  readonly purgeStaleTransactionsInSeconds: number
 
   readonly healthIntervalInSeconds: number
   readonly lowWalletBalanceInBitcoin: number
@@ -79,6 +80,7 @@ export interface ExchangeConfiguration {
   readonly exchangeClaimsNotDownloaded: string
   readonly exchangeStorageWriterStoreNextClaim: string
   readonly exchangeGetHealth: string
+  readonly exchangePurgeStaleTransactions: string
 }
 
 const defaultConfiguration: Configuration = {
@@ -106,6 +108,7 @@ const defaultConfiguration: Configuration = {
 
   enableAnchoring: false,
   anchorIntervalInSeconds: 30,
+  purgeStaleTransactionsInSeconds: 600,
 
   healthIntervalInSeconds: 30,
   lowWalletBalanceInBitcoin: 1,
@@ -142,6 +145,7 @@ const defaultConfiguration: Configuration = {
   exchangeClaimsNotDownloaded: 'CLAIMS_NOT_DOWNLOADED',
   exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM',
   exchangeGetHealth: 'HEALTH::GET_HEALTH',
+  exchangePurgeStaleTransactions: 'BLOCK_WRITER::PURGE_STALE_TRANSACTIONS',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
@@ -186,6 +190,7 @@ const applyExchangePrefix = (configVars: any) => {
     'exchangeClaimsNotDownloaded',
     'exchangeStorageWriterStoreNextClaim',
     'exchangeGetHealth',
+    'exchangePurgeStaleTransactions',
   ]
 
   return {
