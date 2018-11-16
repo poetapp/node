@@ -66,6 +66,7 @@ export interface BitcoinRPCConfiguration {
 }
 
 export interface ExchangeConfiguration {
+  readonly exchangeAnchorNextHashRequest: string
   readonly exchangeBatchReaderReadNextDirectoryRequest: string
   readonly exchangeBatchReaderReadNextDirectorySuccess: string
   readonly exchangeBatchWriterCreateNextBatchRequest: string
@@ -128,6 +129,7 @@ const defaultConfiguration: Configuration = {
 
   forceBlockHeight: undefined,
 
+  exchangeAnchorNextHashRequest: 'ANCHOR_NEXT_HASH_REQUEST',
   exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
   exchangeBatchReaderReadNextDirectorySuccess: 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
   exchangeBatchWriterCreateNextBatchRequest: 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
@@ -171,6 +173,7 @@ const applyExchangePrefix = (configVars: any) => {
   if (configVars.exchangePrefix === '') return configVars
 
   const exchangeNames = [
+    'exchangeAnchorNextHashRequest',
     'exchangeBatchReaderReadNextDirectoryRequest',
     'exchangeBatchReaderReadNextDirectorySuccess',
     'exchangeBatchWriterCreateNextBatchRequest',

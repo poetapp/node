@@ -32,8 +32,22 @@ export class Router {
   }
 
   async start() {
+    await this.messaging.consume(this.exchange.anchorNextHashRequest, this.onAnchorNextHashRequest)
     await this.messaging.consume(this.exchange.batchWriterCreateNextBatchSuccess, this.onCreateBatchSuccess)
     await this.messaging.consumeBlockDownloaded(this.blockDownloadedConsumer)
+  }
+
+  onAnchorNextHashRequest = async (message: any): Promise<void> => {
+    const logger = this.logger.child({ method: 'onAnchorNextHashRequest' })
+
+    logger.trace('Anchoring next hash')
+
+    try {
+      await this.claimController.anchorNextIPFSDirectoryHash()
+      logger.trace('Anchored next hash')
+    } catch (error) {
+      logger.error({ error }, 'Anchoring next hash failed')
+    }
   }
 
   blockDownloadedConsumer = async (blockDownloaded: BlockDownloaded): Promise<void> => {
