@@ -4,10 +4,11 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { LightBlock } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { poetAnchorToData } from './Bitcoin'
-import { DAO } from './DAO'
+import { DAO, Entry } from './DAO'
 import { translateFundTransactionError } from './Exceptions'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
@@ -15,6 +16,11 @@ export interface ControllerConfiguration {
   readonly poetNetwork: string
   readonly poetVersion: number
 }
+
+export const convertLightBlockToEntry = (lightBlock: LightBlock): Entry => ({
+  blockHeight: lightBlock.height,
+  blockHash: lightBlock.hash,
+})
 
 @injectable()
 export class Controller {
@@ -72,6 +78,17 @@ export class Controller {
         'Unexpected Exception While Anchoring IPFS Directory Hash',
       )
     }
+  }
+
+  async setBlockInformationForTransactions(
+    transactionIds: ReadonlyArray<string>,
+    lightBlock: LightBlock,
+  ): Promise<void> {
+    const logger = this.logger.child({ method: 'setBlockInformationForTransactions'})
+
+    logger.debug({ transactionIds, lightBlock }, 'Setting Block Info for transactions')
+
+    await this.dao.updateAllByTransactionId(transactionIds, convertLightBlockToEntry(lightBlock))
   }
 
   private async anchorIPFSDirectoryHash(ipfsDirectoryHash: string): Promise<void> {
