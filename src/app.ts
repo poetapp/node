@@ -179,7 +179,7 @@ export async function app(localVars: any = {}) {
         poetNetwork: configuration.poetNetwork,
         poetVersion: configuration.poetVersion,
         anchorIntervalInSeconds: configuration.anchorIntervalInSeconds,
-        purgeTransactionsInSeconds: configuration.purgeTransactionsInSeconds,
+        purgeStaleTransactionsInSeconds: configuration.purgeStaleTransactionsInSeconds,
         bitcoinUrl: configuration.bitcoinUrl,
         bitcoinPort: configuration.bitcoinPort,
         bitcoinNetwork: configuration.bitcoinNetwork,

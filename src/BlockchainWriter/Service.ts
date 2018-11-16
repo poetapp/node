@@ -9,7 +9,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export interface ServiceConfiguration {
   readonly anchorIntervalInSeconds: number
-  readonly purgeTransactionsInSeconds: number
+  readonly purgeStaleTransactionsInSeconds: number
 }
 
 @injectable()
@@ -30,7 +30,7 @@ export class Service {
     this.messaging = messaging
     this.logger = childWithFileName(logger, __filename)
     this.anchorNextHashInterval = new Interval(this.anchorNextHash, 1000 * configuration.anchorIntervalInSeconds)
-    this.purgeStaleTransactionInterval = new Interval(this.purgeStaleTransactions, 1000 * configuration.purgeTransactionsInSeconds)
+    this.purgeStaleTransactionInterval = new Interval(this.purgeStaleTransactions, 1000 * configuration.purgeStaleTransactionsInSeconds)
   }
 
   async start() {
