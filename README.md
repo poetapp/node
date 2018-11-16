@@ -62,7 +62,7 @@ These dependencies are setup automatically when you run `docker-compose`.
 The Po.et Node comes with a default configuration that works out of the box, which can be found here:
 https://github.com/poetapp/node/blob/master/src/Configuration.ts#L82-L141
 
-By default, anchoring to the blockchain is disabled (`enableTimestamping: false`). If you want to enable blockchain anchoring, you will need to the Bitcoin Core dependency to be running with a funded wallet so that it can pay the Bitcoin network transaction fees (either for testnet or real Bitcoin for mainnet).
+By default, anchoring to the blockchain is disabled (`enableAnchoring: false`). If you want to enable blockchain anchoring, you will need to the Bitcoin Core dependency to be running with a funded wallet so that it can pay the Bitcoin network transaction fees (either for testnet or real Bitcoin for mainnet).
 
 You can change any configuration by passing configuration values via environment variables. The keys of these environment variables are always the SCREAMING_SNAKE_CASE equivalent of the configuration options listed in the default configuration. For example, the RabbitMQ URL (`rabbitmqUrl`) can be set with the `RABBITMQ_URL` environment variable.
 
