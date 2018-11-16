@@ -97,7 +97,7 @@ components:
       required:
         - code
         - message
-    Timestamp:
+    Anchor:
       type: 'object'
       properties:
         transactionId:
@@ -155,8 +155,8 @@ components:
           type: 'string'
         attributes:
           $ref: '#/components/schemas/Attributes'
-        timestamp:
-          $ref: '#/components/schemas/Timestamp'
+        anchor:
+          $ref: '#/components/schemas/Anchor'
     Works:
       type: 'array'
       items:
