@@ -30,7 +30,10 @@ export class Service {
     this.messaging = messaging
     this.logger = childWithFileName(logger, __filename)
     this.anchorNextHashInterval = new Interval(this.anchorNextHash, 1000 * configuration.anchorIntervalInSeconds)
-    this.purgeStaleTransactionInterval = new Interval(this.purgeStaleTransactions, 1000 * configuration.purgeStaleTransactionsInSeconds)
+    this.purgeStaleTransactionInterval = new Interval(
+      this.purgeStaleTransactions,
+      1000 * configuration.purgeStaleTransactionsInSeconds,
+    )
   }
 
   async start() {
