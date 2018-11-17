@@ -179,6 +179,7 @@ export async function app(localVars: any = {}) {
         poetNetwork: configuration.poetNetwork,
         poetVersion: configuration.poetVersion,
         anchorIntervalInSeconds: configuration.anchorIntervalInSeconds,
+        purgeStaleTransactionsInSeconds: configuration.purgeStaleTransactionsInSeconds,
         bitcoinUrl: configuration.bitcoinUrl,
         bitcoinPort: configuration.bitcoinPort,
         bitcoinNetwork: configuration.bitcoinNetwork,
@@ -190,6 +191,7 @@ export async function app(localVars: any = {}) {
           batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
           poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
           claimsDownloaded: configuration.exchangeClaimsDownloaded,
+          purgeStaleTransactions: configuration.exchangePurgeStaleTransactions,
         },
       })
     : startStopNoop
