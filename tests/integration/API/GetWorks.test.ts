@@ -46,8 +46,8 @@ const works = [
   TheWeekOfDiana,
 ]
 
-const getClaimWithoutTimestamp = (claim: any) => pickBy((v: any, k: string) => k !== 'timestamp', claim)
-const getClaimsWithoutTimestamps = (claims: ReadonlyArray<any>) => claims.map(getClaimWithoutTimestamp)
+const getClaimWithoutAnchor = (claim: any) => pickBy((v: any, k: string) => k !== 'anchor', claim)
+const getClaimsWithoutAnchors = (claims: ReadonlyArray<any>) => claims.map(getClaimWithoutAnchor)
 
 describe('GET /works', async assert => {
   // Setup Mongodb and the app server
@@ -111,7 +111,7 @@ describe('GET /works', async assert => {
     assert({
       given,
       should: 'return only signed claims',
-      actual: all(isSignedVerifiableClaim)(getClaimsWithoutTimestamps(claims)),
+      actual: all(isSignedVerifiableClaim)(getClaimsWithoutAnchors(claims)),
       expected: true,
     })
   }
