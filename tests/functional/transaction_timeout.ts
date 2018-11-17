@@ -16,7 +16,7 @@ const postWorkToNode = postWork(NODE_PORT)
 
 const blockchainSettings = {
   MINIMUM_BLOCK_HEIGHT: 100,
-  ENABLE_TIMESTAMPING: true,
+  ENABLE_ANCHORING: true,
   ANCHOR_INTERVAL_IN_SECONDS: 10,
   BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
   READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
@@ -34,9 +34,9 @@ const createClaim = pipeP(
 
 const { btcdClientA }: any = bitcoindClients()
 
-const blockHash = lensPath(['timestamp', 'blockHash'])
-const blockHeight = lensPath(['timestamp', 'blockHeight'])
-const transactionId = lensPath(['timestamp', 'transactionId'])
+const blockHash = lensPath(['anchor', 'blockHash'])
+const blockHeight = lensPath(['anchor', 'blockHeight'])
+const transactionId = lensPath(['anchor', 'transactionId'])
 
 const getTransactionId = view(transactionId)
 const getBlockHash = view(blockHash)

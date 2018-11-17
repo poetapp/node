@@ -11,7 +11,7 @@ const NODE_PORT = '28081'
 const getWorkFromNode = getWork(NODE_PORT)
 const postWorkToNode = postWork(NODE_PORT)
 
-const getClaimWithoutTimestamp = (claim: any) => pickBy((v: any, k: string) => k !== 'timestamp', claim)
+const getClaimWithoutAnchor = (claim: any) => pickBy((v: any, k: string) => k !== 'anchor', claim)
 
 describe('POST /works', async assert => {
   // Setup Mongodb and the app server
@@ -38,7 +38,7 @@ describe('POST /works', async assert => {
     await delay(5000)
 
     const retrievedResponse = await getWorkFromNode(ABraveAndStartlingTruth.id)
-    const retrievedClaim = getClaimWithoutTimestamp(await retrievedResponse.json())
+    const retrievedClaim = getClaimWithoutAnchor(await retrievedResponse.json())
 
     assert({
       given: 'a work posted to node',

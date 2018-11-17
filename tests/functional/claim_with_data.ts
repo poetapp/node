@@ -114,9 +114,9 @@ describe('A user can successfully submit a claim into the po.et network', async 
       const responseA = await getWorkFromNodeA(claim.id)
       claimDataA = await responseA.json()
     } catch (err) {
-      claimDataA = { timestamp: {} }
+      claimDataA = { anchor: {} }
     }
-    const { ipfsFileHash, ipfsDirectoryHash, blockHeight, blockHash, transactionId } = path(['timestamp'], claimDataA)
+    const { ipfsFileHash, ipfsDirectoryHash, blockHeight, blockHash, transactionId } = path(['anchor'], claimDataA)
 
     assert({
       given: 'a claim retrieved by id from po.et node A',
@@ -164,9 +164,9 @@ describe('A user can successfully submit a claim into the po.et network', async 
       const responseB = await getWorkFromNodeB(claim.id)
       claimDataB = await responseB.json()
     } catch (err) {
-      claimDataB = { timestamp: {} }
+      claimDataB = { anchor: {} }
     }
-    const { ipfsFileHash, ipfsDirectoryHash, blockHeight, blockHash, transactionId } = path(['timestamp'], claimDataB)
+    const { ipfsFileHash, ipfsDirectoryHash, blockHeight, blockHash, transactionId } = path(['anchor'], claimDataB)
 
     assert({
       given: 'a claim retrieved by id from po.et node B',

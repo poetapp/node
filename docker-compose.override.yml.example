@@ -11,7 +11,7 @@ services:
 
   poet-node:
     environment:
-      - ENABLE_TIMESTAMPING=true
+      - ENABLE_ANCHORING=true
     # volumes:
     #   - .:/usr/src/app
     # command: sleep infinity

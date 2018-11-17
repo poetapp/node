@@ -83,14 +83,14 @@ Accepts the following query parameters:
 ### `GET /works/:id`
 Returns a single signed verifiable work claim by its Id.
 
-For simplicity, this endpoint adds a `.timestamp` in the response, which is not a real part of the claim, but provides valuable information such as the ID of the transaction in which this claim has been timestamped, the IPFS directory hash in which it can be found, etc.
+For simplicity, this endpoint adds a `.anchor` in the response, which is not a real part of the claim, but provides valuable information such as the ID of the transaction in which this claim has been anchored, the IPFS directory hash in which it can be found, etc.
 
 A 404 error is returned if the claim isn't found in this Node's database. This doesn't strictly mean the claim does not exist in the Po.et Network — it just doesn't exist in this Node.
 
 ### `POST /works`
 Publish a signed verifiable work claim.
 
-This endpoint is async and returns an ACK, unless an immediate error can be detected (e.g., a malformed claim). There is no guarantee that the work has actually been processed, timestamped and sent to IPFS. To confirm that, you'll need to `GET /works/:id` and check the `.timestamp` attribute.
+This endpoint is async and returns an ACK, unless an immediate error can be detected (e.g., a malformed claim). There is no guarantee that the work has actually been processed, sent to IPFS and anchored. To confirm that, you'll need to `GET /works/:id` and check the `.anchor` attribute.
 
 This endpoint expects a fully constructed signed verifiable claim — with the correct `'@context'`, `.id`, `.issuer`, `.issuanceDate`, `.type`, and `sec:proof`. See [Building Claims](#building-claims) for information on how to correctly create these attributes.
 
