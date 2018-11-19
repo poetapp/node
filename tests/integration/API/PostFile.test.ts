@@ -21,7 +21,7 @@ const fileHelper = FileHelper({ port: NODE_PORT  })
 
 const getHash = prop('hash')
 const getArchiveUrl  = prop('archiveUrl')
-const getStatus = prop('hash')
+const getStatus = prop('status')
 
 const message = lensPath(['message'])
 const status = lensPath(['status'])
