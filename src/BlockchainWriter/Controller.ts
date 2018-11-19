@@ -103,11 +103,14 @@ export class Controller {
 
     const data = poetAnchorToData(poetAnchor)
     const txId = await anchorData(data)
+    const blockInfo = await this.bitcoinCore.getBlockchainInfo()
+    logger.trace({ blockInfoBlocks: blockInfo.blocks }, 'blockInfo.blocks')
 
     await dao.updateByIPFSDirectoryHash({
       ipfsDirectoryHash,
       txId,
       transactionCreationDate: new Date(),
+      creationBlockHeight: blockInfo.blocks,
     })
 
     await messaging.publish(this.exchange.ipfsHashTxId, {

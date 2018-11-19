@@ -120,6 +120,15 @@ A Po.et Claim is a signed verifiable claim that holds arbitrary information and 
 For more information about claims and their structure, please see:
 https://github.com/poetapp/documentation/blob/master/reference/claims.md
 
+### Verifying the Claim is on Bitcoin's Blockchain
+
+Once node receives a claim, it stores the claim with some metadata including the following:
+* The highest block read at the time node stores the claim
+* Placeholders for the actual block that was mined including the claim
+
+This allows the node application to track whether or not the claim actually has been successfully saved to the Bitcoin blockchain. There is a configuration value, `maxBlockHeightDelta`, that determines how far ahead the blockchain will grow before resubmitting the claim. Comparing this value against the delta between the highest block read and the block read at the time of claim creation will determine whether node resubmits the claim.
+
+
 ### Po.et JS
 All the claim logic is abstracted away in [Po.et JS](https://github.com/poetapp/poet-js), so if you are working with JavaScript or TypeScript you can simply use the library:
 
