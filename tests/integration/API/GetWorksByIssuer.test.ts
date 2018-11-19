@@ -45,8 +45,8 @@ const works = [
   TheWeekOfDiana,
 ]
 
-const getClaimWithoutTimestamp = (claim: any) => pickBy((v: any, k: string) => k !== 'timestamp', claim)
-const getClaimsWithoutTimestamps = (claims: ReadonlyArray<any>) => claims.map(getClaimWithoutTimestamp)
+const getClaimWithoutAnchor = (claim: any) => pickBy((v: any, k: string) => k !== 'anchor', claim)
+const getClaimsWithoutAnchors = (claims: ReadonlyArray<any>) => claims.map(getClaimWithoutAnchor)
 
 describe('GET /works?issuer=:issuer', async assert => {
   // Setup Mongodb and the app server
@@ -62,7 +62,7 @@ describe('GET /works?issuer=:issuer', async assert => {
     const response = await getWorkFromNode(`?issuer=${encodeURIComponent(ABraveAndStartlingTruth.issuer)}`)
     const claims = await response.json()
     const issuers = uniq(getissuers(claims))
-    const claimsWithoutTimestamps = getClaimsWithoutTimestamps(claims)
+    const claimsWithoutAnchors = getClaimsWithoutAnchors(claims)
 
     assert({
       given,
@@ -102,7 +102,7 @@ describe('GET /works?issuer=:issuer', async assert => {
     assert({
       given,
       should: 'return only signedClaims',
-      actual: all(isSignedVerifiableClaim)(claimsWithoutTimestamps),
+      actual: all(isSignedVerifiableClaim)(claimsWithoutAnchors),
       expected: true,
     })
   }
