@@ -1,7 +1,7 @@
 /* tslint:disable:no-relative-imports */
 import { asyncPipe } from 'Helpers/asyncPipe'
 import * as path from 'path'
-import { prop, identity, head, map } from 'ramda'
+import { prop, identity, head, map, view, lensPath } from 'ramda'
 import { describe } from 'riteway'
 import * as fetch from 'node-fetch'
 import * as FormData from 'form-data'
@@ -41,15 +41,8 @@ const testArchiveUrl = asyncPipe(
 
 const testStatusCode = asyncPipe(fileHelper.postStringStreams, getStatus)
 
-const testInvalidBodies = asyncPipe(
-  fileHelper.postFile,
-  getResponseJson,
-)
-
-const getResponseMessage = asyncPipe(
-  getResponseJson,
-  getMessage
-)
+const message = lensPath(['message'])
+const status = lensPath(['status'])
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
@@ -85,19 +78,20 @@ describe('POST /files', async assert => {
 
     const formData = new FormData()
     const response = await fileHelper.postFile(formData).catch(identity)
+    const responseJson = await getResponseJson(response).catch(identity)
 
 
     assert({
       given,
       should: 'return status of 400',
-      actual: getStatus(response), 
+      actual: view(status, response), 
       expected: 400
     })
 
     assert({
       given,
-      should: 'return a descriptive message',
-      actual: await getResponseMessage(response).catch(identity),
+      should: 'return a descriptive message for the user that no file was found',
+      actual: view(message, response),
       expected: 'No file found in multipart-form'
     })
 
