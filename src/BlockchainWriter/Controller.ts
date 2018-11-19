@@ -103,7 +103,8 @@ export class Controller {
 
     const data = poetAnchorToData(poetAnchor)
     const txId = await anchorData(data)
-    const blockInfo: any = await this.bitcoinCore.getBlockchainInfo()
+    const blockInfo = await this.bitcoinCore.getBlockchainInfo()
+    logger.trace({ blockInfoBlocks: blockInfo.blocks }, 'blockInfo.blocks')
 
     await dao.updateByIPFSDirectoryHash({
       ipfsDirectoryHash,
