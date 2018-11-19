@@ -7,11 +7,49 @@ declare module 'bitcoin-core' {
     password?: string
   }
 
+  interface RejectStatus {
+    status: boolean
+  }
+
+  interface Softfork {
+    id?: string
+    version?: number
+    reject?: RejectStatus
+  }
+
+  interface bip9Softfork {
+    status?: string
+    startTime: number
+    timeout: number
+    since: number
+  }
+
+  interface Bip9Softforks {
+    [key: string]: bip9Softfork
+  }
+
+  interface BitcoinBlockInfo {
+    chain?: string
+    blocks?: number
+    headers?: number
+    bestblockhash?: string
+    difficulty?: number
+    mediantime?: number
+    verificationprogress?: number
+    initialblockdownload?: boolean
+    chainwork?: number
+    size_on_disk?: number
+    pruned?: boolean
+    softforks?: ReadonlyArray<Softfork>
+    bip9_softforks?: Bip9Softforks
+    warnings?: string
+  }
+
   class BitcoinCore {
     constructor(configuration: Configuration)
     listUnspent(): any
     generate(count: number): any
-    getBlockchainInfo(): any
+    getBlockchainInfo(): BitcoinBlockInfo
     getBalance(): any
     getBlock(hash: string, verbosity?: number): any
     getBlockHash(height: number): string

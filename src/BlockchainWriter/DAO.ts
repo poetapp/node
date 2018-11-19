@@ -7,6 +7,7 @@ export interface Entry {
   readonly transactionCreationDate?: Date
   readonly blockHeight?: number
   readonly blockHash?: string
+  readonly creationBlockHeight?: number
 }
 
 @injectable()
