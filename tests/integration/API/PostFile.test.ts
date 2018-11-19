@@ -21,8 +21,10 @@ const fileHelper = FileHelper({ port: NODE_PORT  })
 
 const getHash = prop('hash')
 const getArchiveUrl  = prop('archiveUrl')
-const getStatus = prop('status')
-const getMessage = prop('message')
+const getStatus = prop('hash')
+
+const message = lensPath(['message'])
+const status = lensPath(['status'])
 
 const testResponseHashes = asyncPipe(
   fileHelper.postStringStreams,
@@ -40,9 +42,6 @@ const testArchiveUrl = asyncPipe(
 )
 
 const testStatusCode = asyncPipe(fileHelper.postStringStreams, getStatus)
-
-const message = lensPath(['message'])
-const status = lensPath(['status'])
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
