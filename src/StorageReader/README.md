@@ -46,8 +46,8 @@ They can also look like this:
 
 ## Downloads
 
-Download Requests come into the StorageReader module via the `PoetTimestampDownloaded` RabbitMQ message 
-which is handled in the Router by the `onPoetTimestampsDownloaded` function.
+Download Requests come into the StorageReader module via the `PoetAnchorDownloaded` RabbitMQ message 
+which is handled in the Router by the `onPoetAnchorDownloaded` function.
 
 This function calls the `download` function of the ClaimController, which simply inserts a new entry into the database, 
 acting as an asynchronous download queue.

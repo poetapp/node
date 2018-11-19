@@ -84,7 +84,7 @@ describe('src/Configuration', async (assert: any) => {
 describe('loadConfigurationWithDefaults', async (assert: any) => {
   const mongodbOverrides = {
     API_PORT: '4321',
-    ENABLE_TIMESTAMPING: 'true',
+    ENABLE_ANCHORING: 'true',
     RABBITMQ_URL: 'foo',
   }
 
@@ -97,7 +97,7 @@ describe('loadConfigurationWithDefaults', async (assert: any) => {
     expected: {
       ...withoutLocalOverrides,
       apiPort: 4321,
-      enableTimestamping: true,
+      enableAnchoring: true,
       rabbitmqUrl: 'foo',
     },
   })

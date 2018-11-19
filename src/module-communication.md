@@ -30,18 +30,18 @@ This document describes communication between the high level modules of the poet
 ## Reading Claims
 
 - initial
-  - **BlockchainReader** reads block and publishes `PoetTimestampDownloaded`
+  - **BlockchainReader** reads block and publishes `PoetAnchorDownloaded`
 
-- on `PoetTimestampDownloaded`
+- on `PoetAnchorDownloaded`
   - **BatchReader** stores ipfsDirectoryHash in collection queue for reading 
-  - **View** stores timestamp information in a timestamp collection
+  - **View** stores anchor information in an anchor collection
 
 - on `BatchReaderReadNextDirectoryRequest` (published on set interval)
   - **BatchReader** reads next directory and publishes `BatchReaderReadNextDirectorySuccess`
 
 - on `BatchReaderReadNextDirectorySuccess`
   - **Storage** stores the ipfsFileHashes to download 
-  - **View** creates/updates work entry per ipfsFileHash, copies timestamp data from the timestamp collection for the work entry. Copying the timestamp data also fills in missing timestamp information from write flow work entries.
+  - **View** creates/updates work entry per ipfsFileHash, copies anchor data from the anchor collection for the work entry. Copying the anchor data also fills in missing anchor information from write flow work entries.
 
 - on `ClaimsDownloaded`
   - **View** Adds claim to work entry
