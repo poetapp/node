@@ -7,7 +7,8 @@ import { prop, identity, head, map, view, lensPath } from 'ramda'
 import { describe } from 'riteway'
 
 import { utf8Markdown } from '../../fixtures/file-text'
-import { FileHelper, getResponseJson } from '../../helpers/files'
+import { getResponseJson } from '../../helpers/fetch'
+import { FileHelper } from '../../helpers/files'
 import { IPFS } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
 
