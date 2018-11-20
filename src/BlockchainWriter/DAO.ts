@@ -32,6 +32,18 @@ export class DAO {
       blockHeight: null,
     })
 
+  readonly purgeStaleTransactions = (thresholdBlock: number) =>
+    this.blockchainWriterCollection.updateMany(
+      {
+        txId: { $ne: null },
+        blockHeight: null,
+        creationBlockHeight: { $lt: thresholdBlock },
+      },
+      {
+        $set: { txId: null },
+      },
+    )
+
   readonly findTransactionlessEntry = () => this.blockchainWriterCollection.findOne({ txId: null })
 
   readonly updateAllByTransactionId =  async (txIds: ReadonlyArray<string>, entry: Entry) => {
