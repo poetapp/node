@@ -57,10 +57,8 @@ export class Router {
       blockDownloaded.block,
     )
 
-  onPurgeStaleTransactions = async (): Promise<void> => {
+  onPurgeStaleTransactions = async (): Promise<void> =>
     await this.claimController.purgeStaleTransactions()
-    await this.messaging.publish(this.exchange.anchorNextHashRequest, '')
-  }
 
   onCreateBatchSuccess = async (message: any): Promise<void> => {
     const logger = this.logger.child({ method: 'onCreateBatchSuccess' })
