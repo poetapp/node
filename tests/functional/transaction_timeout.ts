@@ -21,7 +21,8 @@ const blockchainSettings = {
   BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
   READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
   UPLOAD_CLAIM_INTERVAL_IN_SECONDS: 5,
-  TRANSACTION_MAX_AGE_IN_SECONDS: 60,
+  MAX_BLOCK_HEIGHT_DELTA: 0,
+  PURGE_STALE_TRANSACTIONS_IN_SECONDS: 6,
 }
 
 const { configureSignVerifiableClaim } = getVerifiableClaimSigner()
@@ -100,7 +101,8 @@ describe('Transaction timout will reset the transaction id for the claim', async
     expected: true,
   })
 
-  await delay(blockchainSettings.TRANSACTION_MAX_AGE_IN_SECONDS * 1000 + 5)
+  await btcdClientA.generate(1)
+  await delay(blockchainSettings.PURGE_STALE_TRANSACTIONS_IN_SECONDS * 1000 + 5)
 
   const secondResponse = await getWorkFromNode(claim.id)
   const secondGet = await secondResponse.json()
