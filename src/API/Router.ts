@@ -108,7 +108,7 @@ export class Router {
   private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
 
     const files = context.request.files || {}
-    
+
     if (values(files).length <= 0)
       context.throw(400, 'No file found.')
 
