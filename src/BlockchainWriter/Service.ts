@@ -10,6 +10,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 export interface ServiceConfiguration {
   readonly anchorIntervalInSeconds: number
   readonly purgeStaleTransactionsInSeconds: number
+  readonly maxBlockHeightDelta: number
 }
 
 @injectable()
