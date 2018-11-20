@@ -98,7 +98,7 @@ export class Controller {
     logger.trace({ blocks, maxBlockHeightDelta: this.configuration.maxBlockHeightDelta }, 'Purging stale transactions')
 
     try {
-      await this.dao.purgeStaleTransactions(blocks, this.configuration.maxBlockHeightDelta)
+      await this.dao.purgeStaleTransactions(blocks - this.configuration.maxBlockHeightDelta)
     } catch (exception) {
       logger.error({ exception }, 'purgeStaleTransactions')
     }
