@@ -74,13 +74,15 @@ The reports are divided in a folder with the respective json file.
 
 The test from localhost was executed with a machine with these specifications:
 
--	MacBook Pro
-- Processor Name:	Intel Core i5
-- Processor Speed:	2,7 GHz
-- Number of Processors:	1
-- Total Number of Cores:	2
-- L2 Cache (per Core):	256 KB
-- L3 Cache:	3 MB
-- Memory:	8 GB
+```
+MacBook Pro
+Processor Name:	Intel Core i5
+Processor Speed:	2,7 GHz
+Number of Processors:	1
+Total Number of Cores:	2
+L2 Cache (per Core):	256 KB
+L3 Cache:	3 MB
+Memory:	8 GB
+```
 
 Note: with these specifications only I could handle 400 virtual users.
