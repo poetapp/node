@@ -32,12 +32,12 @@ export class DAO {
       blockHeight: null,
     })
 
-  readonly purgeStaleTransactions = (currentBlockHeight: number, maxBlockHeightDelta: number) =>
+  readonly purgeStaleTransactions = (thresholdBlock: number) =>
     this.blockchainWriterCollection.updateMany(
       {
         txId: { $ne: null },
         blockHeight: null,
-        creationBlockHeight: { $lt: currentBlockHeight - maxBlockHeightDelta },
+        creationBlockHeight: { $lt: thresholdBlock },
       },
       {
         $set: { txId: null },

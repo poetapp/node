@@ -7,6 +7,11 @@ const FILES_PATH = 'files'
 
 const baseUrl = (port: string, host: string = 'localhost') => `http://${host}:${port}`
 
+const postFile = (url: string) => (body: any) => fetch(url, {
+  method: 'post',
+  body,
+})
+
 const postFileStreams = (url: string) => (fileStreams: ReadonlyArray<fs.ReadStream>) => {
   const formData = new FormData()
   fileStreams.map((stream, index) => formData.append(`file-${index}`, stream))
@@ -46,6 +51,7 @@ export const FileHelper = ({ port, host }: FileHelperConfiguration) => {
   const url = `${baseUrl(port, host)}/${FILES_PATH}`
 
   return {
+    postFile: postFile(url),
     postFileStreams: postFileStreams(url),
     postStringStreams: postStringStreams(url),
   }
