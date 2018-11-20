@@ -68,7 +68,7 @@ More options on: https://docs.k6.io/docs/options
 In the folder reports, you will find the reports generated. These reports are divided on folders with the domain that was tested.
 The reports are divided in a folder with the respective json file.
 
-`reports -> domain -> from -> script -> how many users -> time -> json file`
+`reports -> domain -> from -> script -> how many users -> times -> json file`
 
 ### Localhost
 
