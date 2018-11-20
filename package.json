@@ -67,7 +67,7 @@
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
     "@types/joi": "14.0.0",
-    "@types/koa": "2.0.46",
+    "@types/koa": "2.0.47",
     "@types/koa-helmet": "3.1.2",
     "@types/koa-router": "7.0.35",
     "@types/mongodb": "3.1.14",
