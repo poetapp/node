@@ -1,10 +1,10 @@
 /* tslint:disable:no-relative-imports */
 import { asyncPipe } from 'Helpers/asyncPipe'
+import * as FormData from 'form-data'
+import * as fetch from 'node-fetch'
 import * as path from 'path'
 import { prop, identity, head, map, view, lensPath } from 'ramda'
 import { describe } from 'riteway'
-import * as fetch from 'node-fetch'
-import * as FormData from 'form-data'
 
 import { utf8Markdown } from '../../fixtures/file-text'
 import { FileHelper, getResponseJson } from '../../helpers/files'
@@ -79,22 +79,20 @@ describe('POST /files', async assert => {
     const response = await fileHelper.postFile(formData).catch(identity)
     const responseJson = await getResponseJson(response).catch(identity)
 
-
     assert({
       given,
       should: 'return status of 400',
-      actual: view(status, response), 
-      expected: 400
+      actual: view(status, response),
+      expected: 400,
     })
 
     assert({
       given,
       should: 'return a descriptive message for the user that no file was found',
       actual: view(message, responseJson),
-      expected: 'No file found.'
+      expected: 'No file found.',
     })
   }
   await server.stop()
   await db.teardown()
 })
-

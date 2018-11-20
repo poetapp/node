@@ -9,7 +9,7 @@ const baseUrl = (port: string, host: string = 'localhost') => `http://${host}:${
 
 const postFile = (url: string) => (body: any) => fetch(url, {
   method: 'post',
-  body
+  body,
 })
 
 const postFileStreams = (url: string) => (fileStreams: ReadonlyArray<fs.ReadStream>) => {
