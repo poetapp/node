@@ -90,10 +90,9 @@ describe('POST /files', async assert => {
     assert({
       given,
       should: 'return a descriptive message for the user that no file was found',
-      actual: view(message, response),
-      expected: 'No file found in multipart-form'
+      actual: view(message, responseJson),
+      expected: 'No file found.'
     })
-
   }
   await server.stop()
   await db.teardown()
