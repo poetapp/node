@@ -34,6 +34,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly enableAnchoring: boolean
   readonly anchorIntervalInSeconds: number
   readonly purgeStaleTransactionsInSeconds: number
+  readonly maxBlockHeightDelta: number
 
   readonly healthIntervalInSeconds: number
   readonly lowWalletBalanceInBitcoin: number
@@ -109,6 +110,7 @@ const defaultConfiguration: Configuration = {
   enableAnchoring: false,
   anchorIntervalInSeconds: 30,
   purgeStaleTransactionsInSeconds: 600,
+  maxBlockHeightDelta: 25,
 
   healthIntervalInSeconds: 30,
   lowWalletBalanceInBitcoin: 1,

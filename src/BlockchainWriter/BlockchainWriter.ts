@@ -108,6 +108,7 @@ const createContainer = (
   container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
     anchorIntervalInSeconds: configuration.anchorIntervalInSeconds,
     purgeStaleTransactionsInSeconds: configuration.purgeStaleTransactionsInSeconds,
+    maxBlockHeightDelta: configuration.maxBlockHeightDelta,
   })
   container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(configuration)
   container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(configuration.exchanges)
