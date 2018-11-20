@@ -89,7 +89,7 @@ describe('POST /files', async assert => {
 
     assert({
       given,
-      should: 'return a descriptive message for the user that no file was found',
+      should: 'return a message that no file was found',
       actual: view(message, responseJson),
       expected: 'No file found.',
     })
