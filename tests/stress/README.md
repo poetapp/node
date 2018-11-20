@@ -62,3 +62,25 @@ More options on: https://docs.k6.io/docs/options
 - NODE_HOST: The node Po.et location
 - CLAIM_HOST: The Api for create a Claim
 
+
+## Reports 
+
+In the folder reports, you will find the reports generated. These reports are divided on folders with the domain that was tested.
+The reports are divided in a folder with the respective json file.
+
+`reports -> domain -> from -> script -> how many users -> time -> json file`
+
+### Localhost
+
+The test from localhost was executed with a machine with these specifications:
+
+-	MacBook Pro
+- Processor Name:	Intel Core i5
+- Processor Speed:	2,7 GHz
+- Number of Processors:	1
+- Total Number of Cores:	2
+- L2 Cache (per Core):	256 KB
+- L3 Cache:	3 MB
+- Memory:	8 GB
+
+Note: with these specifications only I could handle 400 virtual users.
