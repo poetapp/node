@@ -1,10 +1,13 @@
 /* tslint:disable:no-relative-imports */
 import { asyncPipe } from 'Helpers/asyncPipe'
+import * as FormData from 'form-data'
+import * as fetch from 'node-fetch'
 import * as path from 'path'
-import { prop, identity, head, map } from 'ramda'
+import { prop, identity, head, map, view, lensPath } from 'ramda'
 import { describe } from 'riteway'
 
 import { utf8Markdown } from '../../fixtures/file-text'
+import { getResponseText } from '../../helpers/fetch'
 import { FileHelper } from '../../helpers/files'
 import { IPFS } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
@@ -20,6 +23,8 @@ const fileHelper = FileHelper({ port: NODE_PORT  })
 const getHash = prop('hash')
 const getArchiveUrl  = prop('archiveUrl')
 const getStatus = prop('status')
+
+const status = lensPath(['status'])
 
 const testResponseHashes = asyncPipe(
   fileHelper.postStringStreams,
@@ -67,6 +72,27 @@ describe('POST /files', async assert => {
     })
   }
 
+  {
+    const given = 'no files in multipart form data'
+
+    const formData = new FormData()
+    const response = await fileHelper.postFile(formData).catch(identity)
+    const responseText = await getResponseText(response).catch(identity)
+
+    assert({
+      given,
+      should: 'return status of 400',
+      actual: view(status, response),
+      expected: 400,
+    })
+
+    assert({
+      given,
+      should: 'return a message that describes the issue with the request',
+      actual: responseText,
+      expected: 'No file found.',
+    })
+  }
   await server.stop()
   await db.teardown()
 })
