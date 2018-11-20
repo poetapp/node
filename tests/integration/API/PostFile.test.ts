@@ -7,7 +7,7 @@ import { prop, identity, head, map, view, lensPath } from 'ramda'
 import { describe } from 'riteway'
 
 import { utf8Markdown } from '../../fixtures/file-text'
-import { getResponseJson } from '../../helpers/fetch'
+import { getResponseText } from '../../helpers/fetch'
 import { FileHelper } from '../../helpers/files'
 import { IPFS } from '../../helpers/ipfs'
 import { runtimeId, setUpServerAndDb } from '../../helpers/utils'
@@ -24,7 +24,6 @@ const getHash = prop('hash')
 const getArchiveUrl  = prop('archiveUrl')
 const getStatus = prop('status')
 
-const message = lensPath(['message'])
 const status = lensPath(['status'])
 
 const testResponseHashes = asyncPipe(
@@ -78,7 +77,7 @@ describe('POST /files', async assert => {
 
     const formData = new FormData()
     const response = await fileHelper.postFile(formData).catch(identity)
-    const responseJson = await getResponseJson(response).catch(identity)
+    const responseText = await getResponseText(response).catch(identity)
 
     assert({
       given,
@@ -90,7 +89,7 @@ describe('POST /files', async assert => {
     assert({
       given,
       should: 'return a json object with a message that describes the issue with the request',
-      actual: view(message, responseJson),
+      actual: responseText,
       expected: 'No file found.',
     })
   }
