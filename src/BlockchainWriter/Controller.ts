@@ -97,7 +97,7 @@ export class Controller {
     const { blocks } = await this.bitcoinCore.getBlockchainInfo()
     logger.info(
       {
-        blocks, maximumTransactionAgeInBlocks: this.configuration.maximumTransactionAgeInBlocks
+        blocks, maximumTransactionAgeInBlocks: this.configuration.maximumTransactionAgeInBlocks,
       },
       'Purging stale transactions',
     )
