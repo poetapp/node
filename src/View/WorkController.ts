@@ -10,13 +10,13 @@ import { ClaimIPFSHashPair } from 'Interfaces'
 export class WorkController {
   private readonly logger: Pino.Logger
   private readonly db: Db
-  private readonly timestampCollection: Collection
+  private readonly anchorCollection: Collection
   private readonly workCollection: Collection
 
   constructor(@inject('Logger') logger: Pino.Logger, @inject('DB') db: Db) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
-    this.timestampCollection = this.db.collection('timestamps')
+    this.anchorCollection = this.db.collection('anchors')
     this.workCollection = this.db.collection('works')
   }
 
@@ -32,7 +32,7 @@ export class WorkController {
 
   setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
     this.logger.trace({ workId, ipfsFileHash }, 'Setting the IPFS Hash for a Work')
-    await this.workCollection.updateOne({ id: workId }, { $set: { 'timestamp.ipfsFileHash': ipfsFileHash } })
+    await this.workCollection.updateOne({ id: workId }, { $set: { 'anchor.ipfsFileHash': ipfsFileHash } })
   }
 
   setDirectoryHashOnEntries = async ({
@@ -47,8 +47,8 @@ export class WorkController {
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
         this.workCollection.updateOne(
-          { 'timestamp.ipfsFileHash': ipfsFileHash },
-          { $set: { 'timestamp.ipfsDirectoryHash': ipfsDirectoryHash } },
+          { 'anchor.ipfsFileHash': ipfsFileHash },
+          { $set: { 'anchor.ipfsDirectoryHash': ipfsDirectoryHash } },
           { upsert: true },
         ),
       ),
@@ -58,19 +58,19 @@ export class WorkController {
   setTxId = async (ipfsDirectoryHash: string, transactionId: string): Promise<void> => {
     this.logger.trace({ ipfsDirectoryHash, transactionId }, 'Setting the Transaction ID for a IPFS Hash')
     await this.workCollection.updateMany(
-      { 'timestamp.ipfsDirectoryHash': ipfsDirectoryHash },
-      { $set: { 'timestamp.transactionId': transactionId } },
+      { 'anchor.ipfsDirectoryHash': ipfsDirectoryHash },
+      { $set: { 'anchor.transactionId': transactionId } },
     )
   }
 
-  async upsertAnchors(poetTimestamps: ReadonlyArray<PoetBlockAnchor>) {
-    this.logger.trace({ poetTimestamps }, 'Upserting Po.et Anchors')
+  async upsertAnchors(poetAnchors: ReadonlyArray<PoetBlockAnchor>) {
+    this.logger.trace({ poetAnchors }, 'Upserting Po.et Anchors')
 
     await Promise.all(
-      poetTimestamps.map(timestamp =>
-        this.timestampCollection.updateOne(
-          { ipfsDirectoryHash: timestamp.ipfsDirectoryHash },
-          { $set: timestamp },
+      poetAnchors.map(anchor =>
+        this.anchorCollection.updateOne(
+          { ipfsDirectoryHash: anchor.ipfsDirectoryHash },
+          { $set: anchor },
           { upsert: true },
         ),
       ),
@@ -86,14 +86,14 @@ export class WorkController {
   }) => {
     const logger = this.logger.child({ method: 'setFileHashesForDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
-    const timestamp = await this.timestampCollection.findOne({ ipfsDirectoryHash }, { projection: { _id: 0 } })
-    logger.debug({ ipfsFileHashes, ipfsDirectoryHash, timestamp }, 'setting directory hash on work entries')
+    const anchor = await this.anchorCollection.findOne({ ipfsDirectoryHash }, { projection: { _id: 0 } })
+    logger.debug({ ipfsFileHashes, ipfsDirectoryHash, anchor }, 'setting directory hash on work entries')
 
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
         this.workCollection.updateOne(
-          { 'timestamp.ipfsFileHash': ipfsFileHash },
-          { $set: { timestamp: { ...timestamp, ipfsFileHash } } },
+          { 'anchor.ipfsFileHash': ipfsFileHash },
+          { $set: { anchor: { ...anchor, ipfsFileHash } } },
           { upsert: true },
         ),
       ),
@@ -104,7 +104,7 @@ export class WorkController {
     this.logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
-        this.workCollection.updateOne({ 'timestamp.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
+        this.workCollection.updateOne({ 'anchor.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
       ),
     )
   }

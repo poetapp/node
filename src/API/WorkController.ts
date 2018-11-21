@@ -15,7 +15,7 @@ interface WorksFilters {
 }
 
 interface WorkWithAnchor extends Work {
-  readonly timestamp: PoetBlockAnchor
+  readonly anchor: PoetBlockAnchor
 }
 
 interface WorksWithCount {

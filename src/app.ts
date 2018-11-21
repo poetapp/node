@@ -65,7 +65,7 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'API was unable to start')
   }
 
-  const batchWriter = configuration.enableTimestamping
+  const batchWriter = configuration.enableAnchoring
     ? new BatchWriter({
         ...loggingConfiguration,
         batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
@@ -171,7 +171,7 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'StorageWriter was unable to start')
   }
 
-  const blockchainWriter = configuration.enableTimestamping
+  const blockchainWriter = configuration.enableAnchoring
     ? new BlockchainWriter({
         ...loggingConfiguration,
         dbUrl: configuration.mongodbUrl,
@@ -179,16 +179,20 @@ export async function app(localVars: any = {}) {
         poetNetwork: configuration.poetNetwork,
         poetVersion: configuration.poetVersion,
         anchorIntervalInSeconds: configuration.anchorIntervalInSeconds,
+        purgeStaleTransactionsInSeconds: configuration.purgeStaleTransactionsInSeconds,
+        maxBlockHeightDelta: configuration.maxBlockHeightDelta,
         bitcoinUrl: configuration.bitcoinUrl,
         bitcoinPort: configuration.bitcoinPort,
         bitcoinNetwork: configuration.bitcoinNetwork,
         bitcoinUsername: configuration.bitcoinUsername,
         bitcoinPassword: configuration.bitcoinPassword,
         exchanges: {
+          anchorNextHashRequest: configuration.exchangeAnchorNextHashRequest,
           ipfsHashTxId: configuration.exchangeIpfsHashTxId,
           batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
           poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
           claimsDownloaded: configuration.exchangeClaimsDownloaded,
+          purgeStaleTransactions: configuration.exchangePurgeStaleTransactions,
         },
       })
     : startStopNoop

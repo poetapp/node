@@ -4,10 +4,11 @@ import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { LightBlock } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { poetAnchorToData } from './Bitcoin'
-import { DAO } from './DAO'
+import { DAO, Entry } from './DAO'
 import { translateFundTransactionError } from './Exceptions'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
@@ -15,6 +16,11 @@ export interface ControllerConfiguration {
   readonly poetNetwork: string
   readonly poetVersion: number
 }
+
+export const convertLightBlockToEntry = (lightBlock: LightBlock): Entry => ({
+  blockHeight: lightBlock.height,
+  blockHash: lightBlock.hash,
+})
 
 @injectable()
 export class Controller {
@@ -74,6 +80,17 @@ export class Controller {
     }
   }
 
+  async setBlockInformationForTransactions(
+    transactionIds: ReadonlyArray<string>,
+    lightBlock: LightBlock,
+  ): Promise<void> {
+    const logger = this.logger.child({ method: 'setBlockInformationForTransactions'})
+
+    logger.debug({ transactionIds, lightBlock }, 'Setting Block Info for transactions')
+
+    await this.dao.updateAllByTransactionId(transactionIds, convertLightBlockToEntry(lightBlock))
+  }
+
   private async anchorIPFSDirectoryHash(ipfsDirectoryHash: string): Promise<void> {
     const { dao, messaging, anchorData, ipfsDirectoryHashToPoetAnchor } = this
     const logger = this.logger.child({ method: 'anchorIPFSDirectoryHash' })
@@ -86,11 +103,14 @@ export class Controller {
 
     const data = poetAnchorToData(poetAnchor)
     const txId = await anchorData(data)
+    const blockInfo = await this.bitcoinCore.getBlockchainInfo()
+    logger.trace({ blockInfoBlocks: blockInfo.blocks }, 'blockInfo.blocks')
 
     await dao.updateByIPFSDirectoryHash({
       ipfsDirectoryHash,
       txId,
       transactionCreationDate: new Date(),
+      creationBlockHeight: blockInfo.blocks,
     })
 
     await messaging.publish(this.exchange.ipfsHashTxId, {

@@ -31,8 +31,10 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly minimumBlockHeight: number
   readonly forceBlockHeight?: number
 
-  readonly enableTimestamping: boolean
+  readonly enableAnchoring: boolean
   readonly anchorIntervalInSeconds: number
+  readonly purgeStaleTransactionsInSeconds: number
+  readonly maxBlockHeightDelta: number
 
   readonly healthIntervalInSeconds: number
   readonly lowWalletBalanceInBitcoin: number
@@ -44,6 +46,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly downloadTimeoutInSeconds: number
 
   readonly batchCreationIntervalInSeconds: number
+  readonly transactionMaxAgeInSeconds: number
 
   readonly readDirectoryIntervalInSeconds: number
 
@@ -65,6 +68,7 @@ export interface BitcoinRPCConfiguration {
 }
 
 export interface ExchangeConfiguration {
+  readonly exchangeAnchorNextHashRequest: string
   readonly exchangeBatchReaderReadNextDirectoryRequest: string
   readonly exchangeBatchReaderReadNextDirectorySuccess: string
   readonly exchangeBatchWriterCreateNextBatchRequest: string
@@ -77,6 +81,7 @@ export interface ExchangeConfiguration {
   readonly exchangeClaimsNotDownloaded: string
   readonly exchangeStorageWriterStoreNextClaim: string
   readonly exchangeGetHealth: string
+  readonly exchangePurgeStaleTransactions: string
 }
 
 const defaultConfiguration: Configuration = {
@@ -102,8 +107,10 @@ const defaultConfiguration: Configuration = {
   minimumBlockHeight: 100,
   blockchainReaderIntervalInSeconds: 5,
 
-  enableTimestamping: false,
+  enableAnchoring: false,
   anchorIntervalInSeconds: 30,
+  purgeStaleTransactionsInSeconds: 600,
+  maxBlockHeightDelta: 25,
 
   healthIntervalInSeconds: 30,
   lowWalletBalanceInBitcoin: 1,
@@ -118,6 +125,7 @@ const defaultConfiguration: Configuration = {
   loggingPretty: true,
 
   batchCreationIntervalInSeconds: 600,
+  transactionMaxAgeInSeconds: 1800,
 
   readDirectoryIntervalInSeconds: 30,
 
@@ -126,6 +134,7 @@ const defaultConfiguration: Configuration = {
 
   forceBlockHeight: undefined,
 
+  exchangeAnchorNextHashRequest: 'ANCHOR_NEXT_HASH_REQUEST',
   exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
   exchangeBatchReaderReadNextDirectorySuccess: 'BATCH_READER::READ_NEXT_DIRECTORY_SUCCESS',
   exchangeBatchWriterCreateNextBatchRequest: 'BATCH_WRITER::CREATE_NEXT_BATCH_REQUEST',
@@ -138,6 +147,7 @@ const defaultConfiguration: Configuration = {
   exchangeClaimsNotDownloaded: 'CLAIMS_NOT_DOWNLOADED',
   exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM',
   exchangeGetHealth: 'HEALTH::GET_HEALTH',
+  exchangePurgeStaleTransactions: 'BLOCK_WRITER::PURGE_STALE_TRANSACTIONS',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
@@ -169,6 +179,7 @@ const applyExchangePrefix = (configVars: any) => {
   if (configVars.exchangePrefix === '') return configVars
 
   const exchangeNames = [
+    'exchangeAnchorNextHashRequest',
     'exchangeBatchReaderReadNextDirectoryRequest',
     'exchangeBatchReaderReadNextDirectorySuccess',
     'exchangeBatchWriterCreateNextBatchRequest',
@@ -181,6 +192,7 @@ const applyExchangePrefix = (configVars: any) => {
     'exchangeClaimsNotDownloaded',
     'exchangeStorageWriterStoreNextClaim',
     'exchangeGetHealth',
+    'exchangePurgeStaleTransactions',
   ]
 
   return {

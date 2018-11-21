@@ -62,7 +62,7 @@ These dependencies are setup automatically when you run `docker-compose`.
 The Po.et Node comes with a default configuration that works out of the box, which can be found here:
 https://github.com/poetapp/node/blob/master/src/Configuration.ts#L82-L141
 
-By default, anchoring to the blockchain is disabled (`enableTimestamping: false`). If you want to enable blockchain anchoring, you will need to the Bitcoin Core dependency to be running with a funded wallet so that it can pay the Bitcoin network transaction fees (either for testnet or real Bitcoin for mainnet).
+By default, anchoring to the blockchain is disabled (`enableAnchoring: false`). If you want to enable blockchain anchoring, you will need to the Bitcoin Core dependency to be running with a funded wallet so that it can pay the Bitcoin network transaction fees (either for testnet or real Bitcoin for mainnet).
 
 You can change any configuration by passing configuration values via environment variables. The keys of these environment variables are always the SCREAMING_SNAKE_CASE equivalent of the configuration options listed in the default configuration. For example, the RabbitMQ URL (`rabbitmqUrl`) can be set with the `RABBITMQ_URL` environment variable.
 
@@ -83,14 +83,14 @@ Accepts the following query parameters:
 ### `GET /works/:id`
 Returns a single signed verifiable work claim by its Id.
 
-For simplicity, this endpoint adds a `.timestamp` in the response, which is not a real part of the claim, but provides valuable information such as the ID of the transaction in which this claim has been timestamped, the IPFS directory hash in which it can be found, etc.
+For simplicity, this endpoint adds a `.anchor` in the response, which is not a real part of the claim, but provides valuable information such as the ID of the transaction in which this claim has been anchored, the IPFS directory hash in which it can be found, etc.
 
 A 404 error is returned if the claim isn't found in this Node's database. This doesn't strictly mean the claim does not exist in the Po.et Network — it just doesn't exist in this Node.
 
 ### `POST /works`
 Publish a signed verifiable work claim.
 
-This endpoint is async and returns an ACK, unless an immediate error can be detected (e.g., a malformed claim). There is no guarantee that the work has actually been processed, timestamped and sent to IPFS. To confirm that, you'll need to `GET /works/:id` and check the `.timestamp` attribute.
+This endpoint is async and returns an ACK, unless an immediate error can be detected (e.g., a malformed claim). There is no guarantee that the work has actually been processed, sent to IPFS and anchored. To confirm that, you'll need to `GET /works/:id` and check the `.anchor` attribute.
 
 This endpoint expects a fully constructed signed verifiable claim — with the correct `'@context'`, `.id`, `.issuer`, `.issuanceDate`, `.type`, and `sec:proof`. See [Building Claims](#building-claims) for information on how to correctly create these attributes.
 
@@ -119,6 +119,15 @@ A Po.et Claim is a signed verifiable claim that holds arbitrary information and 
 
 For more information about claims and their structure, please see:
 https://github.com/poetapp/documentation/blob/master/reference/claims.md
+
+### Verifying the Claim is on Bitcoin's Blockchain
+
+Once node receives a claim, it stores the claim with some metadata including the following:
+* The highest block read at the time node stores the claim
+* Placeholders for the actual block that was mined including the claim
+
+This allows the node application to track whether or not the claim actually has been successfully saved to the Bitcoin blockchain. There is a configuration value, `maxBlockHeightDelta`, that determines how far ahead the blockchain will grow before resubmitting the claim. Comparing this value against the delta between the highest block read and the block read at the time of claim creation will determine whether node resubmits the claim.
+
 
 ### Po.et JS
 All the claim logic is abstracted away in [Po.et JS](https://github.com/poetapp/poet-js), so if you are working with JavaScript or TypeScript you can simply use the library:
