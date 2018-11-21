@@ -21,7 +21,7 @@ const blockchainSettings = {
   BATCH_CREATION_INTERVAL_IN_SECONDS: 5,
   READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
   UPLOAD_CLAIM_INTERVAL_IN_SECONDS: 5,
-  MAX_BLOCK_HEIGHT_DELTA: 0,
+  MAXIMUM_TRANSACTION_AGE_IN_BLOCKS: 1,
   PURGE_STALE_TRANSACTIONS_IN_SECONDS: 6,
 }
 
@@ -33,7 +33,7 @@ const createClaim = pipeP(
   signVerifiableClaim,
 )
 
-const { btcdClientA }: any = bitcoindClients()
+const { btcdClientA, btcdClientB }: any = bitcoindClients()
 
 const blockHash = lensPath(['anchor', 'blockHash'])
 const blockHeight = lensPath(['anchor', 'blockHeight'])
@@ -63,9 +63,13 @@ describe('Transaction timout will reset the transaction id for the claim', async
 
   // Make sure node A has regtest coins to pay for transactions.
   await ensureBitcoinBalance(btcdClientA)
+  await ensureBitcoinBalance(btcdClientB)
 
   // Allow everything to finish starting.
   await delay(5 * 1000)
+  // Disconnect btcdClientA
+  const result = await btcdClientA.setNetworkActive(false)
+  console.log(`result: ${JSON.stringify(result, null, 2)}`)
   const claim = await createClaim({
     name: 'Author Name',
   })
@@ -101,8 +105,16 @@ describe('Transaction timout will reset the transaction id for the claim', async
     expected: true,
   })
 
-  await btcdClientA.generate(1)
-  await delay(blockchainSettings.PURGE_STALE_TRANSACTIONS_IN_SECONDS * 1000 + 5)
+  await btcdClientB.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
+  // Reattach btcdClientA to the network
+  const result2 = await btcdClientA.setNetworkActive(true)
+  console.log(`result2: ${JSON.stringify(result2, null, 2)}`)
+  await delay(60 * 1000)
+
+  await delay((blockchainSettings.PURGE_STALE_TRANSACTIONS_IN_SECONDS + 5) * 1000)
+  await delay((blockchainSettings.ANCHOR_INTERVAL_IN_SECONDS +
+    blockchainSettings.BATCH_CREATION_INTERVAL_IN_SECONDS + 5) * 1000)
+
 
   const secondResponse = await getWorkFromNode(claim.id)
   const secondGet = await secondResponse.json()
