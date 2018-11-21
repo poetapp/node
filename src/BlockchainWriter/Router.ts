@@ -57,8 +57,18 @@ export class Router {
       blockDownloaded.block,
     )
 
-  onPurgeStaleTransactions = async (): Promise<void> =>
-    await this.claimController.purgeStaleTransactions()
+  onPurgeStaleTransactions = async (): Promise<void> => {
+    const logger = this.logger.child({ method: 'onPurgeStaleTransactions' })
+
+    try {
+      await this.claimController.purgeStaleTransactions()
+    } catch (error) {
+      logger.trace(
+        { error },
+        'Error encountered while purging stale transactions'
+      )
+    }
+  }
 
   onCreateBatchSuccess = async (message: any): Promise<void> => {
     const logger = this.logger.child({ method: 'onCreateBatchSuccess' })

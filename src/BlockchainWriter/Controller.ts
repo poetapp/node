@@ -102,11 +102,7 @@ export class Controller {
       'Purging stale transactions',
     )
 
-    try {
-      await this.dao.purgeStaleTransactions(blocks - this.configuration.maximumTransactionAgeInBlocks)
-    } catch (exception) {
-      logger.error({ exception }, 'purgeStaleTransactions')
-    }
+    await this.dao.purgeStaleTransactions(blocks - this.configuration.maximumTransactionAgeInBlocks)
   }
 
   private async anchorIPFSDirectoryHash(ipfsDirectoryHash: string): Promise<void> {
