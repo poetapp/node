@@ -10,4 +10,4 @@ For write operations (`POST` requests), the API broadcasts a RMQ message signali
 
 ## Middlewares
 
-See [/middlewares](/middlewares).
+See [/middlewares](./Middlewares).
