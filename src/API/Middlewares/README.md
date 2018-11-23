@@ -1,6 +1,6 @@
 # API Middlewares
 
-## HTTPExceptions
+## HttpExceptions
 
 This middleware is responsible for converting exceptions thrown in the API module into HTTP responses.
 
