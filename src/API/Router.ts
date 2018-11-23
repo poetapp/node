@@ -107,7 +107,7 @@ export class Router {
 
   private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     this.logger.debug('POST /files')
-    
+
     const files = context.request.files || {}
 
     if (values(files).length <= 0)
@@ -136,7 +136,7 @@ export class Router {
 
   private getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     this.logger.debug({ query: context.query }, 'GET /works')
-    
+
     const { works, count } = await this.workController.getByFilters({
       ...context.query,
       offset: parseInt(context.query.offset, 10),
@@ -148,7 +148,7 @@ export class Router {
 
   private getWorkCounts = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     this.logger.debug('GET /metrics')
-    
+
     const TotalWorkClaims = await this.workController.getWorksCountByFilters({
       ...context.query,
     })
