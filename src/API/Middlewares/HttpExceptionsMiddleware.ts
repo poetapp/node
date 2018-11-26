@@ -13,13 +13,14 @@ export const HttpExceptionsMiddleware: Koa.Middleware = async (context: any, nex
       context.body = exception.message
       context.status = 404
     } else {
-      if (context.logger)
-        context.logger.error({ exception }, 'Error Caught at Middleware')
-
+      
       if (exception.expose) {
         context.body = exception.message || 'Internal Server Error'
         context.status = exception.status || 503
       } else {
+        if (context.logger)
+          context.logger.error({ exception }, 'Error Caught at Middleware')
+        
         context.body = 'Internal Server Error'
         context.status = 503
       }
