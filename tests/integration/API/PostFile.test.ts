@@ -81,9 +81,9 @@ describe('POST /files', async assert => {
 
     assert({
       given,
-      should: 'return status of 400',
+      should: 'return status of 422',
       actual: view(status, response),
-      expected: 400,
+      expected: 422,
     })
 
     assert({
