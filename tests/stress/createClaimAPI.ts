@@ -1,4 +1,5 @@
 const Koa = require('koa')
+const cuid = require('cuid')
 const { createACDClaim } = require('../helpers/createClaims')
 
 const PORT = process.env.PORT || 3002
@@ -8,7 +9,7 @@ const main = async () => {
 
   app.use(async (ctx: any) => {
     const attributes = {
-      name: `testing claim ${Date.now()}`,
+      name: `testing claim ${Date.now()} - ${cuid()}`,
       author: 'the tester',
     }
 
