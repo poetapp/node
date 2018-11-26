@@ -1,6 +1,6 @@
 /* tslint:disable:no-relative-imports */
 import { configureCreateVerifiableClaim, getVerifiableClaimSigner, isSignedVerifiableClaim } from '@po.et/poet-js'
-import { allPass, is, isNil, lensPath, path, pipeP, view } from 'ramda'
+import { allPass, is, isNil, lensPath, not, path, pipe, pipeP, view } from 'ramda'
 import { describe } from 'riteway'
 
 import { app } from '../../src/app'
@@ -22,7 +22,7 @@ const blockchainSettings = {
   READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
   UPLOAD_CLAIM_INTERVAL_IN_SECONDS: 5,
   MAXIMUM_TRANSACTION_AGE_IN_BLOCKS: 1,
-  PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS: 6,
+  PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS: 15,
 }
 
 const { configureSignVerifiableClaim } = getVerifiableClaimSigner()
@@ -42,12 +42,14 @@ const transactionId = lensPath(['anchor', 'transactionId'])
 const getTransactionId = view(transactionId)
 const getBlockHash = view(blockHash)
 const getBlockHeight = view(blockHeight)
+const isNotNil = pipe(isNil, not)
 
 const lengthIsGreaterThan0 = (s: string) => s.length > 0
 const hasValidTxId = allPass([is(String), lengthIsGreaterThan0])
 
 describe('Transaction timout will reset the transaction id for the claim', async assert => {
   await resetBitcoinServers()
+  await btcdClientB.addNode(btcdClientA.host, 'add')
   await delay(5 * 1000)
 
   const db = await createDatabase(PREFIX)
@@ -63,7 +65,7 @@ describe('Transaction timout will reset the transaction id for the claim', async
 
   // Make sure node A has regtest coins to pay for transactions.
   await ensureBitcoinBalance(btcdClientA)
-  await ensureBitcoinBalance(btcdClientB)
+  // await ensureBitcoinBalance(btcdClientB)
 
   // Allow everything to finish starting.
   await delay(5 * 1000)
@@ -105,6 +107,7 @@ describe('Transaction timout will reset the transaction id for the claim', async
   })
 
   await btcdClientB.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
+
   // Reattach btcdClientA to the network
   await btcdClientA.setNetworkActive(true)
   await delay(60 * 1000)
@@ -129,6 +132,43 @@ describe('Transaction timout will reset the transaction id for the claim', async
     should: 'create a new transaction id for the claim',
     actual: secondTxId !== firstTxId,
     expected: true,
+  })
+
+  await btcdClientA.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
+  await delay((
+    blockchainSettings.BATCH_CREATION_INTERVAL_IN_SECONDS +
+    blockchainSettings.READ_DIRECTORY_INTERVAL_IN_SECONDS
+  ) * 1000)
+
+  const thirdResponse = await getWorkFromNode(claim.id)
+  const thirdGet = await thirdResponse.json()
+  const thirdTxId = getTransactionId(thirdGet)
+
+  assert({
+    given: 'transaction mined',
+    should: 'store the block height with the claim',
+    actual: isNotNil(getBlockHeight(thirdGet)),
+    expected: true,
+  })
+
+  assert({
+    given: 'transaction mined',
+    should: 'store the block hash with the claim',
+    actual: isNotNil(getBlockHash(thirdGet)),
+    expected: true,
+  })
+
+  await delay((blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS + 5) * 1000)
+
+  const fourthResponse = await getWorkFromNode(claim.id)
+  const fourthGet = await fourthResponse.json()
+  const fourthTxId = getTransactionId(fourthGet)
+
+  assert({
+    given: 'a claim with a block height and hash',
+    should: 'have the same transaction id',
+    actual: fourthTxId,
+    expected: thirdTxId,
   })
 
   await server.stop()

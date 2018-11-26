@@ -65,7 +65,7 @@ export class Router {
     } catch (error) {
       logger.trace(
         { error },
-        'Error encountered while purging stale transactions'
+        'Error encountered while purging stale transactions',
       )
     }
   }
