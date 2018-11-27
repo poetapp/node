@@ -6,7 +6,7 @@ import { describe } from 'riteway'
 import { app } from '../../src/app'
 import { issuer, privateKey } from '../helpers/Keys'
 import { ensureBitcoinBalance, bitcoindClients, resetBitcoinServers } from '../helpers/bitcoin'
-import { delay, runtimeId, createDatabase } from '../helpers/utils'
+import { delayInSeconds, runtimeId, createDatabase } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'
 
 const PREFIX = `test-functional-nodeA-poet-${runtimeId()}`
@@ -22,7 +22,7 @@ const blockchainSettings = {
   READ_DIRECTORY_INTERVAL_IN_SECONDS: 5,
   UPLOAD_CLAIM_INTERVAL_IN_SECONDS: 5,
   MAXIMUM_TRANSACTION_AGE_IN_BLOCKS: 1,
-  PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS: 15,
+  PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS: 30,
 }
 
 const { configureSignVerifiableClaim } = getVerifiableClaimSigner()
@@ -50,7 +50,8 @@ const hasValidTxId = allPass([is(String), lengthIsGreaterThan0])
 describe('Transaction timout will reset the transaction id for the claim', async assert => {
   await resetBitcoinServers()
   await btcdClientB.addNode(btcdClientA.host, 'add')
-  await delay(5 * 1000)
+
+  await delayInSeconds(5)
 
   const db = await createDatabase(PREFIX)
   const server = await app({
@@ -65,9 +66,10 @@ describe('Transaction timout will reset the transaction id for the claim', async
 
   // Make sure node A has regtest coins to pay for transactions.
   await ensureBitcoinBalance(btcdClientA)
+  await btcdClientA.setNetworkActive(false)
 
   // Allow everything to finish starting.
-  await delay(5 * 1000)
+  await delayInSeconds(5)
 
   const claim = await createClaim({
     name: 'Author Name',
@@ -76,8 +78,11 @@ describe('Transaction timout will reset the transaction id for the claim', async
   await postWorkToNode(claim)
 
   // Wait for a claim batch to be submitted to the blockchain.
-  await delay((blockchainSettings.ANCHOR_INTERVAL_IN_SECONDS +
-    blockchainSettings.BATCH_CREATION_INTERVAL_IN_SECONDS + 5) * 1000)
+  await delayInSeconds(
+    blockchainSettings.ANCHOR_INTERVAL_IN_SECONDS +
+    blockchainSettings.BATCH_CREATION_INTERVAL_IN_SECONDS +
+    5,
+  )
 
   const firstResponse = await getWorkFromNode(claim.id)
   const firstGet = await firstResponse.json()
@@ -105,8 +110,9 @@ describe('Transaction timout will reset the transaction id for the claim', async
   })
 
   await btcdClientB.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
+  await btcdClientA.setNetworkActive(true)
 
-  await delay((blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS  + 5) * 1000)
+  await delayInSeconds((blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS  + 5) * 2)
 
   const secondResponse = await getWorkFromNode(claim.id)
   const secondGet = await secondResponse.json()
@@ -127,10 +133,10 @@ describe('Transaction timout will reset the transaction id for the claim', async
   })
 
   await btcdClientA.generate(1)
-  await delay((
+  await delayInSeconds(
     blockchainSettings.BATCH_CREATION_INTERVAL_IN_SECONDS +
-    blockchainSettings.READ_DIRECTORY_INTERVAL_IN_SECONDS
-  ) * 1000)
+      blockchainSettings.READ_DIRECTORY_INTERVAL_IN_SECONDS,
+  )
 
   const thirdResponse = await getWorkFromNode(claim.id)
   const thirdGet = await thirdResponse.json()
@@ -150,7 +156,7 @@ describe('Transaction timout will reset the transaction id for the claim', async
     expected: true,
   })
 
-  await delay((blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS + 5) * 1000)
+  await delayInSeconds(blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS + 5)
 
   const fourthResponse = await getWorkFromNode(claim.id)
   const fourthGet = await fourthResponse.json()

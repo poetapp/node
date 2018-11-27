@@ -1,11 +1,13 @@
 /* tslint:disable:no-relative-imports */
 import { promisify } from 'util'
-
+import { secondsToMiliseconds } from '../../src/Helpers/Time'
+import { asyncPipe } from '../../src/Helpers/asyncPipe'
 import { app } from '../../src/app'
 import { dbHelper } from './database'
-
 export const runtimeId = () => `${process.pid}-${new Date().getMilliseconds()}-${Math.floor(Math.random() * 10)}`
 export const delay = promisify(setTimeout)
+
+export const delayInSeconds = asyncPipe(secondsToMiliseconds, delay)
 
 export const createDatabase = async (prefix: string) => {
   const db = dbHelper()
