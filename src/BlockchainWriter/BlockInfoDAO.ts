@@ -21,6 +21,6 @@ export class BlockInfoDAO {
 
   readonly getHighestBlock = async (): Promise<LightBlock> => {
     const cursor = this.blockchainInfo.find().sort({height: -1}).limit(1)
-    return await cursor.next()
+    return cursor.next()
   }
 }

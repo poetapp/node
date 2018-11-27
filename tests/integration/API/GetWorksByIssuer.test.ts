@@ -27,7 +27,7 @@ const getWorkFromNode = getWork(NODE_PORT)
 const postWorkToNode = postWorkWithDelay(NODE_PORT)
 
 const setUpExistingClaims = async (claims: ReadonlyArray<SignedVerifiableClaim>) =>
-  await Promise.all(claims.map(async (claim: SignedVerifiableClaim) => postWorkToNode(claim)))
+  Promise.all(claims.map(async (claim: SignedVerifiableClaim) => postWorkToNode(claim)))
 
 const works = [
   ABraveAndStartlingTruth,
