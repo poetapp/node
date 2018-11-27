@@ -52,7 +52,7 @@ export class Router {
   }
 
   blockDownloadedConsumer = async (blockDownloaded: BlockDownloaded): Promise<void> =>
-    await this.claimController.setBlockInformationForTransactions(
+    this.claimController.setBlockInformationForTransactions(
       getTxnIds(blockDownloaded.poetBlockAnchors),
       blockDownloaded.block,
     )
