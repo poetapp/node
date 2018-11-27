@@ -99,7 +99,7 @@ export class HealthController {
   }
 
   private async getEstimatedSmartFee(): Promise<EstimatedSmartFeeInfo> {
-    return await this.bitcoinCore.estimateSmartFee(this.configuration.feeEstimateMinTargetBlock)
+    return this.bitcoinCore.estimateSmartFee(this.configuration.feeEstimateMinTargetBlock)
   }
 
   private async updateEstimatedSmartFee(estimatedSmartFeeInfo: EstimatedSmartFeeInfo): Promise<EstimatedSmartFeeInfo> {

@@ -111,7 +111,7 @@ export class Router {
     const files = context.request.files || {}
 
     if (values(files).length <= 0)
-      context.throw(422, 'No file found.')
+      throw new IllegalArgumentException('No file found.')
 
     const responses = await this.fileController.addFiles(map(createStreamFromFile, values(files)))
 

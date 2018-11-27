@@ -60,7 +60,7 @@ export const dbHelper = () => {
 
   return {
     collection: async (collection: string = 'poet') => {
-      if (setupCalled) return await dbExecuteWithClient(async (db: any) => db.collection(collection))
+      if (setupCalled) return dbExecuteWithClient(async (db: any) => db.collection(collection))
       else console.log('ERROR: setup() must be called before collection()')
       return
     },
