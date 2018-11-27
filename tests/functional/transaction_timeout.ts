@@ -65,7 +65,6 @@ describe('Transaction timout will reset the transaction id for the claim', async
 
   // Make sure node A has regtest coins to pay for transactions.
   await ensureBitcoinBalance(btcdClientA)
-  // await ensureBitcoinBalance(btcdClientB)
 
   // Allow everything to finish starting.
   await delay(5 * 1000)
@@ -108,8 +107,6 @@ describe('Transaction timout will reset the transaction id for the claim', async
   await btcdClientB.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
 
   await delay((blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS  + 5) * 1000)
-  await delay((blockchainSettings.ANCHOR_INTERVAL_IN_SECONDS +
-    blockchainSettings.BATCH_CREATION_INTERVAL_IN_SECONDS + 5) * 1000)
 
   const secondResponse = await getWorkFromNode(claim.id)
   const secondGet = await secondResponse.json()
@@ -129,7 +126,7 @@ describe('Transaction timout will reset the transaction id for the claim', async
     expected: true,
   })
 
-  await btcdClientA.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
+  await btcdClientA.generate(1)
   await delay((
     blockchainSettings.BATCH_CREATION_INTERVAL_IN_SECONDS +
     blockchainSettings.READ_DIRECTORY_INTERVAL_IN_SECONDS
