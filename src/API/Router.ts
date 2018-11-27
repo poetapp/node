@@ -54,7 +54,7 @@ export class Router {
     @inject('FileController') fileController: FileController,
     @inject('WorkController') workController: WorkController,
     @inject('HealthController') healthController: HealthController,
-    @inject('VerifiableClaimSignergner') verifiableClaimSigner: VerifiableClaimSigner,
+    @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner,
   ) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
