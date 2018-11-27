@@ -26,7 +26,7 @@ const defaultBlockchainSettings = {
 }
 
 export const setUpDb = async (prefix: string) => {
-  return await createDatabase(prefix)
+  return createDatabase(prefix)
 }
 
 export const setUpServerAndDb = async ({

@@ -29,7 +29,7 @@ export class IPFS {
 
   addFilesToDirectory: addFilesToDirectory = ({ ipfsDirectoryHash = '', ipfsFileHashes = [] }) =>
     ipfsFileHashes.reduce(
-      async (acc, cur) => await this.addFileToDirectory(await acc, cur),
+      async (acc, cur) => this.addFileToDirectory(await acc, cur),
       Promise.resolve(ipfsDirectoryHash),
     )
 

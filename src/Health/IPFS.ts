@@ -15,5 +15,5 @@ export class IPFS {
     this.url = configuration.ipfsUrl
   }
 
-  getVersion: getVersion = async () => await fetch(`${this.url}/api/v0/version`)
+  getVersion: getVersion = async () => fetch(`${this.url}/api/v0/version`)
 }
