@@ -15,6 +15,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 export interface ControllerConfiguration {
   readonly poetNetwork: string
   readonly poetVersion: number
+  readonly maximumTransactionAgeInBlocks: number
 }
 
 export const convertLightBlockToEntry = (lightBlock: LightBlock): Entry => ({
@@ -89,6 +90,19 @@ export class Controller {
     logger.debug({ transactionIds, lightBlock }, 'Setting Block Info for transactions')
 
     await this.dao.updateAllByTransactionId(transactionIds, convertLightBlockToEntry(lightBlock))
+  }
+
+  async purgeStaleTransactions(): Promise<void> {
+    const logger = this.logger.child({ method: 'purgeStaleTransactions' })
+    const { blocks } = await this.bitcoinCore.getBlockchainInfo()
+    logger.info(
+      {
+        blocks, maximumTransactionAgeInBlocks: this.configuration.maximumTransactionAgeInBlocks,
+      },
+      'Purging stale transactions',
+    )
+
+    await this.dao.purgeStaleTransactions(blocks - this.configuration.maximumTransactionAgeInBlocks)
   }
 
   private async anchorIPFSDirectoryHash(ipfsDirectoryHash: string): Promise<void> {

@@ -35,6 +35,7 @@ export class Router {
     await this.messaging.consume(this.exchange.anchorNextHashRequest, this.onAnchorNextHashRequest)
     await this.messaging.consume(this.exchange.batchWriterCreateNextBatchSuccess, this.onCreateBatchSuccess)
     await this.messaging.consumeBlockDownloaded(this.blockDownloadedConsumer)
+    await this.messaging.consume(this.exchange.purgeStaleTransactions, this.onPurgeStaleTransactions)
   }
 
   onAnchorNextHashRequest = async (message: any): Promise<void> => {
@@ -50,11 +51,23 @@ export class Router {
     }
   }
 
-  blockDownloadedConsumer = async (blockDownloaded: BlockDownloaded): Promise<void> => {
-    await this.claimController.setBlockInformationForTransactions(
+  blockDownloadedConsumer = async (blockDownloaded: BlockDownloaded): Promise<void> =>
+    this.claimController.setBlockInformationForTransactions(
       getTxnIds(blockDownloaded.poetBlockAnchors),
       blockDownloaded.block,
     )
+
+  onPurgeStaleTransactions = async (): Promise<void> => {
+    const logger = this.logger.child({ method: 'onPurgeStaleTransactions' })
+
+    try {
+      await this.claimController.purgeStaleTransactions()
+    } catch (error) {
+      logger.trace(
+        { error },
+        'Error encountered while purging stale transactions',
+      )
+    }
   }
 
   onCreateBatchSuccess = async (message: any): Promise<void> => {
