@@ -56,7 +56,7 @@
     "node-fetch": "1.7.3",
     "pino": "4.17.6",
     "protobufjs": "6.8.8",
-    "ramda": "0.26.0",
+    "ramda": "0.26.1",
     "reflect-metadata": "0.1.12",
     "string-to-stream": "1.1.1"
   },
