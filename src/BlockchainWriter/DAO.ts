@@ -43,7 +43,7 @@ export class DAO {
       },
       {
         $set: { txId: null },
-        $inc: { attempts: 1 }
+        $inc: { attempts: 1 },
       },
     )
 
