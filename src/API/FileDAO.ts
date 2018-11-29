@@ -7,7 +7,7 @@ export interface Entry {
 
 export const Symbols = {
   Collection: Symbol.for('Collection'),
-  FileDAO: Symbol.for('FileDAO')
+  FileDAO: Symbol.for('FileDAO'),
 }
 
 @injectable()
@@ -24,5 +24,3 @@ export class FileDAO {
     await this.collection.insertOne(entry)
   }
 }
-
-
