@@ -5,12 +5,17 @@ export interface Entry {
   hash: string
 }
 
+export const Symbols = {
+  Collection: Symbol.for('Collection'),
+  FileDAO: Symbol.for('FileDAO')
+}
+
 @injectable()
 export class FileDAO {
   private readonly collection: Collection
 
   constructor(
-    @inject('Collection') collection: Collection,
+    @inject(Symbols.Collection) collection: Collection,
   ) {
     this.collection = collection
   }
@@ -19,3 +24,5 @@ export class FileDAO {
     await this.collection.insertOne(entry)
   }
 }
+
+
