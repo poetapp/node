@@ -3,10 +3,9 @@ import { configureCreateVerifiableClaim, getVerifiableClaimSigner, isSignedVerif
 import { allPass, is, isNil, lensPath, not, path, pipe, pipeP, view } from 'ramda'
 import { describe } from 'riteway'
 
-import { app } from '../../src/app'
 import { issuer, privateKey } from '../helpers/Keys'
 import { ensureBitcoinBalance, bitcoindClients, resetBitcoinServers } from '../helpers/bitcoin'
-import { delayInSeconds, runtimeId, createDatabase } from '../helpers/utils'
+import { delayInSeconds, runtimeId, setUpServerAndDb } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'
 
 const PREFIX = `test-functional-nodeA-poet-${runtimeId()}`
@@ -53,16 +52,7 @@ describe('Transaction timout will reset the transaction id for the claim', async
 
   await delayInSeconds(5)
 
-  const db = await createDatabase(PREFIX)
-  const server = await app({
-    BITCOIN_URL: btcdClientA.host,
-    API_PORT: NODE_PORT,
-    MONGODB_DATABASE: db.settings.tempDbName,
-    MONGODB_USER: db.settings.tempDbUser,
-    MONGODB_PASSWORD: db.settings.tempDbPassword,
-    EXCHANGE_PREFIX: PREFIX,
-    ...blockchainSettings,
-  })
+  const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT, blockchainSettings })
 
   // Make sure node A has regtest coins to pay for transactions.
   await ensureBitcoinBalance(btcdClientA)
