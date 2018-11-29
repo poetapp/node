@@ -31,7 +31,7 @@ export class DAO {
       transactionCreationDate: null,
       blockHash: null,
       blockHeight: null,
-      attempts: 0,
+      attempts: 1,
     })
 
   readonly purgeStaleTransactions = (thresholdBlock: number) =>
