@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify'
-import { Collection, Db } from 'mongodb'
+import { Collection } from 'mongodb'
 
 export interface UpdateAnchorAttemptInfo {
   readonly ipfsDirectoryHash: string
