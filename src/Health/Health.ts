@@ -13,6 +13,7 @@ import { HealthController, HealthControllerConfiguration } from './HealthControl
 import { HealthDAO } from './HealthDAO'
 import { HealthService, HealthServiceConfiguration } from './HealthService'
 import { IPFS, IPFSConfiguration } from './IPFS'
+import {IPFSDirectoryHashDAO} from "./IPFSDirectoryHashDAO";
 import { Router } from './Router'
 
 export interface HealthConfiguration
@@ -101,5 +102,6 @@ export class Health {
       feeEstimateMinTargetBlock: this.configuration.feeEstimateMinTargetBlock,
     })
     this.container.bind<HealthDAO>('HealthDAO').to(HealthDAO)
+    this.container.bind<IPFSDirectoryHashDAO>('IPFSDirectoryHashDAO').to(IPFSDirectoryHashDAO )
   }
 }
