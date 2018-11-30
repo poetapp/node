@@ -10,14 +10,16 @@ type updateAnchorAttemptsInfo = (x: UpdateAnchorAttemptInfo) => Promise<void>
 
 @injectable()
 export class IPFSDirectoryHashDAO {
-  private readonly collection: Collection
+  private readonly ipfsDirectoryHashInfoCollection: Collection
 
-  constructor(@inject('DB') db: Db) {
-    this.collection = db.collection('ipfsDirectoryHashInfo')
+  constructor(
+    @inject('IPFSDirectoryHashInfoCollection') ipfsDirectoryHashInfoCollection: Collection,
+  ) {
+    this.ipfsDirectoryHashInfoCollection = ipfsDirectoryHashInfoCollection
   }
 
   readonly updateAnchorAttemptsInfo: updateAnchorAttemptsInfo = async anchorAttemptInfo => {
-    await this.collection.updateOne(
+    await this.ipfsDirectoryHashInfoCollection.updateOne(
       {
         ipfsDirectoryHash: anchorAttemptInfo.ipfsDirectoryHash,
         txId: { $ne: anchorAttemptInfo.txId },

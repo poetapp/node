@@ -1,7 +1,7 @@
 import { Messaging } from 'Messaging/Messaging'
 import BitcoinCore = require('bitcoin-core')
 import { Container } from 'inversify'
-import { Db, MongoClient } from 'mongodb'
+import { Collection, Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
@@ -36,6 +36,7 @@ export class Health {
   private cron: HealthService
   private messaging: Messaging
   private router: Router
+  private ipfsDirectoryHashInfoCollection: Collection
 
   constructor(configuration: HealthConfiguration) {
     this.configuration = configuration
@@ -46,6 +47,8 @@ export class Health {
     this.logger.info({ configuration: this.configuration }, 'Health Starting')
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await this.mongoClient.db()
+
+    this.ipfsDirectoryHashInfoCollection = this.dbConnection.collection('ipfsDirectoryHashInfo')
 
     const exchangesMessaging = pick(
       ['getHealth', 'claimsNotDownloaded'],
@@ -90,6 +93,10 @@ export class Health {
     this.container.bind<HealthServiceConfiguration>('HealthServiceConfiguration').toConstantValue({
       healthIntervalInSeconds: this.configuration.healthIntervalInSeconds,
     })
+    this.container
+      .bind<Collection>('IPFSDirectoryHashInfoCollection')
+      .toConstantValue(this.ipfsDirectoryHashInfoCollection)
+
     this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
     this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
     this.container.bind<Router>('Router').to(Router)
