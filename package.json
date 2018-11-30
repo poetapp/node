@@ -80,7 +80,7 @@
     "cuid": "2.1.4",
     "ipfs-api": "26.1.2",
     "nyc": "poetapp/nyc#fbc2ed1",
-    "riteway": "4.0.0",
+    "riteway": "4.0.1",
     "semantic-release": "15.12.3",
     "sinon": "7.1.1",
     "ts-node": "7.0.1",
