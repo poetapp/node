@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 
-
 export interface UpdateAnchorAttemptInfo {
   readonly ipfsDirectoryHash: string
   readonly txId: string
@@ -28,7 +27,7 @@ export class IPFSDirectoryHashDAO {
         $inc: { attempts: 1 },
         $setOnInsert: { attempts: 1 },
       },
-      { upsert: true }
+      { upsert: true },
     )
   }
 }
