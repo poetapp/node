@@ -8,7 +8,6 @@ export interface Entry {
   readonly blockHeight?: number
   readonly blockHash?: string
   readonly creationBlockHeight?: number
-  readonly attempts?: number
 }
 
 @injectable()
@@ -31,7 +30,6 @@ export class DAO {
       transactionCreationDate: null,
       blockHash: null,
       blockHeight: null,
-      attempts: 1,
     })
 
   readonly purgeStaleTransactions = (thresholdBlock: number) =>
@@ -43,7 +41,6 @@ export class DAO {
       },
       {
         $set: { txId: null },
-        $inc: { attempts: 1 },
       },
     )
 
