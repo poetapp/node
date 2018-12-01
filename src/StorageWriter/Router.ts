@@ -23,7 +23,7 @@ export interface Dependencies {
 }
 
 export interface RouterArg {
-  dependencies: Dependencies 
+  dependencies: Dependencies
   exchange: ExchangeConfiguration
 }
 
@@ -35,7 +35,7 @@ export const Router = ({
   },
   // Instead of receiving exchange configuration, an exchange object
   // should be passed in that contains preconfigured functions to call.
-  exchange
+  exchange,
 }: RouterArg) => {
   const childLogger = childWithFileName(logger, __filename)
 
@@ -78,7 +78,7 @@ export const Router = ({
     }
   }
 
-  const start = async () =>{
+  const start = async () => {
     await messaging.consume(exchange.newClaim, onNewClaim)
     await messaging.consume(exchange.storageWriterStoreNextClaim, onStorageWriterStoreNextClaim)
   }

@@ -41,11 +41,11 @@ export interface DAOClaims {
 
 export const DAOClaims = ({
   dependencies: {
-    collection
+    collection,
   },
   configuration: {
-    maxStorageAttempts
-  }
+    maxStorageAttempts,
+  },
 }: DAOClaimsArg) => {
 
   const start = async () => {
@@ -79,6 +79,6 @@ export const DAOClaims = ({
 
   return {
     start,
-    findNextClaim
+    findNextClaim,
   }
 }

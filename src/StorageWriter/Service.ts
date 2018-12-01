@@ -19,7 +19,7 @@ export interface Dependencies {
 export interface ServiceArg {
   configuration: Configuration
   dependencies: Dependencies
-  exchange: ExchangeConfiguration 
+  exchange: ExchangeConfiguration
 }
 
 export interface Service {
@@ -31,19 +31,18 @@ export const Service = ({
   configuration,
   dependencies: {
     logger,
-    messaging
+    messaging,
   },
   // Instead of receiving exchange configuration, an exchange object
   // should be passed in that contains preconfigured functions to call.
-  exchange
+  exchange,
 }: ServiceArg) => {
   const childLogger = childWithFileName(logger, __filename)
 
-  
   const uploadNextClaim = async () => {
     const methodLogger = childLogger.child({ method: 'uploadNextClaim' })
     try {
-      await messaging.publish(exchange.storageWriterStoreNextClaim, '')  
+      await messaging.publish(exchange.storageWriterStoreNextClaim, '')
     } catch (error) {
       methodLogger.error({ error }, 'Uncaught exception in StorageWriter Service')
     }
@@ -51,10 +50,9 @@ export const Service = ({
 
   const uploadNextClaimInterval = new Interval(
     uploadNextClaim,
-    secondsToMiliseconds(configuration.uploadClaimIntervalInSeconds)
+    secondsToMiliseconds(configuration.uploadClaimIntervalInSeconds),
   )
 
-  
   const start = async () => {
     await uploadNextClaimInterval.start()
   }
@@ -65,6 +63,6 @@ export const Service = ({
 
   return {
     start,
-    stop
+    stop,
   }
 }

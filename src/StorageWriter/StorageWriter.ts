@@ -43,11 +43,11 @@ export const StorageWriter = ({
   configuration,
   dependencies: {
     logger,
-  }
+  },
 }: FactoryArg) => {
   const childLogger = createModuleLogger(configuration, __dirname)
 
-  let db = Db
+  const db = Db
   let mongoClient: MongoClient
   let router: Router
   let service: Service.Service
@@ -58,7 +58,7 @@ export const StorageWriter = ({
   let ipfs: IPFS
 
   const start = async () => {
-    logger.info({ configuration: configuration }, 'StorageWriter Starting')
+    logger.info({ configuration }, 'StorageWriter Starting')
 
     mongoClient = await MongoClient.connect(configuration.dbUrl)
     const db = await mongoClient.db()
@@ -69,15 +69,15 @@ export const StorageWriter = ({
 
     daoClaims = DAOClaims({
       dependencies: {
-        collection: db.collection('storageWriterClaims')
+        collection: db.collection('storageWriterClaims'),
       },
       configuration: {
-        maxStorageAttempts: 3
-      }
+        maxStorageAttempts: 3,
+      },
     })
 
     daoIntegrityCheckFailures = DAOIntegrityCheckFailures({
-      collection: db.collection('storageWriterIntegrityCheckFailures')
+      collection: db.collection('storageWriterIntegrityCheckFailures'),
     })
 
     ipfs = IPFS(configuration.ipfs)
@@ -87,7 +87,7 @@ export const StorageWriter = ({
         logger,
         daoClaims,
         daoIntegrityCheckFailures,
-        ipfs
+        ipfs,
       },
     })
 
@@ -95,22 +95,22 @@ export const StorageWriter = ({
       dependencies: {
         logger,
         messaging,
-        claimController
+        claimController,
       },
-      exchange: configuration.exchanges 
-    }) 
+      exchange: configuration.exchanges,
+    })
     await router.start()
 
     service = Service.Service({
       dependencies: {
         logger,
-        messaging
+        messaging,
       },
       configuration: {
         uploadClaimIntervalInSeconds: configuration.uploadClaimIntervalInSeconds,
       },
-      exchange: configuration.exchanges
-    }) 
+      exchange: configuration.exchanges,
+    })
     await service.start()
 
     logger.info('StorageWriter Started')
@@ -129,6 +129,6 @@ export const StorageWriter = ({
 
   return {
     start,
-    stop
+    stop,
   }
 }

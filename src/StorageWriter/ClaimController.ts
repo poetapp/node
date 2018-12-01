@@ -41,15 +41,15 @@ export const ClaimController = ({
     logger,
     daoClaims,
     daoIntegrityCheckFailures,
-    ipfs
-  }
+    ipfs,
+  },
 }: ClaimControllerArg) => {
   const childLogger = childWithFileName(logger, __filename)
 
   const log = (level: LogTypes) => (message: string) => async (value: any) => {
     childLogger[level]({ value }, message)
     return value
-  } 
+  }
 
   const create = async (claim: SignedVerifiableClaim): Promise<void> => {
     const logger = childLogger.child({ method: 'create' })
@@ -122,6 +122,6 @@ export const ClaimController = ({
 
   return {
     create,
-    storeNextClaim
+    storeNextClaim,
   }
 }
