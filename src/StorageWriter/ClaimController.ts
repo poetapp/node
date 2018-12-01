@@ -20,14 +20,14 @@ interface StoreNextClaimData {
   readonly ipfsFileHash?: string
 }
 
-interface Dependencies {
+export interface Dependencies {
   logger: Pino.Logger
   daoClaims: DAOClaims
   daoIntegrityCheckFailures: DAOIntegrityCheckFailures
   ipfs: IPFS
 }
 
-interface Arguments {
+export interface Arguments {
   dependencies: Dependencies
 }
 
