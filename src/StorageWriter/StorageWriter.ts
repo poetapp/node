@@ -39,13 +39,8 @@ export interface StorageWriter {
   readonly stop: () => Promise<void>
 }
 
-export const StorageWriter = ({
-  configuration,
-  dependencies: {
-    logger,
-  },
-}: FactoryArg) => {
-  const childLogger = createModuleLogger(configuration, __dirname)
+export const StorageWriter = (configuration: StorageWriterConfiguration) => {
+  const logger = createModuleLogger(configuration, __dirname)
 
   const db = Db
   let mongoClient: MongoClient

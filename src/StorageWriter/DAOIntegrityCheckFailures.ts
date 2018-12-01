@@ -10,7 +10,7 @@ export interface DAOIntegrityCheckFailures {
     claim: SignedVerifiableClaim,
     ipfsResponse: string,
     message: string,
-    failureTime: Date,
+    failureTime?: Date,
   ) => Promise<void>
 }
 

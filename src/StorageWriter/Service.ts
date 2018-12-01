@@ -16,7 +16,7 @@ export interface Dependencies {
   messaging: Messaging
 }
 
-export interface ServiceArg {
+export interface ServiceArguments {
   configuration: Configuration
   dependencies: Dependencies
   exchange: ExchangeConfiguration
@@ -36,7 +36,7 @@ export const Service = ({
   // Instead of receiving exchange configuration, an exchange object
   // should be passed in that contains preconfigured functions to call.
   exchange,
-}: ServiceArg) => {
+}: ServiceArguments) => {
   const childLogger = childWithFileName(logger, __filename)
 
   const uploadNextClaim = async () => {

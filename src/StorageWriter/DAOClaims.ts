@@ -37,6 +37,8 @@ export interface DAOClaimsArg {
 export interface DAOClaims {
   start: () => Promise<void>
   findNextClaim: () => Promise<SignedVerifiableClaim>
+  addClaim: (claim: SignedVerifiableClaim) => Promise<void>
+  addClaimHash: (claimId: string, ipfsFileHash: string) => Promise<void>
 }
 
 export const DAOClaims = ({
@@ -80,5 +82,7 @@ export const DAOClaims = ({
   return {
     start,
     findNextClaim,
+    addClaim,
+    addClaimHash,
   }
 }
