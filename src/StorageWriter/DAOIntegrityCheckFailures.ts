@@ -14,9 +14,15 @@ export interface DAOIntegrityCheckFailures {
   ) => Promise<void>
 }
 
-export const DAOIntegrityCheckFailures = (
-  { collection }: Dependencies,
-) => {
+export interface Arguments {
+  dependencies: Dependencies
+}
+
+export const DAOIntegrityCheckFailures = ({
+  dependencies: {
+    collection,
+  },
+}: Arguments) => {
   const addFailure = async (
     claim: SignedVerifiableClaim,
     ipfsResponse: string,

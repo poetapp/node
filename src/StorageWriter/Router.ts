@@ -22,7 +22,7 @@ export interface Dependencies {
   claimController: ClaimController
 }
 
-export interface RouterArg {
+export interface Arguments {
   dependencies: Dependencies
   exchange: ExchangeConfiguration
 }
@@ -33,10 +33,10 @@ export const Router = ({
     messaging,
     claimController,
   },
-  // Instead of receiving exchange configuration, an exchange object
+  // Instead of receiving exchange configuration, a messaging object
   // should be passed in that contains preconfigured functions to call.
   exchange,
-}: RouterArg) => {
+}: Arguments) => {
   const childLogger = childWithFileName(logger, __filename)
 
   const onNewClaim = async (message: any): Promise<void> => {

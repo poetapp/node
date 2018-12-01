@@ -16,7 +16,7 @@ export interface Dependencies {
   messaging: Messaging
 }
 
-export interface ServiceArguments {
+export interface Arguments {
   configuration: Configuration
   dependencies: Dependencies
   exchange: ExchangeConfiguration
@@ -29,18 +29,14 @@ export interface Service {
 
 export const Service = ({
   configuration,
-  dependencies: {
-    logger,
-    messaging,
-  },
-  // Instead of receiving exchange configuration, an exchange object
-  // should be passed in that contains preconfigured functions to call.
+  dependencies,
   exchange,
-}: ServiceArguments) => {
-  const childLogger = childWithFileName(logger, __filename)
+}: Arguments) => {
+  const { messaging } = dependencies
+  const logger = childWithFileName(dependencies.logger, __filename)
 
   const uploadNextClaim = async () => {
-    const methodLogger = childLogger.child({ method: 'uploadNextClaim' })
+    const methodLogger = logger.child({ method: 'uploadNextClaim' })
     try {
       await messaging.publish(exchange.storageWriterStoreNextClaim, '')
     } catch (error) {

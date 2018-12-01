@@ -72,7 +72,9 @@ export const StorageWriter = (configuration: StorageWriterConfiguration) => {
     })
 
     daoIntegrityCheckFailures = DAOIntegrityCheckFailures({
-      collection: db.collection('storageWriterIntegrityCheckFailures'),
+      dependencies: {
+        collection: db.collection('storageWriterIntegrityCheckFailures'),
+      },
     })
 
     ipfs = IPFS(configuration.ipfs)

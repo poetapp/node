@@ -29,7 +29,7 @@ export interface Configuration {
   maxStorageAttempts: number
 }
 
-export interface DAOClaimsArg {
+export interface Arguments {
   dependencies: Dependencies
   configuration: Configuration
 }
@@ -48,7 +48,7 @@ export const DAOClaims = ({
   configuration: {
     maxStorageAttempts,
   },
-}: DAOClaimsArg) => {
+}: Arguments) => {
 
   const start = async () => {
     await collection.createIndex({ 'claim.id': 1 }, { unique: true })

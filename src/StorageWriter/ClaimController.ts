@@ -27,7 +27,7 @@ interface Dependencies {
   ipfs: IPFS
 }
 
-interface ClaimControllerArg {
+interface Arguments {
   dependencies: Dependencies
 }
 
@@ -43,7 +43,7 @@ export const ClaimController = ({
     daoIntegrityCheckFailures,
     ipfs,
   },
-}: ClaimControllerArg) => {
+}: Arguments) => {
   const childLogger = childWithFileName(logger, __filename)
 
   const log = (level: LogTypes) => (message: string) => async (value: any) => {
