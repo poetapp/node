@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@po.et/poet-js": "5.1.14",
-    "amqplib": "0.5.2",
+    "amqplib": "0.5.3",
     "bitcoin-core": "2.0.0",
     "bs58": "4.0.1",
     "form-data": "2.3.3",
