@@ -2,7 +2,7 @@
 
 ## Architecture
 
-The Po.et ndoe is made of micro-service like services.
+The Po.et node is made of micro-service like services.
 
 ### Service Guidlines
 
