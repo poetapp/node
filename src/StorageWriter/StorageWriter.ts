@@ -25,13 +25,22 @@ export interface StorageWriterConfiguration
   readonly exchanges: ExchangeConfiguration
 }
 
+export interface Dependencies {
+  readonly logger: Pino.Logger
+}
+
+export interface FactoryArg {
+  readonly dependencies: Dependencies
+  readonly configuration: StorageWriterConfiguration
+}
+
 export interface StorageWriter {
   readonly start: () => Promise<void>
   readonly stop: () => Promise<void>
 }
 
 export const StorageWriter = (
-  configuration: StorageWriterConfiguration
+  configuration: StorageWriterConfiguration,
 ): StorageWriter => {
   const logger = createModuleLogger(configuration, __dirname)
 
