@@ -4,7 +4,7 @@
 
 The Po.et node is made of micro-service like services.
 
-### Service Guidlines
+### Service Guidelines
 
 - Each service initializes and maintains its own mongo collections
 - Services should not access another services mongo collections. 
