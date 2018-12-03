@@ -12,6 +12,11 @@ export interface LightBlock {
   readonly height: number
 }
 
+export interface IPFSHashTxId {
+  readonly ipfsDirectoryHash: string
+  readonly txId: string
+}
+
 const PoetBlockAnchorJoiSchema = Joi.object({
   prefix: Joi.string().required(),
   version: Joi.number().required(),
@@ -29,5 +34,13 @@ const BlockDownloadedJoiSchema = Joi.object({
     .optional(),
 })
 
+const IPFSHashTxIdJoiSchema = Joi.object({
+  ipfsDirectoryHash: Joi.string().required(),
+  txId: Joi.string().required(),
+})
+
 export const isBlockDownloaded = (messageContent: any): messageContent is BlockDownloaded =>
   Joi.validate(messageContent, BlockDownloadedJoiSchema).error === null
+
+export const isIPFSHashTxId = (messageContent: any): messageContent is IPFSHashTxId =>
+  Joi.validate(messageContent, IPFSHashTxIdJoiSchema).error === null

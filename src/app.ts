@@ -244,6 +244,7 @@ export async function app(localVars: any = {}) {
     exchanges: {
       getHealth: configuration.exchangeGetHealth,
       claimsNotDownloaded: configuration.exchangeClaimsNotDownloaded,
+      ipfsHashTxId: configuration.exchangeIpfsHashTxId,
     },
   })
 
