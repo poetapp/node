@@ -1,6 +1,6 @@
 import { getVerifiableClaimSigner, VerifiableClaimSigner } from '@po.et/poet-js'
 import { injectable, Container } from 'inversify'
-import { MongoClient, Db } from 'mongodb'
+import { Collection, MongoClient, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { LoggingConfiguration } from 'Configuration'
@@ -9,6 +9,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileController, FileControllerConfiguration } from './FileController'
+import * as FileDAO from './FileDAO'
 import { HealthController } from './HealthController'
 import { Router } from './Router'
 import { RouterConfiguration } from './Router'
@@ -30,6 +31,7 @@ export class API {
   private dbConnection: Db
   private router: Router
   private messaging: Messaging
+  private fileCollection: Collection
 
   constructor(configuration: APIConfiguration) {
     this.configuration = configuration
@@ -40,6 +42,8 @@ export class API {
     this.logger.info({ configuration: this.configuration }, 'API Starting')
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     this.dbConnection = await this.mongoClient.db()
+
+    this.fileCollection = this.dbConnection.collection('files')
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, this.configuration.exchanges)
     await this.messaging.start()
@@ -62,6 +66,8 @@ export class API {
   }
 
   initializeContainer() {
+    this.container.bind<FileDAO.FileDAO>(FileDAO.Symbols.FileDAO).to(FileDAO.FileDAO)
+    this.container.bind<Collection>(FileDAO.Symbols.Collection).toConstantValue(this.fileCollection)
     this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
     this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
     this.container.bind<Router>('Router').to(Router)
