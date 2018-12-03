@@ -4,7 +4,7 @@ import { Connection, connect, Channel } from 'amqplib'
 import { ClaimIPFSHashPair, isClaimIPFSHashPair, IPFSHashFailure, isIPFSHashFailure } from 'Interfaces'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { BlockDownloaded, isBlockDownloaded } from './Messages'
+import { BlockDownloaded, HashTxId, isBlockDownloaded, isHashTxId } from './Messages'
 
 export class Messaging {
   private readonly connectionUrl: string
@@ -68,6 +68,21 @@ export class Messaging {
       if (!isBlockDownloaded(blockDownloaded)) return
 
       consume(blockDownloaded)
+    })
+  }
+
+  publishIPFSHashTxId = async (hashTxId: HashTxId) => {
+    return this.publish(this.exchanges.ipfsHashTxId, hashTxId)
+  }
+
+  consumeIPFSHashTxId = async (consume: (hashTxId: HashTxId) => void) => {
+    await this.consume(this.exchanges.ipfsHashTxId, (message: any) => {
+      const messageContent = message.content.toString()
+      const hashTxId = JSON.parse(messageContent) as unknown
+
+      if (!isHashTxId(hashTxId)) return
+
+      consume(hashTxId)
     })
   }
 
