@@ -12,7 +12,7 @@ export interface LightBlock {
   readonly height: number
 }
 
-export interface HashTxId {
+export interface IPFSHashTxId {
   readonly ipfsDirectoryHash: string
   readonly txId: string
 }
@@ -34,7 +34,7 @@ const BlockDownloadedJoiSchema = Joi.object({
     .optional(),
 })
 
-const HashTxIdJoiSchema = Joi.object({
+const IPFSHashTxIdJoiSchema = Joi.object({
   ipfsDirectoryHash: Joi.string().required(),
   txId: Joi.string().required(),
 })
@@ -42,5 +42,5 @@ const HashTxIdJoiSchema = Joi.object({
 export const isBlockDownloaded = (messageContent: any): messageContent is BlockDownloaded =>
   Joi.validate(messageContent, BlockDownloadedJoiSchema).error === null
 
-export const isHashTxId = (messageContent: any): messageContent is HashTxId =>
-  Joi.validate(messageContent, HashTxIdJoiSchema).error === null
+export const isIPFSHashTxId = (messageContent: any): messageContent is IPFSHashTxId =>
+  Joi.validate(messageContent, IPFSHashTxIdJoiSchema).error === null
