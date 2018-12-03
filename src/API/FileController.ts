@@ -1,7 +1,6 @@
 import * as FormData from 'form-data'
 import * as fs from 'fs'
 import { inject, injectable } from 'inversify'
-import { Collection, Db } from 'mongodb'
 import fetch, {Response} from 'node-fetch'
 import * as Pino from 'pino'
 import { map } from 'ramda'
@@ -9,6 +8,8 @@ import { map } from 'ramda'
 import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds  } from 'Helpers/Time'
 import { asyncPipe } from 'Helpers/asyncPipe'
+
+import * as FileDAO from './FileDAO'
 
 interface IPFSFileResponseJson {
   readonly Hash: string
@@ -39,19 +40,17 @@ export const convertJson = (archiveUrlPrefix: string) =>
 @injectable()
 export class FileController {
   private readonly logger: Pino.Logger
-  private readonly db: Db
-  private readonly collection: Collection
   private readonly ipfsArchiveUrlPrefix: string
   private readonly ipfsUrl: string
+  private readonly fileDao: FileDAO.FileDAO
 
   constructor(
+    @inject(FileDAO.Symbols.FileDAO) fileDao: FileDAO.FileDAO,
     @inject('Logger') logger: Pino.Logger,
-    @inject('DB') db: Db,
     @inject('FileControllerConfiguration') configuration: FileControllerConfiguration,
   ) {
+    this.fileDao = fileDao
     this.logger = childWithFileName(logger, __filename)
-    this.db = db
-    this.collection = this.db.collection('files')
     this.ipfsArchiveUrlPrefix = configuration.ipfsArchiveUrlPrefix
     this.ipfsUrl = configuration.ipfsUrl
   }
@@ -77,7 +76,7 @@ export class FileController {
 
   private storeIPFSHash = async (response: FileResponseJson) => {
     const { hash } = response
-    await this.collection.insertOne({ hash })
+    await this.fileDao.addEntry({ hash })
     return response
   }
 
