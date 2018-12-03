@@ -39,7 +39,9 @@ export interface StorageWriter {
   readonly stop: () => Promise<void>
 }
 
-export const StorageWriter = (configuration: StorageWriterConfiguration) => {
+export const StorageWriter = (
+  configuration: StorageWriterConfiguration
+): StorageWriter => {
   const logger = createModuleLogger(configuration, __dirname)
 
   const db = Db

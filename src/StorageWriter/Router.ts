@@ -12,19 +12,19 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 export const isTraceError = anyPass([isNoMoreEntriesException])
 
 export interface Router {
-  start: () => Promise<void>
-  stop: () => Promise<void>
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
 }
 
 export interface Dependencies {
-  logger: Pino.Logger
-  messaging: Messaging
-  claimController: ClaimController
+  readonly logger: Pino.Logger
+  readonly messaging: Messaging
+  readonly claimController: ClaimController
 }
 
 export interface Arguments {
-  dependencies: Dependencies
-  exchange: ExchangeConfiguration
+  readonly dependencies: Dependencies
+  readonly exchange: ExchangeConfiguration
 }
 
 export const Router = ({
@@ -36,7 +36,7 @@ export const Router = ({
   // Instead of receiving exchange configuration, a messaging object
   // should be passed in that contains preconfigured functions to call.
   exchange,
-}: Arguments) => {
+}: Arguments): Router => {
   const childLogger = childWithFileName(logger, __filename)
 
   const onNewClaim = async (message: any): Promise<void> => {

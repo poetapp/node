@@ -2,11 +2,11 @@ import { SignedVerifiableClaim } from '@po.et/poet-js'
 import { Collection } from 'mongodb'
 
 export interface Dependencies {
-  collection: Collection
+  readonly collection: Collection
 }
 
 export interface DAOIntegrityCheckFailures {
-  addFailure: (
+  readonly addFailure: (
     claim: SignedVerifiableClaim,
     ipfsResponse: string,
     message: string,
@@ -15,14 +15,14 @@ export interface DAOIntegrityCheckFailures {
 }
 
 export interface Arguments {
-  dependencies: Dependencies
+  readonly dependencies: Dependencies
 }
 
 export const DAOIntegrityCheckFailures = ({
   dependencies: {
     collection,
   },
-}: Arguments) => {
+}: Arguments): DAOIntegrityCheckFailures => {
   const addFailure = async (
     claim: SignedVerifiableClaim,
     ipfsResponse: string,

@@ -12,19 +12,19 @@ export interface Configuration {
 }
 
 export interface Dependencies {
-  logger: Pino.Logger
-  messaging: Messaging
+  readonly logger: Pino.Logger
+  readonly messaging: Messaging
 }
 
 export interface Arguments {
-  configuration: Configuration
-  dependencies: Dependencies
-  exchange: ExchangeConfiguration
+  readonly configuration: Configuration
+  readonly dependencies: Dependencies
+  readonly exchange: ExchangeConfiguration
 }
 
 export interface Service {
-  start: () => Promise<void>
-  stop: () => Promise<void>
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
 }
 
 export const Service = ({
@@ -33,7 +33,7 @@ export const Service = ({
   // Instead of receiving exchange configuration, a messaging object
   // should be passed in that contains preconfigured functions to call.
   exchange,
-}: Arguments) => {
+}: Arguments): Service => {
   const { messaging } = dependencies
   const logger = childWithFileName(dependencies.logger, __filename)
 

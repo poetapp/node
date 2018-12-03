@@ -22,23 +22,23 @@ export const throwIfClaimNotFound = (claim: SignedVerifiableClaim): SignedVerifi
 }
 
 export interface Dependencies {
-  collection: Collection
+  readonly collection: Collection
 }
 
 export interface Configuration {
-  maxStorageAttempts: number
+  readonly maxStorageAttempts: number
 }
 
 export interface Arguments {
-  dependencies: Dependencies
-  configuration: Configuration
+  readonly dependencies: Dependencies
+  readonly configuration: Configuration
 }
 
 export interface DAOClaims {
-  start: () => Promise<void>
-  findNextClaim: () => Promise<SignedVerifiableClaim>
-  addClaim: (claim: SignedVerifiableClaim) => Promise<void>
-  addClaimHash: (claimId: string, ipfsFileHash: string) => Promise<void>
+  readonly start: () => Promise<void>
+  readonly findNextClaim: () => Promise<SignedVerifiableClaim>
+  readonly addClaim: (claim: SignedVerifiableClaim) => Promise<void>
+  readonly addClaimHash: (claimId: string, ipfsFileHash: string) => Promise<void>
 }
 
 export const DAOClaims = ({

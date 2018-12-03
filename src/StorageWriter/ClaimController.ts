@@ -21,19 +21,19 @@ interface StoreNextClaimData {
 }
 
 export interface Dependencies {
-  logger: Pino.Logger
-  daoClaims: DAOClaims
-  daoIntegrityCheckFailures: DAOIntegrityCheckFailures
-  ipfs: IPFS
+  readonly logger: Pino.Logger
+  readonly daoClaims: DAOClaims
+  readonly daoIntegrityCheckFailures: DAOIntegrityCheckFailures
+  readonly ipfs: IPFS
 }
 
 export interface Arguments {
-  dependencies: Dependencies
+  readonly dependencies: Dependencies
 }
 
 export interface ClaimController {
-  create: (claim: SignedVerifiableClaim) => Promise<void>
-  storeNextClaim: () => Promise<StoreNextClaimData>
+  readonly create: (claim: SignedVerifiableClaim) => Promise<void>
+  readonly storeNextClaim: () => Promise<StoreNextClaimData>
 }
 
 export const ClaimController = ({
@@ -43,7 +43,7 @@ export const ClaimController = ({
     daoIntegrityCheckFailures,
     ipfs,
   },
-}: Arguments) => {
+}: Arguments): ClaimController => {
   const childLogger = childWithFileName(logger, __filename)
 
   const log = (level: LogTypes) => (message: string) => async (value: any) => {
