@@ -23,7 +23,7 @@ describe('Security Headers', async assert => {
   }
 
   const actual = await Promise.all(
-    Object.keys(headers).map(async (header: string) => await response.headers.get(header)),
+    Object.keys(headers).map(async (header: string) => response.headers.get(header)),
   )
 
   const expected = values(headers)

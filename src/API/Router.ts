@@ -106,11 +106,12 @@ export class Router {
   }
 
   private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    this.logger.debug('POST /files')
 
     const files = context.request.files || {}
 
     if (values(files).length <= 0)
-      context.throw(400, 'No file found.')
+      throw new IllegalArgumentException('No file found.')
 
     const responses = await this.fileController.addFiles(map(createStreamFromFile, values(files)))
 
@@ -119,7 +120,7 @@ export class Router {
   }
 
   private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.trace({ params: context.params }, 'GET /works/:id')
+    this.logger.debug({ params: context.params }, 'GET /works/:id')
 
     const id = context.params.id
     const work = await this.workController.getById(id)
@@ -134,7 +135,8 @@ export class Router {
   }
 
   private getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.trace({ query: context.query }, '/works')
+    this.logger.debug({ query: context.query }, 'GET /works')
+
     const { works, count } = await this.workController.getByFilters({
       ...context.query,
       offset: parseInt(context.query.offset, 10),
@@ -145,7 +147,8 @@ export class Router {
   }
 
   private getWorkCounts = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.trace('/metrics')
+    this.logger.debug('GET /metrics')
+
     const TotalWorkClaims = await this.workController.getWorksCountByFilters({
       ...context.query,
     })
@@ -155,7 +158,7 @@ export class Router {
   private postWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     const { body } = context.request
 
-    this.logger.trace({ body }, 'POST /works')
+    this.logger.debug({ body }, 'POST /works')
 
     if (!isSignedVerifiableClaim(body))
       throw new IllegalArgumentException('Request Body must be a Signed Verifiable Claim.')

@@ -9,8 +9,8 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export interface ServiceConfiguration {
   readonly anchorIntervalInSeconds: number
-  readonly purgeStaleTransactionsInSeconds: number
-  readonly maxBlockHeightDelta: number
+  readonly purgeStaleTransactionsIntervalInSeconds: number
+  readonly maximumTransactionAgeInBlocks: number
 }
 
 @injectable()
@@ -33,7 +33,7 @@ export class Service {
     this.anchorNextHashInterval = new Interval(this.anchorNextHash, 1000 * configuration.anchorIntervalInSeconds)
     this.purgeStaleTransactionInterval = new Interval(
       this.purgeStaleTransactions,
-      1000 * configuration.purgeStaleTransactionsInSeconds,
+      1000 * configuration.purgeStaleTransactionsIntervalInSeconds,
     )
   }
 

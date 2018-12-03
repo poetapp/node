@@ -10,7 +10,6 @@
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
     "lint": "tslint -p ./tsconfig.with-tests.json",
     "lint:fix": "tslint -p ./tsconfig.with-tests.json --fix",
-    "watch": "concurrently --kill-others \"tsc -w\"  \"npm run watch-babel\" \"nodemon --delay 10 dist/babel/src\"",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "ts-node -r tsconfig-paths/register -r reflect-metadata --files ./tests/unit/index.ts",
     "test:functional": "node ./dist/babel/tests/functional/index.js",
@@ -41,13 +40,13 @@
     "url": "https://github.com/poetapp/node/issues"
   },
   "dependencies": {
-    "@po.et/poet-js": "5.1.10",
-    "amqplib": "0.5.2",
+    "@po.et/poet-js": "5.1.14",
+    "amqplib": "0.5.3",
     "bitcoin-core": "2.0.0",
     "bs58": "4.0.1",
     "form-data": "2.3.3",
     "inversify": "5.0.1",
-    "joi": "14.1.0",
+    "joi": "14.3.0",
     "koa": "2.6.2",
     "koa-body": "4.0.4",
     "koa-cors": "0.0.16",
@@ -57,12 +56,12 @@
     "node-fetch": "1.7.3",
     "pino": "4.17.6",
     "protobufjs": "6.8.8",
-    "ramda": "0.26.0",
+    "ramda": "0.26.1",
     "reflect-metadata": "0.1.12",
     "string-to-stream": "1.1.1"
   },
   "devDependencies": {
-    "@po.et/tslint-rules": "2.0.2",
+    "@po.et/tslint-rules": "2.1.0",
     "@types/amqplib": "0.5.9",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
@@ -70,7 +69,7 @@
     "@types/koa": "2.0.47",
     "@types/koa-helmet": "3.1.2",
     "@types/koa-router": "7.0.35",
-    "@types/mongodb": "3.1.14",
+    "@types/mongodb": "3.1.15",
     "@types/node-fetch": "1.6.9",
     "@types/pino": "4.16.1",
     "@types/ramda": "0.26.0",
@@ -78,14 +77,14 @@
     "babel-cli": "6.26.0",
     "babel-plugin-module-resolver": "3.1.1",
     "concurrently": "4.1.0",
+    "cuid": "2.1.4",
     "ipfs-api": "26.1.2",
-    "nodemon": "1.18.6",
     "nyc": "poetapp/nyc#fbc2ed1",
-    "riteway": "4.0.0",
-    "semantic-release": "15.12.0",
+    "riteway": "4.0.1",
+    "semantic-release": "15.12.3",
     "sinon": "7.1.1",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.7.0",
-    "typescript": "3.1.6"
+    "typescript": "3.2.1"
   }
 }
