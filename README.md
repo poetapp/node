@@ -159,7 +159,7 @@ const signedWorkClaim = await signVerifiableClaim(unsignedVerifiableClaim)
 
 > You can find more examples on how to build and publish claims in the integration tests in [tests/API/integration/PostWork.test](./tests/integration/API/PostWork.test.ts).
 
-## Contributing
+## [Contributing](https://github.com/poetapp/documentation/blob/master/CONTRIBUTING.md)
 
 ### Compiling
 Run `npm run build` to compile the source. This will run TypeScript on the source files and place the output in `dist/ts`, and will then run Babel and place the output in `dist/babel`.
@@ -186,5 +186,4 @@ Coverage is generated with [Istanbul](https://github.com/istanbuljs/nyc). A more
 
 > Note: We are using our own forks of [nyc](https://github.com/istanbuljs/nyc) and [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/tree/master/packages/istanbul-lib-instrument) in order to add better support for TypeScript. We intend to contribute our forks back to nyc and istanbul-lib-instrument in order to make our solution available to the entire community. You can follow the issues in this [PR](https://github.com/poetapp/node/pull/230), and check the new PRs for [istanbul-lib-instrument](https://github.com/istanbuljs/istanbuljs/pull/204).
 
-### Branches and Pull Requests
-The master branch is blocked - no one can commit to it directly. To contribute changes, branch off of master and make a pull request back to it. Travis CI will run all tests automatically for all submitted pull requests, including linting (`npm run lint`). You can run `npm run lint:fix` for quick, automatic lint fixes.
+## [Security](https://github.com/poetapp/documentation/blob/master/SECURITY.md)
