@@ -4,7 +4,7 @@
 
 The Po.et node is made of micro-service like services.
 
-The services that make up the Po.et Node behave as if they were true microservices: isolated applications with no knowledge of each other's source code. In practice, they all live in the scame code base, are started by the root code file, `src/index.ts` and run in the same process, rather than as true separate applications.
+The services that make up the Po.et Node behave as if they were true microservices: isolated applications with no knowledge of each other's source code. In practice, they all live in the same code base, are started by the root code file, `src/index.ts` and run in the same process, rather than as true separate applications.
 
 This greatly reduces the amount of work needed to install and run the Po.et Node without depending on a container system such as Docker, and allows for less maintenance overhead and faster development, while still reaping the benefits of microservices in regards to separation of concerns and serving as a bridge towards scalability.
 
