@@ -14,9 +14,10 @@ This greatly reduces the amount of work needed to install and run the Po.et Node
 - Each service initializes and maintains its own mongo collections
 - Services must not access another services mongo collections. 
 - Factory functions are used as the main form of encapsulation and layered separation of concerns.
-- [Dependency Injection] is implemented manually.
+- [Dependency Injection] is implemented manually. See [Dependency Inversion Principle].
 - Code makes use of both OOP and FP techniques. See: [FP vs OO](http://blog.cleancoder.com/uncle-bob/2018/04/13/FPvsOO.html)
 
 [SOLID]: https://en.wikipedia.org/wiki/SOLID
 [RabbitMQ]: https://www.rabbitmq.com/
 [Dependency Injection]: https://en.wikipedia.org/wiki/Dependency_injection
+[Dependency Inversion Principle]: https://en.wikipedia.org/wiki/Dependency_inversion_principle
