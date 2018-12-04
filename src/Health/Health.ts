@@ -51,7 +51,7 @@ export class Health {
     this.ipfsDirectoryHashInfoCollection = this.dbConnection.collection('ipfsDirectoryHashInfo')
 
     const exchangesMessaging = pick(
-      ['getHealth', 'claimsNotDownloaded', 'ipfsHashTxId'],
+      ['getHealth', 'claimsNotDownloaded', 'ipfsHashTxId', 'poetAnchorDownloaded'],
       this.configuration.exchanges,
     )
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
