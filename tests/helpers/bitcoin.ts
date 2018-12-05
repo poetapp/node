@@ -1,6 +1,7 @@
 /* tslint:disable:no-relative-imports */
+import BitcoinCore = require('bitcoin-core')
 const Client = require('bitcoin-core')
-import {LoggingConfiguration, Configuration, loadConfigurationWithDefaults} from 'Configuration'
+import { LoggingConfiguration, Configuration, loadConfigurationWithDefaults } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import * as Pino from 'pino'
 import {delay, delayInSeconds} from '../helpers/utils'
@@ -31,20 +32,21 @@ const clientSingleton = (hostA: string = BITCOIND_A, hostB: string = BITCOIND_B)
 }
 export const waitForBlockchainsToSync = async (
   targetBlockHeight: number,
-  bitcoinClients: ReadonlyArray<any>,
+  bitcoinClients: ReadonlyArray<BitcoinCore>,
 ): Promise<void> => {
   const waitForTargetHeight = waitForBlockchainSync(targetBlockHeight)
   await Promise.all(bitcoinClients.map(waitForTargetHeight))
 }
 
-export const waitForBlockchainSync = (targetBlockHeight: number) => async (bitcoinClient: any): Promise<void> => {
-  logger.info(`Waiting for ${targetBlockHeight}`)
-  let { blocks } = await bitcoinClient.getBlockchainInfo()
-  while (blocks < targetBlockHeight) {
-    await delayInSeconds(10)
-    blocks = (await bitcoinClient.getBlockchainInfo()).blocks
-    logger.info(`currentHeight: ${blocks}`)
-  }
+export const waitForBlockchainSync = (targetBlockHeight: number) =>
+  async (bitcoinClient: BitcoinCore): Promise<void> => {
+    logger.info(`Waiting for ${targetBlockHeight}`)
+    let { blocks } = await bitcoinClient.getBlockchainInfo()
+    while (blocks < targetBlockHeight) {
+      await delayInSeconds(10)
+      blocks = (await bitcoinClient.getBlockchainInfo()).blocks
+      logger.info(`currentHeight: ${blocks}`)
+    }
 }
 
 export const bitcoindClients = clientSingleton(process.env.BITCOIN_URL, process.env.BITCOIN_URL_B)
