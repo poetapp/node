@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { isNil } from 'ramda'
 
@@ -9,19 +8,31 @@ import { Messaging } from 'Messaging/Messaging'
 import { ClaimController } from './ClaimController'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly messaging: Messaging
+  readonly claimController: ClaimController
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly exchange: ExchangeConfiguration
+}
+
 export class Router {
   private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly claimController: ClaimController
   private readonly exchange: ExchangeConfiguration
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('Messaging') messaging: Messaging,
-    @inject('ClaimController') claimController: ClaimController,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      messaging,
+      claimController,
+    },
+    exchange,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.claimController = claimController
