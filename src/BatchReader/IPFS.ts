@@ -40,7 +40,7 @@ export interface IPFSConfiguration {
 }
 
 export interface Arguments {
-  configuration: IPFSConfiguration
+  readonly configuration: IPFSConfiguration
 }
 
 export class IPFS {
