@@ -1,5 +1,4 @@
 import { Interval } from '@po.et/poet-js'
-import { injectable, inject } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
@@ -11,7 +10,17 @@ export interface HealthServiceConfiguration {
   readonly healthIntervalInSeconds: number
 }
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly messaging: Messaging
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly exchange: ExchangeConfiguration
+  readonly configuration: HealthServiceConfiguration
+}
+
 export class HealthService {
   private readonly logger: Pino.Logger
   private readonly configuration: HealthServiceConfiguration
@@ -19,12 +28,14 @@ export class HealthService {
   private readonly messaging: Messaging
   private readonly exchange: ExchangeConfiguration
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('Messaging') messaging: Messaging,
-    @inject('HealthServiceConfiguration') configuration: HealthServiceConfiguration,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      messaging,
+    },
+    configuration,
+    exchange,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
     this.messaging = messaging

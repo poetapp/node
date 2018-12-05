@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 
 export interface BlockchainInfo {
@@ -46,11 +45,22 @@ type updateIPFSInfo = (x: IPFSInfo) => Promise<void>
 
 type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<void>
 
-@injectable()
+export interface Dependencies {
+  readonly db: Db
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class HealthDAO {
   private readonly collection: Collection
 
-  constructor(@inject('DB') db: Db) {
+  constructor({
+    dependencies: {
+      db,
+    },
+  }: Arguments) {
     this.collection = db.collection('health')
   }
 

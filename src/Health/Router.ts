@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
@@ -8,19 +7,31 @@ import { Messaging } from 'Messaging/Messaging'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { HealthController } from './HealthController'
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly messaging: Messaging
+  readonly controller: HealthController
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly exchange: ExchangeConfiguration
+}
+
 export class Router {
   private readonly logger: Pino.Logger
   private readonly messaging: Messaging
   private readonly controller: HealthController
   private readonly exchange: ExchangeConfiguration
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('Messaging') messaging: Messaging,
-    @inject('HealthController') controller: HealthController,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      messaging,
+      controller,
+    },
+    exchange,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.controller = controller
