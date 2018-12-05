@@ -1,9 +1,9 @@
 /* tslint:disable:no-relative-imports */
 const Client = require('bitcoin-core')
+import {LoggingConfiguration, Configuration, loadConfigurationWithDefaults} from 'Configuration'
+import { createModuleLogger } from 'Helpers/Logging'
 import * as Pino from 'pino'
 import {delay, delayInSeconds} from '../helpers/utils'
-import { createModuleLogger } from 'Helpers/Logging'
-import {LoggingConfiguration, Configuration, loadConfigurationWithDefaults} from 'Configuration'
 
 const BITCOIND_A = 'bitcoind-1'
 const BITCOIND_B = 'bitcoind-2'
