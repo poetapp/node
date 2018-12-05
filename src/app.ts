@@ -149,7 +149,7 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'StorageReader was unable to start')
   }
 
-  const storageWriter = new StorageWriter({
+  const storageWriter = StorageWriter({
     ...loggingConfiguration,
     dbUrl: configuration.mongodbUrl,
     ipfs: { url: configuration.ipfsUrl },

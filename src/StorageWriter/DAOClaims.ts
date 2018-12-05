@@ -1,5 +1,4 @@
 import { SignedVerifiableClaim } from '@po.et/poet-js'
-import { inject, injectable } from 'inversify'
 import { Collection, Db, FindAndModifyWriteOpResultObject } from 'mongodb'
 import { isNil, pipeP, lensPath, view } from 'ramda'
 
@@ -22,32 +21,51 @@ export const throwIfClaimNotFound = (claim: SignedVerifiableClaim): SignedVerifi
   return claim
 }
 
-@injectable()
-export class DAOClaims {
-  private readonly collection: Collection
-  private readonly maxStorageAttempts: number
+export interface Dependencies {
+  readonly collection: Collection
+}
 
-  constructor(@inject('DB') db: Db, @inject('DAOClaimsConfiguration') configuration: DAOClaimsConfiguration) {
-    this.collection = db.collection('storageWriterClaims')
-    this.maxStorageAttempts = configuration.maxStorageAttempts
+export interface Configuration {
+  readonly maxStorageAttempts: number
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly configuration: Configuration
+}
+
+export interface DAOClaims {
+  readonly start: () => Promise<void>
+  readonly findNextClaim: () => Promise<SignedVerifiableClaim>
+  readonly addClaim: (claim: SignedVerifiableClaim) => Promise<void>
+  readonly addClaimHash: (claimId: string, ipfsFileHash: string) => Promise<void>
+}
+
+export const DAOClaims = ({
+  dependencies: {
+    collection,
+  },
+  configuration: {
+    maxStorageAttempts,
+  },
+}: Arguments): DAOClaims => {
+
+  const start = async () => {
+    await collection.createIndex({ 'claim.id': 1 }, { unique: true })
   }
 
-  public readonly start = async () => {
-    await this.collection.createIndex({ 'claim.id': 1 }, { unique: true })
+  const addClaim = async (claim: SignedVerifiableClaim) => {
+    await collection.insertOne({ claim, storageAttempts: 0, ipfsFileHash: null })
   }
 
-  public readonly addClaim = async (claim: SignedVerifiableClaim) => {
-    await this.collection.insertOne({ claim, storageAttempts: 0, ipfsFileHash: null })
+  const addClaimHash = async (claimId: string, ipfsFileHash: string) => {
+    await collection.updateOne({ 'claim.id': claimId }, { $set: { ipfsFileHash } })
   }
 
-  public readonly addClaimHash = async (claimId: string, ipfsFileHash: string) => {
-    await this.collection.updateOne({ 'claim.id': claimId }, { $set: { ipfsFileHash } })
-  }
-
-  private readonly findClaimToStore = () =>
-    this.collection.findOneAndUpdate(
+  const findClaimToStore = () =>
+    collection.findOneAndUpdate(
       {
-        $and: [{ ipfsFileHash: null }, { storageAttempts: { $lt: this.maxStorageAttempts } }],
+        $and: [{ ipfsFileHash: null }, { storageAttempts: { $lt: maxStorageAttempts } }],
       },
       {
         $inc: { storageAttempts: 1 },
@@ -55,9 +73,16 @@ export class DAOClaims {
       },
     )
 
-  public readonly findNextClaim = pipeP(
-    this.findClaimToStore,
+  const findNextClaim = pipeP(
+    findClaimToStore,
     getClaimFromFindAndUpdateResponse,
     throwIfClaimNotFound,
   )
+
+  return {
+    start,
+    findNextClaim,
+    addClaim,
+    addClaimHash,
+  }
 }
