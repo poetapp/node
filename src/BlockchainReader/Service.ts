@@ -1,5 +1,4 @@
 import { Interval } from '@po.et/poet-js'
-import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
@@ -12,7 +11,16 @@ export interface ServiceConfiguration {
   readonly forceBlockHeight?: number
 }
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly claimController: Controller
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly configuration: ServiceConfiguration
+}
+
 export class Service {
   private readonly logger: Pino.Logger
   private readonly claimController: Controller
@@ -20,11 +28,13 @@ export class Service {
   private readonly interval: Interval
   private lastBlockHeight: number
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('ClaimController') claimController: Controller,
-    @inject('ServiceConfiguration') configuration: ServiceConfiguration,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      claimController,
+    },
+    configuration,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.claimController = claimController
     this.configuration = configuration

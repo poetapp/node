@@ -1,5 +1,4 @@
 import BitcoinCore = require('bitcoin-core')
-import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { filter, reject } from 'ramda'
 
@@ -15,7 +14,18 @@ export interface ControllerConfiguration {
   readonly poetVersion: number
 }
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly dao: DAO
+  readonly messaging: Messaging
+  readonly bitcoinCore: BitcoinCore
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly configuration: ControllerConfiguration
+}
+
 export class Controller {
   private readonly logger: Pino.Logger
   private readonly dao: DAO
@@ -23,13 +33,15 @@ export class Controller {
   private readonly bitcoinCore: BitcoinCore
   private readonly configuration: ControllerConfiguration
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('DAO') dao: DAO,
-    @inject('Messaging') messaging: Messaging,
-    @inject('BitcoinCore') bitcoinCore: BitcoinCore,
-    @inject('ClaimControllerConfiguration') configuration: ControllerConfiguration,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      messaging,
+      bitcoinCore,
+      dao,
+    },
+    configuration,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.dao = dao
     this.messaging = messaging
