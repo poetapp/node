@@ -30,8 +30,15 @@ const clientSingleton = (hostA: string = BITCOIND_A, hostB: string = BITCOIND_B)
     bitcoinCoreClientB: bitcoinCoreClientB || createClient(hostB),
   })
 }
+export const waitForBlockchainsToSync = async (
+  targetBlockHeight: number,
+  bitcoinClients: ReadonlyArray<any>,
+): Promise<void> => {
+  const waitForTargetHeight = waitForBlockchainSync(targetBlockHeight)
+  await Promise.all(bitcoinClients.map(waitForTargetHeight))
+}
 
-export const waitForBlockchainSync = async (targetBlockHeight: number, bitcoinClient: any): Promise<void> => {
+export const waitForBlockchainSync = (targetBlockHeight: number) => async (bitcoinClient: any): Promise<void> => {
   logger.info(`Waiting for ${targetBlockHeight}`)
   let { blocks } = await bitcoinClient.getBlockchainInfo()
   while (blocks < targetBlockHeight) {

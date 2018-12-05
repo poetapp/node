@@ -4,7 +4,13 @@ import { allPass, is, isNil, lensPath, not, path, pipe, pipeP, view } from 'ramd
 import { describe } from 'riteway'
 
 import { issuer, privateKey } from '../helpers/Keys'
-import { ensureBitcoinBalance, bitcoindClients, resetBitcoinServers, waitForBlockchainSync } from '../helpers/bitcoin'
+import {
+  ensureBitcoinBalance,
+  bitcoindClients,
+  resetBitcoinServers,
+  waitForBlockchainSync,
+  waitForBlockchainsToSync,
+} from '../helpers/bitcoin'
 import { delayInSeconds, runtimeId, setUpServerAndDb } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'
 
@@ -57,8 +63,7 @@ describe('Transaction timout will reset the transaction id for the claim', async
   // Make sure node A has regtest coins to pay for transactions.
   const generatedBlockHeight = 101
   await ensureBitcoinBalance(bitcoinCoreClientA, generatedBlockHeight)
-  await waitForBlockchainSync(generatedBlockHeight, bitcoinCoreClientA)
-  await waitForBlockchainSync(generatedBlockHeight, bitcoinCoreClientB)
+  await waitForBlockchainsToSync(generatedBlockHeight, [bitcoinCoreClientA, bitcoinCoreClientB])
   await bitcoinCoreClientA.setNetworkActive(false)
 
   // Allow everything to finish starting.
@@ -104,11 +109,12 @@ describe('Transaction timout will reset the transaction id for the claim', async
 
   await bitcoinCoreClientB.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
   const targetHeight = 102 + blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS
-  await waitForBlockchainSync(targetHeight, bitcoinCoreClientB)
+  const waitForTargetHeight = waitForBlockchainSync(targetHeight)
+  await waitForTargetHeight(bitcoinCoreClientB)
   await bitcoinCoreClientA.setNetworkActive(true)
-  await waitForBlockchainSync(targetHeight, bitcoinCoreClientA)
+  await waitForTargetHeight(bitcoinCoreClientA)
 
-  await delayInSeconds((blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS  + 5) * 2)
+  await delayInSeconds(blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS  + 5)
 
   const secondResponse = await getWorkFromNode(claim.id)
   const secondGet = await secondResponse.json()
