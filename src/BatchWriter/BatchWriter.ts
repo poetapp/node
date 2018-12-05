@@ -1,4 +1,3 @@
-import { injectable, Container } from 'inversify'
 import { Db, MongoClient, Collection } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
@@ -20,11 +19,9 @@ export interface BatchWriterConfiguration extends LoggingConfiguration, ServiceC
   readonly exchanges: ExchangeConfiguration
 }
 
-@injectable()
 export class BatchWriter {
   private readonly logger: Pino.Logger
   private readonly configuration: BatchWriterConfiguration
-  private readonly container = new Container()
   private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
@@ -45,15 +42,48 @@ export class BatchWriter {
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
-    this.initializeContainer()
+    const ipfs = new IPFS({
+      configuration: {
+        ipfsUrl: this.configuration.ipfsUrl,
+      },
+    })
 
-    this.router = this.container.get('Router')
+    const fileCollection: Collection = this.dbConnection.collection('batchWriter')
+
+    const fileDAO = new FileDAO({
+      dependencies: {
+        fileCollection,
+      },
+    })
+
+    const claimController = new ClaimController({
+      dependencies: {
+        fileDAO,
+        ipfs,
+      },
+    })
+
+    this.router = new Router({
+      dependencies: {
+        logger: this.logger,
+        messaging: this.messaging,
+        claimController,
+      },
+      exchange: this.configuration.exchanges,
+    })
     await this.router.start()
 
-    this.service = this.container.get('Service')
+    this.service = new Service({
+      dependencies: {
+        logger: this.logger,
+        messaging: this.messaging,
+      },
+      configuration: {
+        batchCreationIntervalInSeconds: this.configuration.batchCreationIntervalInSeconds,
+      },
+      exchange: this.configuration.exchanges,
+    })
     await this.service.start()
-    const fileDAO: FileDAO = this.container.get('FileDAO')
-    await fileDAO.start()
 
     this.logger.info('Batcher Writer Started')
   }
@@ -64,25 +94,5 @@ export class BatchWriter {
     this.logger.info('BatchWriter Database Stopping')
     await this.mongoClient.close()
     await this.router.stop()
-  }
-
-  initializeContainer() {
-    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
-    this.container.bind<FileDAO>('FileDAO').to(FileDAO)
-    this.container.bind<Collection>('fileCollection').toConstantValue(this.dbConnection.collection('batchWriter'))
-    this.container.bind<IPFS>('IPFS').to(IPFS)
-    this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
-      ipfsUrl: this.configuration.ipfsUrl,
-    })
-    this.container.bind<Router>('Router').to(Router)
-    this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<Service>('Service').to(Service)
-    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
-      batchCreationIntervalInSeconds: this.configuration.batchCreationIntervalInSeconds,
-    })
-
-    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }
