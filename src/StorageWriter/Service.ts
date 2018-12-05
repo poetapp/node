@@ -30,8 +30,6 @@ export interface Service {
 export const Service = ({
   configuration,
   dependencies,
-  // Instead of receiving exchange configuration, a messaging object
-  // should be passed in that contains preconfigured functions to call.
   exchange,
 }: Arguments): Service => {
   const { messaging } = dependencies
