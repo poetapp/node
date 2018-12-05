@@ -1,9 +1,16 @@
 /* tslint:disable:no-relative-imports */
+import BitcoinCore = require('bitcoin-core')
 const Client = require('bitcoin-core')
-import { delay } from '../helpers/utils'
+import { LoggingConfiguration, Configuration, loadConfigurationWithDefaults } from 'Configuration'
+import { createModuleLogger } from 'Helpers/Logging'
+import * as Pino from 'pino'
+import {delay, delayInSeconds} from '../helpers/utils'
 
 const BITCOIND_A = 'bitcoind-1'
 const BITCOIND_B = 'bitcoind-2'
+
+const loggingConfiguration: LoggingConfiguration = loadConfigurationWithDefaults()
+const logger: Pino.Logger = createModuleLogger(loggingConfiguration, __dirname)
 
 const createClient = (host: string) =>
   new Client({
@@ -15,22 +22,40 @@ const createClient = (host: string) =>
   })
 
 const clientSingleton = (hostA: string = BITCOIND_A, hostB: string = BITCOIND_B) => {
-  const btcdClientA: any = null
-  const btcdClientB: any = null
+  const bitcoinCoreClientA: any = null
+  const bitcoinCoreClientB: any = null
 
   return () => ({
-    btcdClientA: btcdClientA || createClient(hostA),
-    btcdClientB: btcdClientB || createClient(hostB),
+    bitcoinCoreClientA: bitcoinCoreClientA || createClient(hostA),
+    bitcoinCoreClientB: bitcoinCoreClientB || createClient(hostB),
   })
+}
+export const waitForBlockchainsToSync = async (
+  targetBlockHeight: number,
+  bitcoinClients: ReadonlyArray<BitcoinCore>,
+): Promise<void> => {
+  const waitForTargetHeight = waitForBlockchainSync(targetBlockHeight)
+  await Promise.all(bitcoinClients.map(waitForTargetHeight))
+}
+
+export const waitForBlockchainSync = (targetBlockHeight: number) =>
+  async (bitcoinClient: BitcoinCore): Promise<void> => {
+    logger.info(`Waiting for ${targetBlockHeight}`)
+    let { blocks } = await bitcoinClient.getBlockchainInfo()
+    while (blocks < targetBlockHeight) {
+      await delayInSeconds(10)
+      blocks = (await bitcoinClient.getBlockchainInfo()).blocks
+      logger.info(`currentHeight: ${blocks}`)
+    }
 }
 
 export const bitcoindClients = clientSingleton(process.env.BITCOIN_URL, process.env.BITCOIN_URL_B)
 
 export const resetBitcoinServers = async () => {
-  const { btcdClientA, btcdClientB }: any = bitcoindClients()
+  const { bitcoinCoreClientA, bitcoinCoreClientB }: any = bitcoindClients()
 
-  await btcdClientA.stop()
-  await btcdClientB.stop()
+  await bitcoinCoreClientA.stop()
+  await bitcoinCoreClientB.stop()
   await delay(5 * 1000)
 }
 
