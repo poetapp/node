@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import { Collection, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb'
 
 export interface Entry {
@@ -18,11 +17,22 @@ type completeEntry = (x: Entry) => Promise<UpdateWriteOpResult>
 
 type completeEntries = (xs: ReadonlyArray<Entry>) => Promise<ReadonlyArray<UpdateWriteOpResult>>
 
-@injectable()
+export interface Dependencies {
+  readonly fileCollection: Collection
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class FileDAO {
   private readonly fileCollection: Collection
 
-  constructor(@inject('fileCollection') fileCollection: Collection) {
+  constructor({
+    dependencies: {
+      fileCollection,
+    },
+  }: Arguments) {
     this.fileCollection = fileCollection
   }
 
