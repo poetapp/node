@@ -21,6 +21,7 @@ export interface Arguments {
   readonly configuration: ServiceConfiguration
   readonly exchange: ExchangeConfiguration
 }
+
 export class Service {
   private readonly interval: Interval
   private readonly messaging: Messaging
