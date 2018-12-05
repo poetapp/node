@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import { Collection, InsertWriteOpResult, UpdateWriteOpResult } from 'mongodb'
 
 import { ErrorCodes } from 'Helpers/MongoDB'
@@ -31,11 +30,22 @@ type incEntryAttempts = (x: Entry) => Promise<UpdateWriteOpResult>
 
 type updateFileHashes = (x: Entry) => Promise<UpdateWriteOpResult>
 
-@injectable()
+export interface Dependencies {
+  readonly directoryCollection: Collection
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class DirectoryDAO {
   private readonly directoryCollection: Collection
 
-  constructor(@inject('directoryCollection') directoryCollection: Collection) {
+  constructor({
+    dependencies: {
+      directoryCollection,
+    },
+  }: Arguments) {
     this.directoryCollection = directoryCollection
   }
 

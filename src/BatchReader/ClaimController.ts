@@ -1,15 +1,27 @@
-import { inject, injectable } from 'inversify'
 import { InsertWriteOpResult } from 'mongodb'
 
 import { DirectoryDAO } from './DirectoryDAO'
 import { IPFS } from './IPFS'
 
-@injectable()
+export interface Dependencies {
+  readonly directoryDAO: DirectoryDAO
+  readonly ipfs: IPFS
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class ClaimController {
   private readonly directoryDAO: DirectoryDAO
   private readonly ipfs: IPFS
 
-  constructor(@inject('DirectoryDAO') directoryDAO: DirectoryDAO, @inject('IPFS') ipfs: IPFS) {
+  constructor({
+    dependencies: {
+      directoryDAO,
+      ipfs,
+    },
+  }: Arguments) {
     this.directoryDAO = directoryDAO
     this.ipfs = ipfs
   }
