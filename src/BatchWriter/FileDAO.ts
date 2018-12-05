@@ -22,7 +22,7 @@ export interface Dependencies {
 }
 
 export interface Arguments {
-  dependencies: Dependencies
+  readonly dependencies: Dependencies
 }
 
 export class FileDAO {
