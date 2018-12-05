@@ -33,8 +33,6 @@ export const Router = ({
     messaging,
     claimController,
   },
-  // Instead of receiving exchange configuration, a messaging object
-  // should be passed in that contains preconfigured functions to call.
   exchange,
 }: Arguments): Router => {
   const childLogger = childWithFileName(logger, __filename)
