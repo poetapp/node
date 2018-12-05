@@ -1,14 +1,22 @@
 import { LightBlock } from 'Messaging/Messages'
-import { inject, injectable } from 'inversify'
 import { Collection } from 'mongodb'
 
-@injectable()
+export interface Dependencies {
+  readonly blockchainInfo: Collection
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class BlockInfoDAO {
   private readonly blockchainInfo: Collection
 
-  constructor(
-    @inject('BlockchainInfoCollection') blockchainInfo: Collection,
-  ) {
+  constructor({
+    dependencies: {
+      blockchainInfo,
+    },
+  }: Arguments) {
     this.blockchainInfo = blockchainInfo
   }
 

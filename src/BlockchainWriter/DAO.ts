@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import { Collection } from 'mongodb'
 
 export interface Entry {
@@ -10,11 +9,22 @@ export interface Entry {
   readonly creationBlockHeight?: number
 }
 
-@injectable()
+export interface Dependencies {
+  readonly blockchainWriterCollection: Collection
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class DAO {
   private readonly blockchainWriterCollection: Collection
 
-  constructor(@inject('BlockchainWriterCollection') blockchainWriterCollection: Collection) {
+  constructor({
+    dependencies: {
+      blockchainWriterCollection,
+    },
+  }: Arguments) {
     this.blockchainWriterCollection = blockchainWriterCollection
   }
 
