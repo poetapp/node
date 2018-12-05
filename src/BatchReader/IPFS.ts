@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 
 import { isNotNil } from 'Helpers/isNotNil'
@@ -40,11 +39,16 @@ export interface IPFSConfiguration {
   readonly ipfsUrl: string
 }
 
-@injectable()
+export interface Arguments {
+  readonly configuration: IPFSConfiguration
+}
+
 export class IPFS {
   private readonly url: string
 
-  constructor(@inject('IPFSConfiguration') configuration: IPFSConfiguration) {
+  constructor({
+    configuration,
+  }: Arguments) {
     this.url = configuration.ipfsUrl
   }
 
