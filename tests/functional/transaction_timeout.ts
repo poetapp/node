@@ -4,7 +4,6 @@ import { allPass, is, isNil, lensPath, not, path, pipe, pipeP, view } from 'ramd
 import { describe } from 'riteway'
 
 import { issuer, privateKey } from '../helpers/Keys'
-import { ensureBitcoinBalance, bitcoindClients, resetBitcoinServers } from '../helpers/bitcoin'
 import { ensureBitcoinBalance, bitcoindClients, resetBitcoinServers, waitForBlockchainSync } from '../helpers/bitcoin'
 import { delayInSeconds, runtimeId, setUpServerAndDb } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'

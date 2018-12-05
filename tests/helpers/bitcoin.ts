@@ -26,11 +26,9 @@ const clientSingleton = (hostA: string = BITCOIND_A, hostB: string = BITCOIND_B)
 
 export const waitForBlockchainSync = async (targetBlockHeight: number, bitcoinClient: any): Promise<void> => {
   let { blocks } = await bitcoinClient.getBlockchainInfo()
-  console.log(`Target Height: ${targetBlockHeight}`)
   while (blocks < targetBlockHeight) {
     await delayInSeconds(10)
     blocks = (await bitcoinClient.getBlockchainInfo()).blocks
-    console.log(`Current height: ${blocks}`)
   }
 }
 
