@@ -32,7 +32,7 @@ const createClaim = pipeP(
   signVerifiableClaim,
 )
 
-const { btcdClientA, btcdClientB }: any = bitcoindClients()
+const { bitcoinCoreClientA, bitcoinCoreClientB }: any = bitcoindClients()
 
 const blockHash = lensPath(['anchor', 'blockHash'])
 const blockHeight = lensPath(['anchor', 'blockHeight'])
@@ -48,15 +48,15 @@ const hasValidTxId = allPass([is(String), lengthIsGreaterThan0])
 
 describe('Transaction timout will reset the transaction id for the claim', async assert => {
   await resetBitcoinServers()
-  await btcdClientB.addNode(btcdClientA.host, 'add')
+  await bitcoinCoreClientB.addNode(bitcoinCoreClientA.host, 'add')
 
   await delayInSeconds(5)
 
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT, blockchainSettings })
 
   // Make sure node A has regtest coins to pay for transactions.
-  await ensureBitcoinBalance(btcdClientA)
-  await btcdClientA.setNetworkActive(false)
+  await ensureBitcoinBalance(bitcoinCoreClientA)
+  await bitcoinCoreClientA.setNetworkActive(false)
 
   // Allow everything to finish starting.
   await delayInSeconds(5)
@@ -99,11 +99,11 @@ describe('Transaction timout will reset the transaction id for the claim', async
     expected: true,
   })
 
-  await btcdClientB.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
+  await bitcoinCoreClientB.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
   const targetHeight = 102 + blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS
-  await waitForBlockchainSync(targetHeight, btcdClientB)
-  await btcdClientA.setNetworkActive(true)
-  await waitForBlockchainSync(targetHeight, btcdClientA)
+  await waitForBlockchainSync(targetHeight, bitcoinCoreClientB)
+  await bitcoinCoreClientA.setNetworkActive(true)
+  await waitForBlockchainSync(targetHeight, bitcoinCoreClientA)
 
   await delayInSeconds((blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS  + 5) * 2)
 
@@ -125,7 +125,7 @@ describe('Transaction timout will reset the transaction id for the claim', async
     expected: true,
   })
 
-  await btcdClientA.generate(1)
+  await bitcoinCoreClientA.generate(1)
   await delayInSeconds(
     blockchainSettings.BATCH_CREATION_INTERVAL_IN_SECONDS +
       blockchainSettings.READ_DIRECTORY_INTERVAL_IN_SECONDS,
