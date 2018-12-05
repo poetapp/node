@@ -35,7 +35,7 @@ export const StorageWriter = (
 ): StorageWriter => {
   const logger = createModuleLogger(configuration, __dirname)
 
-  const db = Db
+  let db: Db
   let mongoClient: MongoClient
   let router: Router
   let service: Service.Service
@@ -49,7 +49,7 @@ export const StorageWriter = (
     logger.info({ configuration }, 'StorageWriter Starting')
 
     mongoClient = await MongoClient.connect(configuration.dbUrl)
-    const db = await mongoClient.db()
+    db = await mongoClient.db()
 
     const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
     messaging = new Messaging(configuration.rabbitmqUrl, exchangesMessaging)
