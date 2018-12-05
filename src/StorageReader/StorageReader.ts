@@ -1,5 +1,4 @@
 import { getVerifiableClaimSigner, VerifiableClaimSigner } from '@po.et/poet-js'
-import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
@@ -26,11 +25,9 @@ export interface StorageReaderConfiguration
   readonly exchanges: ExchangeConfiguration
 }
 
-@injectable()
 export class StorageReader {
   private readonly logger: Pino.Logger
   private readonly configuration: StorageReaderConfiguration
-  private readonly container = new Container()
   private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
@@ -54,12 +51,46 @@ export class StorageReader {
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
-    this.initializeContainer()
+    const ipfs = new IPFS({
+      configuration: {
+        ipfsUrl: this.configuration.ipfsUrl,
+        downloadTimeoutInSeconds: this.configuration.downloadTimeoutInSeconds,
+      },
+    })
 
-    this.router = this.container.get('Router')
+    const claimController = new ClaimController({
+      dependencies: {
+        logger: this.logger,
+        db: this.dbConnection,
+        messaging: this.messaging,
+        ipfs,
+        verifiableClaimSigner: getVerifiableClaimSigner(),
+      },
+      configuration: {
+        downloadRetryDelayInMinutes: this.configuration.downloadRetryDelayInMinutes,
+        downloadMaxAttempts: this.configuration.downloadMaxAttempts,
+      },
+    })
+
+    this.router = new Router({
+      dependencies: {
+        logger: this.logger,
+        messaging: this.messaging,
+        claimController,
+      },
+      exchange: this.configuration.exchanges,
+    })
     await this.router.start()
 
-    this.service = this.container.get('Service')
+    this.service = new Service({
+      dependencies: {
+        logger: this.logger,
+        claimController,
+      },
+      configuration: {
+        downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds,
+      },
+    })
     await this.service.start()
 
     await this.createIndices()
@@ -74,30 +105,6 @@ export class StorageReader {
     await this.mongoClient.close()
     this.logger.info('Stopping Storage Messaging...')
     await this.messaging.stop()
-  }
-
-  initializeContainer() {
-    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
-    this.container.bind<Router>('Router').to(Router)
-    this.container.bind<IPFS>('IPFS').to(IPFS)
-    this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
-      ipfsUrl: this.configuration.ipfsUrl,
-      downloadTimeoutInSeconds: this.configuration.downloadTimeoutInSeconds,
-    })
-    this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<ClaimControllerConfiguration>('ClaimControllerConfiguration').toConstantValue({
-      downloadRetryDelayInMinutes: this.configuration.downloadRetryDelayInMinutes,
-      downloadMaxAttempts: this.configuration.downloadMaxAttempts,
-    })
-    this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<Service>('Service').to(Service)
-    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
-      downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds,
-    })
-
-    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
-    this.container.bind<VerifiableClaimSigner>('VerifiableClaimSigner').toConstantValue(getVerifiableClaimSigner())
   }
 
   private async createIndices() {
