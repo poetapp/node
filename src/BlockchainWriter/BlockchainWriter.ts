@@ -1,5 +1,4 @@
 import BitcoinCore = require('bitcoin-core')
-import { injectable, Container } from 'inversify'
 import { Collection, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
@@ -25,7 +24,6 @@ export interface BlockchainWriterConfiguration
   readonly exchanges: ExchangeConfiguration
 }
 
-@injectable()
 export class BlockchainWriter {
   private readonly logger: Pino.Logger
   private readonly configuration: BlockchainWriterConfiguration
@@ -44,27 +42,62 @@ export class BlockchainWriter {
     this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
     const db = await this.mongoClient.db()
 
-    const blockchainWriterCollection = db.collection('blockchainWriter')
-    const blockchainInfoCollection = db.collection('blockchainInfo')
+    const blockchainWriterCollection: Collection = db.collection('blockchainWriter')
+    const blockchainInfoCollection: Collection = db.collection('blockchainInfo')
 
-    const container = createContainer(
-      this.configuration,
-      this.logger,
-      blockchainWriterCollection,
-      blockchainInfoCollection,
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
+
+    this.messaging = new Messaging(
+      this.configuration.rabbitmqUrl,
+      exchangesMessaging,
     )
-
-    this.messaging = container.get('Messaging') as Messaging
     await this.messaging.start()
 
-    const router = container.get('Router') as Router
+    const dao = new DAO({
+      dependencies: {
+        blockchainWriterCollection,
+      },
+    })
+    await dao.start()
+
+    const bitcoinCore = new BitcoinCore(
+      bitcoinRPCConfigurationToBitcoinCoreArguments(this.configuration),
+    )
+
+    const controller = new Controller({
+      dependencies: {
+        logger: this.logger,
+        messaging: this.messaging,
+        bitcoinCore,
+        dao,
+      },
+      configuration: this.configuration,
+      exchange: this.configuration.exchanges,
+    })
+
+    const router = new Router({
+      dependencies: {
+        logger: this.logger,
+        messaging: this.messaging,
+        claimController: controller,
+      },
+      exchange: this.configuration.exchanges,
+    })
     await router.start()
 
-    this.service = container.get('Service') as Service
+    this.service = new Service({
+      dependencies: {
+        logger: this.logger,
+        messaging: this.messaging,
+      },
+      configuration: {
+        anchorIntervalInSeconds: this.configuration.anchorIntervalInSeconds,
+        purgeStaleTransactionsIntervalInSeconds: this.configuration.purgeStaleTransactionsIntervalInSeconds,
+        maximumTransactionAgeInBlocks: this.configuration.maximumTransactionAgeInBlocks,
+      },
+      exchange: this.configuration.exchanges,
+    })
     await this.service.start()
-
-    const dao = container.get('DAO') as DAO
-    await dao.start()
 
     this.logger.info('BlockchainWriter Started')
   }
@@ -77,41 +110,4 @@ export class BlockchainWriter {
     this.logger.info('BlockchainWriter Messaging stopping...')
     await this.messaging.stop()
   }
-}
-
-const createContainer = (
-  configuration: BlockchainWriterConfiguration,
-  logger: Pino.Logger,
-  blockchainWriterCollection: Collection,
-  blockchainInfo: Collection,
-) => {
-  const container = new Container()
-
-  container.bind<Router>('Router').to(Router)
-  container.bind<Controller>('Controller').to(Controller)
-  container.bind<Service>('Service').to(Service)
-  container.bind<DAO>('DAO').to(DAO)
-
-  container.bind<Pino.Logger>('Logger').toConstantValue(logger)
-  container
-    .bind<Collection>('BlockchainWriterCollection')
-    .toConstantValue(blockchainWriterCollection)
-  container
-    .bind<Collection>('BlockchainInfoCollection')
-    .toConstantValue(blockchainInfo)
-
-  const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
-  container.bind<Messaging>('Messaging').toConstantValue(new Messaging(configuration.rabbitmqUrl, exchangesMessaging))
-  container
-    .bind<BitcoinCore>('BitcoinCore')
-    .toConstantValue(new BitcoinCore(bitcoinRPCConfigurationToBitcoinCoreArguments(configuration)))
-  container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
-    anchorIntervalInSeconds: configuration.anchorIntervalInSeconds,
-    purgeStaleTransactionsIntervalInSeconds: configuration.purgeStaleTransactionsIntervalInSeconds,
-    maximumTransactionAgeInBlocks: configuration.maximumTransactionAgeInBlocks,
-  })
-  container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(configuration)
-  container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(configuration.exchanges)
-
-  return container
 }
