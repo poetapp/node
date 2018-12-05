@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 
 import { secondsToMiliseconds } from 'Helpers/Time'
@@ -8,15 +7,17 @@ export interface IPFSConfiguration {
   readonly downloadTimeoutInSeconds: number
 }
 
-/**
- * Wrapper around IPFS' RPC
- */
-@injectable()
+export interface Arguments {
+  readonly configuration: IPFSConfiguration
+}
+
 export class IPFS {
   private readonly url: string
   private readonly downloadTimeoutInSeconds: number
 
-  constructor(@inject('IPFSConfiguration') configuration: IPFSConfiguration) {
+  constructor({
+    configuration,
+  }: Arguments) {
     this.url = configuration.ipfsUrl
     this.downloadTimeoutInSeconds = configuration.downloadTimeoutInSeconds
   }
