@@ -16,10 +16,6 @@ export interface ViewConfiguration extends LoggingConfiguration {
   readonly exchanges: ExchangeConfiguration
 }
 
-export interface Arguments {
-  readonly configuration: ViewConfiguration
-}
-
 export class View {
   private readonly logger: Pino.Logger
   private readonly configuration: ViewConfiguration
@@ -28,9 +24,7 @@ export class View {
   private router: Router
   private messaging: Messaging
 
-  constructor({
-    configuration,
-  }: Arguments) {
+  constructor(configuration: ViewConfiguration) {
     this.configuration = configuration
     this.logger = createModuleLogger(configuration, __dirname)
   }
