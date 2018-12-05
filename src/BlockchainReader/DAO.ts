@@ -1,5 +1,4 @@
 import { PoetBlockAnchor } from '@po.et/poet-js'
-import { inject, injectable } from 'inversify'
 import { Collection } from 'mongodb'
 
 export interface Entry {
@@ -17,11 +16,22 @@ type findHighestBlockHeight = () => Promise<number | undefined>
 
 type findHashByHeight = (blockHeight: number) => Promise<string | undefined>
 
-@injectable()
+export interface Dependencies {
+  readonly collection: Collection
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class DAO {
   private readonly collection: Collection
 
-  constructor(@inject('Collection') collection: Collection) {
+  constructor({
+    dependencies: {
+      collection,
+    },
+  }: Arguments) {
     this.collection = collection
   }
 
