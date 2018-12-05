@@ -1,6 +1,5 @@
   /* tslint:disable:trailing-comma */
 import { SignedVerifiableClaim, VerifiableClaimSigner } from '@po.et/poet-js'
-import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 import { pipeP } from 'ramda'
@@ -27,7 +26,19 @@ export interface ClaimControllerConfiguration {
   readonly downloadMaxAttempts: number
 }
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly db: Db
+  readonly messaging: Messaging
+  readonly ipfs: IPFS
+  readonly verifiableClaimSigner: VerifiableClaimSigner
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly configuration: ClaimControllerConfiguration
+}
+
 export class ClaimController {
   private readonly logger: Pino.Logger
   private readonly db: Db
@@ -37,14 +48,16 @@ export class ClaimController {
   private readonly configuration: ClaimControllerConfiguration
   private readonly verifiableClaimSigner: VerifiableClaimSigner
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('DB') db: Db,
-    @inject('Messaging') messaging: Messaging,
-    @inject('IPFS') ipfs: IPFS,
-    @inject('ClaimControllerConfiguration') configuration: ClaimControllerConfiguration,
-    @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      db,
+      messaging,
+      ipfs,
+      verifiableClaimSigner,
+    },
+    configuration,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('storageReader')
