@@ -42,13 +42,13 @@ export class BatchReader {
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
-    const directoryCollection = this.dbConnection.collection('batchReader')
-
     const ipfs = new IPFS({
       configuration: {
         ipfsUrl: this.configuration.ipfsUrl,
       },
     })
+    
+    const directoryCollection = this.dbConnection.collection('batchReader')
 
     const directoryDAO = new DirectoryDAO({
       dependencies: {
