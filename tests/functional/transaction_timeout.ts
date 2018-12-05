@@ -5,6 +5,7 @@ import { describe } from 'riteway'
 
 import { issuer, privateKey } from '../helpers/Keys'
 import { ensureBitcoinBalance, bitcoindClients, resetBitcoinServers } from '../helpers/bitcoin'
+import { ensureBitcoinBalance, bitcoindClients, resetBitcoinServers, waitForBlockchainSync } from '../helpers/bitcoin'
 import { delayInSeconds, runtimeId, setUpServerAndDb } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'
 
@@ -100,7 +101,10 @@ describe('Transaction timout will reset the transaction id for the claim', async
   })
 
   await btcdClientB.generate(blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS + 1)
+  const targetHeight = 102 + blockchainSettings.MAXIMUM_TRANSACTION_AGE_IN_BLOCKS
+  await waitForBlockchainSync(targetHeight, btcdClientB)
   await btcdClientA.setNetworkActive(true)
+  await waitForBlockchainSync(targetHeight, btcdClientA)
 
   await delayInSeconds((blockchainSettings.PURGE_STALE_TRANSACTIONS_INTERVAL_IN_SECONDS  + 5) * 2)
 

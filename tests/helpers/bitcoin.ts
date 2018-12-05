@@ -1,6 +1,6 @@
 /* tslint:disable:no-relative-imports */
 const Client = require('bitcoin-core')
-import { delay } from '../helpers/utils'
+import {delay, delayInSeconds} from '../helpers/utils'
 
 const BITCOIND_A = 'bitcoind-1'
 const BITCOIND_B = 'bitcoind-2'
@@ -22,6 +22,16 @@ const clientSingleton = (hostA: string = BITCOIND_A, hostB: string = BITCOIND_B)
     btcdClientA: btcdClientA || createClient(hostA),
     btcdClientB: btcdClientB || createClient(hostB),
   })
+}
+
+export const waitForBlockchainSync = async (targetBlockHeight: number, bitcoinClient: any): Promise<void> => {
+  let { blocks } = await bitcoinClient.getBlockchainInfo()
+  console.log(`Target Height: ${targetBlockHeight}`)
+  while (blocks < targetBlockHeight) {
+    await delayInSeconds(10)
+    blocks = (await bitcoinClient.getBlockchainInfo()).blocks
+    console.log(`Current height: ${blocks}`)
+  }
 }
 
 export const bitcoindClients = clientSingleton(process.env.BITCOIN_URL, process.env.BITCOIN_URL_B)
