@@ -8,7 +8,6 @@ import {delay, delayInSeconds} from '../helpers/utils'
 const BITCOIND_A = 'bitcoind-1'
 const BITCOIND_B = 'bitcoind-2'
 
-// @ts-ignore
 const loggingConfiguration: LoggingConfiguration = loadConfigurationWithDefaults()
 const logger: Pino.Logger = createModuleLogger(loggingConfiguration, __dirname)
 
