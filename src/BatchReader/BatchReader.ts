@@ -47,7 +47,7 @@ export class BatchReader {
         ipfsUrl: this.configuration.ipfsUrl,
       },
     })
-    
+
     const directoryCollection = this.dbConnection.collection('batchReader')
 
     const directoryDAO = new DirectoryDAO({
