@@ -8,7 +8,6 @@ import {
 } from '@po.et/poet-js'
 import * as fs from 'fs'
 import * as http from 'http'
-import { injectable, inject } from 'inversify'
 import * as Joi from 'joi'
 import * as Koa from 'koa'
 import * as KoaBody from 'koa-body'
@@ -36,7 +35,19 @@ const getPath = prop('path')
 
 const createStreamFromFile = pipe(getPath, fs.createReadStream)
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly fileController: FileController
+  readonly workController: WorkController
+  readonly healthController: HealthController
+  readonly verifiableClaimSigner: VerifiableClaimSigner
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly configuration: RouterConfiguration
+}
+
 export class Router {
   private readonly logger: Pino.Logger
   private readonly configuration: RouterConfiguration
@@ -48,14 +59,16 @@ export class Router {
   private server: http.Server
   private readonly verifiableClaimSigner: VerifiableClaimSigner
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('RouterConfiguration') configuration: RouterConfiguration,
-    @inject('FileController') fileController: FileController,
-    @inject('WorkController') workController: WorkController,
-    @inject('HealthController') healthController: HealthController,
-    @inject('VerifiableClaimSigner') verifiableClaimSigner: VerifiableClaimSigner,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      fileController,
+      workController,
+      healthController,
+      verifiableClaimSigner,
+    },
+    configuration,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
     this.fileController = fileController
