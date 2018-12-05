@@ -10,6 +10,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 export interface ServiceConfiguration {
   readonly readNextDirectoryIntervalInSeconds: number
 }
+
 export interface Dependencies {
   readonly messaging: Messaging
   readonly logger: Pino.Logger
