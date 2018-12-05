@@ -1,5 +1,4 @@
 import BitcoinCore = require('bitcoin-core')
-import { injectable, Container } from 'inversify'
 import { MongoClient, Db, Collection } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
@@ -24,11 +23,9 @@ export interface BlockchainReaderConfiguration
   readonly exchanges: ExchangeConfiguration
 }
 
-@injectable()
 export class BlockchainReader {
   private readonly logger: Pino.Logger
   private readonly configuration: BlockchainReaderConfiguration
-  private readonly container = new Container()
   private mongoClient: MongoClient
   private dbConnection: Db
   private messaging: Messaging
@@ -48,13 +45,45 @@ export class BlockchainReader {
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
-    this.initializeContainer()
+    const collection: Collection = this.dbConnection.collection('blockchainReader')
 
-    this.service = this.container.get('Service')
-    await this.service.start()
-
-    const dao: DAO = this.container.get('DAO')
+    const dao = new DAO({
+      dependencies: {
+        collection,
+      },
+    })
     await dao.start()
+
+    const bitcoinCore = new BitcoinCore({
+      host: this.configuration.bitcoinUrl,
+      port: this.configuration.bitcoinPort,
+      network: this.configuration.bitcoinNetwork,
+      username: this.configuration.bitcoinUsername,
+      password: this.configuration.bitcoinPassword,
+    })
+
+    const controller = new Controller({
+      dependencies: {
+        logger: this.logger,
+        dao,
+        messaging: this.messaging,
+        bitcoinCore,
+      },
+      configuration: this.configuration,
+    })
+
+    this.service = new Service({
+      dependencies: {
+        logger: this.logger,
+        claimController: controller,
+      },
+      configuration: {
+        minimumBlockHeight: this.configuration.minimumBlockHeight,
+        blockchainReaderIntervalInSeconds: this.configuration.blockchainReaderIntervalInSeconds,
+        forceBlockHeight: this.configuration.forceBlockHeight,
+      },
+    })
+    await this.service.start()
 
     this.logger.info('BlockchainReader Started')
   }
@@ -66,29 +95,5 @@ export class BlockchainReader {
     this.service.stop()
     this.logger.info('BlockchainReader Messaging Stopping...')
     await this.messaging.stop()
-  }
-
-  initializeContainer() {
-    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<Controller>('ClaimController').to(Controller)
-    this.container.bind<Service>('Service').to(Service)
-    this.container.bind<DAO>('DAO').to(DAO)
-    this.container.bind<Collection>('Collection').toConstantValue(this.dbConnection.collection('blockchainReader'))
-    this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<BitcoinCore>('BitcoinCore').toConstantValue(
-      new BitcoinCore({
-        host: this.configuration.bitcoinUrl,
-        port: this.configuration.bitcoinPort,
-        network: this.configuration.bitcoinNetwork,
-        username: this.configuration.bitcoinUsername,
-        password: this.configuration.bitcoinPassword,
-      }),
-    )
-    this.container.bind<ControllerConfiguration>('ClaimControllerConfiguration').toConstantValue(this.configuration)
-    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
-      minimumBlockHeight: this.configuration.minimumBlockHeight,
-      blockchainReaderIntervalInSeconds: this.configuration.blockchainReaderIntervalInSeconds,
-      forceBlockHeight: this.configuration.forceBlockHeight,
-    })
   }
 }
