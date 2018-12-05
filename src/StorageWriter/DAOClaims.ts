@@ -48,7 +48,7 @@ export const DAOClaims = ({
   configuration: {
     maxStorageAttempts,
   },
-}: Arguments) => {
+}: Arguments): DAOClaims => {
 
   const start = async () => {
     await collection.createIndex({ 'claim.id': 1 }, { unique: true })
