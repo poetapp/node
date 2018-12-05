@@ -1,9 +1,16 @@
 /* tslint:disable:no-relative-imports */
 const Client = require('bitcoin-core')
+import * as Pino from 'pino'
 import {delay, delayInSeconds} from '../helpers/utils'
+import { createModuleLogger } from 'Helpers/Logging'
+import {LoggingConfiguration, Configuration, loadConfigurationWithDefaults} from 'Configuration'
 
 const BITCOIND_A = 'bitcoind-1'
 const BITCOIND_B = 'bitcoind-2'
+
+// @ts-ignore
+const loggingConfiguration: LoggingConfiguration = loadConfigurationWithDefaults()
+const logger: Pino.Logger = createModuleLogger(loggingConfiguration, __dirname)
 
 const createClient = (host: string) =>
   new Client({
@@ -25,10 +32,12 @@ const clientSingleton = (hostA: string = BITCOIND_A, hostB: string = BITCOIND_B)
 }
 
 export const waitForBlockchainSync = async (targetBlockHeight: number, bitcoinClient: any): Promise<void> => {
+  logger.info(`Waiting for ${targetBlockHeight}`)
   let { blocks } = await bitcoinClient.getBlockchainInfo()
   while (blocks < targetBlockHeight) {
     await delayInSeconds(10)
     blocks = (await bitcoinClient.getBlockchainInfo()).blocks
+    logger.info(`currentHeight: ${blocks}`)
   }
 }
 

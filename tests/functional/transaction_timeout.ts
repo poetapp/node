@@ -55,7 +55,10 @@ describe('Transaction timout will reset the transaction id for the claim', async
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT, blockchainSettings })
 
   // Make sure node A has regtest coins to pay for transactions.
-  await ensureBitcoinBalance(bitcoinCoreClientA)
+  const generatedBlockHeight = 101
+  await ensureBitcoinBalance(bitcoinCoreClientA, generatedBlockHeight)
+  await waitForBlockchainSync(generatedBlockHeight, bitcoinCoreClientA)
+  await waitForBlockchainSync(generatedBlockHeight, bitcoinCoreClientB)
   await bitcoinCoreClientA.setNetworkActive(false)
 
   // Allow everything to finish starting.
