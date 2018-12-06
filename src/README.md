@@ -11,6 +11,7 @@ This greatly reduces the amount of work needed to install and run the Po.et Node
 ### Service Guidelines
 
 - Services communicate via pub/sub using [RabbitMQ], never directly.
+- Event, queue or exchange names must not include the name of the service creating it.
 - Each service initializes and maintains its own mongo collections
 - Services must not access another services mongo collections. 
 - Factory functions are used as the main form of encapsulation and layered separation of concerns.
