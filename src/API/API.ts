@@ -1,5 +1,4 @@
-import { getVerifiableClaimSigner, VerifiableClaimSigner } from '@po.et/poet-js'
-import { injectable, Container } from 'inversify'
+import { getVerifiableClaimSigner } from '@po.et/poet-js'
 import { Collection, MongoClient, Db } from 'mongodb'
 import * as Pino from 'pino'
 
@@ -12,7 +11,6 @@ import { FileController, FileControllerConfiguration } from './FileController'
 import * as FileDAO from './FileDAO'
 import { HealthController } from './HealthController'
 import { Router } from './Router'
-import { RouterConfiguration } from './Router'
 import { WorkController } from './WorkController'
 
 export interface APIConfiguration extends LoggingConfiguration, FileControllerConfiguration {
@@ -22,11 +20,9 @@ export interface APIConfiguration extends LoggingConfiguration, FileControllerCo
   readonly exchanges: ExchangeConfiguration
 }
 
-@injectable()
 export class API {
   private readonly logger: Pino.Logger
   private readonly configuration: APIConfiguration
-  private readonly container = new Container()
   private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
@@ -48,9 +44,50 @@ export class API {
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, this.configuration.exchanges)
     await this.messaging.start()
 
-    this.initializeContainer()
+    const fileDao = new FileDAO.FileDAO({
+      dependencies: {
+        collection: this.fileCollection,
+      },
+    })
 
-    this.router = this.container.get('Router')
+    const fileController = new FileController({
+      dependencies: {
+        fileDao,
+        logger: this.logger,
+      },
+      configuration: {
+        ipfsArchiveUrlPrefix: this.configuration.ipfsArchiveUrlPrefix,
+        ipfsUrl: this.configuration.ipfsUrl,
+      },
+    })
+
+    const workController = new WorkController({
+      dependencies: {
+        logger: this.logger,
+        db: this.dbConnection,
+        messaging: this.messaging,
+      },
+      exchange: this.configuration.exchanges,
+    })
+
+    const healthController = new HealthController({
+      dependencies: {
+        db: this.dbConnection,
+      },
+    })
+
+    this.router = new Router({
+      dependencies: {
+        logger: this.logger,
+        fileController,
+        workController,
+        healthController,
+        verifiableClaimSigner: getVerifiableClaimSigner(),
+      },
+      configuration: {
+        port: this.configuration.port,
+      },
+    })
     await this.router.start()
 
     this.logger.info('API Started')
@@ -63,24 +100,5 @@ export class API {
     await this.router.stop()
     this.logger.info('Stopping API Messaging...')
     await this.messaging.stop()
-  }
-
-  initializeContainer() {
-    this.container.bind<FileDAO.FileDAO>(FileDAO.Symbols.FileDAO).to(FileDAO.FileDAO)
-    this.container.bind<Collection>(FileDAO.Symbols.Collection).toConstantValue(this.fileCollection)
-    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
-    this.container.bind<Router>('Router').to(Router)
-    this.container.bind<RouterConfiguration>('RouterConfiguration').toConstantValue({ port: this.configuration.port })
-    this.container.bind<FileController>('FileController').to(FileController)
-    this.container.bind<WorkController>('WorkController').to(WorkController)
-    this.container.bind<HealthController>('HealthController').to(HealthController)
-    this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
-    this.container.bind<VerifiableClaimSigner>('VerifiableClaimSigner').toConstantValue(getVerifiableClaimSigner())
-    this.container.bind<FileControllerConfiguration>('FileControllerConfiguration').toConstantValue({
-      ipfsArchiveUrlPrefix: this.configuration.ipfsArchiveUrlPrefix,
-      ipfsUrl: this.configuration.ipfsUrl,
-    })
   }
 }

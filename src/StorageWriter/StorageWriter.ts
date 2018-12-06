@@ -13,11 +13,11 @@ import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
 import { DAOIntegrityCheckFailures } from './DAOIntegrityCheckFailures'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
-import { Service, ServiceConfiguration } from './Service'
+import * as Service from './Service'
 
 export interface StorageWriterConfiguration
   extends LoggingConfiguration,
-    ServiceConfiguration,
+    Service.Configuration,
     DAOClaimsConfiguration {
   readonly ipfs: IPFSConfiguration
   readonly dbUrl: string
@@ -25,79 +25,100 @@ export interface StorageWriterConfiguration
   readonly exchanges: ExchangeConfiguration
 }
 
-@injectable()
-export class StorageWriter {
-  private readonly logger: Pino.Logger
-  private readonly configuration: StorageWriterConfiguration
-  private readonly container = new Container()
-  private mongoClient: MongoClient
-  private dbConnection: Db
-  private integrityCheckFailuresCollection: Collection
-  private router: Router
-  private messaging: Messaging
-  private service: Service
-  private daoClaims: DAOClaims
-  private daoIntegrityCheckFailures: DAOIntegrityCheckFailures
+export interface StorageWriter {
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
+}
 
-  constructor(configuration: StorageWriterConfiguration) {
-    this.configuration = configuration
-    this.logger = createModuleLogger(configuration, __dirname)
-  }
+export const StorageWriter = (
+  configuration: StorageWriterConfiguration,
+): StorageWriter => {
+  const logger = createModuleLogger(configuration, __dirname)
 
-  async start() {
-    this.logger.info({ configuration: this.configuration }, 'StorageWriter Starting')
-    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    const db = this.dbConnection = await this.mongoClient.db()
+  let db: Db
+  let mongoClient: MongoClient
+  let router: Router
+  let service: Service.Service
+  let daoClaims: DAOClaims
+  let daoIntegrityCheckFailures: DAOIntegrityCheckFailures
+  let messaging: Messaging
+  let claimController: ClaimController
+  let ipfs: IPFS
 
-    this.integrityCheckFailuresCollection = db.collection('storageWriterIntegrityCheckFailures')
+  const start = async () => {
+    logger.info({ configuration }, 'StorageWriter Starting')
 
-    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
-    await this.messaging.start()
+    mongoClient = await MongoClient.connect(configuration.dbUrl)
+    db = await mongoClient.db()
 
-    this.initializeContainer()
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
+    messaging = new Messaging(configuration.rabbitmqUrl, exchangesMessaging)
+    await messaging.start()
 
-    this.router = this.container.get('Router')
-    await this.router.start()
-
-    this.service = this.container.get('Service')
-    await this.service.start()
-
-    this.daoClaims = this.container.get('DAOClaims')
-    await this.daoClaims.start()
-
-    this.logger.info('StorageWriter Started')
-  }
-
-  async stop() {
-    this.logger.info('Stopping StorageWriter Service')
-    await this.service.stop()
-
-    this.logger.info('Stopping StorageWriter...')
-    await this.router.stop()
-
-    this.logger.info('Stopping StorageWriter Database...')
-    await this.mongoClient.close()
-  }
-
-  initializeContainer() {
-    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
-    this.container.bind<Collection>('integrityCheckFailuresCollection')
-      .toConstantValue(this.integrityCheckFailuresCollection)
-    this.container.bind<DAOClaims>('DAOClaims').to(DAOClaims)
-    this.container.bind<DAOClaimsConfiguration>('DAOClaimsConfiguration').toConstantValue({
-      maxStorageAttempts: this.configuration.maxStorageAttempts,
+    daoClaims = DAOClaims({
+      dependencies: {
+        collection: db.collection('storageWriterClaims'),
+      },
+      configuration: {
+        maxStorageAttempts: 3,
+      },
     })
-    this.container.bind<DAOIntegrityCheckFailures>('DAOIntegrityCheckFailures').to(DAOIntegrityCheckFailures)
-    this.container.bind<Router>('Router').to(Router)
-    this.container.bind<ClaimController>('ClaimController').to(ClaimController)
-    this.container.bind<IPFS>('IPFS').toConstantValue(IPFS(this.configuration.ipfs))
-    this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
-    this.container.bind<Service>('Service').to(Service)
-    this.container.bind<ServiceConfiguration>('ServiceConfiguration').toConstantValue({
-      uploadClaimIntervalInSeconds: this.configuration.uploadClaimIntervalInSeconds,
+
+    daoIntegrityCheckFailures = DAOIntegrityCheckFailures({
+      dependencies: {
+        collection: db.collection('storageWriterIntegrityCheckFailures'),
+      },
     })
+
+    ipfs = IPFS(configuration.ipfs)
+
+    claimController = ClaimController({
+      dependencies: {
+        logger,
+        daoClaims,
+        daoIntegrityCheckFailures,
+        ipfs,
+      },
+    })
+
+    router = Router({
+      dependencies: {
+        logger,
+        messaging,
+        claimController,
+      },
+      exchange: configuration.exchanges,
+    })
+    await router.start()
+
+    service = Service.Service({
+      dependencies: {
+        logger,
+        messaging,
+      },
+      configuration: {
+        uploadClaimIntervalInSeconds: configuration.uploadClaimIntervalInSeconds,
+      },
+      exchange: configuration.exchanges,
+    })
+    await service.start()
+
+    logger.info('StorageWriter Started')
+  }
+
+  const stop = async () => {
+    logger.info('Stopping StorageWriter Service')
+    await service.stop()
+
+    logger.info('Stopping StorageWriter...')
+    await router.stop()
+
+    logger.info('Stopping StorageWriter Database...')
+    await mongoClient.close()
+  }
+
+  return {
+    start,
+    stop,
   }
 }

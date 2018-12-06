@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import fetch from 'node-fetch'
 
 type addFileToDirectory = (directoryhash: string, filehash: string) => Promise<string>
@@ -11,11 +10,16 @@ export interface IPFSConfiguration {
   readonly ipfsUrl: string
 }
 
-@injectable()
+export interface Arguments {
+  readonly configuration: IPFSConfiguration
+}
+
 export class IPFS {
   private readonly url: string
 
-  constructor(@inject('IPFSConfiguration') configuration: IPFSConfiguration) {
+  constructor({
+    configuration,
+  }: Arguments) {
     this.url = configuration.ipfsUrl
   }
 

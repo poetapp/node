@@ -1,5 +1,4 @@
 import { Interval } from '@po.et/poet-js'
-import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
@@ -8,46 +7,58 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
-export interface ServiceConfiguration {
+export interface Configuration {
   readonly uploadClaimIntervalInSeconds: number
 }
 
-@injectable()
-export class Service {
-  private readonly messaging: Messaging
-  private readonly logger: Pino.Logger
-  private readonly uploadNextClaimInterval: Interval
-  private readonly exchange: ExchangeConfiguration
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly messaging: Messaging
+}
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('Messaging') messaging: Messaging,
-    @inject('ServiceConfiguration') configuration: ServiceConfiguration,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
-  ) {
-    this.messaging = messaging
-    this.logger = childWithFileName(logger, __filename)
-    this.uploadNextClaimInterval = new Interval(
-      this.uploadNextClaim,
-      secondsToMiliseconds(configuration.uploadClaimIntervalInSeconds),
-    )
-    this.exchange = exchange
-  }
+export interface Arguments {
+  readonly configuration: Configuration
+  readonly dependencies: Dependencies
+  readonly exchange: ExchangeConfiguration
+}
 
-  async start() {
-    this.uploadNextClaimInterval.start()
-  }
+export interface Service {
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
+}
 
-  stop() {
-    this.uploadNextClaimInterval.stop()
-  }
+export const Service = ({
+  configuration,
+  dependencies,
+  exchange,
+}: Arguments): Service => {
+  const { messaging } = dependencies
+  const logger = childWithFileName(dependencies.logger, __filename)
 
-  private uploadNextClaim = async () => {
-    const logger = this.logger.child({ method: 'uploadNextClaim' })
+  const uploadNextClaim = async () => {
+    const methodLogger = logger.child({ method: 'uploadNextClaim' })
     try {
-      await this.messaging.publish(this.exchange.storageWriterStoreNextClaim, '')
+      await messaging.publish(exchange.storageWriterStoreNextClaim, '')
     } catch (error) {
-      logger.error({ error }, 'Uncaught exception in StorageWriter Service')
+      methodLogger.error({ error }, 'Uncaught exception in StorageWriter Service')
     }
+  }
+
+  const uploadNextClaimInterval = new Interval(
+    uploadNextClaim,
+    secondsToMiliseconds(configuration.uploadClaimIntervalInSeconds),
+  )
+
+  const start = async () => {
+    await uploadNextClaimInterval.start()
+  }
+
+  const stop = async () => {
+    await uploadNextClaimInterval.stop()
+  }
+
+  return {
+    start,
+    stop,
   }
 }

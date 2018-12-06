@@ -1,5 +1,4 @@
 import { isSignedVerifiableClaim } from '@po.et/poet-js'
-import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { anyPass } from 'ramda'
 
@@ -12,49 +11,46 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export const isTraceError = anyPass([isNoMoreEntriesException])
 
-@injectable()
-export class Router {
-  private readonly logger: Pino.Logger
-  private readonly messaging: Messaging
-  private readonly claimController: ClaimController
-  private readonly exchange: ExchangeConfiguration
+export interface Router {
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
+}
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('Messaging') messaging: Messaging,
-    @inject('ClaimController') claimController: ClaimController,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
-  ) {
-    this.logger = childWithFileName(logger, __filename)
-    this.messaging = messaging
-    this.claimController = claimController
-    this.exchange = exchange
-  }
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly messaging: Messaging
+  readonly claimController: ClaimController
+}
 
-  async start() {
-    await this.messaging.consume(this.exchange.newClaim, this.onNewClaim)
-    await this.messaging.consume(this.exchange.storageWriterStoreNextClaim, this.onStorageWriterStoreNextClaim)
-  }
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly exchange: ExchangeConfiguration
+}
 
-  async stop() {
-    this.logger.info('Stopping StorageWriter Router...')
-    await this.messaging.stop()
-  }
+export const Router = ({
+  dependencies: {
+    logger,
+    messaging,
+    claimController,
+  },
+  exchange,
+}: Arguments): Router => {
+  const childLogger = childWithFileName(logger, __filename)
 
-  onNewClaim = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onNewClaim' })
+  const onNewClaim = async (message: any): Promise<void> => {
+    const methodLogger = childLogger.child({ method: 'onNewClaim' })
 
     const messageContent = message.content.toString()
 
     const claim = JSON.parse(messageContent)
 
     if (!isSignedVerifiableClaim(claim))
-      logger.error(`Received a ${this.exchange.newClaim} message, but the content isn't a claim.`)
+      methodLogger.error(`Received a ${exchange.newClaim} message, but the content isn't a claim.`)
 
     try {
-      await this.claimController.create(claim)
+      await claimController.create(claim)
     } catch (error) {
-      logger.error(
+      methodLogger.error(
         {
           error,
         },
@@ -63,19 +59,35 @@ export class Router {
     }
   }
 
-  onStorageWriterStoreNextClaim = async () => {
-    const logger = this.logger.child({ method: 'onStorageWriterStoreNextClaim' })
-    logger.trace('Upload next claim request')
+  const onStorageWriterStoreNextClaim = async () => {
+    const methodLogger = childLogger.child({ method: 'onStorageWriterStoreNextClaim' })
+    methodLogger.trace('Upload next claim request')
+
     try {
-      const { ipfsFileHash, claim } = await this.claimController.storeNextClaim()
-      await this.messaging.publish(this.exchange.claimIpfsHash, {
+      const { ipfsFileHash, claim } = await claimController.storeNextClaim()
+      await messaging.publish(exchange.claimIpfsHash, {
         claimId: claim.id,
         ipfsFileHash,
       })
-      logger.info({ ipfsFileHash, claim }, 'Upload next claim success')
+      methodLogger.info({ ipfsFileHash, claim }, 'Upload next claim success')
     } catch (error) {
-      if (isTraceError(error)) return logger.trace({ error })
-      logger.error({ error }, 'Upload next claim failure')
+      if (isTraceError(error)) return methodLogger.trace({ error })
+      methodLogger.error({ error }, 'Upload next claim failure')
     }
+  }
+
+  const start = async () => {
+    await messaging.consume(exchange.newClaim, onNewClaim)
+    await messaging.consume(exchange.storageWriterStoreNextClaim, onStorageWriterStoreNextClaim)
+  }
+
+  const stop = async () => {
+    childLogger.info('Stopping StorageWriter Router...')
+    await messaging.stop()
+  }
+
+  return {
+    start,
+    stop,
   }
 }

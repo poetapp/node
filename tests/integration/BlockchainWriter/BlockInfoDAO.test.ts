@@ -9,7 +9,11 @@ describe('BlockInfoDAO.insertBlockInfo', async assert => {
   const db = await setUpDb(prefix)
   const { result, mongoClient } = await db.collection('blockchainInfo')
   const blockchainInfoCollection = result
-  const blockInfoDAO = new BlockInfoDAO(blockchainInfoCollection)
+  const blockInfoDAO = new BlockInfoDAO({
+    dependencies: {
+      blockchainInfo: blockchainInfoCollection,
+    },
+  })
   await blockInfoDAO.start()
   const expected = { height: 12345, hash: 'this-is-a-hash', previousHash: 'this-is-a-parent-hash' }
   await blockInfoDAO.insertBlockInfo(expected)
@@ -30,7 +34,11 @@ describe('BlockInfoDAO.getHighestBlock', async assert => {
   const db = await setUpDb(prefix)
   const { result, mongoClient } = await db.collection('blockchainInfo')
   const blockchainInfoCollection = result
-  const blockInfoDAO = new BlockInfoDAO(blockchainInfoCollection)
+  const blockInfoDAO = new BlockInfoDAO({
+    dependencies: {
+      blockchainInfo: blockchainInfoCollection,
+    },
+  })
   await blockInfoDAO.start()
   await blockInfoDAO.insertBlockInfo({ height: 1234, hash: 'wrong-hash', previousHash: 'wrong-hash-parent' })
   const expected = { height: 54321, hash: 'good-hash', previousHash: 'parentHash '}

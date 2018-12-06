@@ -34,16 +34,16 @@ const createClaim = pipeP(
   signVerifiableClaim,
 )
 
-const { btcdClientA, btcdClientB }: any = bitcoindClients()
+const { bitcoinCoreClientA, bitcoinCoreClientB }: any = bitcoindClients()
 
 describe('A user can successfully submit a claim into the po.et network', async (assert: any) => {
   await resetBitcoinServers()
-  await btcdClientB.addNode(btcdClientA.host, 'add')
+  await bitcoinCoreClientB.addNode(bitcoinCoreClientA.host, 'add')
   await delay(5 * 1000)
 
   const dbA = await createDatabase(PREFIX_A)
   const serverA = await app({
-    BITCOIN_URL: btcdClientA.host,
+    BITCOIN_URL: bitcoinCoreClientA.host,
     API_PORT: NODE_A_PORT,
     MONGODB_DATABASE: dbA.settings.tempDbName,
     MONGODB_USER: dbA.settings.tempDbUser,
@@ -54,7 +54,7 @@ describe('A user can successfully submit a claim into the po.et network', async 
 
   const dbB = await createDatabase(PREFIX_B)
   const serverB = await app({
-    BITCOIN_URL: btcdClientB.host,
+    BITCOIN_URL: bitcoinCoreClientB.host,
     API_PORT: NODE_B_PORT,
     MONGODB_DATABASE: dbB.settings.tempDbName,
     MONGODB_USER: dbB.settings.tempDbUser,
@@ -64,7 +64,7 @@ describe('A user can successfully submit a claim into the po.et network', async 
   })
 
   // Make sure node A has regtest coins to pay for transactions.
-  await ensureBitcoinBalance(btcdClientA)
+  await ensureBitcoinBalance(bitcoinCoreClientA)
 
   // Allow everything to finish starting.
   await delay(5 * 1000)
@@ -100,7 +100,7 @@ describe('A user can successfully submit a claim into the po.et network', async 
   await delay(parseInt(process.env.ANCHOR_INTERVAL_IN_SECONDS || '10', 10) * 1000 * 2)
 
   // mine N confirmation blocks on bitcoindA.
-  await btcdClientA.generate(parseInt(process.env.CONFIRMATION_BLOCKS || '1', 10))
+  await bitcoinCoreClientA.generate(parseInt(process.env.CONFIRMATION_BLOCKS || '1', 10))
 
   // Wait for claim batches to be read from the blockchain.
   await delay(parseInt(process.env.READ_DIRECTORY_INTERVAL_IN_SECONDS || '5', 10) * 1000 * 3)

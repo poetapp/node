@@ -13,11 +13,10 @@ This greatly reduces the amount of work needed to install and run the Po.et Node
 - Services communicate via pub/sub using [RabbitMQ], never directly.
 - Each service initializes and maintains its own mongo collections
 - Services must not access another services mongo collections. 
-- Classes are used as the main form of encapsulation and layered separation of concerns.
-- [Dependency Injection] is implemented using the [InversifyJS] framework. See [Inversion of Control]
+- Factory functions are used as the main form of encapsulation and layered separation of concerns.
+- [Dependency Injection] is implemented manually. See [Inversion of Control]
 - Code makes use of both OOP and FP techniques. See: [FP vs OO](http://blog.cleancoder.com/uncle-bob/2018/04/13/FPvsOO.html)
 
-[InversifyJS]: https://github.com/inversify/InversifyJS
 [SOLID]: https://en.wikipedia.org/wiki/SOLID
 [RabbitMQ]: https://www.rabbitmq.com/
 [Inversion of Control]: https://en.wikipedia.org/wiki/Inversion_of_control

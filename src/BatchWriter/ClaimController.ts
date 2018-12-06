@@ -1,16 +1,27 @@
-import { inject, injectable } from 'inversify'
-
 import { NoMoreEntriesException } from 'Exceptions'
 
 import { FileDAO } from './FileDAO'
 import { IPFS } from './IPFS'
 
-@injectable()
+export interface Dependencies {
+  readonly fileDAO: FileDAO
+  readonly ipfs: IPFS
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class ClaimController {
   private readonly fileDAO: FileDAO
   private readonly ipfs: IPFS
 
-  constructor(@inject('FileDAO') fileDAO: FileDAO, @inject('IPFS') ipfs: IPFS) {
+  constructor({
+    dependencies: {
+      fileDAO,
+      ipfs,
+    },
+  }: Arguments) {
     this.fileDAO = fileDAO
     this.ipfs = ipfs
   }

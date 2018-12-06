@@ -1,6 +1,5 @@
 import { PoetAnchor, StorageProtocol } from '@po.et/poet-js'
 import BitcoinCore = require('bitcoin-core')
-import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
@@ -23,7 +22,19 @@ export const convertLightBlockToEntry = (lightBlock: LightBlock): Entry => ({
   blockHash: lightBlock.hash,
 })
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly dao: DAO
+  readonly messaging: Messaging
+  readonly bitcoinCore: BitcoinCore
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly exchange: ExchangeConfiguration
+  readonly configuration: ControllerConfiguration
+}
+
 export class Controller {
   private readonly logger: Pino.Logger
   private readonly dao: DAO
@@ -32,14 +43,16 @@ export class Controller {
   private readonly configuration: ControllerConfiguration
   private readonly exchange: ExchangeConfiguration
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('DAO') dao: DAO,
-    @inject('Messaging') messaging: Messaging,
-    @inject('BitcoinCore') bitcoinCore: BitcoinCore,
-    @inject('ClaimControllerConfiguration') configuration: ControllerConfiguration,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      messaging,
+      bitcoinCore,
+      dao,
+    },
+    configuration,
+    exchange,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.messaging = messaging
     this.bitcoinCore = bitcoinCore
