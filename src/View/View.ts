@@ -1,4 +1,3 @@
-import { injectable, Container } from 'inversify'
 import { Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
@@ -17,11 +16,9 @@ export interface ViewConfiguration extends LoggingConfiguration {
   readonly exchanges: ExchangeConfiguration
 }
 
-@injectable()
 export class View {
   private readonly logger: Pino.Logger
   private readonly configuration: ViewConfiguration
-  private readonly container = new Container()
   private mongoClient: MongoClient
   private dbConnection: Db
   private router: Router
@@ -41,9 +38,21 @@ export class View {
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
-    this.initializeContainer()
+    const workController = new WorkController({
+      dependencies: {
+        logger: this.logger,
+        db: this.dbConnection,
+      },
+    })
 
-    this.router = this.container.get('Router')
+    this.router = new Router({
+      dependencies: {
+        logger: this.logger,
+        messaging: this.messaging,
+        workController,
+      },
+      exchange: this.configuration.exchanges,
+    })
     await this.router.start()
 
     this.logger.info('View Started')
@@ -54,14 +63,5 @@ export class View {
     await this.router.stop()
     this.logger.info('Stopping View Database...')
     await this.mongoClient.close()
-  }
-
-  initializeContainer() {
-    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
-    this.container.bind<Router>('Router').to(Router)
-    this.container.bind<WorkController>('WorkController').to(WorkController)
-    this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
   }
 }
