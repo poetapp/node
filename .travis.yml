@@ -15,6 +15,7 @@ services:
 env:
   REPO: poetapp/node
   DOCKER_COMPOSE_VERSION: 1.21.2
+  LOGGING_LEVEL: warn
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
