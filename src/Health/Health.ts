@@ -1,6 +1,5 @@
 import { Messaging } from 'Messaging/Messaging'
 import BitcoinCore = require('bitcoin-core')
-import { Container } from 'inversify'
 import { Collection, Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
@@ -29,7 +28,6 @@ export interface HealthConfiguration
 export class Health {
   private readonly logger: Pino.Logger
   private readonly configuration: HealthConfiguration
-  private readonly container = new Container()
   private mongoClient: MongoClient
   private dbConnection: Db
   private cron: HealthService
