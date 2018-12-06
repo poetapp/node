@@ -1,19 +1,31 @@
 import { Work, PoetBlockAnchor } from '@po.et/poet-js'
-import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { ClaimIPFSHashPair } from 'Interfaces'
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly db: Db
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class WorkController {
   private readonly logger: Pino.Logger
   private readonly db: Db
   private readonly anchorCollection: Collection
   private readonly workCollection: Collection
 
-  constructor(@inject('Logger') logger: Pino.Logger, @inject('DB') db: Db) {
+  constructor({
+    dependencies: {
+      logger,
+      db,
+    },
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.anchorCollection = this.db.collection('anchors')
