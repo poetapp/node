@@ -3,6 +3,7 @@ import { promisify } from 'util'
 import { secondsToMiliseconds } from '../../src/Helpers/Time'
 import { asyncPipe } from '../../src/Helpers/asyncPipe'
 import { app } from '../../src/app'
+import { RabbitMQ } from '../rabbitMQ'
 import { dbHelper } from './database'
 export const runtimeId = () => `${process.pid}-${new Date().getMilliseconds()}-${Math.floor(Math.random() * 10)}`
 export const delay = promisify(setTimeout)
@@ -51,7 +52,9 @@ export const setUpServerAndDb = async ({
     ...blockchainSettings,
   })
   await delay(5 * 1000)
-  return { db, server }
+  const rabbitMQ = await RabbitMQ(process.env.RABBITMQ_URL)
+
+  return { db, server, rabbitMQ }
 }
 
 export const baseUrl = (port: string, host: string = 'localhost') => `http://${host}:${port}`

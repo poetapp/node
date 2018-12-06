@@ -2,7 +2,6 @@
 import { describe } from 'riteway'
 
 import { bitcoindClients, resetBitcoinServers, generateReorgs } from '../helpers/bitcoin'
-import { RabbitMQ } from '../helpers/rabbitMQ'
 import { delay, runtimeId } from '../helpers/utils'
 import { setUpServerAndDb } from '../helpers/utils'
 
@@ -25,8 +24,7 @@ describe('Fork detected', async (assert: any) => {
   await bitcoinCoreClientB.addNode(bitcoinCoreClientA.host, 'add')
   await delay(5 * 1000)
 
-  const rabbitMQ = await RabbitMQ()
-  const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT, blockchainSettings })
+  const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT, blockchainSettings })
 
   await delay(5 * 1000)
 

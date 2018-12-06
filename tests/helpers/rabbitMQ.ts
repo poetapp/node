@@ -2,9 +2,9 @@
 /* tslint:disable:no-relative-imports */
 import { connect } from 'amqplib'
 
-export const RabbitMQ = async () => {
+export const RabbitMQ = async (rabbitUrl: string) => {
   console.log(`Connecting to RabbitMQ...`)
-  const connection = await connect(process.env.RABBITMQ_URL)
+  const connection = await connect(rabbitUrl)
 
   return {
     consume: (exchange: string, callback: (message: any) => Promise<void>) => consume(connection, exchange, callback),
@@ -22,6 +22,6 @@ const consume = async (connection: any, exchange: string, consume: (message: any
 }
 
 const stop = async (connection: any) => {
-  console.log(`Closing to RabbitMQ...`)
+  console.log(`Closing RabbitMQ connection...`)
   await connection.close()
 }
