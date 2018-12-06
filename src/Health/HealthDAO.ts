@@ -32,9 +32,6 @@ export interface IPFSInfo {
   readonly ipfsIsConnected: boolean
 }
 
-function foo(a: string): boolean
-function foo(a: string) { return !a}
-
 type updateBlockchainInfo = (x: BlockchainInfo) => Promise<void>
 
 type updateWalletInfo = (x: WalletInfo) => Promise<void>
