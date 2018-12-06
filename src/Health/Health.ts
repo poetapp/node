@@ -13,7 +13,6 @@ import { HealthController, HealthControllerConfiguration } from './HealthControl
 import { HealthDAO } from './HealthDAO'
 import { HealthService, HealthServiceConfiguration } from './HealthService'
 import { IPFS, IPFSConfiguration } from './IPFS'
-import { IPFSDirectoryHashDAO } from './IPFSDirectoryHashDAO'
 import { Router } from './Router'
 
 export interface HealthConfiguration
@@ -57,12 +56,59 @@ export class Health {
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
-    this.initializeContainer()
+    const healthDAO = new HealthDAO({
+      dependencies: {
+        db: this.dbConnection,
+      },
+    })
 
-    this.router = this.container.get('Router')
+    const bitcoinCore = new BitcoinCore({
+      host: this.configuration.bitcoinUrl,
+      port: this.configuration.bitcoinPort,
+      network: this.configuration.bitcoinNetwork,
+      username: this.configuration.bitcoinUsername,
+      password: this.configuration.bitcoinPassword,
+    })
+
+    const ipfs = new IPFS({
+      configuration: {
+        ipfsUrl: this.configuration.ipfsUrl,
+      },
+    })
+
+    const controller = new HealthController({
+      dependencies: {
+        logger: this.logger,
+        healthDAO,
+        bitcoinCore,
+        ipfs,
+      },
+      configuration: {
+        lowWalletBalanceInBitcoin: this.configuration.lowWalletBalanceInBitcoin,
+        feeEstimateMinTargetBlock: this.configuration.feeEstimateMinTargetBlock,
+      },
+    })
+
+    this.router = new Router({
+      dependencies: {
+        logger: this.logger,
+        messaging: this.messaging,
+        controller,
+      },
+      exchange: this.configuration.exchanges,
+    })
     await this.router.start()
 
-    this.cron = this.container.get('Cron')
+    this.cron = new HealthService({
+      dependencies: {
+        logger: this.logger,
+        messaging: this.messaging,
+      },
+      configuration: {
+        healthIntervalInSeconds: this.configuration.healthIntervalInSeconds,
+      },
+      exchange: this.configuration.exchanges,
+    })
     await this.cron.start()
 
     this.logger.info('Health Started')
@@ -74,41 +120,5 @@ export class Health {
     await this.messaging.stop()
     this.logger.info('Stopping Health Database...')
     await this.mongoClient.close()
-  }
-
-  initializeContainer() {
-    this.container.bind<Pino.Logger>('Logger').toConstantValue(this.logger)
-    this.container.bind<Db>('DB').toConstantValue(this.dbConnection)
-    this.container.bind<HealthService>('Cron').to(HealthService)
-    this.container.bind<HealthController>('HealthController').to(HealthController)
-    this.container.bind<BitcoinCore>('BitcoinCore').toConstantValue(
-      new BitcoinCore({
-        host: this.configuration.bitcoinUrl,
-        port: this.configuration.bitcoinPort,
-        network: this.configuration.bitcoinNetwork,
-        username: this.configuration.bitcoinUsername,
-        password: this.configuration.bitcoinPassword,
-      }),
-    )
-    this.container.bind<HealthServiceConfiguration>('HealthServiceConfiguration').toConstantValue({
-      healthIntervalInSeconds: this.configuration.healthIntervalInSeconds,
-    })
-    this.container
-      .bind<Collection>('IPFSDirectoryHashInfoCollection')
-      .toConstantValue(this.ipfsDirectoryHashInfoCollection)
-
-    this.container.bind<ExchangeConfiguration>('ExchangeConfiguration').toConstantValue(this.configuration.exchanges)
-    this.container.bind<Messaging>('Messaging').toConstantValue(this.messaging)
-    this.container.bind<Router>('Router').to(Router)
-    this.container.bind<IPFS>('IPFS').to(IPFS)
-    this.container.bind<IPFSConfiguration>('IPFSConfiguration').toConstantValue({
-      ipfsUrl: this.configuration.ipfsUrl,
-    })
-    this.container.bind<HealthControllerConfiguration>('HealthControllerConfiguration').toConstantValue({
-      lowWalletBalanceInBitcoin: this.configuration.lowWalletBalanceInBitcoin,
-      feeEstimateMinTargetBlock: this.configuration.feeEstimateMinTargetBlock,
-    })
-    this.container.bind<HealthDAO>('HealthDAO').to(HealthDAO)
-    this.container.bind<IPFSDirectoryHashDAO>('IPFSDirectoryHashDAO').to(IPFSDirectoryHashDAO )
   }
 }

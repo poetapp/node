@@ -1,5 +1,4 @@
 import BitcoinCore = require('bitcoin-core')
-import { inject, injectable } from 'inversify'
 import * as Pino from 'pino'
 import { pick, pipeP } from 'ramda'
 
@@ -39,7 +38,18 @@ export const addWalletIsBalanceLow = (lowBalanceAmount: number) => (walletInfo: 
 
 export const isFailureHard = (failureType: string) => failureType === 'HARD'
 
-@injectable()
+export interface Dependencies {
+  readonly healthDAO: HealthDAO
+  readonly bitcoinCore: BitcoinCore
+  readonly logger: Pino.Logger
+  readonly ipfs: IPFS
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly configuration: HealthControllerConfiguration
+}
+
 export class HealthController {
   private readonly configuration: HealthControllerConfiguration
   private readonly healthDAO: HealthDAO
@@ -47,13 +57,15 @@ export class HealthController {
   private readonly logger: Pino.Logger
   private readonly ipfs: IPFS
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('HealthDAO') healthDAO: HealthDAO,
-    @inject('HealthControllerConfiguration') configuration: HealthControllerConfiguration,
-    @inject('BitcoinCore') bitcoinCore: BitcoinCore,
-    @inject('IPFS') ipfs: IPFS,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      healthDAO,
+      bitcoinCore,
+      ipfs,
+    },
+    configuration,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
     this.healthDAO = healthDAO
