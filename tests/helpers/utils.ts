@@ -48,6 +48,7 @@ export const setUpServerAndDb = async ({
     MONGODB_USER: db.settings.tempDbUser,
     MONGODB_PASSWORD: db.settings.tempDbPassword,
     EXCHANGE_PREFIX: PREFIX,
+    LOGGING_LEVEL: 'warn',
     ...blockchainSettings,
   })
   await delay(5 * 1000)
