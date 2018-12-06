@@ -1,4 +1,3 @@
-import { injectable, Container } from 'inversify'
 import { Collection, Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
