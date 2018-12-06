@@ -8,6 +8,7 @@ import '../../src/BlockchainWriter/Bitcoin.test'
 import '../../src/BlockchainWriter/Controller.test'
 import '../../src/BlockchainWriter/Exceptions.test'
 import '../../src/Configuration.test'
+import '../../src/Exceptions.test'
 import '../../src/Extensions/Array.test.ts'
 import '../../src/Extensions/Error.test.ts'
 import '../../src/Extensions/Promise.test.ts'
@@ -27,5 +28,3 @@ import '../../src/StorageWriter/DAOClaims.test.ts'
 import '../../src/StorageWriter/Exceptions.test.ts'
 import '../../src/StorageWriter/Router.test.ts'
 import '../../src/Storage/Exceptions.test.ts'
-
-
