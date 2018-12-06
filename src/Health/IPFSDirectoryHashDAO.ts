@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import { Collection } from 'mongodb'
 
 export interface UpdateAnchorAttemptInfo {
@@ -8,13 +7,22 @@ export interface UpdateAnchorAttemptInfo {
 
 type updateAnchorAttemptsInfo = (x: UpdateAnchorAttemptInfo) => Promise<void>
 
-@injectable()
+export interface Dependencies {
+  readonly ipfsDirectoryHashInfoCollection: Collection
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class IPFSDirectoryHashDAO {
   private readonly ipfsDirectoryHashInfoCollection: Collection
 
-  constructor(
-    @inject('IPFSDirectoryHashInfoCollection') ipfsDirectoryHashInfoCollection: Collection,
-  ) {
+  constructor({
+    dependencies: {
+      ipfsDirectoryHashInfoCollection,
+    },
+  }: Arguments) {
     this.ipfsDirectoryHashInfoCollection = ipfsDirectoryHashInfoCollection
   }
 
