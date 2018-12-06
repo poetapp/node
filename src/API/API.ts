@@ -10,7 +10,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileController, FileControllerConfiguration } from './FileController'
 import * as FileDAO from './FileDAO'
 import { HealthController } from './HealthController'
-import * as IPFSDirectoryHashDAO from './IPFSDirectoryHashDAO'
+import { IPFSDirectoryHashDAO } from './IPFSDirectoryHashDAO'
 import { Router } from './Router'
 import { WorkController } from './WorkController'
 
@@ -53,7 +53,7 @@ export class API {
       },
     })
 
-    const ipfsDirectoryHashDAO = new IPFSDirectoryHashDAO.IPFSDirectoryHashDAO({
+    const ipfsDirectoryHashDAO = new IPFSDirectoryHashDAO({
       dependencies: {
         collection: this.ipfsDirectoryHashCollection,
       },
