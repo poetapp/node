@@ -82,6 +82,7 @@ export class API {
     const healthController = new HealthController({
       dependencies: {
         db: this.dbConnection,
+        ipfsDireactoryHashDAO: ipfsDirectoryHashDAO,
       },
     })
 
