@@ -31,8 +31,15 @@ export class IPFSDirectoryHashDAO {
       { $group: { _id: '$attempts', count: { $sum: 1} } },
     ]).toArray()
 
-    if (isNil(cursorArray) || cursorArray.length === 0) return []
+    if (isNil(cursorArray)) return []
 
-    return cursorArray.map( (item: AnchorRetryDAOResult) => ({ attempts: item._id, count: item.count }))
+    return cursorArray.map(
+      (item: AnchorRetryDAOResult) => (
+        {
+          attempts: item._id,
+          count: item.count,
+        }
+      )
+    )
   }
 }
