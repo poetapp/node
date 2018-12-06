@@ -82,7 +82,7 @@ export interface ExchangeConfiguration {
   readonly exchangeStorageWriterStoreNextClaim: string
   readonly exchangeGetHealth: string
   readonly exchangePurgeStaleTransactions: string
-  readonly exchangeBlockchainReaderForkDetected: string
+  readonly exchangeForkDetected: string
 }
 
 const defaultConfiguration: Configuration = {
@@ -149,7 +149,7 @@ const defaultConfiguration: Configuration = {
   exchangeStorageWriterStoreNextClaim: 'STORAGE_WRITER::STORE_NEXT_CLAIM',
   exchangeGetHealth: 'HEALTH::GET_HEALTH',
   exchangePurgeStaleTransactions: 'BLOCK_WRITER::PURGE_STALE_TRANSACTIONS',
-  exchangeBlockchainReaderForkDetected: 'BLOCKCHAIN_READER::FORK_DETECTED',
+  exchangeForkDetected: 'FORK_DETECTED',
 }
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
@@ -195,7 +195,7 @@ const applyExchangePrefix = (configVars: any) => {
     'exchangeStorageWriterStoreNextClaim',
     'exchangeGetHealth',
     'exchangePurgeStaleTransactions',
-    'exchangeBlockchainReaderForkDetected',
+    'exchangeForkDetected',
   ]
 
   return {

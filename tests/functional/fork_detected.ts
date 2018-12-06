@@ -18,21 +18,20 @@ const blockchainSettings = {
   UPLOAD_CLAIM_INTERVAL_IN_SECONDS: 5,
 }
 
-const { btcdClientA, btcdClientB }: any = bitcoindClients()
+const { bitcoinCoreClientA, bitcoinCoreClientB }: any = bitcoindClients()
 
 describe('Fork detected', async (assert: any) => {
   await resetBitcoinServers()
-
+  await bitcoinCoreClientB.addNode(bitcoinCoreClientA.host, 'add')
   await delay(5 * 1000)
 
-  await btcdClientB.addNode(btcdClientA.host, 'add')
   const rabbitMQ = await RabbitMQ()
   const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT, blockchainSettings })
 
   await delay(5 * 1000)
 
-  const FORK_DETECTED = `${PREFIX}.BLOCKCHAIN_READER::FORK_DETECTED`
-  await generateReorgs(btcdClientA, btcdClientB)
+  const FORK_DETECTED = `${PREFIX}.FORK_DETECTED`
+  await generateReorgs(bitcoinCoreClientA, bitcoinCoreClientB)
 
   const getFork = (): Promise<{ blockHash: string, blockHeight: number }> => new Promise(async (resolve) => {
     await rabbitMQ.consume(FORK_DETECTED, async (message: any) => {
@@ -44,14 +43,14 @@ describe('Fork detected', async (assert: any) => {
   const fork = await getFork()
 
   assert({
-    given: 'a BLOCKCHAIN_READER::FORK_DETECTED from RabbitMQ',
+    given: 'a FORK_DETECTED from RabbitMQ',
     should: 'have a blockHash property of type string',
     actual: typeof fork.blockHash,
     expected: 'string',
   })
 
   assert({
-    given: 'a BLOCKCHAIN_READER::FORK_DETECTED from RabbitMQ',
+    given: 'a FORK_DETECTED from RabbitMQ',
     should: 'have a blockHeight property of type number',
     actual: typeof fork.blockHeight,
     expected: 'number',
