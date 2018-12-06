@@ -1,6 +1,6 @@
 /* tslint:disable:no-console */
 /* tslint:disable:no-relative-imports */
-import { connect, ConsumeMessage } from 'amqplib'
+import { connect, ConsumeMessage, Connection } from 'amqplib'
 
 export const RabbitMQ = async (rabbitUrl: string) => {
   console.log(`Connecting to RabbitMQ...`)
@@ -12,7 +12,7 @@ export const RabbitMQ = async (rabbitUrl: string) => {
   }
 }
 
-const consume = async (connection: any, exchange: string, consume: (message: ConsumeMessage) => Promise<void>) => {
+const consume = async (connection: Connection, exchange: string, consume: (message: ConsumeMessage) => Promise<void>) => {
   const channel = await connection.createChannel()
   await channel.assertExchange(exchange, 'fanout', { durable: false })
   const assertQueue = await channel.assertQueue('', { exclusive: true })
@@ -21,7 +21,7 @@ const consume = async (connection: any, exchange: string, consume: (message: Con
   channel.consume(assertQueue.queue, consume)
 }
 
-const stop = async (connection: any) => {
+const stop = async (connection: Connection) => {
   console.log(`Closing RabbitMQ connection...`)
   await connection.close()
 }
