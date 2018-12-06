@@ -147,4 +147,8 @@ export class Messaging {
       consume(ipfsHashFailures)
     })
   }
+
+  publishForkDetected = async (fork: { blockHash: string, blockHeight: number }) => {
+    return this.publish(this.exchanges.forkDetected, fork)
+  }
 }

@@ -80,7 +80,7 @@ export class Controller {
       'Block retrieved and scanned successfully',
     )
 
-    if (localPreviousHash && localPreviousHash !== previousBlockHash)
+    if (localPreviousHash && localPreviousHash !== previousBlockHash) {
       logger.warn(
         {
           blockHash,
@@ -90,6 +90,9 @@ export class Controller {
         },
         'Fork detected',
       )
+
+      await this.messaging.publishForkDetected({ blockHash, blockHeight })
+    }
 
     await this.dao.upsertEntryByHash({
       blockHash,
