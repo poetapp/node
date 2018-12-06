@@ -10,6 +10,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileController, FileControllerConfiguration } from './FileController'
 import * as FileDAO from './FileDAO'
 import { HealthController } from './HealthController'
+import * as IPFSDirectoryHashDAO from './IPFSDirectoryHashDAO'
 import { Router } from './Router'
 import { WorkController } from './WorkController'
 
@@ -28,6 +29,7 @@ export class API {
   private router: Router
   private messaging: Messaging
   private fileCollection: Collection
+  private ipfsDirectoryHashCollection: Collection
 
   constructor(configuration: APIConfiguration) {
     this.configuration = configuration
@@ -40,6 +42,7 @@ export class API {
     this.dbConnection = await this.mongoClient.db()
 
     this.fileCollection = this.dbConnection.collection('files')
+    this.ipfsDirectoryHashCollection = this.dbConnection.collection('ipfsDirectoryHashInfo')
 
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, this.configuration.exchanges)
     await this.messaging.start()
@@ -47,6 +50,12 @@ export class API {
     const fileDao = new FileDAO.FileDAO({
       dependencies: {
         collection: this.fileCollection,
+      },
+    })
+
+    const ipfsDirectoryHashDAO = new IPFSDirectoryHashDAO.IPFSDirectoryHashDAO({
+      dependencies: {
+        collection: this.ipfsDirectoryHashCollection,
       },
     })
 

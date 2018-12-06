@@ -1,4 +1,7 @@
+import { AnchorRetryReport } from 'Interfaces'
 import { Db, Collection } from 'mongodb'
+
+import { IPFSDirectoryHashDAO } from './IPFSDirectoryHashDAO'
 
 export const isOkOne = ({ ok }: { ok: number }) => ok === 1
 
@@ -10,10 +13,16 @@ interface HealthObject {
   readonly networkInfo: object
   readonly estimatedSmartFeeInfo: object
   readonly ipfsRetryInfo: object
+  readonly transactionAnchorRetryInfo: AnchorRetryReport | Error
+}
+
+interface Error {
+  error: string
 }
 
 export interface Dependencies {
   readonly db: Db
+  readonly ipfsDireactoryHashDAO: IPFSDirectoryHashDAO
 }
 
 export interface Arguments {
@@ -23,14 +32,17 @@ export interface Arguments {
 export class HealthController {
   private readonly db: Db
   private readonly collection: Collection
+  private readonly ipfsDirectoryHashDAO: IPFSDirectoryHashDAO
 
   constructor({
     dependencies: {
       db,
+      ipfsDireactoryHashDAO,
     },
   }: Arguments) {
     this.db = db
     this.collection = this.db.collection('health')
+    this.ipfsDirectoryHashDAO = ipfsDireactoryHashDAO
   }
 
   private async checkMongo(): Promise<boolean> {
@@ -100,6 +112,14 @@ export class HealthController {
     }
   }
 
+  private async getTransactionAnchorRetryReport(): Promise<AnchorRetryReport | Error> {
+    try {
+      return await this.ipfsDirectoryHashDAO.getAnchorRetryHealth()
+    } catch (e) {
+      return { error: 'Error retrieving transactionAnchorRetryReport' }
+    }
+  }
+
   async getHealth(): Promise<HealthObject> {
     const mongoIsConnected = await this.checkMongo()
     const ipfsInfo = await this.getIPFSInfo()
@@ -108,6 +128,7 @@ export class HealthController {
     const networkInfo = await this.getNetworkInfo()
     const estimatedSmartFeeInfo = await this.getEstimatedSmartFeeInfo()
     const ipfsRetryInfo = await this.getIPFSRetryInfo()
+    const transactionAnchorRetryInfo = await this.getTransactionAnchorRetryReport()
     return {
       mongoIsConnected,
       ipfsInfo,
@@ -116,6 +137,7 @@ export class HealthController {
       networkInfo,
       estimatedSmartFeeInfo,
       ipfsRetryInfo,
+      transactionAnchorRetryInfo,
     }
   }
 }
