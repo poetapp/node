@@ -27,3 +27,22 @@ const hasFailureType = has('failureType')
 const hasFailureReason = has('failureReason')
 const hasFailureTime = has('failureTime')
 export const isIPFSHashFailure = allPass([hasIPFSFileHash, hasFailureReason, hasFailureType, hasFailureTime])
+
+export interface UpdateAnchorAttemptInfo {
+  readonly ipfsDirectoryHash: string
+  readonly txId: string
+}
+
+export interface AnchorRetryDAOResult {
+  readonly _id: number
+  readonly count: number
+}
+
+export interface AnchorRetryCount {
+  readonly attempts: number
+  readonly count: number
+}
+
+export type AnchorRetryReport = ReadonlyArray<AnchorRetryCount>
+
+export type getAnchorRetryHealth = () => Promise<AnchorRetryReport>
