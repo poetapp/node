@@ -7,7 +7,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
-export interface Configuration {
+export interface ServiceConfiguration {
   readonly uploadClaimIntervalInSeconds: number
 }
 
@@ -17,7 +17,7 @@ export interface Dependencies {
 }
 
 export interface Arguments {
-  readonly configuration: Configuration
+  readonly configuration: ServiceConfiguration
   readonly dependencies: Dependencies
   readonly exchange: ExchangeConfiguration
 }
