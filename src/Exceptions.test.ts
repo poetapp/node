@@ -8,15 +8,6 @@ describe('Exceptions NoMoreEntriesException', async (should: any) => {
   const parseError = JSON.parse(JSON.stringify(noMoreEntriesException))
 
   {
-    assert({
-      given: 'the new instance of NoMoreEntriesException',
-      should: 'be an instance of NoMoreEntriesException',
-      actual: noMoreEntriesException instanceof NoMoreEntriesException,
-      expected: true,
-    })
-  }
-
-  {
     const actual = parseError.type
     const expected = 'NoMoreEntriesException'
 
