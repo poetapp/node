@@ -13,10 +13,10 @@ interface HealthObject {
   readonly networkInfo: object
   readonly estimatedSmartFeeInfo: object
   readonly ipfsRetryInfo: object
-  readonly transactionAnchorRetryInfo: AnchorRetryReport | Error
+  readonly transactionAnchorRetryInfo: AnchorRetryReport | HealthError
 }
 
-interface Error {
+interface HealthError {
   error: string
 }
 
@@ -112,7 +112,7 @@ export class HealthController {
     }
   }
 
-  private async getTransactionAnchorRetryReport(): Promise<AnchorRetryReport | Error> {
+  private async getTransactionAnchorRetryReport(): Promise<AnchorRetryReport | HealthError> {
     try {
       return await this.ipfsDirectoryHashDAO.getAnchorRetryHealth()
     } catch (e) {
