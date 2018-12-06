@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import { Collection } from 'mongodb'
 
 export interface Entry {
@@ -10,13 +9,22 @@ export const Symbols = {
   FileDAO: Symbol.for('FileDAO'),
 }
 
-@injectable()
+export interface Dependencies {
+  readonly collection: Collection
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class FileDAO {
   private readonly collection: Collection
 
-  constructor(
-    @inject(Symbols.Collection) collection: Collection,
-  ) {
+  constructor({
+    dependencies: {
+      collection,
+    },
+  }: Arguments) {
     this.collection = collection
   }
 

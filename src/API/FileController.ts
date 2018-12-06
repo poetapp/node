@@ -1,6 +1,5 @@
 import * as FormData from 'form-data'
 import * as fs from 'fs'
-import { inject, injectable } from 'inversify'
 import fetch, {Response} from 'node-fetch'
 import * as Pino from 'pino'
 import { map } from 'ramda'
@@ -37,18 +36,29 @@ export const convertJson = (archiveUrlPrefix: string) =>
     archiveUrl: `${archiveUrlPrefix}/${ipfsFileResponse.Hash}`,
   })
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly fileDao: FileDAO.FileDAO
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly configuration: FileControllerConfiguration
+}
+
 export class FileController {
   private readonly logger: Pino.Logger
   private readonly ipfsArchiveUrlPrefix: string
   private readonly ipfsUrl: string
   private readonly fileDao: FileDAO.FileDAO
 
-  constructor(
-    @inject(FileDAO.Symbols.FileDAO) fileDao: FileDAO.FileDAO,
-    @inject('Logger') logger: Pino.Logger,
-    @inject('FileControllerConfiguration') configuration: FileControllerConfiguration,
-  ) {
+  constructor({
+    dependencies: {
+      fileDao,
+      logger,
+    },
+    configuration,
+  }: Arguments) {
     this.fileDao = fileDao
     this.logger = childWithFileName(logger, __filename)
     this.ipfsArchiveUrlPrefix = configuration.ipfsArchiveUrlPrefix
