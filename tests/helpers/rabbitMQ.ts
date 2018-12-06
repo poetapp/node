@@ -7,7 +7,7 @@ export const RabbitMQ = async (rabbitUrl: string) => {
   const connection = await connect(rabbitUrl)
 
   return {
-    consume: (exchange: string, callback: (message: any) => Promise<void>) => consume(connection, exchange, callback),
+    consume: (exchange: string, callback: (message: ConsumeMessage) => Promise<void>) => consume(connection, exchange, callback),
     stop: () => stop(connection),
   }
 }
