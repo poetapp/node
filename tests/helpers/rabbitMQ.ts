@@ -7,12 +7,19 @@ export const RabbitMQ = async (rabbitUrl: string) => {
   const connection = await connect(rabbitUrl)
 
   return {
-    consume: (exchange: string, callback: (message: ConsumeMessage) => Promise<void>) => consume(connection, exchange, callback),
+    consume: (
+      exchange: string,
+      callback: (message: ConsumeMessage) => Promise<void>,
+    ) => consume(connection, exchange, callback),
     stop: () => stop(connection),
   }
 }
 
-const consume = async (connection: Connection, exchange: string, consume: (message: ConsumeMessage) => Promise<void>) => {
+const consume = async (
+    connection: Connection,
+    exchange: string,
+    consume: (message: ConsumeMessage) => Promise<void>,
+  ) => {
   const channel = await connection.createChannel()
   await channel.assertExchange(exchange, 'fanout', { durable: false })
   const assertQueue = await channel.assertQueue('', { exclusive: true })
