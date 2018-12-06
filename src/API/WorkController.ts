@@ -1,5 +1,4 @@
 import { Work, PoetBlockAnchor } from '@po.et/poet-js'
-import { inject, injectable } from 'inversify'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
@@ -23,7 +22,17 @@ interface WorksWithCount {
   readonly works: ReadonlyArray<WorkWithAnchor>
 }
 
-@injectable()
+export interface Dependencies {
+  readonly logger: Pino.Logger
+  readonly db: Db
+  readonly messaging: Messaging
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+  readonly exchange: ExchangeConfiguration
+}
+
 export class WorkController {
   private readonly logger: Pino.Logger
   private readonly db: Db
@@ -31,12 +40,14 @@ export class WorkController {
   private readonly messaging: Messaging
   private readonly exchange: ExchangeConfiguration
 
-  constructor(
-    @inject('Logger') logger: Pino.Logger,
-    @inject('DB') db: Db,
-    @inject('Messaging') messaging: Messaging,
-    @inject('ExchangeConfiguration') exchange: ExchangeConfiguration,
-  ) {
+  constructor({
+    dependencies: {
+      logger,
+      db,
+      messaging,
+    },
+    exchange,
+  }: Arguments) {
     this.logger = childWithFileName(logger, __filename)
     this.db = db
     this.collection = this.db.collection('works')

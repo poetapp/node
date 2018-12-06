@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import { Db, Collection } from 'mongodb'
 
 export const isOkOne = ({ ok }: { ok: number }) => ok === 1
@@ -13,12 +12,23 @@ interface HealthObject {
   readonly ipfsRetryInfo: object
 }
 
-@injectable()
+export interface Dependencies {
+  readonly db: Db
+}
+
+export interface Arguments {
+  readonly dependencies: Dependencies
+}
+
 export class HealthController {
   private readonly db: Db
   private readonly collection: Collection
 
-  constructor(@inject('DB') db: Db) {
+  constructor({
+    dependencies: {
+      db,
+    },
+  }: Arguments) {
     this.db = db
     this.collection = this.db.collection('health')
   }
