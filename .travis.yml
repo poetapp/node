@@ -23,7 +23,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 install:
-  - docker-compose up -d
+  - docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d
   - sleep 10
 
 script:
