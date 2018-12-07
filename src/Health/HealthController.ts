@@ -6,6 +6,7 @@ import { childWithFileName } from 'Helpers/Logging'
 import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
 
 import { BlockchainInfo, WalletInfo, NetworkInfo, IPFSInfo, EstimatedSmartFeeInfo, HealthDAO } from './HealthDAO'
+import { TransactionAnchorRetryInfo, IPFSDirectoryHashDAO } from './IPFSDirectoryHashDAO'
 
 import { IPFS } from './IPFS'
 
@@ -13,6 +14,10 @@ enum LogTypes {
   info = 'info',
   trace = 'trace',
   error = 'error',
+}
+
+export interface HealthError {
+  readonly error: string
 }
 
 export interface HealthControllerConfiguration {
@@ -40,6 +45,7 @@ export const isFailureHard = (failureType: string) => failureType === 'HARD'
 
 export interface Dependencies {
   readonly healthDAO: HealthDAO
+  readonly ipfsDirectoryHasDAO: IPFSDirectoryHashDAO
   readonly bitcoinCore: BitcoinCore
   readonly logger: Pino.Logger
   readonly ipfs: IPFS
@@ -53,6 +59,7 @@ export interface Arguments {
 export class HealthController {
   private readonly configuration: HealthControllerConfiguration
   private readonly healthDAO: HealthDAO
+  private readonly ipfsDirectoryHashDAO: IPFSDirectoryHashDAO
   private readonly bitcoinCore: BitcoinCore
   private readonly logger: Pino.Logger
   private readonly ipfs: IPFS
@@ -61,6 +68,7 @@ export class HealthController {
     dependencies: {
       logger,
       healthDAO,
+      ipfsDirectoryHasDAO,
       bitcoinCore,
       ipfs,
     },
@@ -119,6 +127,14 @@ export class HealthController {
     return estimatedSmartFeeInfo
   }
 
+  private async getTransactionAnchorRetryInfo(): Promise<TransactionAnchorRetryInfo | HealthError> {
+    try {
+      return await this.ipfsDirectoryHashDAO.getTransactionAnchorRetryInfo()
+    } catch (e) {
+      return { error: 'Error retrieving transactionAnchorRetryReport' }
+    }
+  }
+
   private async checkIPFSConnection(): Promise<IPFSInfo> {
     try {
       const ipfsConnection = await this.ipfs.getVersion()
@@ -132,6 +148,13 @@ export class HealthController {
   private async updateIPFSInfo(ipfsInfo: IPFSInfo): Promise<object> {
     await this.healthDAO.updateIPFSInfo(ipfsInfo)
     return ipfsInfo
+  }
+
+  private async updateTransactionAnchorRetryInfo(
+    transactionAnchorRetryInfo: TransactionAnchorRetryInfo,
+  ): Promise<TransactionAnchorRetryInfo> {
+    await this.healthDAO.updateTransactionAnchorRetryInfo(transactionAnchorRetryInfo)
+    return transactionAnchorRetryInfo
   }
 
   public async updateIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
@@ -185,4 +208,13 @@ export class HealthController {
     this.updateIPFSInfo,
     this.log(LogTypes.trace)('refreshed IPFS info'),
   )
+
+  public refreshTransactionAnchorRetryInfo = pipeP(
+    this.log(LogTypes.trace)('refreshing transaction anchor retry info'),
+    this.getTransactionAnchorRetryInfo,
+    this.log(LogTypes.trace)('new info gathered, saving transaction anchor retry info'),
+    this.updateTransactionAnchorRetryInfo,
+    this.log(LogTypes.trace)('refreshed transaction anchor retry info'),
+  )
+
 }
