@@ -68,7 +68,7 @@ export class HealthController {
     dependencies: {
       logger,
       healthDAO,
-
+      ipfsDirectoryHasDAO,
       bitcoinCore,
       ipfs,
     },
