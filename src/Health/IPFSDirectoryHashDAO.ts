@@ -40,6 +40,11 @@ export class IPFSDirectoryHashDAO {
     this.ipfsDirectoryHashInfoCollection = ipfsDirectoryHashInfoCollection
   }
 
+  readonly start = async (): Promise<void> => {
+    await this.ipfsDirectoryHashInfoCollection.createIndex({ ipofsDirectoryHash: 1 }, { unique: true })
+    await this.ipfsDirectoryHashInfoCollection.createIndex({ txId: 1, attempts: 1 })
+  }
+
   readonly updateAnchorAttemptsInfo: updateAnchorAttemptsInfo = async anchorAttemptInfo => {
     await this.ipfsDirectoryHashInfoCollection.updateOne(
       {

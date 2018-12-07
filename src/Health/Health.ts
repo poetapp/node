@@ -66,6 +66,7 @@ export class Health {
         ipfsDirectoryHashInfoCollection: this.ipfsDirectoryHashInfoCollection,
       },
     })
+    await ipfsDirectoryHasDAO.start()
 
     const bitcoinCore = new BitcoinCore({
       host: this.configuration.bitcoinUrl,
