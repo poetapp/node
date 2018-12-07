@@ -1,4 +1,5 @@
 import { Collection, Db } from 'mongodb'
+import { TransactionAnchorRetryInfo } from './IPFSDirectoryHashDAO'
 
 export interface BlockchainInfo {
   readonly blocks: number
@@ -41,6 +42,8 @@ type updateNetworkInfo = (x: NetworkInfo) => Promise<void>
 type updateIPFSInfo = (x: IPFSInfo) => Promise<void>
 
 type updateEstimatedSmartFeeInfo = (x: EstimatedSmartFeeInfo) => Promise<void>
+
+type updateTransactionAnchorRetryInfo = (x: TransactionAnchorRetryInfo) => Promise<void>
 
 export interface Dependencies {
   readonly db: Db
@@ -115,6 +118,18 @@ export class HealthDAO {
       {
         $set: {
           estimatedSmartFeeInfo,
+        },
+      },
+      { upsert: true },
+    )
+  }
+
+  readonly updateTransactionAnchorRetryInfo: updateTransactionAnchorRetryInfo = async transactionAnchorRetryInfo => {
+    await this.collection.updateOne(
+      { name: 'transactionAnchorRetryInfo' },
+      {
+        $set: {
+          transactionAnchorRetryInfo,
         },
       },
       { upsert: true },
