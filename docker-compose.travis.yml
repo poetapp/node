@@ -3,4 +3,4 @@ version: '3.6'
 services:
   poet-node:
     environment:
-      - LOGGIN_LEVEL=warn
+      - LOGGING_LEVEL=warn
