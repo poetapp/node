@@ -51,8 +51,8 @@ export class Messaging {
   consume = async (exchange: string, consume: (message: any) => void): Promise<void> => {
     await this.channel.assertExchange(exchange, 'fanout', { durable: false })
     const assertQueue = await this.channel.assertQueue('', { exclusive: true })
-    this.channel.bindQueue(assertQueue.queue, exchange, '')
-    this.channel.consume(assertQueue.queue, consume, { noAck: true })
+    await this.channel.bindQueue(assertQueue.queue, exchange, '')
+    await this.channel.consume(assertQueue.queue, consume, { noAck: true })
   }
 
   // TODO: move these business-specific functions to a different file. See https://github.com/poetapp/node/issues/66
