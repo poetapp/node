@@ -152,7 +152,7 @@ export class HealthController {
 
   private async updateTransactionAnchorRetryInfo(
     transactionAnchorRetryInfo: TransactionAnchorRetryInfo,
-  ): Promise<object> {
+  ): Promise<TransactionAnchorRetryInfo> {
     await this.healthDAO.updateTransactionAnchorRetryInfo(transactionAnchorRetryInfo)
     return transactionAnchorRetryInfo
   }
