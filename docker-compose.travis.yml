@@ -1,0 +1,6 @@
+version: '3.6'
+
+services:
+  poet-node:
+    environment:
+      - LOGGING_LEVEL=warn
