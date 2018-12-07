@@ -1,0 +1,34 @@
+more in depth, I did this research about the behavior of `--no-optional`
+
+First I created a project `npm`
+
+```
+mkdir test-native
+cd test-native
+npm init --yest
+``` 
+
+after that I installed the pakcages `rdf-canonize` and `jsonld` but one at a time
+
+Fist with `rdf-canonize`
+
+`npm i --no-optional rdf-canonize`
+
+
+in this case the optional packages was omitted, that's fine
+
+after I tried the same with `npm i rdf-canonize`
+
+
+in this case the optional packages was installed, that's fine
+
+ now, I did the same with `jsonld`, previous I deleted the `node_modules` and the `package-lock`
+
+`npm i --no-optional jsonld`
+
+
+in this case the optional packages was installed, that's wrong, I was waiting that omit the optional package
+
+`npm i jsonld`
+
+

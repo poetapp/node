@@ -1,34 +1,30 @@
-/* tslint:disable:no-console */
 /* tslint:disable:no-relative-imports */
-import { connect, ConsumeMessage, Connection } from 'amqplib'
+import { connect, ConsumeMessage } from 'amqplib'
 
-export const RabbitMQ = async (rabbitUrl: string) => {
-  console.log(`Connecting to RabbitMQ...`)
+type ConsumeCallback = (message: ConsumeMessage) => Promise<void>
+interface RabbitMQ {
+  readonly consume: (exchange: string, callback: ConsumeCallback) => Promise<void>
+  readonly stop: () => Promise<void>
+}
+
+export const RabbitMQ = async (rabbitUrl: string): Promise<RabbitMQ> => {
   const connection = await connect(rabbitUrl)
 
-  return {
-    consume: (
-      exchange: string,
-      callback: (message: ConsumeMessage) => Promise<void>,
-    ) => consume(connection, exchange, callback),
-    stop: () => stop(connection),
+  const consume = async (exchange: string, consume: ConsumeCallback) => {
+    const channel = await connection.createChannel()
+    await channel.assertExchange(exchange, 'fanout', { durable: false })
+    const assertQueue = await channel.assertQueue('', { exclusive: true })
+    channel.bindQueue(assertQueue.queue, exchange, '')
+
+    channel.consume(assertQueue.queue, consume)
   }
-}
 
-const consume = async (
-    connection: Connection,
-    exchange: string,
-    consume: (message: ConsumeMessage) => Promise<void>,
-  ) => {
-  const channel = await connection.createChannel()
-  await channel.assertExchange(exchange, 'fanout', { durable: false })
-  const assertQueue = await channel.assertQueue('', { exclusive: true })
-  channel.bindQueue(assertQueue.queue, exchange, '')
+  const stop = async () => {
+    await connection.close()
+  }
 
-  channel.consume(assertQueue.queue, consume)
-}
-
-const stop = async (connection: Connection) => {
-  console.log(`Closing RabbitMQ connection...`)
-  await connection.close()
+  return {
+    consume,
+    stop,
+  }
 }
