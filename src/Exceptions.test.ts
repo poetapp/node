@@ -1,5 +1,4 @@
 import { NoMoreEntriesException } from 'Exceptions'
-import 'Extensions/Error'
 import { describe } from 'riteway'
 
 describe('Exceptions NoMoreEntriesException', async (assert: any) => {
