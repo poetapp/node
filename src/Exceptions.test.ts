@@ -7,18 +7,6 @@ describe('Exceptions NoMoreEntriesException', async (assert: any) => {
   const parseError = JSON.parse(JSON.stringify(noMoreEntriesException))
 
   {
-    const actual = parseError.type
-    const expected = 'NoMoreEntriesException'
-
-    assert({
-      given: 'a NoMoreEntriesException',
-      should: 'be the type property NoMoreEntriesException',
-      actual,
-      expected,
-    })
-  }
-
-  {
     const actual = parseError.message
     const expected = 'noMoreEntriesException'
 
