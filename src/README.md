@@ -18,6 +18,47 @@ This greatly reduces the amount of work needed to install and run the Po.et Node
 - [Dependency Injection] is implemented manually. See [Inversion of Control]
 - Code makes use of both OOP and FP techniques. See: [FP vs OO](http://blog.cleancoder.com/uncle-bob/2018/04/13/FPvsOO.html)
 
+### Service Layers
+
+Each service is made up of several layers, each with different responsibilities. In this sense, all services look exactly the same. Most or all of them have these layers:
+
+
+#### Root
+
+A root file, with the same name of the service. For example: src/BlockchainReader/BlockchainReader.ts.
+
+This file is the [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/), and as such has two responsibilities:
+- Starting up everything
+- Wiring everything
+
+These files are modules, not scripts. They do not do anything on their own and they can't be run. Instead, they export the entry point to the service.
+
+Other files can import the service and call `.start()` on it.
+
+#### Router
+
+The router is responsible for managing interaction between the service and the "outside world". This can be via any means of communication, such as HTTP with Koa or AMQP with RabbitMQ. It must have no business logic, and should hide away all details of the libraries used for communication.
+
+It should also be the only file responsible for _answering_ requests or publishing messages. 
+
+#### Service
+
+The confusingly named Service file is basically a cron job, a timer that periodically runs a function.
+
+There are currently two different approaches to services in the code base:
+- The service calling a function of the controller directly
+- The service firing a RMQ message
+
+The first approach breaks the rule of having the router be the only one that communicates with the router, the second approach breaks the rule of having the router be the only one that publishes messages.
+
+The BlockchainReader Service in particular also has some business logic and mutable state.
+
+There is room from improvement in this area.
+
+If implementing a new Service, prefer the second approach (firing a RMQ message) whenever possible.
+
+#### 
+
 [SOLID]: https://en.wikipedia.org/wiki/SOLID
 [RabbitMQ]: https://www.rabbitmq.com/
 [Inversion of Control]: https://en.wikipedia.org/wiki/Inversion_of_control
