@@ -2,6 +2,7 @@ import { Interval } from '@po.et/poet-js'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { secondsToMiliseconds } from 'Helpers/Time'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
@@ -39,7 +40,7 @@ export class HealthService {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
     this.messaging = messaging
-    this.interval = new Interval(this.getHealth, this.configuration.healthIntervalInSeconds * 1000)
+    this.interval = new Interval(this.getHealth, secondsToMiliseconds(this.configuration.healthIntervalInSeconds))
     this.exchange = exchange
   }
 
