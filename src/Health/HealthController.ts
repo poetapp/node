@@ -45,7 +45,7 @@ export const isFailureHard = (failureType: string) => failureType === 'HARD'
 
 export interface Dependencies {
   readonly healthDAO: HealthDAO
-  readonly ipfsDirectoryHasDAO: IPFSDirectoryHashDAO
+  readonly ipfsDirectoryHashDAO: IPFSDirectoryHashDAO
   readonly bitcoinCore: BitcoinCore
   readonly logger: Pino.Logger
   readonly ipfs: IPFS
@@ -68,7 +68,7 @@ export class HealthController {
     dependencies: {
       logger,
       healthDAO,
-      ipfsDirectoryHasDAO,
+      ipfsDirectoryHashDAO,
       bitcoinCore,
       ipfs,
     },
