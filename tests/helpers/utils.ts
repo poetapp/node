@@ -5,6 +5,7 @@ import { asyncPipe } from '../../src/Helpers/asyncPipe'
 import { app } from '../../src/app'
 import { dbHelper } from './database'
 import { RabbitMQ } from './rabbitMQ'
+
 export const runtimeId = () => `${process.pid}-${new Date().getMilliseconds()}-${Math.floor(Math.random() * 10)}`
 export const delay = promisify(setTimeout)
 
@@ -58,3 +59,7 @@ export const setUpServerAndDb = async ({
 }
 
 export const baseUrl = (port: string, host: string = 'localhost') => `http://${host}:${port}`
+
+export const timeoutPromise = (seconds = 10): Promise<any> => {
+  return new Promise((resolve, reject) => setTimeout(reject, 1000 * seconds, 'Timeout'))
+}

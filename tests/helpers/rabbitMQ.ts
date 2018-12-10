@@ -1,4 +1,3 @@
-/* tslint:disable:no-relative-imports */
 import { connect, ConsumeMessage } from 'amqplib'
 
 type ConsumeCallback = (message: ConsumeMessage) => Promise<void>

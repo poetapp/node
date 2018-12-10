@@ -4,7 +4,7 @@ import { Connection, connect, Channel } from 'amqplib'
 import { ClaimIPFSHashPair, isClaimIPFSHashPair, IPFSHashFailure, isIPFSHashFailure } from 'Interfaces'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { BlockDownloaded, IPFSHashTxId, isBlockDownloaded, isIPFSHashTxId } from './Messages'
+import { BlockDownloaded, IPFSHashTxId, isBlockDownloaded, isIPFSHashTxId, ForkDetected } from './Messages'
 
 export class Messaging {
   private readonly connectionUrl: string
@@ -148,7 +148,7 @@ export class Messaging {
     })
   }
 
-  publishForkDetected = async (fork: { blockHash: string, blockHeight: number }) => {
+  publishForkDetected = async (fork: ForkDetected) => {
     return this.publish(this.exchanges.forkDetected, fork)
   }
 }
