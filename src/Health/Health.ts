@@ -86,7 +86,7 @@ export class Health {
       dependencies: {
         logger: this.logger,
         healthDAO,
-        ipfsDirectoryHashDAO: ipfsDirectoryHashDAO,
+        ipfsDirectoryHashDAO,
         bitcoinCore,
         ipfs,
       },
