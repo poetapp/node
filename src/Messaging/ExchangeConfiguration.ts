@@ -3,4 +3,5 @@ export interface ExchangeConfiguration {
   readonly claimsDownloaded?: string
   readonly claimsNotDownloaded?: string
   readonly ipfsHashTxId?: string
+  readonly forkDetected?: string
 }

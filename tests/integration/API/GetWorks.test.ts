@@ -51,7 +51,7 @@ const getClaimsWithoutAnchors = (claims: ReadonlyArray<any>) => claims.map(getCl
 
 describe('GET /works', async assert => {
   // Setup Mongodb and the app server
-  const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
+  const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   // Wait for everything to finish starting
   await delay(5 * 1000)
@@ -159,4 +159,5 @@ describe('GET /works', async assert => {
 
   await server.stop()
   await db.teardown()
+  await rabbitMQ.stop()
 })

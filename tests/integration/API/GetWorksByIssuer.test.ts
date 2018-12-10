@@ -50,7 +50,7 @@ const getClaimsWithoutAnchors = (claims: ReadonlyArray<any>) => claims.map(getCl
 
 describe('GET /works?issuer=:issuer', async assert => {
   // Setup Mongodb and the app server
-  const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
+  const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   // Submit claims
   await setUpExistingClaims(works)
@@ -168,4 +168,5 @@ describe('GET /works?issuer=:issuer', async assert => {
 
   await server.stop()
   await db.teardown()
+  await rabbitMQ.stop()
 })

@@ -58,7 +58,7 @@ describe('Transaction timout will reset the transaction id for the claim', async
 
   await delayInSeconds(5)
 
-  const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT, blockchainSettings })
+  const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT, blockchainSettings })
 
   // Make sure node A has regtest coins to pay for transactions.
   const generatedBlockHeight = 101
@@ -173,4 +173,5 @@ describe('Transaction timout will reset the transaction id for the claim', async
 
   await server.stop()
   await db.teardown()
+  await rabbitMQ.stop()
 })
