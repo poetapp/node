@@ -4,6 +4,7 @@ import { pick, pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
+import { IPFSHashTxId } from 'Messaging/Messages'
 
 import { BlockchainInfo, WalletInfo, NetworkInfo, IPFSInfo, EstimatedSmartFeeInfo, HealthDAO } from './HealthDAO'
 import { TransactionAnchorRetryInfo, IPFSDirectoryHashDAO } from './IPFSDirectoryHashDAO'
@@ -77,6 +78,7 @@ export class HealthController {
     this.logger = childWithFileName(logger, __filename)
     this.configuration = configuration
     this.healthDAO = healthDAO
+    this.ipfsDirectoryHashDAO = ipfsDirectoryHashDAO
     this.bitcoinCore = bitcoinCore
     this.ipfs = ipfs
   }
@@ -157,6 +159,10 @@ export class HealthController {
     return transactionAnchorRetryInfo
   }
 
+  private async removeIPFSDirectoryHashByTransactionId(transactionIds: ReadonlyArray<string>): Promise<void> {
+    await this.ipfsDirectoryHashDAO.deleteByTransactionIds(transactionIds)
+  }
+
   public async updateIPFSFailures(ipfsHashFailures: ReadonlyArray<IPFSHashFailure>) {
     this.logger.debug({ ipfsHashFailures }, 'Updating IPFS Failure Count by failureType')
     await ipfsHashFailures.map(
@@ -166,6 +172,12 @@ export class HealthController {
       },
     )
   }
+
+  public purgeIpfsDirectoryHashByTransactionIds = pipeP(
+    this.log(LogTypes.trace)('purging IPFSDirectoryHash for transactionIds'),
+    this.removeIPFSDirectoryHashByTransactionId,
+    this.log(LogTypes.trace)('purged IPFSDirectoryHash for transactionIds'),
+  )
 
   public refreshBlockchainInfo = pipeP(
     this.log(LogTypes.trace)('refreshing blockchain info'),

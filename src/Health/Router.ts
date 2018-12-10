@@ -1,7 +1,9 @@
 import * as Pino from 'pino'
+import { pluck } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { IPFSHashFailure } from 'Interfaces'
+import { BlockDownloaded, IPFSHashTxId } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
@@ -41,6 +43,7 @@ export class Router {
   async start() {
     await this.messaging.consume(this.exchange.getHealth, this.onGetHealth)
     await this.messaging.consumeClaimsNotDownloaded(this.onClaimsNotDownloaded)
+    await this.messaging.consumeBlockDownloaded(this.blockDownloadedConsumer)
   }
 
   onGetHealth = async () => {
@@ -65,6 +68,18 @@ export class Router {
       await this.controller.updateIPFSFailures(ipfsHashFailures)
     } catch (error) {
       logger.error({ error }, 'Failed to update ipfsHashFailures on health')
+    }
+  }
+
+  blockDownloadedConsumer = async (blockDownloaded: BlockDownloaded): Promise<void> => {
+    const logger = this.logger.child({ method: 'blockDownloadedConsumer' })
+
+    logger.trace({ blockDownloaded }, 'Block downloaded, removing associated transactions')
+    try {
+      const transactionIds = pluck('transactionId', blockDownloaded.poetBlockAnchors)
+      await this.controller.purgeIpfsDirectoryHashByTransactionIds(transactionIds)
+    } catch (error) {
+      logger.error({ error }, 'Failed to remove transactions')
     }
   }
 }

@@ -20,6 +20,7 @@ export interface TransactionAnchorRetryEntry {
 
 export type TransactionAnchorRetryInfo = ReadonlyArray<TransactionAnchorRetryEntry>
 export type getTransactionAnchorRetryInfo = () => Promise<TransactionAnchorRetryInfo>
+type deleteByTransactionIds = (transactionIds: ReadonlyArray<string>) => Promise<void>
 
 export interface Dependencies {
   readonly ipfsDirectoryHashInfoCollection: Collection
@@ -56,6 +57,14 @@ export class IPFSDirectoryHashDAO {
         $inc: { attempts: 1 },
       },
       { upsert: true },
+    )
+  }
+
+  readonly deleteByTransactionIds: deleteByTransactionIds = async transactionIds => {
+    await this.ipfsDirectoryHashInfoCollection.deleteMany(
+      {
+        txId: { $in: transactionIds },
+      },
     )
   }
 
