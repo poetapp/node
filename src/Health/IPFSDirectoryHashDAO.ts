@@ -1,12 +1,9 @@
 import { Collection } from 'mongodb'
 import { isNil } from 'ramda'
 
-export interface UpdateAnchorAttemptInfo {
-  readonly ipfsDirectoryHash: string
-  readonly txId: string
-}
+import { IPFSHashTxId } from 'Messaging/Messages'
 
-type updateAnchorAttemptsInfo = (x: UpdateAnchorAttemptInfo) => Promise<void>
+type updateAnchorAttemptsInfo = (x: IPFSHashTxId) => Promise<void>
 
 export interface AnchorRetryDAOResult {
   readonly _id: number
