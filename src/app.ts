@@ -220,6 +220,7 @@ export async function app(localVars: any = {}) {
     exchanges: {
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
+      forkDetected: configuration.exchangeForkDetected,
     },
   })
   try {
