@@ -61,12 +61,12 @@ export class Health {
       },
     })
 
-    const ipfsDirectoryHasDAO = new IPFSDirectoryHashDAO({
+    const ipfsDirectoryHashDAO = new IPFSDirectoryHashDAO({
       dependencies: {
         ipfsDirectoryHashInfoCollection: this.ipfsDirectoryHashInfoCollection,
       },
     })
-    await ipfsDirectoryHasDAO.start()
+    await ipfsDirectoryHashDAO.start()
 
     const bitcoinCore = new BitcoinCore({
       host: this.configuration.bitcoinUrl,
@@ -86,7 +86,7 @@ export class Health {
       dependencies: {
         logger: this.logger,
         healthDAO,
-        ipfsDirectoryHasDAO,
+        ipfsDirectoryHashDAO,
         bitcoinCore,
         ipfs,
       },
