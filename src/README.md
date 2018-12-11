@@ -42,7 +42,9 @@ It should also be the only file responsible for _answering_ requests or publishi
 
 #### Controller
 
-The controller is, ideally, the only place where business logic should reside. Controllers should not interact directly with any dependency (such as MongoDB, IPFS, Bitcoin, RabbitMQ) or having any type of messaging logic (Koa, RabbitMQ).
+Controllers own business logic. The controller is, ideally, the only place where business logic should reside, and business logic is the only thing that should reside in them. Controllers should not interact directly with any dependency (such as MongoDB, IPFS, Bitcoin, RabbitMQ) or having any type of messaging logic (Koa, RabbitMQ).
+
+In practice, business logic also lives in DAOs and, in some cases, Services. See respective sections for information regarding this.
 
 #### DAO
 
