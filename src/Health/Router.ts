@@ -1,5 +1,4 @@
 import * as Pino from 'pino'
-import { pluck } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { IPFSHashFailure } from 'Interfaces'
@@ -76,7 +75,7 @@ export class Router {
 
     logger.trace({ blockDownloaded }, 'Block downloaded, removing associated transactions')
     try {
-      const transactionIds = pluck('transactionId', blockDownloaded.poetBlockAnchors)
+      const transactionIds = blockDownloaded.poetBlockAnchors.map(_ => _.transactionId)
       await this.controller.purgeIpfsDirectoryHashByTransactionIds(transactionIds)
     } catch (error) {
       logger.error({ error }, 'Failed to remove transactions')
