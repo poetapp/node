@@ -73,7 +73,7 @@ export class Router {
   blockDownloadedConsumer = async (blockDownloaded: BlockDownloaded): Promise<void> => {
     const logger = this.logger.child({ method: 'blockDownloadedConsumer' })
 
-    logger.trace({ blockDownloaded }, 'Block downloaded, removing associated transactions')
+    logger.debug({ blockDownloaded }, 'Block downloaded, removing associated transactions')
     try {
       const transactionIds = blockDownloaded.poetBlockAnchors.map(_ => _.transactionId)
       await this.controller.purgeIpfsDirectoryHashByTransactionIds(transactionIds)
