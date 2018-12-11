@@ -40,6 +40,14 @@ The router is responsible for managing interaction between the service and the "
 
 It should also be the only file responsible for _answering_ requests or publishing messages. 
 
+#### Controller
+
+The controller is, ideally, the only place where business logic should reside. Controllers should not interact directly with any dependency (such as MongoDB, IPFS, Bitcoin, RabbitMQ) or having any type of messaging logic (Koa, RabbitMQ).
+
+#### DAO
+
+Services can have any number of DAOs, usually one per collection. DAOs abstract away details of the database engine. For performance reasons it is not practical to completely remove all business logic from DAOs, so what functions a DAO has is usually dictated by a controller, in the sense of what data needs to be written or read. _How_ this data is written or read is an implementation detail of the DAO and should not be leaked to other layers.
+
 #### Service
 
 The confusingly named Service file is basically a cron job, a timer that periodically runs a function.
@@ -55,14 +63,6 @@ The BlockchainReader Service in particular also has some business logic and muta
 There is room from improvement in this area.
 
 If implementing a new Service, prefer the second approach (firing a RMQ message) whenever possible.
-
-#### Controller
-
-The controller is, ideally, the only place where business logic should reside. Controllers should not interact directly with any dependency (such as MongoDB, IPFS, Bitcoin, RabbitMQ) or having any type of messaging logic (Koa, RabbitMQ).
-
-#### DAO
-
-Services can have any number of DAOs, usually one per collection. DAOs abstract away details of the database engine. For performance reasons it is not practical to completely remove all business logic from DAOs, so what functions a DAO has is usually dictated by a controller, in the sense of what data needs to be written or read. _How_ this data is written or read is an implementation detail of the DAO and should not be leaked to other layers.
 
 [SOLID]: https://en.wikipedia.org/wiki/SOLID
 [RabbitMQ]: https://www.rabbitmq.com/
