@@ -35,9 +35,11 @@ This file is the [composition root](http://blog.ploeh.dk/2011/07/28/CompositionR
 - Wiring everything
 - Starting up everything
 
-These files are modules, not scripts. They do not do anything on their own and they can't be run. Instead, they export the entry point to the service.
+These files are modules, not scripts. They do not do anything on their own and they can't be run. Instead, they export the entry point to the service. 
 
 Other files can import the service and call `.start()` on it.
+
+Importing a composition root must have no side-effects.
 
 #### Router
 
