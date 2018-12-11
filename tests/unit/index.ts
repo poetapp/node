@@ -1,6 +1,7 @@
 /* tslint:disable:no-relative-imports */
 import '../../src/API/FileController.test.ts'
 import '../../src/API/HealthController.test'
+import '../../src/API/Middlewares/HttpExceptionsMiddleware.test.ts'
 import '../../src/API/Middlewares/RequestValidationMiddleware.test'
 import '../../src/API/Middlewares/RequestValidationMiddleware.test.ts'
 import '../../src/BlockchainReader/Bitcoin.test'
