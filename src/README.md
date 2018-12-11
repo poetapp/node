@@ -12,8 +12,8 @@ This greatly reduces the amount of work needed to install and run the Po.et Node
 
 - Services communicate via pub/sub using [RabbitMQ], never directly.
 - Event, queue or exchange names must not include the name of the service creating it.
-- Each service initializes and maintains its own mongo collections
-- Services must not access another services mongo collections. 
+- Each service initializes and maintains its own mongo collections.
+- Services must not access other services mongo collections. 
 - Factory functions are used as the main form of encapsulation and layered separation of concerns.
 - [Dependency Injection] is implemented manually. See [Inversion of Control]
 - Code makes use of both OOP and FP techniques. See: [FP vs OO](http://blog.cleancoder.com/uncle-bob/2018/04/13/FPvsOO.html)
