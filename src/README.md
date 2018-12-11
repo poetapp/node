@@ -50,7 +50,7 @@ Services can have any number of DAOs, usually one per collection. DAOs abstract 
 
 #### Service
 
-The confusingly named Service file is basically a cron job, a timer that periodically runs a function.
+The confusingly named Service layer consists of relatively thin wrappers around Timers, which themselves are thin wrappers of `setTimeout`. In that sense, a Service is akin to a cron job, a timer that periodically runs a function.
 
 There are currently two different approaches to services in the code base:
 - The service calling a function of the controller directly
