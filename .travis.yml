@@ -29,7 +29,6 @@ install:
 script:
   - docker-compose exec poet-node npm run lint
   - docker-compose exec poet-node npm run coverage
-  - docker-compose exec poet-node npm run test:functional
 
 after:
   - docker images
