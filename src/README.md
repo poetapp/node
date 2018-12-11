@@ -22,7 +22,6 @@ This greatly reduces the amount of work needed to install and run the Po.et Node
 
 Each service is made up of several layers, each with different responsibilities. In this sense, all services look exactly the same. Most or all of them have these layers:
 
-
 #### Root
 
 A root file, with the same name of the service. For example: src/BlockchainReader/BlockchainReader.ts.
@@ -57,7 +56,13 @@ There is room from improvement in this area.
 
 If implementing a new Service, prefer the second approach (firing a RMQ message) whenever possible.
 
-#### 
+#### Controller
+
+The controller is, ideally, the only place where business logic should reside. Controllers should not interact directly with any dependency (such as MongoDB, IPFS, Bitcoin, RabbitMQ) or having any type of messaging logic (Koa, RabbitMQ).
+
+#### DAO
+
+Services can have any number of DAOs, usually one per collection. DAOs abstract away details of the database engine. For performance reasons it is not practical to completely remove all business logic from DAOs, so what functions a DAO has is usually dictated by a controller, in the sense of what data needs to be written or read. _How_ this data is written or read is an implementation detail of the DAO and should not be leaked to other layers.
 
 [SOLID]: https://en.wikipedia.org/wiki/SOLID
 [RabbitMQ]: https://www.rabbitmq.com/
