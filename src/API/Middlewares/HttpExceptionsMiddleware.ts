@@ -2,7 +2,7 @@ import { IllegalArgumentException, NotFoundException } from '@po.et/poet-js'
 import * as Koa from 'koa'
 import { cond, T } from 'ramda'
 
-export const HttpExceptionsMiddleware: Koa.Middleware  = async (context: any, next: () => Promise<any>) => {
+export const HttpExceptionsMiddleware: Koa.Middleware = async (context: any, next: () => Promise<any>) => {
   try {
     await next()
   } catch (exception) {
