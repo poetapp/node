@@ -32,8 +32,8 @@ Each service is made up of several layers, each with different responsibilities.
 A root file, with the same name of the service. For example: src/BlockchainReader/BlockchainReader.ts.
 
 This file is the [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/), and as such has two responsibilities:
-- Starting up everything
 - Wiring everything
+- Starting up everything
 
 These files are modules, not scripts. They do not do anything on their own and they can't be run. Instead, they export the entry point to the service.
 
