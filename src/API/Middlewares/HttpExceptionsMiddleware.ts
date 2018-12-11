@@ -1,7 +1,8 @@
 import { IllegalArgumentException, NotFoundException } from '@po.et/poet-js'
+import * as Koa from 'koa'
 import { cond, T } from 'ramda'
 
-export const HttpExceptionsMiddleware = async (context: any, next: () => Promise<any>) => {
+export const HttpExceptionsMiddleware: Koa.Middleware  = async (context: any, next: () => Promise<any>) => {
   try {
     await next()
   } catch (exception) {
@@ -10,15 +11,16 @@ export const HttpExceptionsMiddleware = async (context: any, next: () => Promise
     context.status = status
 
     context.app.emit('error', exception, context)
-    executeLogger(context, exception, status)
+    executeLogger(context, exception)
   }
 }
 
-export const executeLogger = (context: any, exception: Error, status: number) => {
-  if (context.logger && (status !== 422 && status !== 404))
+export const executeLogger = (context: any, exception: Error) => {
+  if (context.logger && isUnexpectedErrorStatusCode(context.status))
     context.logger.error({ exception }, 'Error Caught at Middleware - Will Return Internal Server Error')
 }
 
+const isUnexpectedErrorStatusCode = (status: number) => status !== 422 && status !== 404
 const isIllegalArgumentException = (exception: Error) => exception instanceof IllegalArgumentException
 const isNotFoundException = (exception: Error) => exception instanceof NotFoundException
 

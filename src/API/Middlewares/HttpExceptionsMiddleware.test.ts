@@ -1,18 +1,19 @@
 import { IllegalArgumentException, NotFoundException } from '@po.et/poet-js'
+import { always } from 'ramda'
 import { describe } from 'riteway'
 import { spy } from 'sinon'
 import { getCodeError, HttpExceptionsMiddleware, executeLogger } from './HttpExceptionsMiddleware'
 
-describe('HttpExceptionsMiddleware middleware', async (should: any) => {
-  const { assert } = should('')
+const app = { emit: always(undefined) }
 
+describe('HttpExceptionsMiddleware middleware', async (assert) => {
   {
-    const ctx = {}
+    const ctx: any = { app }
     const next = spy()
     await HttpExceptionsMiddleware(ctx, next)
 
     assert({
-      given: 'no errors',
+      given: 'no errors or errors',
       should: 'call next once',
       actual: next.calledOnce,
       expected: true,
@@ -20,7 +21,7 @@ describe('HttpExceptionsMiddleware middleware', async (should: any) => {
   }
 
   {
-    const ctx = {}
+    const ctx: any = { app }
     const next = spy()
     await HttpExceptionsMiddleware(ctx, next)
 
@@ -36,7 +37,7 @@ describe('HttpExceptionsMiddleware middleware', async (should: any) => {
   }
 
   {
-    const ctx = { status: 0, body: '' }
+    const ctx: any = { status: 0, body: '', app }
     const next = () => Promise.reject(new Error('Something happened!'))
 
     await HttpExceptionsMiddleware(ctx, next).catch()
@@ -53,8 +54,7 @@ describe('HttpExceptionsMiddleware middleware', async (should: any) => {
   }
 })
 
-describe('HttpExceptionsMiddleware getCodeError()', async (should: any) => {
-  const { assert } = should('')
+describe('HttpExceptionsMiddleware getCodeError()', async (assert) => {
 
   {
     const illegalArgumentException = new IllegalArgumentException('IllegalArgumentException')
@@ -95,14 +95,12 @@ describe('HttpExceptionsMiddleware getCodeError()', async (should: any) => {
   }
 })
 
-describe('HttpExceptionsMiddleware executeLogger()', async (should: any) => {
-  const { assert } = should('')
+describe('HttpExceptionsMiddleware executeLogger()', async (assert) => {
   {
-    const context = { logger: { error: spy() } }
+    const context = { logger: { error: spy() }, app }
     const exception = new Error()
-    const status = 200
 
-    executeLogger(context, exception, status)
+    executeLogger(context, exception)
 
     assert({
       given: 'an error status equals to 200',
