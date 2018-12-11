@@ -1,12 +1,9 @@
 import { Collection } from 'mongodb'
 import { isNil } from 'ramda'
 
-export interface UpdateAnchorAttemptInfo {
-  readonly ipfsDirectoryHash: string
-  readonly txId: string
-}
+import { IPFSHashTxId } from 'Messaging/Messages'
 
-type updateAnchorAttemptsInfo = (x: UpdateAnchorAttemptInfo) => Promise<void>
+type updateAnchorAttemptsInfo = (x: IPFSHashTxId) => Promise<void>
 
 export interface AnchorRetryDAOResult {
   readonly _id: number
@@ -20,6 +17,7 @@ export interface TransactionAnchorRetryEntry {
 
 export type TransactionAnchorRetryInfo = ReadonlyArray<TransactionAnchorRetryEntry>
 export type getTransactionAnchorRetryInfo = () => Promise<TransactionAnchorRetryInfo>
+type deleteByTransactionIds = (transactionIds: ReadonlyArray<string>) => Promise<void>
 
 export interface Dependencies {
   readonly ipfsDirectoryHashInfoCollection: Collection
@@ -56,6 +54,14 @@ export class IPFSDirectoryHashDAO {
         $inc: { attempts: 1 },
       },
       { upsert: true },
+    )
+  }
+
+  readonly deleteByTransactionIds: deleteByTransactionIds = async transactionIds => {
+    await this.ipfsDirectoryHashInfoCollection.deleteMany(
+      {
+        txId: { $in: transactionIds },
+      },
     )
   }
 

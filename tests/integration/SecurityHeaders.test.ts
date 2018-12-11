@@ -10,7 +10,7 @@ describe('Security Headers', async assert => {
   const PREFIX = `test-functional-node-poet-${runtimeId()}`
   const NODE_PORT = '28081'
 
-  const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
+  const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT })
   const client = new Client(`http://localhost:${NODE_PORT}`)
   const response = await fetch(client.url)
 
@@ -37,4 +37,5 @@ describe('Security Headers', async assert => {
 
   await server.stop()
   await db.teardown()
+  await rabbitMQ.stop()
 })
