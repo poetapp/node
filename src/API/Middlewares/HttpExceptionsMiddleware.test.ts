@@ -12,19 +12,6 @@ describe('HttpExceptionsMiddleware middleware', async (assert) => {
     const next = spy()
     await HttpExceptionsMiddleware(ctx, next)
 
-    assert({
-      given: 'no errors or errors',
-      should: 'call next once',
-      actual: next.calledOnce,
-      expected: true,
-    })
-  }
-
-  {
-    const ctx: any = { app }
-    const next = spy()
-    await HttpExceptionsMiddleware(ctx, next)
-
     const actual = ctx
     const expected = ctx
 
