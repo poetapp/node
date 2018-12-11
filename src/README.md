@@ -21,8 +21,13 @@ This greatly reduces the amount of work needed to install and run the Po.et Node
 ### Service Layers
 
 Each service is made up of several layers, each with different responsibilities. In this sense, all services look exactly the same. Most or all of them have these layers:
+- Composition Root
+- Router
+- Controller
+- DAO
+- Service
 
-#### Root
+#### Composition Root
 
 A root file, with the same name of the service. For example: src/BlockchainReader/BlockchainReader.ts.
 
@@ -48,7 +53,9 @@ In practice, business logic also lives in DAOs and, in some cases, Services. See
 
 #### DAO
 
-Services can have any number of DAOs, usually one per collection. DAOs abstract away details of the database engine. For performance reasons it is not practical to completely remove all business logic from DAOs, so what functions a DAO has is usually dictated by a controller, in the sense of what data needs to be written or read. _How_ this data is written or read is an implementation detail of the DAO and should not be leaked to other layers.
+Services can have any number of DAOs, one per collection. DAOs abstract away details of the database engine. 
+
+For performance reasons it is not practical to completely remove all business logic from DAOs. What functions a DAO has is usually dictated by a controller, in the sense of what data needs to be written or read. _How_ this data is written or read is an implementation detail of the DAO and should not be leaked to other layers.
 
 #### Service
 
@@ -65,6 +72,14 @@ The BlockchainReader Service in particular also has some business logic and muta
 There is room from improvement in this area.
 
 If implementing a new Service, prefer the second approach (firing a RMQ message) whenever possible.
+
+### Process for Architecture Improvement
+
+All code change proposals must follow this document, which should be used as a guide for code review.
+
+To submit a proposal for an architectural change, start by editing this file and making a pull request. Discussion can then take place in that PR. If accepted, the PR will be merged and serve as the guide for subsequent code changes.
+
+
 
 [SOLID]: https://en.wikipedia.org/wiki/SOLID
 [RabbitMQ]: https://www.rabbitmq.com/
