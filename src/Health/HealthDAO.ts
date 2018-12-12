@@ -1,5 +1,6 @@
 import { Collection, Db } from 'mongodb'
-import { TransactionAnchorRetryInfo } from './IPFSDirectoryHashDAO'
+
+import { TransactionAnchorRetryInfo } from 'Interfaces'
 
 export interface BlockchainInfo {
   readonly blocks: number
@@ -124,7 +125,9 @@ export class HealthDAO {
     )
   }
 
-  readonly updateTransactionAnchorRetryInfo: updateTransactionAnchorRetryInfo = async transactionAnchorRetryInfo => {
+  readonly updateTransactionAnchorRetryInfo: updateTransactionAnchorRetryInfo = async (
+    transactionAnchorRetryInfo: TransactionAnchorRetryInfo,
+    ) => {
     await this.collection.updateOne(
       { name: 'transactionAnchorRetryInfo' },
       {

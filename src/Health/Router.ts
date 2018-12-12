@@ -42,6 +42,7 @@ export class Router {
   async start() {
     await this.messaging.consume(this.exchange.getHealth, this.onGetHealth)
     await this.messaging.consumeClaimsNotDownloaded(this.onClaimsNotDownloaded)
+    await this.messaging.consumeIPFSHashTxId(this.ipfsHashTxIdConsumer)
     await this.messaging.consumeBlockDownloaded(this.blockDownloadedConsumer)
   }
 
@@ -70,6 +71,18 @@ export class Router {
     }
   }
 
+  ipfsHashTxIdConsumer = async (hashTxId: IPFSHashTxId): Promise<void> => {
+    const logger = this.logger.child({ method: 'ipfsHashTxIdConsumer' })
+
+    logger.debug({ hashTxId }, 'IPFS Directory Hash assigned a transactionId, updating counts')
+    try {
+      await this.controller.upsertIpfsHashTxId(hashTxId)
+      logger.info({ hashTxId }, 'Updated count for IPFS Directory Hash')
+    } catch (error) {
+      logger.error({ error }, 'Failed to upsert IPFSDirectoryHash')
+    }
+  }
+
   blockDownloadedConsumer = async (blockDownloaded: BlockDownloaded): Promise<void> => {
     const logger = this.logger.child({ method: 'blockDownloadedConsumer' })
 
@@ -77,6 +90,7 @@ export class Router {
     try {
       const transactionIds = blockDownloaded.poetBlockAnchors.map(_ => _.transactionId)
       await this.controller.purgeIpfsDirectoryHashByTransactionIds(transactionIds)
+      logger.info({ blockDownloaded }, 'Block downloaded, associated transactions removed')
     } catch (error) {
       logger.error({ error }, 'Failed to remove transactions')
     }
