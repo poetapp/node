@@ -15,7 +15,7 @@ const getClaimWithoutAnchor = (claim: any) => pickBy((v: any, k: string) => k !=
 
 describe('POST /works', async assert => {
   // Setup Mongodb and the app server
-  const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
+  const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   {
     const response = await postWorkToNode(ABraveAndStartlingTruth)
@@ -83,4 +83,5 @@ describe('POST /works', async assert => {
 
   await server.stop()
   await db.teardown()
+  await rabbitMQ.stop()
 })

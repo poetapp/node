@@ -45,7 +45,6 @@
     "bitcoin-core": "2.0.0",
     "bs58": "4.0.1",
     "form-data": "2.3.3",
-    "inversify": "5.0.1",
     "joi": "14.3.0",
     "koa": "2.6.2",
     "koa-body": "4.0.4",
@@ -61,7 +60,7 @@
     "string-to-stream": "1.1.1"
   },
   "devDependencies": {
-    "@po.et/tslint-rules": "2.1.0",
+    "@po.et/tslint-rules": "2.2.0",
     "@types/amqplib": "0.5.9",
     "@types/form-data": "2.2.1",
     "@types/formidable": "1.0.31",
@@ -81,10 +80,10 @@
     "ipfs-api": "26.1.2",
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "4.0.1",
-    "semantic-release": "15.12.4",
-    "sinon": "7.1.1",
+    "semantic-release": "15.12.5",
+    "sinon": "7.2.0",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.7.0",
-    "typescript": "3.2.1"
+    "typescript": "3.2.2"
   }
 }

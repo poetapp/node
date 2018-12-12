@@ -1,6 +1,5 @@
 import { Messaging } from 'Messaging/Messaging'
 import BitcoinCore = require('bitcoin-core')
-import { Container } from 'inversify'
 import { Collection, Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
@@ -13,6 +12,7 @@ import { HealthController, HealthControllerConfiguration } from './HealthControl
 import { HealthDAO } from './HealthDAO'
 import { HealthService, HealthServiceConfiguration } from './HealthService'
 import { IPFS, IPFSConfiguration } from './IPFS'
+import { IPFSDirectoryHashDAO } from './IPFSDirectoryHashDAO'
 import { Router } from './Router'
 
 export interface HealthConfiguration
@@ -29,7 +29,6 @@ export interface HealthConfiguration
 export class Health {
   private readonly logger: Pino.Logger
   private readonly configuration: HealthConfiguration
-  private readonly container = new Container()
   private mongoClient: MongoClient
   private dbConnection: Db
   private cron: HealthService
@@ -62,6 +61,13 @@ export class Health {
       },
     })
 
+    const ipfsDirectoryHashDAO = new IPFSDirectoryHashDAO({
+      dependencies: {
+        ipfsDirectoryHashInfoCollection: this.ipfsDirectoryHashInfoCollection,
+      },
+    })
+    await ipfsDirectoryHashDAO.start()
+
     const bitcoinCore = new BitcoinCore({
       host: this.configuration.bitcoinUrl,
       port: this.configuration.bitcoinPort,
@@ -80,6 +86,7 @@ export class Health {
       dependencies: {
         logger: this.logger,
         healthDAO,
+        ipfsDirectoryHashDAO,
         bitcoinCore,
         ipfs,
       },

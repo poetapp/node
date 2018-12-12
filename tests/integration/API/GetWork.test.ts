@@ -14,7 +14,7 @@ describe('GET /works/:id', async assert => {
   const getWorkFromNode = getWork(NODE_PORT)
   const postWorkToNode = postWorkWithDelay(NODE_PORT)
 
-  const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
+  const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   // Submit a claim
   await postWorkToNode(TheRaven)
@@ -62,4 +62,5 @@ describe('GET /works/:id', async assert => {
 
   await server.stop()
   await db.teardown()
+  await rabbitMQ.stop()
 })

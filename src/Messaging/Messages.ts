@@ -17,6 +17,11 @@ export interface IPFSHashTxId {
   readonly txId: string
 }
 
+export interface ForkDetected {
+  readonly blockHash: string
+  readonly blockHeight: number
+}
+
 const PoetBlockAnchorJoiSchema = Joi.object({
   prefix: Joi.string().required(),
   version: Joi.number().required(),

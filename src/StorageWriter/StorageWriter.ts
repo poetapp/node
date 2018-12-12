@@ -1,4 +1,3 @@
-import { injectable, Container } from 'inversify'
 import { Collection, Db, MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
@@ -13,11 +12,11 @@ import { DAOClaims, DAOClaimsConfiguration } from './DAOClaims'
 import { DAOIntegrityCheckFailures } from './DAOIntegrityCheckFailures'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
-import * as Service from './Service'
+import { Service, ServiceConfiguration } from './Service'
 
 export interface StorageWriterConfiguration
   extends LoggingConfiguration,
-    Service.Configuration,
+    ServiceConfiguration,
     DAOClaimsConfiguration {
   readonly ipfs: IPFSConfiguration
   readonly dbUrl: string
@@ -38,7 +37,7 @@ export const StorageWriter = (
   let db: Db
   let mongoClient: MongoClient
   let router: Router
-  let service: Service.Service
+  let service: Service
   let daoClaims: DAOClaims
   let daoIntegrityCheckFailures: DAOIntegrityCheckFailures
   let messaging: Messaging
@@ -91,7 +90,7 @@ export const StorageWriter = (
     })
     await router.start()
 
-    service = Service.Service({
+    service = Service({
       dependencies: {
         logger,
         messaging,

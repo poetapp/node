@@ -45,7 +45,7 @@ const testStatusCode = asyncPipe(fileHelper.postStringStreams, getStatus)
 
 describe('POST /files', async assert => {
   // Setup Mongodb and the app server
-  const { db, server } = await setUpServerAndDb({ PREFIX, NODE_PORT })
+  const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   {
     const given = 'a single utf8 markdown file as a multipart file stream'
@@ -95,4 +95,5 @@ describe('POST /files', async assert => {
   }
   await server.stop()
   await db.teardown()
+  await rabbitMQ.stop()
 })

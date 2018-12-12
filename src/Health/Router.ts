@@ -2,6 +2,7 @@ import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { IPFSHashFailure } from 'Interfaces'
+import { BlockDownloaded, IPFSHashTxId } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
@@ -41,6 +42,7 @@ export class Router {
   async start() {
     await this.messaging.consume(this.exchange.getHealth, this.onGetHealth)
     await this.messaging.consumeClaimsNotDownloaded(this.onClaimsNotDownloaded)
+    await this.messaging.consumeBlockDownloaded(this.blockDownloadedConsumer)
   }
 
   onGetHealth = async () => {
@@ -51,6 +53,7 @@ export class Router {
       await this.controller.refreshNetworkInfo()
       await this.controller.refreshIPFSInfo()
       await this.controller.refreshEstimatedSmartFee()
+      await this.controller.refreshTransactionAnchorRetryInfo()
     } catch (error) {
       logger.error({ error }, 'Failed to getHealthInfo')
     }
@@ -64,6 +67,18 @@ export class Router {
       await this.controller.updateIPFSFailures(ipfsHashFailures)
     } catch (error) {
       logger.error({ error }, 'Failed to update ipfsHashFailures on health')
+    }
+  }
+
+  blockDownloadedConsumer = async (blockDownloaded: BlockDownloaded): Promise<void> => {
+    const logger = this.logger.child({ method: 'blockDownloadedConsumer' })
+
+    logger.debug({ blockDownloaded }, 'Block downloaded, removing associated transactions')
+    try {
+      const transactionIds = blockDownloaded.poetBlockAnchors.map(_ => _.transactionId)
+      await this.controller.purgeIpfsDirectoryHashByTransactionIds(transactionIds)
+    } catch (error) {
+      logger.error({ error }, 'Failed to remove transactions')
     }
   }
 }

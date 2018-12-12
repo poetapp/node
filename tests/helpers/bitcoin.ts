@@ -63,3 +63,10 @@ export const ensureBitcoinBalance = async (client: any, blocks: number = 101) =>
   const balance = await client.getBalance()
   if (balance === 0) await client.generate(blocks)
 }
+
+export const generateReorgs = async (btcdClientA: any, btcdClientB: any) => {
+  await btcdClientB.setNetworkActive(false)
+  await btcdClientB.generate(2)
+  await btcdClientA.generate(1)
+  await btcdClientB.setNetworkActive(true)
+}
