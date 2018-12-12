@@ -11,7 +11,7 @@
     "lint": "tslint -p ./tsconfig.with-tests.json",
     "lint:fix": "tslint -p ./tsconfig.with-tests.json --fix",
     "test": "npm run test:unit && npm run test:integration",
-    "test:unit": "ts-node -r tsconfig-paths/register  --files ./tests/unit/index.ts",
+    "test:unit": "ts-node -r tsconfig-paths/register --files ./tests/unit/index.ts",
     "test:functional": "node ./dist/babel/tests/functional/index.js",
     "test:integration": "node ./dist/babel/tests/integration/index.js",
     "coverage": "npm run coverage:unit && npm run coverage:integration",
