@@ -25,7 +25,11 @@ export interface Arguments {
   readonly dependencies: Dependencies
 }
 
-const emptyTransactionAnchorRetryInfo: { transactionAnchorRetryInfo: TransactionAnchorRetryInfo } = {
+interface EmptyTransactionAnchorRetryInfo {
+  transactionAnchorRetryInfo: TransactionAnchorRetryInfo
+}
+
+const emptyTransactionAnchorRetryInfo: EmptyTransactionAnchorRetryInfo = {
   transactionAnchorRetryInfo: [],
 }
 
