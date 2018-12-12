@@ -27,3 +27,14 @@ const hasFailureType = has('failureType')
 const hasFailureReason = has('failureReason')
 const hasFailureTime = has('failureTime')
 export const isIPFSHashFailure = allPass([hasIPFSFileHash, hasFailureReason, hasFailureType, hasFailureTime])
+
+export interface HealthError {
+  readonly error: string
+}
+
+export interface TransactionAnchorRetryEntry {
+  readonly attempts: number
+  readonly count: number
+}
+
+export type TransactionAnchorRetryInfo = ReadonlyArray<TransactionAnchorRetryEntry>

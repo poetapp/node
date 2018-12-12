@@ -1,7 +1,7 @@
+import { TransactionAnchorRetryInfo } from 'Interfaces'
+import { IPFSHashTxId } from 'Messaging/Messages'
 import { Collection } from 'mongodb'
 import { isNil } from 'ramda'
-
-import { IPFSHashTxId } from 'Messaging/Messages'
 
 type updateAnchorAttemptsInfo = (x: IPFSHashTxId) => Promise<void>
 
@@ -10,12 +10,6 @@ export interface AnchorRetryDAOResult {
   readonly count: number
 }
 
-export interface TransactionAnchorRetryEntry {
-  readonly attempts: number
-  readonly count: number
-}
-
-export type TransactionAnchorRetryInfo = ReadonlyArray<TransactionAnchorRetryEntry>
 export type getTransactionAnchorRetryInfo = () => Promise<TransactionAnchorRetryInfo>
 type deleteByTransactionIds = (transactionIds: ReadonlyArray<string>) => Promise<void>
 

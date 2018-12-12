@@ -3,22 +3,16 @@ import * as Pino from 'pino'
 import { pick, pipeP } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
-import { IPFSHashFailure, ClaimIPFSHashPair } from 'Interfaces'
+import { HealthError, IPFSHashFailure, TransactionAnchorRetryInfo } from 'Interfaces'
 import { IPFSHashTxId } from 'Messaging/Messages'
-
-import { BlockchainInfo, WalletInfo, NetworkInfo, IPFSInfo, EstimatedSmartFeeInfo, HealthDAO } from './HealthDAO'
-import { TransactionAnchorRetryInfo, IPFSDirectoryHashDAO } from './IPFSDirectoryHashDAO'
-
+import { BlockchainInfo, EstimatedSmartFeeInfo, HealthDAO, IPFSInfo, NetworkInfo, WalletInfo } from './HealthDAO'
 import { IPFS } from './IPFS'
+import { IPFSDirectoryHashDAO } from './IPFSDirectoryHashDAO'
 
 enum LogTypes {
   info = 'info',
   trace = 'trace',
   error = 'error',
-}
-
-export interface HealthError {
-  readonly error: string
 }
 
 export interface HealthControllerConfiguration {
@@ -159,6 +153,11 @@ export class HealthController {
     return transactionAnchorRetryInfo
   }
 
+  private async upsertIpfsDirectoryHashTxId(ipfsHashTxId: IPFSHashTxId): Promise<IPFSHashTxId> {
+    await this.ipfsDirectoryHashDAO.updateAnchorAttemptsInfo(ipfsHashTxId)
+    return ipfsHashTxId
+  }
+
   private async removeIPFSDirectoryHashByTransactionId(transactionIds: ReadonlyArray<string>): Promise<void> {
     await this.ipfsDirectoryHashDAO.deleteByTransactionIds(transactionIds)
   }
@@ -172,6 +171,12 @@ export class HealthController {
       },
     )
   }
+
+  public upsertIpfsHashTxId = pipeP(
+    this.log(LogTypes.trace)('updating ipfsDirectoryHash info'),
+    this.upsertIpfsDirectoryHashTxId,
+    this.log(LogTypes.trace)('updated ipfsDirectoryHash info'),
+  )
 
   public purgeIpfsDirectoryHashByTransactionIds = pipeP(
     this.log(LogTypes.trace)('purging IPFSDirectoryHash for transactionIds'),
