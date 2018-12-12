@@ -2,6 +2,7 @@
 import { configureCreateVerifiableClaim, getVerifiableClaimSigner, isSignedVerifiableClaim } from '@po.et/poet-js'
 import { allPass, is, isNil, lensPath, not, path, pipe, pipeP, view } from 'ramda'
 import { describe } from 'riteway'
+import { HealthObject } from '../../src/API/HealthController'
 
 import { issuer, privateKey } from '../helpers/Keys'
 import {
@@ -11,6 +12,7 @@ import {
   waitForBlockchainSync,
   waitForBlockchainsToSync,
 } from '../helpers/bitcoin'
+import { getHealth } from '../helpers/endpoints'
 import { delayInSeconds, runtimeId, setUpServerAndDb } from '../helpers/utils'
 import { getWork, postWork } from '../helpers/works'
 
@@ -119,6 +121,8 @@ describe('Transaction timout will reset the transaction id for the claim', async
   const secondResponse = await getWorkFromNode(claim.id)
   const secondGet = await secondResponse.json()
   const secondTxId = getTransactionId(secondGet)
+  const healthResponse = await getHealth(NODE_PORT)
+  const { transactionAnchorRetryInfo }: HealthObject = await healthResponse.json()
 
   assert({
     given: 'transaction age max reached',
@@ -131,6 +135,13 @@ describe('Transaction timout will reset the transaction id for the claim', async
     given: 'transaction age max reached',
     should: 'create a new transaction id for the claim',
     actual: secondTxId !== firstTxId,
+    expected: true,
+  })
+
+  assert({
+    given: 'a reset transaction id',
+    should: 'show in the health report',
+    actual: transactionAnchorRetryInfo.length > 0,
     expected: true,
   })
 
