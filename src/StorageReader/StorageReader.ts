@@ -82,7 +82,7 @@ export class StorageReader {
     })
     await this.router.start()
 
-    this.service = new Service({
+    this.service = Service({
       dependencies: {
         logger: this.logger,
         claimController,
