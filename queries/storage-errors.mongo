@@ -1,4 +1,0 @@
-db.storage.aggregate([
-  { $match: {claimId: null} } ,
-  { $group: {_id: "$failureReason", count: { $sum: 1 } } }
-])
