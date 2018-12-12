@@ -1,6 +1,7 @@
-import { TransactionAnchorRetryInfo } from 'Interfaces'
 import { Db, Collection } from 'mongodb'
 import * as Pino from 'pino'
+
+import { TransactionAnchorRetryInfo } from 'Interfaces'
 
 export const isOkOne = ({ ok }: { ok: number }) => ok === 1
 
