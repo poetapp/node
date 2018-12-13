@@ -21,7 +21,7 @@ export const IPFS = ({
     downloadTimeoutInSeconds,
   },
 }: Arguments): IPFS => {
-  
+
   const cat = async (hash: string): Promise<string> => {
     const response = await fetch(`${ipfsUrl}/api/v0/cat?arg=${hash}`, {
       timeout: secondsToMiliseconds(downloadTimeoutInSeconds),
@@ -30,6 +30,6 @@ export const IPFS = ({
   }
 
   return {
-    cat
+    cat,
   }
 }
