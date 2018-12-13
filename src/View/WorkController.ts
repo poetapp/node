@@ -15,19 +15,19 @@ export interface Arguments {
 }
 
 export interface WorkController {
-  createWork: (work: Work) => Promise<void>
-  setIPFSHash: (workId: string, ipfsFileHash: string) => Promise<void>
-  setDirectoryHashOnEntries: (data: {
+  readonly createWork: (work: Work) => Promise<void>
+  readonly setIPFSHash: (workId: string, ipfsFileHash: string) => Promise<void>
+  readonly setDirectoryHashOnEntries: (data: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => Promise<void>
-  setTxId: (ipfsDirectoryHash: string, transactionId: string) => Promise<void>
-  upsertAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
-  setFileHashesForDirectoryHash: (data: {
+  readonly setTxId: (ipfsDirectoryHash: string, transactionId: string) => Promise<void>
+  readonly upsertAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
+  readonly setFileHashesForDirectoryHash: (data: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => Promise<void>
-  upsertClaimIPFSHashPair: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
+  readonly upsertClaimIPFSHashPair: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
 }
 
 export const WorkController = ({
