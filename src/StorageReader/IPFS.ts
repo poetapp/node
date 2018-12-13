@@ -12,7 +12,7 @@ export interface Arguments {
 }
 
 export interface IPFS {
-  cat: (hash: string) => Promise<string>
+  readonly cat: (hash: string) => Promise<string>
 }
 
 export const IPFS = ({
