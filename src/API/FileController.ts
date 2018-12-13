@@ -46,67 +46,67 @@ export interface Arguments {
   readonly configuration: FileControllerConfiguration
 }
 
-export class FileController {
-  private readonly logger: Pino.Logger
-  private readonly ipfsArchiveUrlPrefix: string
-  private readonly ipfsUrl: string
-  private readonly fileDao: FileDAO.FileDAO
+export interface FileController {
+  readonly addFiles: (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise<ReadonlyArray<{ hash: string}>>
+}
 
-  constructor({
-    dependencies: {
-      fileDao,
-      logger,
-    },
-    configuration,
-  }: Arguments) {
-    this.fileDao = fileDao
-    this.logger = childWithFileName(logger, __filename)
-    this.ipfsArchiveUrlPrefix = configuration.ipfsArchiveUrlPrefix
-    this.ipfsUrl = configuration.ipfsUrl
-  }
+export const FileController = ({
+  dependencies: {
+    fileDao,
+    logger,
+  },
+  configuration: {
+    ipfsUrl,
+    ipfsArchiveUrlPrefix,
+  },
+}: Arguments) => {
 
-  private log = (logType: LogTypes) => (label: string) => async <T extends any>(value?: T ) => {
-    this.logger[logType]({ value }, label)
+  const log = (logType: LogTypes) => (label: string) => async <T extends any>(value?: T ): Promise<T> => {
+    logger[logType]({ value }, label)
     return value
   }
 
-  private uploadStream = (stream: fs.ReadStream) => {
+  const uploadStream = (stream: fs.ReadStream) => {
     const formData = new FormData()
     formData.append('file', stream)
-    return fetch(`${this.ipfsUrl}/api/v0/add`, {
+    return fetch(`${ipfsUrl}/api/v0/add`, {
       method: 'post',
       body: formData,
       timeout: minutesToMiliseconds(10),
     })
   }
 
-  private getResponseJson = (x: Response) => x.json()
+  const getResponseJson = (x: Response) => x.json()
 
-  private addFileToIPFS = (fileStream: fs.ReadStream) => this.uploadStream(fileStream)
+  const addFileToIPFS = (fileStream: fs.ReadStream) => uploadStream(fileStream)
 
-  private storeIPFSHash = async (response: FileResponseJson) => {
+  const storeIPFSHash = async (response: FileResponseJson) => {
     const { hash } = response
-    await this.fileDao.addEntry({ hash })
+    await fileDao.addEntry({ hash })
     return response
   }
 
-  private convertResponse = (ipfsFileResponse: IPFSFileResponseJson): FileResponseJson =>
-    convertJson(this.ipfsArchiveUrlPrefix)(ipfsFileResponse)
+  const convertResponse = (ipfsFileResponse: IPFSFileResponseJson): FileResponseJson =>
+    convertJson(ipfsArchiveUrlPrefix)(ipfsFileResponse)
 
-  private handleFile = asyncPipe(
-    this.log(LogTypes.trace)('Adding file to ipfs'),
-    this.addFileToIPFS,
-    this.getResponseJson,
-    this.convertResponse,
-    this.log(LogTypes.trace)('Added file to ipfs, now saving the hash to the database'),
-    this.storeIPFSHash,
-    this.log(LogTypes.trace)('Saved the hash to the database'),
+  const handleFile = asyncPipe(
+    log(LogTypes.trace)('Adding file to ipfs'),
+    addFileToIPFS,
+    getResponseJson,
+    convertResponse,
+    log(LogTypes.trace)('Added file to ipfs, now saving the hash to the database'),
+    storeIPFSHash,
+    log(LogTypes.trace)('Saved the hash to the database'),
   )
 
-  public addFiles = asyncPipe(
-    this.log(LogTypes.trace)('Adding files'),
-    map(this.handleFile),
+  const addFiles: FileController['addFiles'] = asyncPipe(
+    log(LogTypes.trace)('Adding files'),
+    map(handleFile),
     Promise.all.bind(Promise), // bind required else TypeError "Promise.all called on non-object"
-    this.log(LogTypes.trace)('Added files'),
+    log(LogTypes.trace)('Added files'),
   )
+
+  return {
+    addFiles,
+  }
 }
