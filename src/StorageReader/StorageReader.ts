@@ -51,7 +51,7 @@ export class StorageReader {
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
-    const ipfs = new IPFS({
+    const ipfs = IPFS({
       configuration: {
         ipfsUrl: this.configuration.ipfsUrl,
         downloadTimeoutInSeconds: this.configuration.downloadTimeoutInSeconds,
