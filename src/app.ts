@@ -1,6 +1,5 @@
 /* tslint:disable:no-console */
 import * as Pino from 'pino'
-import 'reflect-metadata'
 
 import 'Extensions/Array'
 import 'Extensions/Error'
