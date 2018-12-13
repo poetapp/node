@@ -58,7 +58,7 @@ export class StorageReader {
       },
     })
 
-    const claimController = new ClaimController({
+    const claimController = ClaimController({
       dependencies: {
         logger: this.logger,
         db: this.dbConnection,
@@ -72,7 +72,7 @@ export class StorageReader {
       },
     })
 
-    this.router = new Router({
+    this.router = Router({
       dependencies: {
         logger: this.logger,
         messaging: this.messaging,
