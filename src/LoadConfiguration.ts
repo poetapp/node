@@ -5,14 +5,14 @@ import { homedir } from 'os'
 import * as path from 'path'
 import { keys, pipe } from 'ramda'
 
-import { Configuration } from 'Configuration'
+import { DefaultConfiguration, Configuration } from 'Configuration'
 import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
 export const mergeConfigs = (localVars: any = {}) => {
   const config = {
-    ...Configuration,
+    ...DefaultConfiguration,
     ...loadConfigurationFromEnv(localVars),
     ...loadConfigurationFromFile(configurationPath()),
   }
@@ -20,7 +20,7 @@ export const mergeConfigs = (localVars: any = {}) => {
   // Support setting MONGODB_URL all at once or via separate variables.
   // Especially needed for production since the schema is different (mongodb+srv) and
   // there's currently no override for that.
-  if (config.mongodbUrl === Configuration.mongodbUrl) {
+  if (config.mongodbUrl === DefaultConfiguration.mongodbUrl) {
     const mongoAuth = config.mongodbUser !== '' ? `${config.mongodbUser}:${config.mongodbPassword}@` : ''
     config.mongodbUrl = `mongodb://${mongoAuth}${config.mongodbHost}:${config.mongodbPort}/${config.mongodbDatabase}`
   }
@@ -60,7 +60,7 @@ export const applyExchangePrefix = (configVars: any) => {
   }
 }
 
-export const LoadConfigurationWithDefaults = (localVars: any = {}) =>
+export const loadConfigurationWithDefaults = (localVars: any = {}) =>
   pipe(
     mergeConfigs,
     applyExchangePrefix,
@@ -88,7 +88,7 @@ export const extractValue = (value: any) => {
 }
 
 const loadConfigurationFromEnv = (env: any): Partial<Configuration> => {
-  const map = createEnvToConfigurationKeyMap(keys(Configuration))
+  const map = createEnvToConfigurationKeyMap(keys(DefaultConfiguration))
 
   const configurationFromEnv = Object.entries(env)
     .filter(([key, value]) => map[key])

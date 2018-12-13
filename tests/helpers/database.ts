@@ -3,7 +3,7 @@
 import { MongoClient } from 'mongodb'
 import { pipeP } from 'ramda'
 
-import { LoadConfigurationWithDefaults } from '../../src/LoadConfiguration'
+import { loadConfigurationWithDefaults } from '../../src/LoadConfiguration'
 import { delay, runtimeId } from './utils'
 
 export const dbHelper = () => {
@@ -12,7 +12,7 @@ export const dbHelper = () => {
   let tempDbName: string
 
   const dbExecute = async (...fns: any) => {
-    const mongodbUrl = LoadConfigurationWithDefaults({
+    const mongodbUrl = loadConfigurationWithDefaults({
       MONGODB_USER: 'root',
       MONGODB_PASSWORD: 'rootPass',
       MONGODB_DATABASE: tempDbName,
@@ -36,7 +36,7 @@ export const dbHelper = () => {
   }
 
   const dbExecuteWithClient = async (...fns: any) => {
-    const mongodbUrl = LoadConfigurationWithDefaults({
+    const mongodbUrl = loadConfigurationWithDefaults({
       MONGODB_USER: 'root',
       MONGODB_PASSWORD: 'rootPass',
       MONGODB_DATABASE: tempDbName,

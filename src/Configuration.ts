@@ -73,7 +73,7 @@ export interface ExchangeConfiguration {
   readonly exchangeForkDetected: string
 }
 
-export const Configuration: Configuration = {
+export const DefaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://admin:adminPass@localhost',
   exchangePrefix: '',
   mongodbUser: '',

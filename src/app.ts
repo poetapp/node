@@ -13,7 +13,7 @@ import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
 import { Configuration } from 'Configuration'
 import { Health } from 'Health/Health'
-import { LoadConfigurationWithDefaults } from 'LoadConfiguration'
+import { loadConfigurationWithDefaults } from 'LoadConfiguration'
 import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
@@ -28,7 +28,7 @@ export async function app(localVars: any = {}) {
   console.log('')
   console.log('Loading Configuration...')
 
-  const configuration: Configuration = LoadConfigurationWithDefaults(localVars)
+  const configuration: Configuration = loadConfigurationWithDefaults(localVars)
 
   console.log('Switching to Structured Logging')
   console.log('Logging Level:', configuration.loggingLevel)

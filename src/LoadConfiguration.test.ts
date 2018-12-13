@@ -2,7 +2,7 @@
 import { pick } from 'ramda'
 import { describe, Try } from 'riteway'
 import {
-  LoadConfigurationWithDefaults,
+  loadConfigurationWithDefaults,
   mergeConfigs,
   applyExchangePrefix,
   extractValue,
@@ -88,19 +88,19 @@ describe('src/LoadConfiguration', async assert => {
   }
 })
 
-describe('LoadConfigurationWithDefaults', async assert => {
+describe('loadConfigurationWithDefaults', async assert => {
   const mongodbOverrides = {
     API_PORT: '4321',
     ENABLE_ANCHORING: 'true',
     RABBITMQ_URL: 'foo',
   }
 
-  const withoutLocalOverrides = LoadConfigurationWithDefaults()
+  const withoutLocalOverrides = loadConfigurationWithDefaults()
 
   assert({
     given: 'a local configuration override',
     should: 'return a config using the local override',
-    actual: LoadConfigurationWithDefaults(mongodbOverrides),
+    actual: loadConfigurationWithDefaults(mongodbOverrides),
     expected: {
       ...withoutLocalOverrides,
       apiPort: 4321,
@@ -129,7 +129,7 @@ describe('LoadConfigurationWithDefaults', async assert => {
       exchangeGetHealth: 'myPrefix.HEALTH::GET_HEALTH',
     }
     const keys = Object.keys(expected)
-    const actual = pick(keys, LoadConfigurationWithDefaults(overrideValues))
+    const actual = pick(keys, loadConfigurationWithDefaults(overrideValues))
 
     assert({
       given: 'override default values with an EXCHANGE_PREFIX',

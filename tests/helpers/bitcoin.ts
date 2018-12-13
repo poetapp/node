@@ -3,14 +3,14 @@ import BitcoinCore = require('bitcoin-core')
 const Client = require('bitcoin-core')
 import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
-import { LoadConfigurationWithDefaults } from 'LoadConfiguration'
+import { loadConfigurationWithDefaults } from 'LoadConfiguration'
 import * as Pino from 'pino'
 import {delay, delayInSeconds} from '../helpers/utils'
 
 const BITCOIND_A = 'bitcoind-1'
 const BITCOIND_B = 'bitcoind-2'
 
-const loggingConfiguration: LoggingConfiguration = LoadConfigurationWithDefaults()
+const loggingConfiguration: LoggingConfiguration = loadConfigurationWithDefaults()
 const logger: Pino.Logger = createModuleLogger(loggingConfiguration, __dirname)
 
 const createClient = (host: string) =>
