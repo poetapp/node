@@ -16,52 +16,57 @@ export interface ViewConfiguration extends LoggingConfiguration {
   readonly exchanges: ExchangeConfiguration
 }
 
-export class View {
-  private readonly logger: Pino.Logger
-  private readonly configuration: ViewConfiguration
-  private mongoClient: MongoClient
-  private dbConnection: Db
-  private router: Router
-  private messaging: Messaging
+export interface View {
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
+}
 
-  constructor(configuration: ViewConfiguration) {
-    this.configuration = configuration
-    this.logger = createModuleLogger(configuration, __dirname)
-  }
+export const View = (configuration: ViewConfiguration): View => {
+  let router: Router
+  let mongoClient: MongoClient
+  let dbConnection: Db
+  let messaging: Messaging
 
-  async start() {
-    this.logger.info({ configuration: this.configuration }, 'View Starting')
-    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await this.mongoClient.db()
+  const logger: Pino.Logger = createModuleLogger(configuration, __dirname)
 
-    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
-    await this.messaging.start()
+  const start = async () => {
+    logger.info({ configuration }, 'View Starting')
+    mongoClient = await MongoClient.connect(configuration.dbUrl)
+    dbConnection = await mongoClient.db()
 
-    const workController = new WorkController({
+    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
+    messaging = new Messaging(configuration.rabbitmqUrl, exchangesMessaging)
+    await messaging.start()
+
+    const workController = WorkController({
       dependencies: {
-        logger: this.logger,
-        db: this.dbConnection,
+        logger,
+        db: dbConnection,
       },
     })
 
-    this.router = new Router({
+    router = Router({
       dependencies: {
-        logger: this.logger,
-        messaging: this.messaging,
+        logger,
+        messaging,
         workController,
       },
-      exchange: this.configuration.exchanges,
+      exchange: configuration.exchanges,
     })
-    await this.router.start()
+    await router.start()
 
-    this.logger.info('View Started')
+    logger.info('View Started')
   }
 
-  async stop() {
-    this.logger.info('Stopping View...')
-    await this.router.stop()
-    this.logger.info('Stopping View Database...')
-    await this.mongoClient.close()
+  const stop = async () => {
+    logger.info('Stopping View...')
+    await router.stop()
+    logger.info('Stopping View Database...')
+    await mongoClient.close()
+  }
+
+  return {
+    start,
+    stop,
   }
 }
