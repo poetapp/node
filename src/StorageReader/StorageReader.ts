@@ -72,7 +72,7 @@ export class StorageReader {
       },
     })
 
-    this.router = new Router({
+    this.router = Router({
       dependencies: {
         logger: this.logger,
         messaging: this.messaging,
