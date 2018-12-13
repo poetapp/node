@@ -21,8 +21,8 @@ export interface APIConfiguration extends LoggingConfiguration, FileControllerCo
 }
 
 export interface API {
-  start: () => Promise<void>
-  stop: () => Promise<void>
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
 }
 
 export const API = (configuration: APIConfiguration): API => {
