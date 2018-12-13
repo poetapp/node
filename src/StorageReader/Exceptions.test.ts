@@ -1,8 +1,13 @@
 
-import { number } from 'joi'
 import { describe } from 'riteway'
 import { FailureReason } from './DownloadFailure'
-import { NoMoreEntriesException, InvalidClaim, IPFSGenericError, IPFSTimeoutError, errorToIPFSError } from './Exceptions'
+import {
+  NoMoreEntriesException,
+  InvalidClaim,
+  IPFSGenericError,
+  IPFSTimeoutError,
+  errorToIPFSError,
+} from './Exceptions'
 
 class FetchTimeoutError extends Error {
   readonly type: string
