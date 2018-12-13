@@ -26,8 +26,8 @@ export interface StorageReaderConfiguration
 }
 
 export interface StorageReader {
-  start: () => Promise<void>
-  stop: () => Promise<void>
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
 }
 
 export const StorageReader = (configuration: StorageReaderConfiguration): StorageReader => {
