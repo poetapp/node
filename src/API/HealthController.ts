@@ -1,8 +1,11 @@
 import { Db, Collection } from 'mongodb'
+import * as Pino from 'pino'
+
+import { TransactionAnchorRetryInfo } from 'Interfaces'
 
 export const isOkOne = ({ ok }: { ok: number }) => ok === 1
 
-interface HealthObject {
+export interface HealthObject {
   readonly mongoIsConnected: boolean
   readonly ipfsInfo: object
   readonly walletInfo: object
@@ -10,27 +13,40 @@ interface HealthObject {
   readonly networkInfo: object
   readonly estimatedSmartFeeInfo: object
   readonly ipfsRetryInfo: object
+  readonly transactionAnchorRetryInfo: TransactionAnchorRetryInfo
 }
 
 export interface Dependencies {
   readonly db: Db
+  readonly logger: Pino.Logger
 }
 
 export interface Arguments {
   readonly dependencies: Dependencies
 }
 
+interface EmptyTransactionAnchorRetryInfo {
+  transactionAnchorRetryInfo: TransactionAnchorRetryInfo
+}
+
+const emptyTransactionAnchorRetryInfo: EmptyTransactionAnchorRetryInfo = {
+  transactionAnchorRetryInfo: [],
+}
+
 export class HealthController {
   private readonly db: Db
   private readonly collection: Collection
+  private readonly logger: Pino.Logger
 
   constructor({
     dependencies: {
       db,
+      logger,
     },
   }: Arguments) {
     this.db = db
     this.collection = this.db.collection('health')
+    this.logger = logger
   }
 
   private async checkMongo(): Promise<boolean> {
@@ -100,6 +116,30 @@ export class HealthController {
     }
   }
 
+  private async getTransactionRetryInfo(): Promise<TransactionAnchorRetryInfo> {
+    this.logger.child({ message: 'getTransactionRetryInfo' })
+    this.logger.trace('retrieving TransactionAnchorRetryInfo')
+    try {
+      const transactionAnchorRetryResults = await this.collection.findOne(
+        {
+          name: 'transactionAnchorRetryInfo',
+        },
+        {
+          fields:
+            {
+              _id: false,
+              name: false,
+            },
+        },
+      ) || emptyTransactionAnchorRetryInfo
+      this.logger.trace({ transactionAnchorRetryResults }, 'getTransactionRetryInfo results')
+      return transactionAnchorRetryResults.transactionAnchorRetryInfo
+    } catch (error) {
+      this.logger.error({ error }, 'error retrieving TransactionAnchorRetryInfo')
+      return []
+    }
+  }
+
   async getHealth(): Promise<HealthObject> {
     const mongoIsConnected = await this.checkMongo()
     const ipfsInfo = await this.getIPFSInfo()
@@ -108,6 +148,7 @@ export class HealthController {
     const networkInfo = await this.getNetworkInfo()
     const estimatedSmartFeeInfo = await this.getEstimatedSmartFeeInfo()
     const ipfsRetryInfo = await this.getIPFSRetryInfo()
+    const transactionAnchorRetryInfo = await this.getTransactionRetryInfo()
     return {
       mongoIsConnected,
       ipfsInfo,
@@ -116,6 +157,7 @@ export class HealthController {
       networkInfo,
       estimatedSmartFeeInfo,
       ipfsRetryInfo,
+      transactionAnchorRetryInfo,
     }
   }
 }
