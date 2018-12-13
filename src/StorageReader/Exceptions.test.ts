@@ -1,8 +1,8 @@
 
+import { number } from 'joi'
 import { describe } from 'riteway'
-import { NoMoreEntriesException, InvalidClaim, IPFSGenericError, IPFSTimeoutError, errorToIPFSError } from './Exceptions'
 import { FailureReason } from './DownloadFailure'
-import { number } from 'joi';
+import { NoMoreEntriesException, InvalidClaim, IPFSGenericError, IPFSTimeoutError, errorToIPFSError } from './Exceptions'
 
 class FetchTimeoutError extends Error {
   readonly type: string
@@ -15,7 +15,7 @@ class FetchTimeoutError extends Error {
 }
 
 describe('src/StorageReader/Exceptions', async (assert: any) => {
-  
+
   {
     const noMoreEntriesException = new NoMoreEntriesException('noMoreEntriesException')
     const parseError = JSON.parse(JSON.stringify(noMoreEntriesException))
@@ -43,7 +43,7 @@ describe('src/StorageReader/Exceptions', async (assert: any) => {
       failureReason: parseError.failureReason,
       failureTime: parseError.failureTime,
       message: parseError.message,
-      type: parseError.type
+      type: parseError.type,
     }
 
     const expected = {
@@ -51,7 +51,7 @@ describe('src/StorageReader/Exceptions', async (assert: any) => {
       failureReason,
       failureTime,
       message: '',
-      type: 'InvalidClaim'
+      type: 'InvalidClaim',
     }
 
     assert({
@@ -93,7 +93,7 @@ describe('src/StorageReader/Exceptions', async (assert: any) => {
       underlyingError: parseError.underlyingError.message,
       failureTime: parseError.failureTime,
       message: parseError.message,
-      type: parseError.type
+      type: parseError.type,
     }
 
     const expected = {
@@ -101,7 +101,7 @@ describe('src/StorageReader/Exceptions', async (assert: any) => {
       underlyingError: underlyingError.message,
       failureTime,
       message: '',
-      type: 'IPFSGenericError'
+      type: 'IPFSGenericError',
     }
 
     assert({
@@ -123,14 +123,14 @@ describe('src/StorageReader/Exceptions', async (assert: any) => {
       ipfsFileHash: parseError.ipfsFileHash,
       failureTime: parseError.failureTime,
       message: parseError.message,
-      type: parseError.type
+      type: parseError.type,
     }
 
     const expected = {
       ipfsFileHash,
       failureTime,
       message: '',
-      type: 'IPFSTimeoutError'
+      type: 'IPFSTimeoutError',
     }
 
     assert({
