@@ -18,7 +18,7 @@ export interface IPFS {
 export const IPFS = ({
   configuration: {
     ipfsUrl,
-    downloadTimeoutInSeconds
+    downloadTimeoutInSeconds,
   },
 }: Arguments): IPFS => {
   
