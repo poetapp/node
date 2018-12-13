@@ -31,13 +31,13 @@ export const Service = ({
   },
   configuration,
  }: Arguments): Service => {
-  const childLogger = childWithFileName(logger, __filename)
+  const serviceLogger = childWithFileName(logger, __filename)
 
   const downloadNextHash = async () => {
     try {
       await claimController.downloadNextHash()
     } catch (error) {
-      childLogger.error(
+      serviceLogger.error(
         {
           method: 'downloadNextHash',
           error,
