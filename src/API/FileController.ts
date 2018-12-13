@@ -47,7 +47,7 @@ export interface Arguments {
 }
 
 export interface FileController {
-  readonly addFiles: (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise<ReadonlyArray<{ hash: string}>>
+  readonly addFiles: (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise<{}>
 }
 
 export const FileController = ({
