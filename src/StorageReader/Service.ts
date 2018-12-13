@@ -19,36 +19,25 @@ export interface Arguments {
   readonly configuration: ServiceConfiguration
 }
 
-export class Service {
-  private readonly logger: Pino.Logger
-  private readonly claimController: ClaimController
-  private readonly interval: Interval
+export interface Service {
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
+}
 
-  constructor({
-    dependencies: {
-      logger,
-      claimController,
-    },
-    configuration,
-  }: Arguments) {
-    this.logger = childWithFileName(logger, __filename)
-    this.claimController = claimController
-    this.interval = new Interval(this.downloadNextHash, 1000 * configuration.downloadIntervalInSeconds)
-  }
+export const Service = ({
+  dependencies: {
+    logger,
+    claimController,
+  },
+  configuration,
+ }: Arguments): Service => {
+  const serviceLogger = childWithFileName(logger, __filename)
 
-  async start() {
-    this.interval.start()
-  }
-
-  stop() {
-    this.interval.stop()
-  }
-
-  private downloadNextHash = async () => {
+  const downloadNextHash = async () => {
     try {
-      await this.claimController.downloadNextHash()
+      await claimController.downloadNextHash()
     } catch (error) {
-      this.logger.error(
+      serviceLogger.error(
         {
           method: 'downloadNextHash',
           error,
@@ -56,5 +45,20 @@ export class Service {
         'Uncaught Error Downloading Next Hash',
       )
     }
+  }
+
+  const interval =  new Interval(downloadNextHash, 1000 * configuration.downloadIntervalInSeconds)
+
+  const start = async () => {
+    interval.start()
+  }
+
+  const stop = async () => {
+    interval.stop()
+  }
+
+  return {
+    start,
+    stop,
   }
 }
