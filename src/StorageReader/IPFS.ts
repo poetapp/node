@@ -11,21 +11,25 @@ export interface Arguments {
   readonly configuration: IPFSConfiguration
 }
 
-export class IPFS {
-  private readonly url: string
-  private readonly downloadTimeoutInSeconds: number
+export interface IPFS {
+  readonly cat: (hash: string) => Promise<string>
+}
 
-  constructor({
-    configuration,
-  }: Arguments) {
-    this.url = configuration.ipfsUrl
-    this.downloadTimeoutInSeconds = configuration.downloadTimeoutInSeconds
-  }
+export const IPFS = ({
+  configuration: {
+    ipfsUrl,
+    downloadTimeoutInSeconds,
+  },
+}: Arguments): IPFS => {
 
-  cat = async (hash: string): Promise<string> => {
-    const response = await fetch(`${this.url}/api/v0/cat?arg=${hash}`, {
-      timeout: secondsToMiliseconds(this.downloadTimeoutInSeconds),
+  const cat = async (hash: string): Promise<string> => {
+    const response = await fetch(`${ipfsUrl}/api/v0/cat?arg=${hash}`, {
+      timeout: secondsToMiliseconds(downloadTimeoutInSeconds),
     })
     return response.text()
+  }
+
+  return {
+    cat,
   }
 }
