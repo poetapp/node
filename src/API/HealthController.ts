@@ -117,7 +117,7 @@ export class HealthController {
   }
 
   private async getTransactionRetryInfo(): Promise<TransactionAnchorRetryInfo> {
-    const logger = this.logger.child({ message: 'getTransactionRetryInfo' })
+    const logger = this.logger.child({ method: 'getTransactionRetryInfo' })
     logger.trace('retrieving TransactionAnchorRetryInfo')
     try {
       const transactionAnchorRetryResults = await this.collection.findOne(
