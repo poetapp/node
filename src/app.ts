@@ -64,8 +64,7 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'API was unable to start')
   }
 
-  const batchWriter = configuration.enableAnchoring
-    ? new BatchWriter({
+  const batchWriter = new BatchWriter({
         ...loggingConfiguration,
         batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
         dbUrl: configuration.mongodbUrl,
