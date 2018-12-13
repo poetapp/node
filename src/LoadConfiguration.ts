@@ -5,8 +5,8 @@ import { homedir } from 'os'
 import * as path from 'path'
 import { keys, pipe } from 'ramda'
 
-import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 import { Configuration } from 'Configuration'
+import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
 
 export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
 
