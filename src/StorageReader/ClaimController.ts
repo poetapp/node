@@ -54,11 +54,11 @@ export const ClaimController = ({
   },
   configuration,
 }: Arguments): ClaimController => {
-  const childLogger = childWithFileName(logger, __filename)
+  const claimControllerLogger = childWithFileName(logger, __filename)
   const collection = db.collection('storageReader')
 
   const download = async (ipfsFileHashes: ReadonlyArray<string>) => {
-    const logger = childLogger.child({ method: 'download' })
+    const logger = claimControllerLogger.child({ method: 'download' })
 
     logger.trace({ ipfsFileHashes }, 'Downloading Claims')
 
@@ -86,7 +86,7 @@ export const ClaimController = ({
     retryDelay?: number
     maxAttempts?: number,
   } = {}): Promise<void> => {
-    const logger = childLogger.child({ method: 'downloadNextHash' })
+    const logger = claimControllerLogger.child({ method: 'downloadNextHash' })
 
     const updateEntryFailureReason = (ipfsFileHash: string, failureType: FailureType, failureReason: FailureReason) =>
       collection.updateOne(
@@ -105,7 +105,7 @@ export const ClaimController = ({
       failureReason: FailureReason,
       failureTime: number
     ) => {
-      const logger = childLogger.child({ method: 'publishEntryFailureReason' })
+      const logger = claimControllerLogger.child({ method: 'publishEntryFailureReason' })
       logger.trace('started publishing')
 
       await messaging.publishClaimsNotDownloaded([
@@ -175,7 +175,7 @@ export const ClaimController = ({
     retryDelay: number
     maxAttempts: number,
   }) => {
-    const logger = childLogger.child({ method: 'findEntryToDownload' })
+    const logger = claimControllerLogger.child({ method: 'findEntryToDownload' })
     logger.trace('started finding entry')
     const entry = await collection.findOne({
       claimId: null,
@@ -225,7 +225,7 @@ export const ClaimController = ({
     entry: Entry
     currentTime?: number,
   }) => {
-    const logger = childLogger.child({ method: 'updateEntryAttempts' })
+    const logger = claimControllerLogger.child({ method: 'updateEntryAttempts' })
     logger.trace({ entry }, 'started updating entry')
 
     await collection.updateOne(
@@ -257,7 +257,7 @@ export const ClaimController = ({
         throw new InvalidClaim(ipfsFileHash, FailureReason.InvalidJson)
       }
     }
-    const logger = childLogger.child({ method: 'downloadEntryClaim' })
+    const logger = claimControllerLogger.child({ method: 'downloadEntryClaim' })
 
     logger.trace({ ipfsFileHash }, 'Starting claim download')
 
@@ -285,7 +285,7 @@ export const ClaimController = ({
     )
 
   const setEntryDownloadSuccessTime = async ({ entry, ...rest }: { entry: Entry }) => {
-    const logger = childLogger.child({ method: 'setEntryDownloadSuccessTime' })
+    const logger = claimControllerLogger.child({ method: 'setEntryDownloadSuccessTime' })
     logger.trace('setting download success time')
 
     await setEntryDownloadSuccessTimeById(entry._id, new Date().getTime())
@@ -299,7 +299,7 @@ export const ClaimController = ({
   }
 
   const updateEntryPairs = async ({ entry, claim, ...rest }: { claim: SignedVerifiableClaim; entry: Entry }) => {
-    const logger = childLogger.child({ method: 'updateEntryPairs' })
+    const logger = claimControllerLogger.child({ method: 'updateEntryPairs' })
     logger.trace('started updating hash pairs')
 
     await updateClaimIdIPFSHashPairs([
@@ -319,7 +319,7 @@ export const ClaimController = ({
   }
 
   const publishEntryDownload = async ({ entry, claim, ...rest }: { claim: SignedVerifiableClaim; entry: Entry }) => {
-    const logger = childLogger.child({ method: 'publishEntryDownload' })
+    const logger = claimControllerLogger.child({ method: 'publishEntryDownload' })
     logger.trace('started publishing')
 
     await messaging.publishClaimsDownloaded([
@@ -339,7 +339,7 @@ export const ClaimController = ({
   }
 
   const updateClaimIdIPFSHashPairs = async (claimIdIPFSHashPairs: ReadonlyArray<ClaimIdIPFSHashPair>) => {
-    const logger = childLogger.child({ method: 'updateClaimIdIPFSHashPairs' })
+    const logger = claimControllerLogger.child({ method: 'updateClaimIdIPFSHashPairs' })
 
     logger.trace({ claimIdIPFSHashPairs }, 'Storing { claimId, ipfsFileHash } pairs in the DB.')
 
