@@ -11,7 +11,7 @@
     "lint": "tslint -p ./tsconfig.with-tests.json",
     "lint:fix": "tslint -p ./tsconfig.with-tests.json --fix",
     "test": "ts-node -r tsconfig-paths/register --files ./tests/index.ts",
-    "test:unit": "ts-node -r tsconfig-paths/register -r reflect-metadata --files ./tests/unit/index.ts",
+    "test:unit": "ts-node -r tsconfig-paths/register --files ./tests/unit/index.ts",
     "test:functional": "node ./dist/babel/tests/functional/index.js",
     "test:integration": "node ./dist/babel/tests/integration/index.js",
     "coverage": "nyc --report-dir ./.coverage npm run test",
@@ -56,7 +56,6 @@
     "pino": "4.17.6",
     "protobufjs": "6.8.8",
     "ramda": "0.26.1",
-    "reflect-metadata": "0.1.12",
     "string-to-stream": "1.1.1"
   },
   "devDependencies": {
