@@ -17,35 +17,29 @@ export interface Arguments {
   readonly exchange: ExchangeConfiguration
 }
 
-export class Router {
-  private readonly logger: Pino.Logger
-  private readonly messaging: Messaging
-  private readonly claimController: ClaimController
-  private readonly exchange: ExchangeConfiguration
+export interface Router {
+  readonly start: () => Promise<void>
+}
 
-  constructor({
-    dependencies: {
-      logger,
-      messaging,
-      claimController,
-    },
-    exchange,
-  }: Arguments) {
-    this.logger = childWithFileName(logger, __filename)
-    this.messaging = messaging
-    this.claimController = claimController
-    this.exchange = exchange
-  }
+export const Router = ({
+  dependencies: {
+    logger,
+    messaging,
+    claimController,
+  },
+  exchange,
+}: Arguments): Router => {
+  const routerLogger = childWithFileName(logger, __filename)
 
-  async start() {
-    await this.messaging.consume(
-      this.exchange.batchReaderReadNextDirectorySuccess,
-      this.onBatchReaderReadNextDirectorySuccess,
+  const start = async () => {
+    await messaging.consume(
+      exchange.batchReaderReadNextDirectorySuccess,
+      onBatchReaderReadNextDirectorySuccess,
     )
   }
 
-  onBatchReaderReadNextDirectorySuccess = async (message: any): Promise<void> => {
-    const logger = this.logger.child({ method: 'onBatchReaderReadNextDirectorySuccess' })
+  const onBatchReaderReadNextDirectorySuccess = async (message: any): Promise<void> => {
+    const logger = routerLogger.child({ method: 'onBatchReaderReadNextDirectorySuccess' })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes } = JSON.parse(messageContent)
@@ -53,9 +47,13 @@ export class Router {
     logger.trace({ ipfsFileHashes }, 'Downloading Claims from IPFS')
 
     try {
-      await this.claimController.download(ipfsFileHashes)
+      await claimController.download(ipfsFileHashes)
     } catch (error) {
       logger.error({ error }, 'Error downloading IPFS hashes')
     }
+  }
+
+  return {
+    start,
   }
 }
