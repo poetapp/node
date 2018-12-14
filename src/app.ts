@@ -10,8 +10,9 @@ import { BatchReader } from 'BatchReader/BatchReader'
 import { BatchWriter } from 'BatchWriter/BatchWriter'
 import { BlockchainReader } from 'BlockchainReader/BlockchainReader'
 import { BlockchainWriter } from 'BlockchainWriter/BlockchainWriter'
-import { loadConfigurationWithDefaults, Configuration } from 'Configuration'
+import { Configuration } from 'Configuration'
 import { Health } from 'Health/Health'
+import { loadConfigurationWithDefaults } from 'LoadConfiguration'
 import { StorageReader } from 'StorageReader/StorageReader'
 import { StorageWriter } from 'StorageWriter/StorageWriter'
 import { View } from 'View/View'
@@ -126,7 +127,7 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'View was unable to start')
   }
 
-  const storage = new StorageReader({
+  const storage = StorageReader({
     ...loggingConfiguration,
     dbUrl: configuration.mongodbUrl,
     ipfsUrl: configuration.ipfsUrl,
