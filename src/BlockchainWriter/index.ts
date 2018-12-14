@@ -48,7 +48,6 @@ export const blockchainWriter = (localVars: any = {}): BlockchainWriter => {
   })
 }
 
-
 blockchainWriter().start()
   .then(shutdownModule)
   .catch(catchBlockchainWriterStartupError)
