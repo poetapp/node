@@ -19,7 +19,7 @@ class FetchTimeoutError extends Error {
   }
 }
 
-describe('src/StorageReader/Exceptions', async (assert: any) => {
+describe('src/StorageReader/Exceptions', async assert => {
 
   {
     const noMoreEntriesException = new NoMoreEntriesException('noMoreEntriesException')
