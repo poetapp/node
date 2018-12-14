@@ -127,7 +127,7 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'View was unable to start')
   }
 
-  const storage = new StorageReader({
+  const storage = StorageReader({
     ...loggingConfiguration,
     dbUrl: configuration.mongodbUrl,
     ipfsUrl: configuration.ipfsUrl,
