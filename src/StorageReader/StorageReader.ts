@@ -25,91 +25,96 @@ export interface StorageReaderConfiguration
   readonly exchanges: ExchangeConfiguration
 }
 
-export class StorageReader {
-  private readonly logger: Pino.Logger
-  private readonly configuration: StorageReaderConfiguration
-  private mongoClient: MongoClient
-  private dbConnection: Db
-  private router: Router
-  private messaging: Messaging
-  private service: Service
+export interface StorageReader {
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
+}
 
-  constructor(configuration: StorageReaderConfiguration) {
-    this.configuration = configuration
-    this.logger = createModuleLogger(configuration, __dirname)
-  }
+export const StorageReader = (configuration: StorageReaderConfiguration): StorageReader => {
+  let mongoClient: MongoClient
+  let dbConnection: Db
+  let router: Router
+  let messaging: Messaging
+  let service: Service
 
-  async start() {
-    this.logger.info({ configuration: this.configuration }, 'StorageReader Starting')
-    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await this.mongoClient.db()
+  const logger = createModuleLogger(configuration, __dirname)
+
+  const start = async () => {
+    logger.info({ configuration }, 'StorageReader Starting')
+    mongoClient = await MongoClient.connect(configuration.dbUrl)
+    dbConnection = await mongoClient.db()
 
     const exchangesMessaging = pick(
       ['poetAnchorDownloaded', 'claimsDownloaded', 'claimsNotDownloaded'],
-      this.configuration.exchanges,
+      configuration.exchanges,
     )
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
-    await this.messaging.start()
+    messaging = new Messaging(configuration.rabbitmqUrl, exchangesMessaging)
+    await messaging.start()
 
     const ipfs = IPFS({
       configuration: {
-        ipfsUrl: this.configuration.ipfsUrl,
-        downloadTimeoutInSeconds: this.configuration.downloadTimeoutInSeconds,
+        ipfsUrl: configuration.ipfsUrl,
+        downloadTimeoutInSeconds: configuration.downloadTimeoutInSeconds,
       },
     })
 
     const claimController = ClaimController({
       dependencies: {
-        logger: this.logger,
-        db: this.dbConnection,
-        messaging: this.messaging,
+        logger,
+        db: dbConnection,
+        messaging,
         ipfs,
         verifiableClaimSigner: getVerifiableClaimSigner(),
       },
       configuration: {
-        downloadRetryDelayInMinutes: this.configuration.downloadRetryDelayInMinutes,
-        downloadMaxAttempts: this.configuration.downloadMaxAttempts,
+        downloadRetryDelayInMinutes: configuration.downloadRetryDelayInMinutes,
+        downloadMaxAttempts: configuration.downloadMaxAttempts,
       },
     })
 
-    this.router = Router({
+    router = Router({
       dependencies: {
-        logger: this.logger,
-        messaging: this.messaging,
+        logger,
+        messaging,
         claimController,
       },
-      exchange: this.configuration.exchanges,
+      exchange: configuration.exchanges,
     })
-    await this.router.start()
+    await router.start()
 
-    this.service = Service({
+    service = Service({
       dependencies: {
-        logger: this.logger,
+        logger,
         claimController,
       },
       configuration: {
-        downloadIntervalInSeconds: this.configuration.downloadIntervalInSeconds,
+        downloadIntervalInSeconds: configuration.downloadIntervalInSeconds,
       },
     })
-    await this.service.start()
+    await service.start()
 
-    await this.createIndices()
+    await createIndices()
 
-    this.logger.info('StorageReader Started')
+    logger.info('StorageReader Started')
   }
 
-  async stop() {
-    this.logger.info('Stopping Storage...')
-    await this.service.stop()
-    this.logger.info('Stopping Storage Database...')
-    await this.mongoClient.close()
-    this.logger.info('Stopping Storage Messaging...')
-    await this.messaging.stop()
+  const stop = async () => {
+    logger.info('Stopping Storage...')
+    await service.stop()
+    logger.info('Stopping Storage Database...')
+    await mongoClient.close()
+    logger.info('Stopping Storage Messaging...')
+    await messaging.stop()
   }
 
-  private async createIndices() {
-    const collection = this.dbConnection.collection('storage')
+  const createIndices = async () => {
+    const collection = dbConnection.collection('storage')
     await collection.createIndex({ ipfsFileHash: 1 }, { unique: true, name: 'ipfsFileHash-unique' })
     await collection.createIndex({ attempts: 1 }, { name: 'attempts' })
+  }
+
+  return {
+    start,
+    stop,
   }
 }
