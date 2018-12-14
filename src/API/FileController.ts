@@ -47,7 +47,7 @@ export interface Arguments {
 }
 
 export interface FileController {
-  readonly addFiles: (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise<{}>
+  readonly addFiles: (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise<ReadonlyArray<{ hash: string }>>
 }
 
 export const FileController = ({
@@ -61,7 +61,7 @@ export const FileController = ({
   },
 }: Arguments) => {
 
-  const log = (logType: LogTypes) => (label: string) => async <T extends any>(value?: T ): Promise<T> => {
+  const log = (logType: LogTypes) => (label: string) => async <T extends undefined>(value?: T ): Promise<T> => {
     logger[logType]({ value }, label)
     return value
   }
