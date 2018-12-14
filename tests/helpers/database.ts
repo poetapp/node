@@ -3,7 +3,7 @@
 import { MongoClient } from 'mongodb'
 import { pipeP } from 'ramda'
 
-import { loadConfigurationWithDefaults } from '../../src/Configuration'
+import { loadConfigurationWithDefaults } from '../../src/LoadConfiguration'
 import { delay, runtimeId } from './utils'
 
 export const dbHelper = () => {
