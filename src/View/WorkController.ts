@@ -14,51 +14,61 @@ export interface Arguments {
   readonly dependencies: Dependencies
 }
 
-export class WorkController {
-  private readonly logger: Pino.Logger
-  private readonly db: Db
-  private readonly anchorCollection: Collection
-  private readonly workCollection: Collection
+export interface WorkController {
+  readonly createWork: (work: Work) => Promise<void>
+  readonly setIPFSHash: (workId: string, ipfsFileHash: string) => Promise<void>
+  readonly setDirectoryHashOnEntries: (data: {
+    ipfsFileHashes: ReadonlyArray<string>
+    ipfsDirectoryHash: string,
+  }) => Promise<void>
+  readonly setTxId: (ipfsDirectoryHash: string, transactionId: string) => Promise<void>
+  readonly upsertAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
+  readonly setFileHashesForDirectoryHash: (data: {
+    ipfsFileHashes: ReadonlyArray<string>
+    ipfsDirectoryHash: string,
+  }) => Promise<void>
+  readonly upsertClaimIPFSHashPair: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
+}
 
-  constructor({
-    dependencies: {
-      logger,
-      db,
-    },
-  }: Arguments) {
-    this.logger = childWithFileName(logger, __filename)
-    this.db = db
-    this.anchorCollection = this.db.collection('anchors')
-    this.workCollection = this.db.collection('works')
-  }
+export const WorkController = ({
+  dependencies: {
+    logger,
+    db,
+  },
+}: Arguments): WorkController => {
+  const workControllerLogger: Pino.Logger = childWithFileName(logger, __filename)
+  const anchorCollection: Collection = db.collection('anchors')
+  const workCollection: Collection = db.collection('works')
 
-  createWork = async (work: Work): Promise<void> => {
-    this.logger.trace({ work }, 'Creating Work')
+  const createWork = async (work: Work): Promise<void> => {
+    const logger = workControllerLogger.child({ method: 'createWork' })
+    logger.trace({ work }, 'Creating Work')
 
-    const existing = await this.workCollection.findOne({ id: work.id })
+    const existing = await workCollection.findOne({ id: work.id })
 
     if (existing) return
 
-    await this.workCollection.insertOne(work)
+    await workCollection.insertOne(work)
   }
 
-  setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
-    this.logger.trace({ workId, ipfsFileHash }, 'Setting the IPFS Hash for a Work')
-    await this.workCollection.updateOne({ id: workId }, { $set: { 'anchor.ipfsFileHash': ipfsFileHash } })
+  const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
+    const logger = workControllerLogger.child({ method: 'setIPFSHash' })
+    logger.trace({ workId, ipfsFileHash }, 'Setting the IPFS Hash for a Work')
+    await workCollection.updateOne({ id: workId }, { $set: { 'anchor.ipfsFileHash': ipfsFileHash } })
   }
 
-  setDirectoryHashOnEntries = async ({
+  const setDirectoryHashOnEntries = async ({
     ipfsFileHashes,
     ipfsDirectoryHash,
   }: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => {
-    const logger = this.logger.child({ method: 'setDirectoryHash' })
+    const logger = workControllerLogger.child({ method: 'setDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
-        this.workCollection.updateOne(
+        workCollection.updateOne(
           { 'anchor.ipfsFileHash': ipfsFileHash },
           { $set: { 'anchor.ipfsDirectoryHash': ipfsDirectoryHash } },
           { upsert: true },
@@ -67,20 +77,22 @@ export class WorkController {
     )
   }
 
-  setTxId = async (ipfsDirectoryHash: string, transactionId: string): Promise<void> => {
-    this.logger.trace({ ipfsDirectoryHash, transactionId }, 'Setting the Transaction ID for a IPFS Hash')
-    await this.workCollection.updateMany(
+  const setTxId = async (ipfsDirectoryHash: string, transactionId: string): Promise<void> => {
+    const logger = workControllerLogger.child({ method: 'setTxId' })
+    logger.trace({ ipfsDirectoryHash, transactionId }, 'Setting the Transaction ID for a IPFS Hash')
+    await workCollection.updateMany(
       { 'anchor.ipfsDirectoryHash': ipfsDirectoryHash },
       { $set: { 'anchor.transactionId': transactionId } },
     )
   }
 
-  async upsertAnchors(poetAnchors: ReadonlyArray<PoetBlockAnchor>) {
-    this.logger.trace({ poetAnchors }, 'Upserting Po.et Anchors')
+  const upsertAnchors =  async (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => {
+    const logger = workControllerLogger.child({ method: 'upsertAnchors' })
+    logger.trace({ poetAnchors }, 'Upserting Po.et Anchors')
 
     await Promise.all(
       poetAnchors.map(anchor =>
-        this.anchorCollection.updateOne(
+        anchorCollection.updateOne(
           { ipfsDirectoryHash: anchor.ipfsDirectoryHash },
           { $set: anchor },
           { upsert: true },
@@ -89,21 +101,21 @@ export class WorkController {
     )
   }
 
-  setFileHashesForDirectoryHash = async ({
+  const setFileHashesForDirectoryHash = async ({
     ipfsFileHashes,
     ipfsDirectoryHash,
   }: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => {
-    const logger = this.logger.child({ method: 'setFileHashesForDirectoryHash' })
+    const logger = workControllerLogger.child({ method: 'setFileHashesForDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
-    const anchor = await this.anchorCollection.findOne({ ipfsDirectoryHash }, { projection: { _id: 0 } })
+    const anchor = await anchorCollection.findOne({ ipfsDirectoryHash }, { projection: { _id: 0 } })
     logger.debug({ ipfsFileHashes, ipfsDirectoryHash, anchor }, 'setting directory hash on work entries')
 
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
-        this.workCollection.updateOne(
+        workCollection.updateOne(
           { 'anchor.ipfsFileHash': ipfsFileHash },
           { $set: { anchor: { ...anchor, ipfsFileHash } } },
           { upsert: true },
@@ -112,12 +124,23 @@ export class WorkController {
     )
   }
 
-  async upsertClaimIPFSHashPair(claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) {
-    this.logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
+  const upsertClaimIPFSHashPair = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
+    const logger = workControllerLogger.child({ method: 'upsertClaimIPFSHashPair' })
+    logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
-        this.workCollection.updateOne({ 'anchor.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
+        workCollection.updateOne({ 'anchor.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
       ),
     )
+  }
+
+  return {
+    createWork,
+    setIPFSHash,
+    setDirectoryHashOnEntries,
+    setTxId,
+    upsertAnchors,
+    setFileHashesForDirectoryHash,
+    upsertClaimIPFSHashPair,
   }
 }

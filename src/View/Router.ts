@@ -19,63 +19,58 @@ export interface Arguments {
   readonly exchange: ExchangeConfiguration
 }
 
-export class Router {
-  private readonly logger: Pino.Logger
-  private readonly messaging: Messaging
-  private readonly workController: WorkController
-  private readonly exchange: ExchangeConfiguration
+export interface Router {
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
+}
 
-  constructor({
-    dependencies: {
-      logger,
-      messaging,
-      workController,
-    },
-    exchange,
-  }: Arguments) {
-    this.logger = childWithFileName(logger, __filename)
-    this.messaging = messaging
-    this.workController = workController
-    this.exchange = exchange
-  }
+export const Router = ({
+  dependencies: {
+    logger,
+    messaging,
+    workController,
+  },
+  exchange,
+}: Arguments): Router => {
+  const routerLogger = childWithFileName(logger, __filename)
 
-  async start() {
-    await this.messaging.consume(this.exchange.newClaim, this.onNewClaim)
-    await this.messaging.consume(this.exchange.claimIpfsHash, this.onClaimIPFSHash)
-    await this.messaging.consume(this.exchange.ipfsHashTxId, this.onIPFSHashTxId)
-    await this.messaging.consumeBlockDownloaded(this.onPoetBlockAnchorsDownloaded)
-    await this.messaging.consumeClaimsDownloaded(this.onClaimsDownloaded)
-    await this.messaging.consume(
-      this.exchange.batchReaderReadNextDirectorySuccess,
-      this.onBatchReaderReadNextDirectorySuccess,
+  const start = async () => {
+    await messaging.consume(exchange.newClaim, onNewClaim)
+    await messaging.consume(exchange.claimIpfsHash, onClaimIPFSHash)
+    await messaging.consume(exchange.ipfsHashTxId, onIPFSHashTxId)
+    await messaging.consumeBlockDownloaded(onPoetBlockAnchorsDownloaded)
+    await messaging.consumeClaimsDownloaded(onClaimsDownloaded)
+    await messaging.consume(
+      exchange.batchReaderReadNextDirectorySuccess,
+      onBatchReaderReadNextDirectorySuccess,
     )
-    await this.messaging.consume(
-      this.exchange.batchWriterCreateNextBatchSuccess,
-      this.onBatchWriterCreateNextBatchSuccess,
+    await messaging.consume(
+      exchange.batchWriterCreateNextBatchSuccess,
+      onBatchWriterCreateNextBatchSuccess,
     )
   }
 
-  async stop() {
-    this.logger.info('Stopping View Router...')
-    this.logger.info('Stopping View Messaging...')
-    await this.messaging.stop()
+  const stop = async () => {
+    routerLogger.info('Stopping View Router...')
+    routerLogger.info('Stopping View Messaging...')
+    await messaging.stop()
   }
 
-  onNewClaim = async (message: any) => {
-    const logger = this.logger.child({ method: 'onNewClaim' })
+  const onNewClaim = async (message: any) => {
+    const logger = routerLogger.child({ method: 'onNewClaim' })
 
     const messageContent = message.content.toString()
     logger.trace({ messageContent }, 'Setting message content on works')
 
     try {
-      await this.workController.createWork(JSON.parse(messageContent))
+      await workController.createWork(JSON.parse(messageContent))
     } catch (error) {
       logger.error({ error }, 'Failed to create on works')
     }
   }
 
-  onClaimIPFSHash = async (message: any) => {
-    const logger = this.logger.child({ method: 'onClaimIPFSHash' })
+  const onClaimIPFSHash = async (message: any) => {
+    const logger = routerLogger.child({ method: 'onClaimIPFSHash' })
 
     const messageContent = message.content.toString()
     const { claimId, ipfsFileHash } = JSON.parse(messageContent)
@@ -83,14 +78,14 @@ export class Router {
     logger.info({ claimId, ipfsFileHash }, 'Setting IPFSHash on works')
 
     try {
-      await this.workController.setIPFSHash(claimId, ipfsFileHash)
+      await workController.setIPFSHash(claimId, ipfsFileHash)
     } catch (error) {
       logger.error({ error }, 'Failed to set claimId and ipfsFileHash on works')
     }
   }
 
-  onBatchWriterCreateNextBatchSuccess = async (message: any): Promise<void> => {
-    const logger = this.logger.child({
+  const onBatchWriterCreateNextBatchSuccess = async (message: any): Promise<void> => {
+    const logger = routerLogger.child({
       method: 'onBatchWriterCreateNextBatchSuccess',
     })
 
@@ -106,7 +101,7 @@ export class Router {
     )
 
     try {
-      await this.workController.setDirectoryHashOnEntries({
+      await workController.setDirectoryHashOnEntries({
         ipfsDirectoryHash,
         ipfsFileHashes,
       })
@@ -123,8 +118,8 @@ export class Router {
     }
   }
 
-  onIPFSHashTxId = async (message: any) => {
-    const logger = this.logger.child({ method: 'onIPFSHashTxId' })
+  const onIPFSHashTxId = async (message: any) => {
+    const logger = routerLogger.child({ method: 'onIPFSHashTxId' })
 
     const messageContent = message.content.toString()
     const { ipfsDirectoryHash, txId } = JSON.parse(messageContent)
@@ -132,27 +127,27 @@ export class Router {
     logger.trace({ ipfsDirectoryHash, txId }, 'Setting TransactionID for IPFS Directory Hash')
 
     try {
-      await this.workController.setTxId(ipfsDirectoryHash, txId)
+      await workController.setTxId(ipfsDirectoryHash, txId)
     } catch (error) {
       logger.error({ error }, 'Failed to set txId on works')
     }
   }
 
-  onPoetBlockAnchorsDownloaded = async (blockDownloaded: BlockDownloaded) => {
-    const logger = this.logger.child({ method: 'onPoetBlockAnchorsDownloaded' })
+  const onPoetBlockAnchorsDownloaded = async (blockDownloaded: BlockDownloaded) => {
+    const logger = routerLogger.child({ method: 'onPoetBlockAnchorsDownloaded' })
 
     const { poetBlockAnchors } = blockDownloaded
 
     logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Anchor')
     try {
-      await this.workController.upsertAnchors(poetBlockAnchors)
+      await workController.upsertAnchors(poetBlockAnchors)
     } catch (error) {
       logger.error({ error }, 'Failed to upsert poetBlockAnchors on works')
     }
   }
 
-  onBatchReaderReadNextDirectorySuccess = async (message: any) => {
-    const logger = this.logger.child({
+  const onBatchReaderReadNextDirectorySuccess = async (message: any) => {
+    const logger = routerLogger.child({
       method: 'onBatchReaderReadNextDirectorySuccess',
     })
 
@@ -160,7 +155,7 @@ export class Router {
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
     logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Setting ipfsDirectoryHash on works')
     try {
-      await this.workController.setFileHashesForDirectoryHash({
+      await workController.setFileHashesForDirectoryHash({
         ipfsFileHashes,
         ipfsDirectoryHash,
       })
@@ -169,14 +164,19 @@ export class Router {
     }
   }
 
-  onClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    const logger = this.logger.child({ method: 'onClaimsDownloaded' })
+  const onClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
+    const logger = routerLogger.child({ method: 'onClaimsDownloaded' })
 
     logger.trace({ claimIPFSHashPairs }, 'Downloaded a (IPFS Hash, Claim Id) Pair')
     try {
-      await this.workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
+      await workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
     } catch (error) {
       logger.error({ error }, 'Failed to upsert claimIPFSHashPairs on works')
     }
+  }
+
+  return {
+    start,
+    stop,
   }
 }

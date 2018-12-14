@@ -1,11 +1,18 @@
 /* tslint:disable:no-relative-imports */
 import { pick } from 'ramda'
-import { describe } from 'riteway'
-import { loadConfigurationWithDefaults, mergeConfigs } from './Configuration'
+import { describe, Try } from 'riteway'
+import {
+  loadConfigurationWithDefaults,
+  mergeConfigs,
+  applyExchangePrefix,
+  extractValue,
+  validatePoetVersion,
+  validatePoetNetwork,
+} from './LoadConfiguration'
 
 const defaultConfig = mergeConfigs()
 
-describe('src/Configuration', async (assert: any) => {
+describe('src/LoadConfiguration', async assert => {
   assert({
     given: 'no arguments',
     should: 'return the default config',
@@ -81,7 +88,7 @@ describe('src/Configuration', async (assert: any) => {
   }
 })
 
-describe('loadConfigurationWithDefaults', async (assert: any) => {
+describe('loadConfigurationWithDefaults', async assert => {
   const mongodbOverrides = {
     API_PORT: '4321',
     ENABLE_ANCHORING: 'true',
@@ -133,7 +140,7 @@ describe('loadConfigurationWithDefaults', async (assert: any) => {
   }
 })
 
-describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
+describe('src/LoadConfiguration RabbitmqExchangeMessages', async assert => {
   {
     const defaultValues = {
       exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
@@ -198,6 +205,127 @@ describe('src/Configuration RabbitmqExchangeMessages', async (assert: any) => {
       should: 'return the new config',
       actual,
       expected,
+    })
+  }
+})
+
+describe('src/LoadConfiguration applyExchangePrefix', async assert => {
+  {
+    const actual = { exchangePrefix: '' }
+
+    const expected = applyExchangePrefix(actual)
+
+    assert({
+      given: 'configVars with the property exchangePrefix with empty string',
+      should: 'return the same object configVars',
+      actual,
+      expected,
+    })
+  }
+
+  {
+    const configVars = {
+      exchangePrefix: 'prefix',
+      exchangeAnchorNextHashRequest: 'exchangeAnchorNextHashRequest',
+      exchangeBatchReaderReadNextDirectoryRequest: 'exchangeBatchReaderReadNextDirectoryRequest',
+      exchangeBatchReaderReadNextDirectorySuccess: 'exchangeBatchReaderReadNextDirectorySuccess',
+      exchangeBatchWriterCreateNextBatchRequest: 'exchangeBatchWriterCreateNextBatchRequest',
+      exchangeBatchWriterCreateNextBatchSuccess: 'exchangeBatchWriterCreateNextBatchSuccess',
+      exchangeNewClaim: 'exchangeNewClaim',
+      exchangeClaimIpfsHash: 'exchangeClaimIpfsHash',
+      exchangeIpfsHashTxId: 'exchangeIpfsHashTxId',
+      exchangePoetAnchorDownloaded: 'exchangePoetAnchorDownloaded',
+      exchangeClaimsDownloaded: 'exchangeClaimsDownloaded',
+      exchangeClaimsNotDownloaded: 'exchangeClaimsNotDownloaded',
+      exchangeStorageWriterStoreNextClaim: 'exchangeStorageWriterStoreNextClaim',
+      exchangeGetHealth: 'exchangeGetHealth',
+      exchangePurgeStaleTransactions: 'exchangePurgeStaleTransactions',
+      exchangeForkDetected: 'exchangeForkDetected',
+    }
+
+    const actual = applyExchangePrefix(configVars)
+
+    const expected = {
+      exchangePrefix: 'prefix',
+      exchangeAnchorNextHashRequest: 'prefix.exchangeAnchorNextHashRequest',
+      exchangeBatchReaderReadNextDirectoryRequest: 'prefix.exchangeBatchReaderReadNextDirectoryRequest',
+      exchangeBatchReaderReadNextDirectorySuccess: 'prefix.exchangeBatchReaderReadNextDirectorySuccess',
+      exchangeBatchWriterCreateNextBatchRequest: 'prefix.exchangeBatchWriterCreateNextBatchRequest',
+      exchangeBatchWriterCreateNextBatchSuccess: 'prefix.exchangeBatchWriterCreateNextBatchSuccess',
+      exchangeNewClaim: 'prefix.exchangeNewClaim',
+      exchangeClaimIpfsHash: 'prefix.exchangeClaimIpfsHash',
+      exchangeIpfsHashTxId: 'prefix.exchangeIpfsHashTxId',
+      exchangePoetAnchorDownloaded: 'prefix.exchangePoetAnchorDownloaded',
+      exchangeClaimsDownloaded: 'prefix.exchangeClaimsDownloaded',
+      exchangeClaimsNotDownloaded: 'prefix.exchangeClaimsNotDownloaded',
+      exchangeStorageWriterStoreNextClaim: 'prefix.exchangeStorageWriterStoreNextClaim',
+      exchangeGetHealth: 'prefix.exchangeGetHealth',
+      exchangePurgeStaleTransactions: 'prefix.exchangePurgeStaleTransactions',
+      exchangeForkDetected: 'prefix.exchangeForkDetected',
+    }
+
+    assert({
+      given: 'configVars with the property exchangePrefix with a custom prefix',
+      should: 'return the same object configVars with the custom prefix over the name of exchanges',
+      actual,
+      expected,
+    })
+  }
+})
+
+describe('src/LoadConfiguration extractValue', async assert => {
+  {
+    const actual = extractValue('false')
+    const expected = false
+
+    assert({
+      given: 'false like as string',
+      should: 'return false as boolean',
+      actual,
+      expected,
+    })
+  }
+
+  {
+    const actual = extractValue('true')
+    const expected = true
+
+    assert({
+      given: 'true like as string',
+      should: 'return true as boolean',
+      actual,
+      expected,
+    })
+  }
+})
+
+describe('src/LoadConfiguration validatePoetVersion', async assert => {
+  {
+    assert({
+      given: 'an invalid Poet version -1',
+      should: `return the message 'poetVersion must be an integer between 0 and 65535'`,
+      actual: Try(validatePoetVersion, -1).message,
+      expected: 'poetVersion must be an integer between 0 and 65535',
+    })
+  }
+
+  {
+    assert({
+      given: 'an invalid Poet version 65536',
+      should: `return the message 'poetVersion must be an integer between 0 and 65535'`,
+      actual: Try(validatePoetVersion, 65536).message,
+      expected: 'poetVersion must be an integer between 0 and 65535',
+    })
+  }
+})
+
+describe('src/LoadConfiguration validatePoetNetwork', async assert => {
+  {
+    assert({
+      given: 'a string with more 4 letters as Poet Network',
+      should: `return the message 'Field poetNetwork must have a length of 4'`,
+      actual: Try(validatePoetNetwork, '12345').message,
+      expected: 'Field poetNetwork must have a length of 4',
     })
   }
 })

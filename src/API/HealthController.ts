@@ -1,6 +1,7 @@
 import { Db, Collection } from 'mongodb'
 import * as Pino from 'pino'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { TransactionAnchorRetryInfo } from 'Interfaces'
 
 export const isOkOne = ({ ok }: { ok: number }) => ok === 1
@@ -44,6 +45,7 @@ export const HealthController = ({
   },
 }: Arguments): HealthController => {
   const collection = db.collection('health')
+  const healthControllerLogger = childWithFileName(logger, __dirname)
 
   const checkMongo = async (): Promise<boolean> => {
     try {
@@ -113,7 +115,7 @@ export const HealthController = ({
   }
 
   const getTransactionRetryInfo = async (): Promise<TransactionAnchorRetryInfo> => {
-    logger.child({ message: 'getTransactionRetryInfo' })
+    const logger = healthControllerLogger.child({ method: 'getTransactionRetryInfo' })
     logger.trace('retrieving TransactionAnchorRetryInfo')
     try {
       const transactionAnchorRetryResults = await collection.findOne(
