@@ -78,7 +78,6 @@ export async function app(localVars: any = {}) {
           claimsDownloaded: configuration.exchangeClaimsDownloaded,
         },
       })
-    : startStopNoop
 
   try {
     await batchWriter.start()
