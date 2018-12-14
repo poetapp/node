@@ -1,8 +1,9 @@
 /* tslint:disable:no-relative-imports */
 import BitcoinCore = require('bitcoin-core')
 const Client = require('bitcoin-core')
-import { LoggingConfiguration, Configuration, loadConfigurationWithDefaults } from 'Configuration'
+import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
+import { loadConfigurationWithDefaults } from 'LoadConfiguration'
 import * as Pino from 'pino'
 import {delay, delayInSeconds} from '../helpers/utils'
 

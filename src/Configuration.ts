@@ -1,15 +1,3 @@
-/* tslint:disable:no-relative-imports */
-import * as assert from 'assert'
-import { readFileSync, existsSync } from 'fs'
-import { homedir } from 'os'
-import * as path from 'path'
-import { keys, pipe } from 'ramda'
-
-import { createEnvToConfigurationKeyMap } from 'Helpers/Configuration'
-
-const defaultMongodbUrl = 'mongodb://localhost:27017/poet'
-
-// Provide default value in defaultConfiguration for any new configuration options
 export interface Configuration extends LoggingConfiguration, BitcoinRPCConfiguration, ExchangeConfiguration {
   readonly rabbitmqUrl: string
   readonly exchangePrefix: string
@@ -85,7 +73,7 @@ export interface ExchangeConfiguration {
   readonly exchangeForkDetected: string
 }
 
-const defaultConfiguration: Configuration = {
+export const DefaultConfiguration: Configuration = {
   rabbitmqUrl: 'amqp://admin:adminPass@localhost',
   exchangePrefix: '',
   mongodbUser: '',
@@ -93,7 +81,7 @@ const defaultConfiguration: Configuration = {
   mongodbHost: 'localhost',
   mongodbPort: 27017,
   mongodbDatabase: 'poet',
-  mongodbUrl: defaultMongodbUrl,
+  mongodbUrl: 'mongodb://localhost:27017/poet',
   ipfsUrl: 'http://localhost:5001',
   ipfsArchiveUrlPrefix: 'https://ipfs.io/ipfs',
   bitcoinUrl: '127.0.0.1',
@@ -150,111 +138,4 @@ const defaultConfiguration: Configuration = {
   exchangeGetHealth: 'HEALTH::GET_HEALTH',
   exchangePurgeStaleTransactions: 'BLOCK_WRITER::PURGE_STALE_TRANSACTIONS',
   exchangeForkDetected: 'FORK_DETECTED',
-}
-
-export const configurationPath = () => path.join(homedir(), '/.po.et/configuration.json')
-
-export const mergeConfigs = (localVars: any = {}) => {
-  const config = {
-    ...defaultConfiguration,
-    ...loadConfigurationFromEnv(localVars),
-    ...loadConfigurationFromFile(configurationPath()),
-  }
-
-  // Support setting MONGODB_URL all at once or via separate variables.
-  // Especially needed for production since the schema is different (mongodb+srv) and
-  // there's currently no override for that.
-  if (config.mongodbUrl === defaultMongodbUrl) {
-    const mongoAuth = config.mongodbUser !== '' ? `${config.mongodbUser}:${config.mongodbPassword}@` : ''
-    config.mongodbUrl = `mongodb://${mongoAuth}${config.mongodbHost}:${config.mongodbPort}/${config.mongodbDatabase}`
-  }
-
-  return config
-}
-
-const prependPrefix = (prefix: string, configVars: any) => (acc: any, k: string) => ({
-  ...acc,
-  [k]: `${prefix}.${configVars[k]}`,
-})
-
-const applyExchangePrefix = (configVars: any) => {
-  if (configVars.exchangePrefix === '') return configVars
-
-  const exchangeNames = [
-    'exchangeAnchorNextHashRequest',
-    'exchangeBatchReaderReadNextDirectoryRequest',
-    'exchangeBatchReaderReadNextDirectorySuccess',
-    'exchangeBatchWriterCreateNextBatchRequest',
-    'exchangeBatchWriterCreateNextBatchSuccess',
-    'exchangeNewClaim',
-    'exchangeClaimIpfsHash',
-    'exchangeIpfsHashTxId',
-    'exchangePoetAnchorDownloaded',
-    'exchangeClaimsDownloaded',
-    'exchangeClaimsNotDownloaded',
-    'exchangeStorageWriterStoreNextClaim',
-    'exchangeGetHealth',
-    'exchangePurgeStaleTransactions',
-    'exchangeForkDetected',
-  ]
-
-  return {
-    ...configVars,
-    ...exchangeNames.reduce(prependPrefix(configVars.exchangePrefix, configVars), {}),
-  }
-}
-
-export const loadConfigurationWithDefaults = (localVars: any = {}) =>
-  pipe(
-    mergeConfigs,
-    applyExchangePrefix,
-  )({ ...process.env, ...localVars })
-
-function loadConfigurationFromFile(configPath: string): Configuration | {} {
-  if (!existsSync(configPath)) return {}
-
-  const configuration = JSON.parse(readFileSync(configPath, 'utf8'))
-
-  if (configuration.poetNetwork) validatePoetNetwork(configuration.poetNetwork)
-  if (configuration.poetVersion) validatePoetVersion(configuration.poetVersion)
-
-  return configuration
-}
-
-const extractValue = (value: any) => {
-  const coercedValue = value === 'true' ? true : value === 'false' ? false : value
-
-  return isNaN(coercedValue)
-    ? coercedValue
-    : typeof coercedValue === 'boolean'
-      ? coercedValue
-      : parseInt(coercedValue, 10)
-}
-
-function loadConfigurationFromEnv(env: any): Partial<Configuration> {
-  const map = createEnvToConfigurationKeyMap(keys(defaultConfiguration))
-
-  const configurationFromEnv = Object.entries(env)
-    .filter(([key, value]) => map[key])
-    .reduce(
-      (previousValue, [key, value]: [string, any]) => ({
-        ...previousValue,
-        [map[key]]: extractValue(value),
-      }),
-      {},
-    )
-
-  return configurationFromEnv
-}
-
-function validatePoetVersion(poetVersion: number) {
-  assert(
-    Number.isInteger(poetVersion) && 0 <= poetVersion && poetVersion <= 0xFFFF,
-    'poetVersion must be an integer between 0 and 65535',
-  )
-}
-
-function validatePoetNetwork(poetNetwork: any) {
-  assert(typeof poetNetwork === 'string', 'Field poetNetwork must be a string')
-  assert(poetNetwork.length === 4, 'Field poetNetwork must have a length of 4')
 }
