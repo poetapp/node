@@ -107,7 +107,7 @@ export async function app(localVars: any = {}) {
     logger.error({ exception }, 'BatchReader was unable to start')
   }
 
-  const view = new View({
+  const view = View({
     ...loggingConfiguration,
     dbUrl: configuration.mongodbUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
