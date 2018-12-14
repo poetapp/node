@@ -1,7 +1,8 @@
 import * as Pino from 'pino'
 
-import { loadConfigurationWithDefaults, Configuration } from 'Configuration'
+import { Configuration } from 'Configuration'
 import { catchStartupError, shutdownModule } from 'Helpers/moduleStartStopCatch'
+import { loadConfigurationWithDefaults } from 'LoadConfiguration'
 
 import { BlockchainWriter } from './BlockchainWriter'
 
