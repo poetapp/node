@@ -2,7 +2,6 @@ import * as FormData from 'form-data'
 import * as fs from 'fs'
 import fetch, {Response} from 'node-fetch'
 import * as Pino from 'pino'
-import { map } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds  } from 'Helpers/Time'
@@ -61,9 +60,9 @@ export const FileController = ({
   },
 }: Arguments) => {
 
-  const log = (logType: LogTypes) => (label: string) => async <T extends undefined>(value?: T ): Promise<T> => {
-    logger[logType]({ value }, label)
-    return value
+  const log = (logType: LogTypes) => (label: string) => <T>(v?: T ) => {
+    logger[logType]({ value: v }, label)
+    return v
   }
 
   const uploadStream = (stream: fs.ReadStream) => {
@@ -89,7 +88,9 @@ export const FileController = ({
   const convertResponse = (ipfsFileResponse: IPFSFileResponseJson): FileResponseJson =>
     convertJson(ipfsArchiveUrlPrefix)(ipfsFileResponse)
 
-  const handleFile = asyncPipe(
+  type handleFile = (stream: fs.ReadStream) => Promise<{ hash: string }>
+
+  const handleFile: handleFile = asyncPipe(
     log(LogTypes.trace)('Adding file to ipfs'),
     addFileToIPFS,
     getResponseJson,
@@ -101,9 +102,9 @@ export const FileController = ({
 
   const addFiles: FileController['addFiles'] = asyncPipe(
     log(LogTypes.trace)('Adding files'),
-    map(handleFile),
-    Promise.all.bind(Promise), // bind required else TypeError "Promise.all called on non-object"
-    log(LogTypes.trace)('Added files'),
+    (xs) => xs.map(handleFile),
+    (xs) => Promise.all(xs),
+    (xs) => log(LogTypes.trace)('Added files')(xs),
   )
 
   return {
