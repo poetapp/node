@@ -80,7 +80,7 @@
     "cuid": "2.1.4",
     "nyc": "poetapp/nyc#fbc2ed1",
     "riteway": "4.0.1",
-    "semantic-release": "15.12.5",
+    "semantic-release": "15.13.1",
     "sinon": "7.2.2",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.7.0",
