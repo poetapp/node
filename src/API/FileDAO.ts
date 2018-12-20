@@ -17,18 +17,20 @@ export interface Arguments {
   readonly dependencies: Dependencies
 }
 
-export class FileDAO {
-  private readonly collection: Collection
+export interface FileDAO {
+  readonly addEntry: (entry: Entry) => Promise<void>
+}
 
-  constructor({
-    dependencies: {
-      collection,
-    },
-  }: Arguments) {
-    this.collection = collection
+export const FileDAO = ({
+  dependencies: {
+    collection,
+  },
+}: Arguments): FileDAO => {
+  const addEntry = async (entry: Entry) => {
+    await collection.insertOne(entry)
   }
 
-  public addEntry = async (entry: Entry) => {
-    await this.collection.insertOne(entry)
+  return {
+    addEntry,
   }
 }

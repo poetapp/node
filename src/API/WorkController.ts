@@ -33,55 +33,61 @@ export interface Arguments {
   readonly exchange: ExchangeConfiguration
 }
 
-export class WorkController {
-  private readonly logger: Pino.Logger
-  private readonly db: Db
-  private readonly collection: Collection
-  private readonly messaging: Messaging
-  private readonly exchange: ExchangeConfiguration
+export interface WorkController {
+  readonly getById: (id: string) => Promise<any>
+  readonly getByFilters: (worksFilters: WorksFilters) => Promise<WorksWithCount>
+  readonly getWorksCountByFilters: (worksFilters: WorksFilters) => Promise<number>
+  readonly create: (work: Work) => Promise<void>
+}
 
-  constructor({
-    dependencies: {
-      logger,
-      db,
-      messaging,
-    },
-    exchange,
-  }: Arguments) {
-    this.logger = childWithFileName(logger, __filename)
-    this.db = db
-    this.collection = this.db.collection('works')
-    this.messaging = messaging
-    this.exchange = exchange
+export const WorkController = ({
+  dependencies: {
+    logger,
+    db,
+    messaging,
+  },
+  exchange,
+}: Arguments) => {
+  const workControllerLogger = childWithFileName(logger, __filename)
+  const collection = db.collection('works')
+
+  const getById = (id: string): Promise<any> => {
+    workControllerLogger.trace({ method: 'getById', id }, 'Getting Work by Id from DB')
+    return collection.findOne({ id }, { projection: { _id: false } })
   }
 
-  async getById(id: string): Promise<any> {
-    this.logger.trace({ method: 'getById', id }, 'Getting Work by Id from DB')
-    return this.collection.findOne({ id }, { projection: { _id: false } })
-  }
-
-  async getByFilters(worksFilters: WorksFilters = {}): Promise<WorksWithCount> {
-    this.logger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
+  const getByFilters = async (worksFilters: WorksFilters = {}): Promise<WorksWithCount> => {
+    workControllerLogger.trace({ method: 'getByFilters', worksFilters }, 'Getting Work by Filters from DB')
     const { offset, limit, ...filters } = worksFilters
-    const works = await this.collection
+    const works = await collection
       .find(filters, { projection: { _id: false } })
       .sort({ _id: -1 })
       .skip(offset)
       .limit(limit || 10)
       .toArray()
-    const count = await this.collection.find(filters, { projection: { _id: false } }).count()
+    const count = await collection.find(filters, { projection: { _id: false } }).count()
     return { count, works }
   }
 
-  async getWorksCountByFilters(worksFilters: WorksFilters = {}): Promise<number> {
-    this.logger.trace({ method: 'getWorksCountByFilters', worksFilters }, 'Getting Work Counts by Filters from DB')
-    const count = await this.collection.find(worksFilters, { projection: { _id: false } }).count()
+  const getWorksCountByFilters = async (worksFilters: WorksFilters = {}): Promise<number> => {
+    workControllerLogger.trace({
+      method: 'getWorksCountByFilters',
+      worksFilters,
+    }, 'Getting Work Counts by Filters from DB')
+    const count = await collection.find(worksFilters, { projection: { _id: false } }).count()
     return count
   }
 
-  async create(work: Work): Promise<void> {
-    this.logger.trace({ method: 'create', work }, 'Creating Work')
+  const create = async (work: Work): Promise<void> => {
+    workControllerLogger.trace({ method: 'create', work }, 'Creating Work')
     // TODO: verify id, publicKey, signature and createdDate
-    await this.messaging.publish(this.exchange.newClaim, work)
+    await messaging.publish(exchange.newClaim, work)
+  }
+
+  return {
+    getById,
+    getByFilters,
+    getWorksCountByFilters,
+    create,
   }
 }

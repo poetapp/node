@@ -45,7 +45,7 @@ export async function app(localVars: any = {}) {
     loggingPretty: configuration.loggingPretty,
   }
 
-  const api = new API({
+  const api = API({
     ...loggingConfiguration,
     port: configuration.apiPort,
     dbUrl: configuration.mongodbUrl,

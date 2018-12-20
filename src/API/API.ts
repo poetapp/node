@@ -20,86 +20,91 @@ export interface APIConfiguration extends LoggingConfiguration, FileControllerCo
   readonly exchanges: ExchangeConfiguration
 }
 
-export class API {
-  private readonly logger: Pino.Logger
-  private readonly configuration: APIConfiguration
-  private mongoClient: MongoClient
-  private dbConnection: Db
-  private router: Router
-  private messaging: Messaging
-  private fileCollection: Collection
+export interface API {
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
+}
 
-  constructor(configuration: APIConfiguration) {
-    this.configuration = configuration
-    this.logger = createModuleLogger(configuration, __dirname)
-  }
+export const API = (configuration: APIConfiguration): API => {
+  let mongoClient: MongoClient
+  let dbConnection: Db
+  let router: Router
+  let messaging: Messaging
+  let fileCollection: Collection
 
-  async start() {
-    this.logger.info({ configuration: this.configuration }, 'API Starting')
-    this.mongoClient = await MongoClient.connect(this.configuration.dbUrl)
-    this.dbConnection = await this.mongoClient.db()
+  const logger = createModuleLogger(configuration, __dirname)
 
-    this.fileCollection = this.dbConnection.collection('files')
+  const start = async () => {
+    logger.info({ configuration }, 'API Starting')
+    mongoClient = await MongoClient.connect(configuration.dbUrl)
+    dbConnection = await mongoClient.db()
 
-    this.messaging = new Messaging(this.configuration.rabbitmqUrl, this.configuration.exchanges)
-    await this.messaging.start()
+    fileCollection = dbConnection.collection('files')
 
-    const fileDao = new FileDAO.FileDAO({
+    messaging = new Messaging(configuration.rabbitmqUrl, configuration.exchanges)
+    await messaging.start()
+
+    const fileDao = FileDAO.FileDAO({
       dependencies: {
-        collection: this.fileCollection,
+        collection: fileCollection,
       },
     })
 
-    const fileController = new FileController({
+    const fileController = FileController({
       dependencies: {
         fileDao,
-        logger: this.logger,
+        logger,
       },
       configuration: {
-        ipfsArchiveUrlPrefix: this.configuration.ipfsArchiveUrlPrefix,
-        ipfsUrl: this.configuration.ipfsUrl,
+        ipfsArchiveUrlPrefix: configuration.ipfsArchiveUrlPrefix,
+        ipfsUrl: configuration.ipfsUrl,
       },
     })
 
-    const workController = new WorkController({
+    const workController = WorkController({
       dependencies: {
-        logger: this.logger,
-        db: this.dbConnection,
-        messaging: this.messaging,
+        logger,
+        db: dbConnection,
+        messaging,
       },
-      exchange: this.configuration.exchanges,
+      exchange: configuration.exchanges,
     })
 
-    const healthController = new HealthController({
+    const healthController = HealthController({
       dependencies: {
-        db: this.dbConnection,
-        logger: this.logger,
+        db: dbConnection,
+        logger,
       },
     })
 
-    this.router = new Router({
+    router = Router({
       dependencies: {
-        logger: this.logger,
+        logger,
         fileController,
         workController,
         healthController,
         verifiableClaimSigner: getVerifiableClaimSigner(),
       },
       configuration: {
-        port: this.configuration.port,
+        port: configuration.port,
       },
     })
-    await this.router.start()
+    await router.start()
 
-    this.logger.info('API Started')
+    logger.info('API Started')
   }
 
-  async stop() {
-    this.logger.info('Stopping API...')
-    this.logger.info('Stopping API Database...')
-    await this.mongoClient.close()
-    await this.router.stop()
-    this.logger.info('Stopping API Messaging...')
-    await this.messaging.stop()
+  const stop = async () => {
+    logger.info('Stopping API...')
+    logger.info('Stopping API Database...')
+    await mongoClient.close()
+    await router.stop()
+    logger.info('Stopping API Messaging...')
+    await messaging.stop()
+  }
+
+  return {
+    start,
+    stop,
   }
 }
