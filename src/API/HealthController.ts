@@ -1,6 +1,7 @@
 import { Db, Collection } from 'mongodb'
 import * as Pino from 'pino'
 
+import { childWithFileName } from 'Helpers/Logging'
 import { TransactionAnchorRetryInfo } from 'Interfaces'
 
 export const isOkOne = ({ ok }: { ok: number }) => ok === 1
@@ -33,82 +34,79 @@ const emptyTransactionAnchorRetryInfo: EmptyTransactionAnchorRetryInfo = {
   transactionAnchorRetryInfo: [],
 }
 
-export class HealthController {
-  private readonly db: Db
-  private readonly collection: Collection
-  private readonly logger: Pino.Logger
+export interface HealthController {
+  readonly getHealth: () => Promise<HealthObject>
+}
 
-  constructor({
-    dependencies: {
-      db,
-      logger,
-    },
-  }: Arguments) {
-    this.db = db
-    this.collection = this.db.collection('health')
-    this.logger = logger
-  }
+export const HealthController = ({
+  dependencies: {
+    db,
+    logger,
+  },
+}: Arguments): HealthController => {
+  const collection = db.collection('health')
+  const healthControllerLogger = childWithFileName(logger, __dirname)
 
-  private async checkMongo(): Promise<boolean> {
+  const checkMongo = async (): Promise<boolean> => {
     try {
-      const mongoConnection = await this.db.stats()
+      const mongoConnection = await db.stats()
       return isOkOne(mongoConnection)
     } catch (e) {
       return false
     }
   }
 
-  private async getIPFSInfo(): Promise<object> {
+  const getIPFSInfo = async (): Promise<object> => {
     try {
-      const { ipfsInfo = {} } = await this.collection.findOne({ name: 'ipfsInfo' })
+      const { ipfsInfo = {} } = await collection.findOne({ name: 'ipfsInfo' })
       return ipfsInfo
     } catch (e) {
       return { error: 'Error retrieving IPFSInfo...' }
     }
   }
 
-  private async getBlockchainInfo(): Promise<object> {
+  const getBlockchainInfo = async (): Promise<object> => {
     try {
-      const { blockchainInfo = {} } = await this.collection.findOne({ name: 'blockchainInfo' })
+      const { blockchainInfo = {} } = await collection.findOne({ name: 'blockchainInfo' })
       return blockchainInfo
     } catch (e) {
       return { error: 'Error retrieving blockchainInfo...' }
     }
   }
 
-  private async getWalletInfo(): Promise<object> {
+  const getWalletInfo = async (): Promise<object> => {
     try {
-      const { walletInfo = {} } = await this.collection.findOne({ name: 'walletInfo' })
+      const { walletInfo = {} } = await collection.findOne({ name: 'walletInfo' })
       return walletInfo
     } catch (e) {
       return { error: 'Error retrieving walletInfo...' }
     }
   }
 
-  private async getNetworkInfo(): Promise<object> {
+  const getNetworkInfo = async (): Promise<object> => {
     try {
-      const { networkInfo = {} } = await this.collection.findOne({ name: 'networkInfo' })
+      const { networkInfo = {} } = await collection.findOne({ name: 'networkInfo' })
       return networkInfo
     } catch (e) {
       return { error: 'Error retrieving networkInfo...' }
     }
   }
 
-  private async getEstimatedSmartFeeInfo(): Promise<object> {
+  const getEstimatedSmartFeeInfo = async (): Promise<object> => {
     try {
-      const { estimatedSmartFeeInfo = {} } = await this.collection.findOne({ name: 'estimatedSmartFeeInfo' })
+      const { estimatedSmartFeeInfo = {} } = await collection.findOne({ name: 'estimatedSmartFeeInfo' })
       return estimatedSmartFeeInfo
     } catch (e) {
       return { error: 'Error retrieving estimatedSmartFeeInfo...' }
     }
   }
 
-  private async getIPFSRetryInfo(): Promise<object> {
+  const getIPFSRetryInfo = async (): Promise<object> => {
     try {
       const {
         hardFailures = 0,
         softFailures = 0,
-      } = await this.collection.findOne({ name: 'ipfsDownloadRetries' }) || {}
+      } = await collection.findOne({ name: 'ipfsDownloadRetries' }) || {}
       const ipfsRetryInfo = { hardFailures, softFailures }
       return ipfsRetryInfo
     } catch (e) {
@@ -116,11 +114,11 @@ export class HealthController {
     }
   }
 
-  private async getTransactionRetryInfo(): Promise<TransactionAnchorRetryInfo> {
-    const logger = this.logger.child({ method: 'getTransactionRetryInfo' })
+  const getTransactionRetryInfo = async (): Promise<TransactionAnchorRetryInfo> => {
+    const logger = healthControllerLogger.child({ method: 'getTransactionRetryInfo' })
     logger.trace('retrieving TransactionAnchorRetryInfo')
     try {
-      const transactionAnchorRetryResults = await this.collection.findOne(
+      const transactionAnchorRetryResults = await collection.findOne(
         {
           name: 'transactionAnchorRetryInfo',
         },
@@ -140,15 +138,15 @@ export class HealthController {
     }
   }
 
-  async getHealth(): Promise<HealthObject> {
-    const mongoIsConnected = await this.checkMongo()
-    const ipfsInfo = await this.getIPFSInfo()
-    const walletInfo = await this.getWalletInfo()
-    const blockchainInfo = await this.getBlockchainInfo()
-    const networkInfo = await this.getNetworkInfo()
-    const estimatedSmartFeeInfo = await this.getEstimatedSmartFeeInfo()
-    const ipfsRetryInfo = await this.getIPFSRetryInfo()
-    const transactionAnchorRetryInfo = await this.getTransactionRetryInfo()
+  const getHealth = async (): Promise<HealthObject> => {
+    const mongoIsConnected = await checkMongo()
+    const ipfsInfo = await getIPFSInfo()
+    const walletInfo = await getWalletInfo()
+    const blockchainInfo = await getBlockchainInfo()
+    const networkInfo = await getNetworkInfo()
+    const estimatedSmartFeeInfo = await getEstimatedSmartFeeInfo()
+    const ipfsRetryInfo = await getIPFSRetryInfo()
+    const transactionAnchorRetryInfo = await getTransactionRetryInfo()
     return {
       mongoIsConnected,
       ipfsInfo,
@@ -159,5 +157,9 @@ export class HealthController {
       ipfsRetryInfo,
       transactionAnchorRetryInfo,
     }
+  }
+
+  return {
+    getHealth,
   }
 }

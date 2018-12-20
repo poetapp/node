@@ -48,109 +48,82 @@ export interface Arguments {
   readonly configuration: RouterConfiguration
 }
 
-export class Router {
-  private readonly logger: Pino.Logger
-  private readonly configuration: RouterConfiguration
-  private readonly koa = new Koa()
-  private readonly koaRouter = new KoaRouter()
-  private readonly fileController: FileController
-  private readonly workController: WorkController
-  private readonly healthController: HealthController
-  private server: http.Server
-  private readonly verifiableClaimSigner: VerifiableClaimSigner
+export interface Router {
+  readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
+}
 
-  constructor({
-    dependencies: {
-      logger,
-      fileController,
-      workController,
-      healthController,
-      verifiableClaimSigner,
+export const Router = ({
+  dependencies: {
+    logger,
+    fileController,
+    workController,
+    healthController,
+    verifiableClaimSigner,
+  },
+  configuration,
+}: Arguments): Router => {
+  let server: http.Server
+  const routerLogger = childWithFileName(logger, __filename)
+  const koaRouter = new KoaRouter()
+  const koa = new Koa()
+
+  const getWorkSchema = {
+    params: {
+      id: Joi.string().required(),
     },
-    configuration,
-  }: Arguments) {
-    this.logger = childWithFileName(logger, __filename)
-    this.configuration = configuration
-    this.fileController = fileController
-    this.workController = workController
-    this.healthController = healthController
-    this.verifiableClaimSigner = verifiableClaimSigner
-
-    const getWorkSchema = {
-      params: {
-        id: Joi.string().required(),
-      },
-    }
-
-    const getWorksSchema = {
-      query: {
-        issuer: Joi.string().optional(),
-        offset: Joi.number().optional(),
-        limit: Joi.number().optional(),
-      },
-    }
-
-    this.koaRouter.post(
-      '/files',
-      KoaBody({ multipart: true, formidable: { multiples: false, maxFields: 1 } }),
-      this.postFile,
-    )
-    this.koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), this.getWork)
-    this.koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), this.getWorks)
-    this.koaRouter.post('/works', KoaBody({ textLimit: 1000000 }), this.postWork)
-    this.koaRouter.get('/health', this.getHealth)
-    this.koaRouter.get('/metrics', this.getWorkCounts)
-
-    this.koa.use(helmet(SecurityHeaders))
-    this.koa.use(KoaCors({ expose: ['X-Total-Count'] }))
-    this.koa.use(LoggerMiddleware(this.logger))
-    this.koa.use(HttpExceptionsMiddleware)
-    this.koa.use(this.koaRouter.allowedMethods())
-    this.koa.use(this.koaRouter.routes())
   }
 
-  async start() {
-    this.server = this.koa.listen(this.configuration.port, '0.0.0.0')
+  const getWorksSchema = {
+    query: {
+      issuer: Joi.string().optional(),
+      offset: Joi.number().optional(),
+      limit: Joi.number().optional(),
+    },
   }
 
-  async stop() {
-    this.logger.info('Stopping API Router...')
-    await this.server.close()
+  const start = async () => {
+    server = koa.listen(configuration.port, '0.0.0.0')
   }
 
-  private postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.debug('POST /files')
+  const stop = async () => {
+    routerLogger.info('Stopping API Router...')
+    await server.close()
+  }
+
+  const postFile = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    routerLogger.debug('POST /files')
 
     const files = context.request.files || {}
 
     if (values(files).length <= 0)
       throw new IllegalArgumentException('No file found.')
 
-    const responses = await this.fileController.addFiles(map(createStreamFromFile, values(files)))
+    const responses = await fileController.addFiles(map(createStreamFromFile, values(files)))
 
     context.body = responses
     context.status = 200
   }
 
-  private getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.debug({ params: context.params }, 'GET /works/:id')
+  const getWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    routerLogger.debug({ params: context.params }, 'GET /works/:id')
 
     const id = context.params.id
-    const work = await this.workController.getById(id)
+    const work = await workController.getById(id)
 
     if (!work) throw new NotFoundException('')
 
     context.body = work
   }
 
-  private getHealth = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    context.body = await this.healthController.getHealth()
+  const getHealth = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    context.body = await healthController.getHealth()
   }
 
-  private getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.debug({ query: context.query }, 'GET /works')
+  const getWorks = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    routerLogger.debug({ query: context.query }, 'GET /works')
 
-    const { works, count } = await this.workController.getByFilters({
+    const { works, count } = await workController.getByFilters({
       ...context.query,
       offset: parseInt(context.query.offset, 10),
       limit: parseInt(context.query.limit, 10),
@@ -159,19 +132,19 @@ export class Router {
     context.body = works
   }
 
-  private getWorkCounts = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
-    this.logger.debug('GET /metrics')
+  const getWorkCounts = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    routerLogger.debug('GET /metrics')
 
-    const TotalWorkClaims = await this.workController.getWorksCountByFilters({
+    const TotalWorkClaims = await workController.getWorksCountByFilters({
       ...context.query,
     })
     context.body = { TotalWorkClaims }
   }
 
-  private postWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+  const postWork = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
     const { body } = context.request
 
-    this.logger.debug({ body }, 'POST /works')
+    routerLogger.debug({ body }, 'POST /works')
 
     if (!isSignedVerifiableClaim(body))
       throw new IllegalArgumentException('Request Body must be a Signed Verifiable Claim.')
@@ -181,12 +154,35 @@ export class Router {
         `Signed Verifiable Claim's type must be ${ClaimType.Work}, not ${Object(body).type}`,
       )
 
-    if (!(await this.verifiableClaimSigner.isValidSignedVerifiableClaim(body)))
+    if (!(await verifiableClaimSigner.isValidSignedVerifiableClaim(body)))
       throw new IllegalArgumentException('Signed Verifiable Claim\'s signature is incorrect.')
 
-    await this.workController.create(body)
+    await workController.create(body)
 
     context.body = ''
     context.status = 202
+  }
+
+  koaRouter.post(
+    '/files',
+    KoaBody({ multipart: true, formidable: { multiples: false, maxFields: 1 } }),
+    postFile,
+  )
+  koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), getWork)
+  koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), getWorks)
+  koaRouter.post('/works', KoaBody({ textLimit: 1000000 }), postWork)
+  koaRouter.get('/health', getHealth)
+  koaRouter.get('/metrics', getWorkCounts)
+
+  koa.use(helmet(SecurityHeaders))
+  koa.use(KoaCors({ expose: ['X-Total-Count'] }))
+  koa.use(LoggerMiddleware(logger))
+  koa.use(HttpExceptionsMiddleware)
+  koa.use(koaRouter.allowedMethods())
+  koa.use(koaRouter.routes())
+
+  return {
+    start,
+    stop,
   }
 }
