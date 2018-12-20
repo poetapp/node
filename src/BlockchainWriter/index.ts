@@ -4,7 +4,7 @@ import 'Extensions/Promise'
 
 import * as Pino from 'pino'
 
-import { catchStartupError, shutdownModule } from 'Helpers/moduleStartStopCatch'
+import { catchStartupError } from 'Helpers/moduleStartStopCatch'
 import { loadConfigurationWithDefaults } from 'LoadConfiguration'
 
 import { BlockchainWriter } from './BlockchainWriter'
@@ -43,6 +43,7 @@ const blockchainWriter = new BlockchainWriter({
   },
 })
 
+process.on('SIGINT', () => blockchainWriter.stop())
+
 blockchainWriter.start()
-  .then(shutdownModule)
   .catch(catchBlockchainWriterStartupError)
