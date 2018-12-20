@@ -112,7 +112,7 @@ services:
       - ipfs
     command: /wait-for-it.sh -h rabbit -p 5672 -t 30 -- /wait-for-it.sh -h mongo -p 27017 -- npm start
 
-  poet-node_blockchain-writer:
+  poet-node-blockchain-writer:
     build: .
     depends_on:
       - mongo
