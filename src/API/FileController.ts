@@ -2,7 +2,6 @@ import * as FormData from 'form-data'
 import * as fs from 'fs'
 import fetch, {Response} from 'node-fetch'
 import * as Pino from 'pino'
-import { map } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds  } from 'Helpers/Time'
@@ -46,10 +45,8 @@ export interface Arguments {
   readonly configuration: FileControllerConfiguration
 }
 
-type addFiles = (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise<ReadonlyArray<{ hash: string }>>
-
 export interface FileController {
-  readonly addFiles: addFiles
+  readonly addFiles: (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise<ReadonlyArray<{ hash: string }>>
 }
 
 export const FileController = ({
