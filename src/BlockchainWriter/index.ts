@@ -1,3 +1,7 @@
+import 'Extensions/Array'
+import 'Extensions/Error'
+import 'Extensions/Promise'
+
 import * as Pino from 'pino'
 
 import { Configuration } from 'Configuration'
