@@ -103,14 +103,6 @@ export const FileController = ({
     log(LogTypes.trace)('Saved the hash to the database'),
   )
 
-  // const addFiles: addFiles = asyncPipe(
-  //   // log(LogTypes.trace)('Adding files'),
-  //   // map(handleFile) as ((x: ReadonlyArray<fs.ReadStream>) => ReadonlyArray<Promise<{ hash: string }>>),
-  //   xs => xs.map(handleFile),
-  //   Promise.all,
-  //   // log(LogTypes.trace)('Added files'),
-  // )
-  //
   const addFiles = (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise.all(fileStreams.map(handleFile))
 
   return {
