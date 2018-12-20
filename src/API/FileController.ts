@@ -2,6 +2,7 @@ import * as FormData from 'form-data'
 import * as fs from 'fs'
 import fetch, {Response} from 'node-fetch'
 import * as Pino from 'pino'
+import { map } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds  } from 'Helpers/Time'
@@ -45,8 +46,10 @@ export interface Arguments {
   readonly configuration: FileControllerConfiguration
 }
 
+type addFiles = (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise<ReadonlyArray<{ hash: string }>>
+
 export interface FileController {
-  readonly addFiles: (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise<ReadonlyArray<{ hash: string }>>
+  readonly addFiles: addFiles
 }
 
 export const FileController = ({
@@ -100,12 +103,15 @@ export const FileController = ({
     log(LogTypes.trace)('Saved the hash to the database'),
   )
 
-  const addFiles = asyncPipe(
-    log(LogTypes.trace)('Adding files'),
-    (xs) => xs.map(handleFile),
-    (xs) => Promise.all(xs),
-    log(LogTypes.trace)('Added files'),
-  )
+  // const addFiles: addFiles = asyncPipe(
+  //   // log(LogTypes.trace)('Adding files'),
+  //   // map(handleFile) as ((x: ReadonlyArray<fs.ReadStream>) => ReadonlyArray<Promise<{ hash: string }>>),
+  //   xs => xs.map(handleFile),
+  //   Promise.all,
+  //   // log(LogTypes.trace)('Added files'),
+  // )
+  //
+  const addFiles = (fileStreams: ReadonlyArray<fs.ReadStream>) => Promise.all(fileStreams.map(handleFile))
 
   return {
     addFiles,
