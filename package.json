@@ -7,6 +7,7 @@
   },
   "scripts": {
     "start": "node dist/babel/src",
+    "start:blockchain-writer": "node dist/babel/src/BlockchainWriter/index.js",
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
     "lint": "tslint -p ./tsconfig.with-tests.json",
     "lint:fix": "tslint -p ./tsconfig.with-tests.json --fix",

@@ -112,6 +112,32 @@ services:
       - ipfs
     command: /wait-for-it.sh -h rabbit -p 5672 -t 30 -- /wait-for-it.sh -h mongo -p 27017 -- npm start
 
+  poet-node-blockchain-writer:
+    build: .
+    depends_on:
+      - mongo
+      - rabbit
+      - bitcoind-1
+      - bitcoind-2
+    environment:
+      - POET_SERVICE=blockchain-writer
+      - BITCOIN_URL=bitcoind-1
+      - BITCOIN_URL_B=bitcoind-2
+      - RABBITMQ_URL=amqp://admin:adminPass@rabbit
+      - MONGODB_HOST=mongo
+      - MONGODB_USER=poet
+      - MONGODB_PASSWORD=poetPass
+      - GH_TOKEN=${GH_TOKEN:-''}
+      - NPM_TOKEN=${NPM_TOKEN:-''}
+    volumes:
+      - ./scripts/wait-for-it.sh:/wait-for-it.sh
+    links:
+      - mongo
+      - rabbit
+      - bitcoind-1
+      - bitcoind-2
+    command: /wait-for-it.sh -h rabbit -p 5672 -t 30 -- /wait-for-it.sh -h mongo -p 27017 -- npm run start:blockchain-writer
+
 volumes:
   db:
     driver: local
