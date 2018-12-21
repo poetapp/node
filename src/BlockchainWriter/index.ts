@@ -43,7 +43,7 @@ const blockchainWriter = new BlockchainWriter({
   },
 })
 
-process.on('SIGINT', () => blockchainWriter.stop())
+process.on('SIGINT', blockchainWriter.stop)
 
 blockchainWriter.start()
   .catch(catchBlockchainWriterStartupError)
