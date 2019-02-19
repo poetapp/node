@@ -72,14 +72,14 @@ services:
       -rpcallowip=::/0
       -deprecatedrpc=signrawtransaction
 
-  k6:
-    build:
-      context: .
-      dockerfile: ./Docker/Dockerfile.stress
-    environment:
-      - NODE_HOST=http://poet-node:18080
-    volumes:
-      - .:/usr/src/app
+  #k6:
+  #  build:
+  #    context: .
+  #    dockerfile: ./Docker/Dockerfile.stress
+  #  environment:
+  #    - NODE_HOST=http://poet-node:18080
+  #  volumes:
+  #    - .:/usr/src/app
 
   poet-node:
     build: .
@@ -105,13 +105,12 @@ services:
       - GH_TOKEN=${GH_TOKEN:-''}
       - NPM_TOKEN=${NPM_TOKEN:-''}
     volumes:
-      - ./scripts/wait-for-it.sh:/wait-for-it.sh
+      - ./Docker/tools/wait-for-it.sh:/wait-for-it.sh
     links:
       - mongo
       - rabbit
       - ipfs
-    command: /wait-for-it.sh -h rabbit -p 5672 -t 30 -- /wait-for-it.sh -h mongo -p 27017 -- npm start
-
+    command: sh -c '/wait-for-it.sh mongo:27017 -- /wait-for-it.sh rabbit:5672 -t 30 -- npm run start:blockchain-writer'
   poet-node-blockchain-writer:
     build: .
     depends_on:
@@ -130,13 +129,14 @@ services:
       - GH_TOKEN=${GH_TOKEN:-''}
       - NPM_TOKEN=${NPM_TOKEN:-''}
     volumes:
-      - ./scripts/wait-for-it.sh:/wait-for-it.sh
+      - ./Docker/tools/wait-for-it.sh:/wait-for-it.sh
     links:
       - mongo
       - rabbit
       - bitcoind-1
       - bitcoind-2
-    command: /wait-for-it.sh -h rabbit -p 5672 -t 30 -- /wait-for-it.sh -h mongo -p 27017 -- npm run start:blockchain-writer
+    command: sh -c '/wait-for-it.sh mongo:27017 -- /wait-for-it.sh rabbit:5672 -t 30 -- npm run start:blockchain-writer'
+
 
 volumes:
   db:

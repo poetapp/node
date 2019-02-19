@@ -1,25 +1,21 @@
-FROM node:10.14.1
-
-RUN echo "deb http://ftp.us.debian.org/debian unstable main contrib non-free" >> /etc/apt/sources.list.d/unstable.list
-
-RUN apt-get update && apt-get install -y rsync \
-                       gcc-5 \
-                       g++-5 \
-                       && rm -rf /var/lib/apt/lists/* \
-                       && rm /etc/apt/sources.list.d/unstable.list
-
-RUN rm /usr/bin/g++ && ln -s /usr/bin/g++-5 /usr/bin/g++
-
-RUN echo 'PS1="\u@${POET_SERVICE:-noService}:\w# "' >> ~/.bashrc
+FROM node:10.14.2-alpine as builder
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-RUN npm ci
-
+COPY package*.json /usr/src/app/
 COPY . /usr/src/app/
 
+RUN apk add --no-cache --virtual .gyp python make git g++ libtool autoconf automake rsync \
+    && npm install
+
 RUN npm run build
+
+FROM node:10.14.2-alpine as app
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app .
 
 CMD [ "npm", "start" ]
