@@ -7,7 +7,7 @@ COPY package*.json /usr/src/app/
 COPY . /usr/src/app/
 
 RUN apk add --no-cache --virtual .gyp python make git g++ libtool autoconf automake rsync \
-    && npm install
+    && npm ci
 
 RUN npm run build
 
