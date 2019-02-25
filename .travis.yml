@@ -14,13 +14,12 @@ services:
 
 env:
   REPO: poetapp/node
-  DOCKER_COMPOSE_VERSION: 1.21.2
+  DOCKER_COMPOSE_VERSION: 1.23.2
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
+  - sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - sudo chmod +x /usr/local/bin/docker-compose
 
 install:
   - docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d
@@ -40,7 +39,7 @@ deploy:
   - provider: script
     skip_cleanup: true
     script:
-    - bash ./scripts/docker-push.sh
+      - bash ./scripts/docker-push.sh
     on:
       all_branches: true
   - provider: script
