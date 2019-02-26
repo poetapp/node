@@ -45,7 +45,7 @@ deploy:
   - provider: script
     skip_cleanup: true
     script:
-      - docker-compose exec poet-node -- apk update && apk add git
+      - docker-compose exec poet-node apk update && apk add git
       - docker-compose exec poet-node npx semantic-release --no-ci
     on:
       branch: master
