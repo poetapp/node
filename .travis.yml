@@ -45,7 +45,8 @@ deploy:
   - provider: script
     skip_cleanup: true
     script:
-      - docker-compose exec poet-node apk update && apk add git
-      - docker-compose exec poet-node npx semantic-release --no-ci
+      - nvm install
+      - npm install semantic-release@15.13.1
+      - npx semantic-release
     on:
       branch: master
