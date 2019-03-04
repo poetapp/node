@@ -45,6 +45,6 @@ deploy:
   - provider: script
     skip_cleanup: true
     script:
-      - bash ./scripts/semver.sh
+      - source ./scripts/semver.sh
     on:
       branch: master
