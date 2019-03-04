@@ -45,8 +45,6 @@ deploy:
   - provider: script
     skip_cleanup: true
     script:
-      - nvm install
-      - npm install semantic-release@15.13.1
-      - npx semantic-release
+      - bash ./scripts/semver.sh
     on:
       branch: master
