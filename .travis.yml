@@ -25,6 +25,7 @@ before_install:
 install:
   - docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d
   - sleep 10
+  - nvm install
   - npm install semantic-release@15.13.1
 
 script:
