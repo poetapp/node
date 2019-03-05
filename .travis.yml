@@ -1,51 +1,49 @@
 language: generic
-
 notifications:
   slack:
     on_success: change
     on_failure: always
     on_error: always
     on_cancel: always
-    rooms:
-      secure: "QKk/n9t+V28a/5Aab4mg+kQmVCVyY2VhjiCdowZXas90wQz8s55Mwj/Ekrcwvv8h6v2y+xBGWYes1EEiK7dnHOigPfRKp/9AiOq8CFajfqHnv9BOKXOfIr93GkCHWFoeuzZkOFVsOsyaIZI4nDeAlBfsSWknSrF22eWgW82qLTIiKZJdhR4LmnKaefdjFTwwoNwpwWGycUbRTJsk7CytBWUWnHVmODoU2p4mOz3gfYSmHWZt/Fa1KQNZupwnD5JpUZJqFileW9/josen8frhfpjwowYCFYbRo0KznP9AWbwUjkLYQNC6M/AOcSr0NnZDxq+q5tSf3EpAjuEtLXVcZXdhQoTlhHW603TyaXL+TC3daQIScU1I5zRNMNpeb6sDXcBJzMi3nSrFPcoxJGB/n9qbvLQlQcnmwkqLKpSUuiY000cqbTTIXyf+A1+9JhqXrVWjo1Z2ZRtAZXKZtRWPR4eEJ1V0RW3DA3quLFO7u3KzXZo8p1uwq4ivWGlYCIRwHSezEf/SSP1vOKnXPFgrvOJwrKwZk7RDff/az0YUSlNbqq50DV/RT0eejp+BtHzGjK7oAL9nJx1U1YkBVoNASpOC0VrdIUr3SsypAsW+mXbnxF+OiLHFZfnNN11QZCZWdaUHvO6HOEZp7S8KCN24zRMnfgrGfBu08pl/0ucuYH4="
+    secure: OngyRHGkxy/2bFCEv7T3t61/f+0cM4KPfii4e/5nBSLUjcs8iyDr3/jX2MclHU2HjWe+U2/Zeog9l6cqU/9tapeh0YOK6OvxVz9hjJwcbqf4CxUxySEfxJG84TvD2sqnUWL/SFEcXG0myZqjXxn1n5gaI2p/xOOywiG+6mQIC8S1nliHAnV7GfHxMOUWGgsblG1vltgHs1soULeFHtUpPHkvkGRq3zxXG72IUjKv5SoRILpPMyd/tesIIkWT7m+aD2VYX15df0Ep/7ajzwADZJ9CmSDgNgA9slEt6k05gp12ZUJE80CYg0nNu/wGrmQhMMVesHiCnWuauyBhlsq+5wOSW6PJHN8nmpRXbwif899d7qIE1f47MP4qDbXh3mkFIrzaR1p/bPcSFvitl9fBN53MUbsPKXMGncugUJ4Xsg465TSnMWqbch5Whptn7MgIBeVxSRELrCxL4oXzxsoBjwgRRFr1SYQPpyV6EFmKBTK3+adjKPC45bnbK7Z2/IBfh9zjE1nk2j9wPBzccRfVlEX8qehVBybPJIhS0RxkDBlg8rPGsGstTnitYxPDXikjK3G0Eat+UsrDB4MJpUl4Rd863Bw/wKJ/DQHQO1MKceM93fqOYWq2ySPYcuFFbnz/aGR9ux350xvMKvehXcy/IP3TKVksyu1qoYpnDw+XXbw=
+
 services:
-  - docker
+- docker
 
 env:
   REPO: poetapp/node
   DOCKER_COMPOSE_VERSION: 1.23.2
 
 before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  - sudo chmod +x /usr/local/bin/docker-compose
-
+- sudo rm /usr/local/bin/docker-compose
+- sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname
+  -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+- sudo chmod +x /usr/local/bin/docker-compose
 
 install:
-  - docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d
-  - sleep 10
+- docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d
+- sleep 10
 
 script:
-  - docker-compose exec poet-node npm run lint
-  - docker-compose exec poet-node npm run coverage
-
+- docker-compose exec poet-node npm run lint
+- docker-compose exec poet-node npm run coverage
 
 after:
-  - docker images
+- docker images
 
 before_deploy:
-  - bash ./scripts/docker-build.sh
+- bash ./scripts/docker-build.sh
 
 deploy:
-  - provider: script
-    skip_cleanup: true
-    script:
-      - bash ./scripts/docker-push.sh
-    on:
-      all_branches: true
-  - provider: script
-    skip_cleanup: true
-    script:
-      - docker-compose exec poet-node npx semantic-release --no-ci
-    on:
-      branch: master
+- provider: script
+  skip_cleanup: true
+  script:
+  - bash ./scripts/docker-push.sh
+  on:
+    all_branches: true
+- provider: script
+  skip_cleanup: true
+  script:
+  - docker-compose exec poet-node npx semantic-release --no-ci
+  on:
+    branch: master
