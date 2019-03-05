@@ -72,14 +72,14 @@ services:
       -rpcallowip=::/0
       -deprecatedrpc=signrawtransaction
 
-  #k6:
-  #  build:
-  #    context: .
-  #    dockerfile: ./Docker/Dockerfile.stress
-  #  environment:
-  #    - NODE_HOST=http://poet-node:18080
-  #  volumes:
-  #    - .:/usr/src/app
+  k6:
+    build:
+      context: .
+      dockerfile: ./Docker/Dockerfile.stress
+    environment:
+      - NODE_HOST=http://poet-node:18080
+    volumes:
+      - .:/usr/src/app
 
   poet-node:
     build: .
@@ -110,7 +110,9 @@ services:
       - mongo
       - rabbit
       - ipfs
-    command: sh -c '/wait-for-it.sh mongo:27017 -- /wait-for-it.sh rabbit:5672 -t 30 -- npm run start'
+    command: ["-c", "/wait-for-it.sh rabbit:5672 && npm run start"]
+    entrypoint: ["/bin/sh"]
+
   poet-node-blockchain-writer:
     build: .
     depends_on:
@@ -135,9 +137,8 @@ services:
       - rabbit
       - bitcoind-1
       - bitcoind-2
-    command: sh -c '/wait-for-it.sh mongo:27017 -- /wait-for-it.sh rabbit:5672 -t 30 -- npm run start:blockchain-writer'
-
-
+    command: ["-c", "/wait-for-it.sh rabbit:5672 && npm run start:blockchain-writer"]
+    entrypoint: ["/bin/sh"]
 volumes:
   db:
     driver: local

@@ -25,8 +25,6 @@ before_install:
 install:
   - docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d
   - sleep 10
-  - nvm install
-  - npm install semantic-release@15.13.1
 
 script:
   - docker-compose exec poet-node npm run lint
@@ -49,6 +47,6 @@ deploy:
   - provider: script
     skip_cleanup: true
     script:
-      - npx semantic-release
+      - docker-compose exec poet-node npx semantic-release --no-ci
     on:
       branch: master
