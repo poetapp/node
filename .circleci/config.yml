@@ -3,7 +3,7 @@ jobs:
  build:
    machine: true
    environment:
-      REPO: poetapp/frost-api
+      REPO: poetapp/poet-node
       DOCKER_COMPOSE_VERSION: 1.23.2
    steps:
       - checkout
@@ -17,7 +17,9 @@ jobs:
       - run: docker-compose up -d
 
       # lint
-      - run: docker-compose exec frost-api npm run lint
+      - run: docker-compose exec poet-node npm run lint
  
       # deploy the image
-      - run: docker-compose exec frost-api npm run coverage
+      - run: docker-compose exec poet-node npm run coverage
+
+      - run: docker images
