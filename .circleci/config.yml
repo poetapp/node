@@ -1,0 +1,23 @@
+version: 2
+jobs:
+ build:
+   machine: true
+   environment:
+      REPO: poetapp/frost-api
+      DOCKER_COMPOSE_VERSION: 1.23.2
+   steps:
+      - checkout
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      
+      - run: docker-compose up -d
+
+      # lint
+      - run: docker-compose exec frost-api npm run lint
+ 
+      # deploy the image
+      - run: docker-compose exec frost-api npm run coverage
