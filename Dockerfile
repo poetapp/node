@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY package*.json /usr/src/app/
 COPY . /usr/src/app/
 
-RUN apk add --no-cache --virtual .gyp python make git g++ libtool autoconf automake \
+RUN apk add --no-cache --virtual .gyp python make git g++ libtool autoconf automake rsync \
     && npm ci
 
 RUN npm run build
