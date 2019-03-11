@@ -41,8 +41,8 @@ jobs:
       - run:
           name: Tag Docker image
           command: |
-            if [[ -z "${DEPLOY_ENV}" ]]; then
-              TAG="v-$(git log -1 --pretty=%h)-beta"
+            if [[ -z "${CIRCLE_TAG}" ]]; then
+              TAG="v-$(echo $CIRCLE_SHA1 | cut -c 1-6)-beta"
             else
               TAG="${CIRCLE_TAG}"
             fi
