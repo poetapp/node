@@ -29,7 +29,8 @@ jobs:
       - run:
           name: tag Docker image
           command: |
-            docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${CIRCLE_TAG}"
+            docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${CIRCLE_SHA1}"
+            # docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${CIRCLE_TAG}"            
             docker tag "${IMAGE_NAME}" "${REPO_NAME}":"latest"
             docker images
   release:
