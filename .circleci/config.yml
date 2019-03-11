@@ -2,8 +2,8 @@ version: 2
 
 defaults: &defaults
     environment:
-      IMAGE_NAME: poet-node
       REPO_NAME: poetapp/node
+      IMAGE_NAME: project_poet-node
       DOCKER_COMPOSE_VERSION: 1.23.2
     machine: true 
 
@@ -21,19 +21,32 @@ jobs:
       - run: docker-compose up -d
       - run: docker-compose exec poet-node npm run lint
       - run: docker-compose exec poet-node npm run coverage
-      - run: docker images
+      - run:
+          name: Archive Docker image
+          command: docker save -o image.tar ${IMAGE_NAME}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
 
   tag:
     <<: *defaults
+    working_directory: /tmp/workspace
     steps:
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
-          name: tag Docker image
+          name: Load archived Docker image
+          command: docker load -i image.tar
+      - run:
+          name: Tag Docker image
           command: |
             docker images
             docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${CIRCLE_SHA1}"
             # docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${CIRCLE_TAG}"            
             docker tag "${IMAGE_NAME}" "${REPO_NAME}":"latest"
             docker images
+
   release:
     docker:
       - image: circleci/node:8
@@ -48,7 +61,7 @@ jobs:
     <<: *defaults
     steps:
       - run:
-          name: tag Docker image
+          name: Publish Docker image
           command: |
             docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
             docker push "${REPO_NAME}"
