@@ -19,8 +19,8 @@ jobs:
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - run: docker-compose up -d
-      - run: docker-compose exec frost-api npm run lint
-      - run: docker-compose exec frost-api npm run coverage
+      - run: docker-compose exec poet-node npm run lint
+      - run: docker-compose exec poet-node npm run coverage
       - run: docker images
 
   tag:
@@ -37,7 +37,7 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: npm install -g semantic-release
+      - run: sudo npm install -g semantic-release
       # Run optional required steps before releasing
       # - run: npm run build-script
       - run: npx semantic-release
