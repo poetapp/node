@@ -13,8 +13,6 @@ RUN npm run build
 
 FROM node:10.14.2-alpine as app
 
-RUN apk add git
-
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
