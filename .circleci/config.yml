@@ -21,6 +21,21 @@ jobs:
       - run: docker-compose up -d
       - run: docker-compose exec poet-node npm run lint
       - run: docker-compose exec poet-node npm run coverage
+      - run: 
+          name: Get logs
+          command: |
+            services="mongo rabbit ipfs bitcoind-1 bitcoind-2 k6 poet-node poet-node-blockchain-writer" 
+            mkdir /tmp/logs
+            for i in $services
+            do
+               docker-compose logs $i > /tmp/logs/$i.log
+            done
+      - run: 
+          name: Get coverage report
+          command: |
+            mkdir -p /tmp/test-results
+            CONTAINER_NAME=$(docker-compose ps poet-node | awk 'FNR==3{print $1}')
+            docker cp $(CONTAINER_NAME):/usr/src/app/.coverage > /tmp/test-results
       - run:
           name: Archive Docker image
           command: docker save -o image.tar ${IMAGE_NAME}
@@ -28,6 +43,10 @@ jobs:
           root: .
           paths:
             - ./image.tar
+      - store_artifacts:
+          path: /tmp/logs
+      - store_test_results:
+          path: /tmp/.coverage
 
   tag:
     <<: *defaults
@@ -48,6 +67,7 @@ jobs:
             fi
             docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${TAG}"
             docker tag "${IMAGE_NAME}" "${REPO_NAME}":"latest"
+            docker images
 
   release:
     docker:
@@ -55,8 +75,6 @@ jobs:
     steps:
       - checkout
       - run: sudo npm install -g semantic-release
-      # Run optional required steps before releasing
-      # - run: npm run build-script
       - run: npx semantic-release
 
   push:
