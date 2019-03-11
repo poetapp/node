@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
     environment:
-      IMAGE_NAME: project_poet-node
+      IMAGE_NAME: poet-node
       REPO_NAME: poetapp/node
       DOCKER_COMPOSE_VERSION: 1.23.2
     machine: true 
@@ -29,6 +29,7 @@ jobs:
       - run:
           name: tag Docker image
           command: |
+            docker images
             docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${CIRCLE_SHA1}"
             # docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${CIRCLE_TAG}"            
             docker tag "${IMAGE_NAME}" "${REPO_NAME}":"latest"
