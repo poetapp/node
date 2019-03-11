@@ -41,11 +41,13 @@ jobs:
       - run:
           name: Tag Docker image
           command: |
-            docker images
-            docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${CIRCLE_SHA1}"
-            # docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${CIRCLE_TAG}"            
+            if [[ -z "${DEPLOY_ENV}" ]]; then
+              TAG="v-$(git log -1 --pretty=%h)-beta"
+            else
+              TAG="${CIRCLE_TAG}"
+            fi
+            docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${TAG}"
             docker tag "${IMAGE_NAME}" "${REPO_NAME}":"latest"
-            docker images
 
   release:
     docker:
