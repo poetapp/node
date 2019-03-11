@@ -34,7 +34,7 @@ jobs:
           name: Get coverage report
           command: |
             mkdir -p /tmp/test-results
-            CONTAINER_NAME=$(docker-compose ps poet-node | awk 'FNR==3{print $1}')
+            export CONTAINER_NAME=$(docker-compose ps poet-node | awk 'FNR==3{print $1}')
             docker cp $(CONTAINER_NAME):/usr/src/app/.coverage > /tmp/test-results
       - run:
           name: Archive Docker image
