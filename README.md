@@ -1,6 +1,6 @@
 # The Po.et Node
 
-[![Build Status](https://travis-ci.org/poetapp/node.svg?branch=master)](https://travis-ci.org/poetapp/node)
+[![CircleCI](https://circleci.com/gh/poetapp/node/tree/master.svg?style=svg)](https://circleci.com/gh/poetapp/node/tree/master)
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Docker Automated build](https://img.shields.io/docker/automated/poetapp/node.svg?style=flat)](https://hub.docker.com/r/poetapp/node/)
@@ -12,16 +12,24 @@ It's built on top of the [Bitcoin](https://github.com/bitcoin/bitcoin) blockchai
 
 ## Index
 
-- [How to Run the Po.et Node](#how-to-run-the-poet-node)
+- [The Po.et Node](#the-poet-node)
+  - [Index](#index)
+  - [How to Run the Po.et Node](#how-to-run-the-poet-node)
     - [Dependencies](#dependencies)
     - [Configuration](#configuration)
-- [API](#api)
-- [Building Claims](#building-claims)
-- [Contributing](#contributing)
+  - [API](#api)
+    - [`GET /works?issuer=xxx&limit=x&offset=x`](#get-worksissuerxxxlimitxoffsetx)
+    - [`GET /works/:id`](#get-worksid)
+    - [`POST /works`](#post-works)
+    - [`POST /files`](#post-files)
+  - [Building Claims](#building-claims)
+    - [Verifying the Claim is on Bitcoin's Blockchain](#verifying-the-claim-is-on-bitcoins-blockchain)
+    - [Po.et JS](#poet-js)
+  - [Contributing](#contributing)
     - [Compiling](#compiling)
     - [Tests](#tests)
     - [Coverage](#coverage)
-    - [Branches and Pull Requests](#branches-and-pull-requests)
+  - [Security](#security)
 
 ## How to Run the Po.et Node
 

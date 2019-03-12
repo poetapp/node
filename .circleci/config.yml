@@ -1,0 +1,119 @@
+version: 2
+
+defaults: &defaults
+    environment:
+      REPO_NAME: poetapp/node
+      IMAGE_NAME: project_poet-node
+      DOCKER_COMPOSE_VERSION: 1.23.2
+    machine: true 
+
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - run: docker-compose up -d
+      - run: docker-compose exec poet-node npm run lint
+      - run: docker-compose exec poet-node npm run coverage
+      - run: 
+          name: Get logs
+          command: |
+            services="mongo rabbit ipfs bitcoind-1 bitcoind-2 k6 poet-node poet-node-blockchain-writer" 
+            mkdir /tmp/logs
+            for i in $services
+            do
+               docker-compose logs $i > /tmp/logs/$i.log
+            done
+          when: on_fail
+      - run: 
+          name: Get coverage report
+          command: |
+            mkdir -p /tmp/test-results
+            docker cp project_poet-node_1:/usr/src/app/.coverage /tmp/test-results
+      - run:
+          name: Archive Docker image
+          command: docker save -o image.tar ${IMAGE_NAME}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
+      - store_artifacts:
+          path: /tmp/logs
+      - store_artifacts:
+          path: /tmp/.coverage
+      - store_test_results:
+          path: /tmp/.coverage
+
+  git-tag-docker:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: 
+          name: Build docker image for git release
+          command: docker build -t "${REPO_NAME}":"${CIRCLE_TAG}" -t "${REPO_NAME}":"latest" .
+      - run:
+          name: Tag and Push Docker image
+          command: |
+            docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
+            docker push "${REPO_NAME}"
+
+  semantic-release:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: sudo npm install -g semantic-release@15
+      - run: npx semantic-release
+
+  push:
+    <<: *defaults
+    working_directory: /tmp/workspace
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Load archived Docker image
+          command: docker load -i image.tar
+      - run:
+          name: Tag and Push Docker image
+          command: |
+            TAG="v-$(echo $CIRCLE_SHA1 | cut -c 1-6)-beta"
+            docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${TAG}" 
+            docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
+            docker push "${REPO_NAME}"
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - semantic-release:
+          context: docker
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - git-tag-docker:
+          context: docker
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - push:
+          context: docker
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+
