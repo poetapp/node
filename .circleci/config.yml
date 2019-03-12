@@ -30,6 +30,7 @@ jobs:
             do
                docker-compose logs $i > /tmp/logs/$i.log
             done
+          when: on_fail
       - run: 
           name: Get coverage report
           command: |
@@ -44,10 +45,33 @@ jobs:
             - ./image.tar
       - store_artifacts:
           path: /tmp/logs
+      - store_artifacts:
+          path: /tmp/.coverage
       - store_test_results:
           path: /tmp/.coverage
 
-  tag:
+  git-tag-docker:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: 
+          name: Build docker image for git release
+          command: docker build -t "${REPO_NAME}":"${CIRCLE_TAG}" -t "${REPO_NAME}":"latest" .
+      - run:
+          name: Tag and Push Docker image
+          command: |
+            docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
+            docker push "${REPO_NAME}"
+
+  semantic-release:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: sudo npm install -g semantic-release@15
+      - run: npx semantic-release
+
+  push:
     <<: *defaults
     working_directory: /tmp/workspace
     steps:
@@ -57,31 +81,10 @@ jobs:
           name: Load archived Docker image
           command: docker load -i image.tar
       - run:
-          name: Tag Docker image
+          name: Tag and Push Docker image
           command: |
-            if [[ -z "${CIRCLE_TAG}" ]]; then
-              TAG="v-$(echo $CIRCLE_SHA1 | cut -c 1-6)-beta"
-            else
-              TAG="${CIRCLE_TAG}"
-            fi
-            docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${TAG}"
-            docker tag "${IMAGE_NAME}" "${REPO_NAME}":"latest"
-            docker images
-
-  release:
-    docker:
-      - image: circleci/node:8
-    steps:
-      - checkout
-      - run: sudo npm install -g semantic-release
-      - run: npx semantic-release
-
-  push:
-    <<: *defaults
-    steps:
-      - run:
-          name: Publish Docker image
-          command: |
+            TAG="v-$(echo $CIRCLE_SHA1 | cut -c 1-6)-beta"
+            docker tag "${IMAGE_NAME}" "${REPO_NAME}":"${TAG}" 
             docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
             docker push "${REPO_NAME}"
 
@@ -90,22 +93,26 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - tag:
+      - semantic-release:
+          context: docker
           requires:
             - build
-          #filters:
-          #  branches:
-          #    only: master
-      - release:
-          requires:
-            - build
-          #filters:
-          #  branches:
-          #    only: master
+          filters:
+            branches:
+              only: master
+      - git-tag-docker:
+          context: docker
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
       - push:
           context: docker
           requires:
-            - release
+            - build
           filters:
             branches:
               only: master
