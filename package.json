@@ -33,6 +33,18 @@
   "files": [
     "dist/babel/src"
   ],
+  "release": {
+    "verifyConditions": [
+      "@semantic-release/github"
+    ],
+    "prepare": [
+      "@semantic-release/npm"
+    ],
+    "publish": [
+      "@semantic-release/github"
+    ],
+    "npmPublish": false
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/poetapp/node.git"
