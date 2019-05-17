@@ -33,6 +33,7 @@ const blockchainWriter = new BlockchainWriter({
   bitcoinNetwork: configuration.bitcoinNetwork,
   bitcoinUsername: configuration.bitcoinUsername,
   bitcoinPassword: configuration.bitcoinPassword,
+  bitcoinFeeEstimateMode: configuration.bitcoinFeeEstimateMode,
   exchanges: {
     anchorNextHashRequest: configuration.exchangeAnchorNextHashRequest,
     ipfsHashTxId: configuration.exchangeIpfsHashTxId,

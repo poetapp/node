@@ -15,6 +15,7 @@ export interface ControllerConfiguration {
   readonly poetNetwork: string
   readonly poetVersion: number
   readonly maximumTransactionAgeInBlocks: number
+  readonly bitcoinFeeEstimateMode: 'CONSERVATIVE' | 'ECONOMICAL'
 }
 
 export const convertLightBlockToEntry = (lightBlock: LightBlock): Entry => ({
@@ -159,7 +160,10 @@ export class Controller {
       'Got rawTransaction from Bitcoin Core',
     )
 
-    const fundedTransaction = await bitcoinCore.fundRawTransaction(rawTransaction).catch(translateFundTransactionError)
+    const fundedTransaction = await bitcoinCore.fundRawTransaction(
+      rawTransaction,
+      { estimate_mode: this.configuration.bitcoinFeeEstimateMode },
+    ).catch(translateFundTransactionError)
 
     logger.trace(
       {
