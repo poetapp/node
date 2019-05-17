@@ -57,11 +57,15 @@ declare module 'bitcoin-core' {
     getNetworkInfo(): any
     getWalletInfo(): any
     createRawTransaction(inputs: any, outputs: any): Promise<string>
-    fundRawTransaction(hexstring: string): Promise<FundRawTransactionResponse>
+    fundRawTransaction(hexstring: string, options?: FundRawTransactionOptions): Promise<FundRawTransactionResponse>
     setNetworkActive(flag: boolean): Promise<void>
     signRawTransaction(hexstring: string): Promise<SignRawTransactionResponse>
     sendRawTransaction(hexstring: string): Promise<string>
     estimateSmartFee(blocks: number): Promise<EstimateSmartFeeResponse>
+  }
+
+  interface FundRawTransactionOptions {
+    readonly estimate_mode: EstimateMode
   }
 
   interface FundRawTransactionResponse {
@@ -79,6 +83,8 @@ declare module 'bitcoin-core' {
     readonly feerate: number
     readonly blocks: number
   }
+
+  type EstimateMode = 'CONSERVATIVE' | 'ECONOMICAL'
 
   export = BitcoinCore
 }
