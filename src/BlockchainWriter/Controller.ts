@@ -160,7 +160,10 @@ export class Controller {
       'Got rawTransaction from Bitcoin Core',
     )
 
-    const fundedTransaction = await bitcoinCore.fundRawTransaction(rawTransaction, { estimate_mode: this.configuration.bitcoinFeeEstimateMode }).catch(translateFundTransactionError)
+    const fundedTransaction = await bitcoinCore.fundRawTransaction(
+      rawTransaction,
+      { estimate_mode: this.configuration.bitcoinFeeEstimateMode },
+    ).catch(translateFundTransactionError)
 
     logger.trace(
       {
