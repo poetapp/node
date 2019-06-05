@@ -42,6 +42,7 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly uploadClaimMaxAttempts: number
 
   readonly bitcoinFeeEstimateMode: 'CONSERVATIVE' | 'ECONOMICAL'
+  readonly bitcoinFeeRate: number
 }
 
 export interface LoggingConfiguration {
@@ -103,6 +104,7 @@ export const DefaultConfiguration: Configuration = {
   purgeStaleTransactionsIntervalInSeconds: 600,
   maximumTransactionAgeInBlocks: 25,
   bitcoinFeeEstimateMode: 'CONSERVATIVE',
+  bitcoinFeeRate: undefined,
 
   healthIntervalInSeconds: 30,
   lowWalletBalanceInBitcoin: 1,
