@@ -57,7 +57,7 @@ Using the instructions above, new blocks have to be generated manually. This is 
 
 You only need to run `docker-compose build` to create or update the Docker images, and `docker-compose up -d` to start them. To shut everything down, it is recommended to use `docker-compose down --volumes`  to stop the running containers and clear any data. If you wish to keep data between invocations, use `docker-compose down`.
 
-You can also `docker-compose exec mongo bash` and `docker-compose exec ipfs bash` to run the mongo shell or ssh into the IPFS container.
+You can also `docker-compose exec mongo bash` and `docker-compose exec ipfs sh` to run the mongo shell or ssh into the IPFS container.
 
 ### Dependencies
 
