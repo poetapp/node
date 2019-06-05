@@ -65,7 +65,8 @@ declare module 'bitcoin-core' {
   }
 
   interface FundRawTransactionOptions {
-    readonly estimate_mode: EstimateMode
+    readonly estimate_mode?: EstimateMode
+    readonly feeRate?: number
   }
 
   interface FundRawTransactionResponse {

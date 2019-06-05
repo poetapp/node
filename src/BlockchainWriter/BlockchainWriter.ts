@@ -43,7 +43,6 @@ export class BlockchainWriter {
     const db = await this.mongoClient.db()
 
     const blockchainWriterCollection: Collection = db.collection('blockchainWriter')
-    const blockchainInfoCollection: Collection = db.collection('blockchainInfo')
 
     const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], this.configuration.exchanges)
 

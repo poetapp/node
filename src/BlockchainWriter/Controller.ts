@@ -16,6 +16,7 @@ export interface ControllerConfiguration {
   readonly poetVersion: number
   readonly maximumTransactionAgeInBlocks: number
   readonly bitcoinFeeEstimateMode: 'CONSERVATIVE' | 'ECONOMICAL'
+  readonly bitcoinFeeRate: number
 }
 
 export const convertLightBlockToEntry = (lightBlock: LightBlock): Entry => ({
@@ -149,6 +150,7 @@ export class Controller {
 
   private anchorData = async (data: string) => {
     const { bitcoinCore } = this
+    const { bitcoinFeeEstimateMode, bitcoinFeeRate } = this.configuration
     const logger = this.logger.child({ method: 'anchorData' })
 
     const rawTransaction = await bitcoinCore.createRawTransaction([], { data })
@@ -160,14 +162,20 @@ export class Controller {
       'Got rawTransaction from Bitcoin Core',
     )
 
+    const fundRawTransactionOptions = {
+      estimate_mode: bitcoinFeeRate === undefined ? bitcoinFeeEstimateMode : undefined,
+      feeRate: bitcoinFeeRate,
+    }
+
     const fundedTransaction = await bitcoinCore.fundRawTransaction(
       rawTransaction,
-      { estimate_mode: this.configuration.bitcoinFeeEstimateMode },
+      fundRawTransactionOptions,
     ).catch(translateFundTransactionError)
 
     logger.trace(
       {
         fundedTransaction,
+        fundRawTransactionOptions,
       },
       'Got fundedTransaction from Bitcoin Core',
     )
