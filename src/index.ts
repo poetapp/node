@@ -6,15 +6,15 @@ import * as Pino from 'pino'
 const logger: Pino.Logger = Pino()
 
 process.on('unhandledRejection', (e) => {
-  console.log('unhandledRejection', e)
+  logger.fatal('unhandledRejection', e)
   process.exit()
 })
 
 process.on('uncaughtException', (e) => {
-  console.log('uncaughtException', e)
+  logger.fatal('uncaughtException', e)
   process.exit()
 })
 
 app()
   .then(server => process.on('SIGINT', () => server.stop()))
-  .catch(exception => logger.error({ exception }, 'server was unable to start'))
+  .catch(exception => logger.fatal({ exception }, 'server was unable to start'))
