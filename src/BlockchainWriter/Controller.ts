@@ -180,7 +180,7 @@ export class Controller {
       'Got fundedTransaction from Bitcoin Core',
     )
 
-    const signedTransaction = await bitcoinCore.signRawTransaction(fundedTransaction.hex)
+    const signedTransaction = await bitcoinCore.signRawTransactionWithWallet(fundedTransaction.hex)
 
     logger.trace(
       {

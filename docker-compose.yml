@@ -52,7 +52,6 @@ services:
       -rpcuser=bitcoinrpcuser
       -rpcpassword=bitcoinrpcpassword
       -rpcallowip=::/0
-      -deprecatedrpc=signrawtransaction
 
   bitcoind-2:
     image: ruimarinho/bitcoin-core:0.17.0
@@ -70,7 +69,6 @@ services:
       -rpcuser=bitcoinrpcuser
       -rpcpassword=bitcoinrpcpassword
       -rpcallowip=::/0
-      -deprecatedrpc=signrawtransaction
 
   k6:
     build:
