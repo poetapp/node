@@ -60,6 +60,7 @@ declare module 'bitcoin-core' {
     fundRawTransaction(hexstring: string, options?: FundRawTransactionOptions): Promise<FundRawTransactionResponse>
     setNetworkActive(flag: boolean): Promise<void>
     signRawTransaction(hexstring: string): Promise<SignRawTransactionResponse>
+    signRawTransactionWithWallet(hexstring: string): Promise<SignRawTransactionResponse>
     sendRawTransaction(hexstring: string): Promise<string>
     estimateSmartFee(blocks: number): Promise<EstimateSmartFeeResponse>
   }
