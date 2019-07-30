@@ -1,4 +1,4 @@
-import { Work, PoetBlockAnchor } from '@po.et/poet-js'
+import { Work, PoetBlockAnchor, SignedVerifiableClaim } from '@po.et/poet-js'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
@@ -40,6 +40,18 @@ export const WorkController = ({
   const anchorCollection: Collection = db.collection('anchors')
   const workCollection: Collection = db.collection('works')
 
+  const updateAboutRelationships = async (signedVerifiableClaim: SignedVerifiableClaim) => {
+    const claimsOnly = (url: string) => url.startsWith('poet:claims/')
+    const urlToClaimId = (url: string) => url.split(':')[1].split('/')[1]
+
+    const pushSubjectOf = (id: string, subjectOf: string) => workCollection.updateOne({ id }, { $push: { subjectOf } })
+
+    signedVerifiableClaim.claim.about && signedVerifiableClaim.claim.about
+      .filter(claimsOnly)
+      .map(urlToClaimId)
+      .map(id => pushSubjectOf(id, signedVerifiableClaim))
+  }
+
   const createWork = async (work: Work): Promise<void> => {
     const logger = workControllerLogger.child({ method: 'createWork' })
     logger.trace({ work }, 'Creating Work')
@@ -49,6 +61,8 @@ export const WorkController = ({
     if (existing) return
 
     await workCollection.insertOne(work)
+    // update `about` relationships for work
+    await updateAboutRelationships(work)
   }
 
   const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
@@ -132,6 +146,8 @@ export const WorkController = ({
         workCollection.updateOne({ 'anchor.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
       ),
     )
+    const claims: ReadonlyArray<Claim> = claimIPFSHashPairs.map(({ claim }) => claim)
+    await Promise.all(claims.map(updateAboutRelationships))
   }
 
   return {
