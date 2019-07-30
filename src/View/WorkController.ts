@@ -61,7 +61,6 @@ export const WorkController = ({
     if (existing) return
 
     await workCollection.insertOne(work)
-    // update `about` relationships for work
     await updateAboutRelationships(work)
   }
 
