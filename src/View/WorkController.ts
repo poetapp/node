@@ -49,7 +49,7 @@ export const WorkController = ({
     signedVerifiableClaim.claim.about && signedVerifiableClaim.claim.about
       .filter(claimsOnly)
       .map(urlToClaimId)
-      .map(id => pushSubjectOf(id, signedVerifiableClaim))
+      .map(id => pushSubjectOf(id, signedVerifiableClaim.id))
   }
 
   const createWork = async (work: Work): Promise<void> => {
