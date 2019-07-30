@@ -146,7 +146,7 @@ export const WorkController = ({
         workCollection.updateOne({ 'anchor.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
       ),
     )
-    const claims: ReadonlyArray<Claim> = claimIPFSHashPairs.map(({ claim }) => claim)
+    const claims = claimIPFSHashPairs.map(({ claim }) => claim)
     await Promise.all(claims.map(updateAboutRelationships))
   }
 
