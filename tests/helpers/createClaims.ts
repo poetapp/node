@@ -5,7 +5,11 @@ import { issuerACD, issuerEAP, issuerMA, privateKeyACD, privateKeyEAP, privateKe
 
 const { configureSignVerifiableClaim } = getVerifiableClaimSigner()
 
-const createACDWorkClaim = configureCreateVerifiableClaim({ issuer: issuerACD })
+const context = {
+  about: 'schema:url',
+}
+
+const createACDWorkClaim = configureCreateVerifiableClaim({ issuer: issuerACD, context })
 const createEAPWorkClaim = configureCreateVerifiableClaim({ issuer: issuerEAP })
 const createMAWorkClaim = configureCreateVerifiableClaim({ issuer: issuerMA })
 
