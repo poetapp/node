@@ -41,16 +41,16 @@ export const WorkController = ({
   const workCollection: Collection = db.collection('works')
 
   // return about of updated claims, so it can be called recursively?
-  const updateAboutRelationships = async (id: string, about: ReadonlyArray<string>) => {
+  const updateAboutRelationships = async (subjectOf: string, about: ReadonlyArray<string>) => {
     const claimsOnly = (url: string) => url.startsWith('poet:claims/')
     const urlToClaimId = (url: string) => url.split(':')[1].split('/')[1]
 
-    const pushSubjectOf = (id: string, subjectOf: string) => workCollection.updateOne({ id }, { $push: { subjectOf } }) // findAndUpdate?
+    const pushSubjectOf = (id: string) => workCollection.updateOne({ id }, { $push: { subjectOf } }) // findAndUpdate?
 
     about
       .filter(claimsOnly)
       .map(urlToClaimId)
-      .map(id2 => pushSubjectOf(id2, id))
+      .map(pushSubjectOf)
   }
 
   const createWork = async (work: Work): Promise<void> => { // TODO: work: Work -> incorrect type? Should be SignedVerifiableClaim?
