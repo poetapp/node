@@ -40,19 +40,20 @@ export const WorkController = ({
   const anchorCollection: Collection = db.collection('anchors')
   const workCollection: Collection = db.collection('works')
 
-  const updateAboutRelationships = async (signedVerifiableClaim: SignedVerifiableClaim) => {
+  // return about of updated claims, so it can be called recursively?
+  const updateAboutRelationships = async (id: string, about: ReadonlyArray<string>) => {
     const claimsOnly = (url: string) => url.startsWith('poet:claims/')
     const urlToClaimId = (url: string) => url.split(':')[1].split('/')[1]
 
-    const pushSubjectOf = (id: string, subjectOf: string) => workCollection.updateOne({ id }, { $push: { subjectOf } })
+    const pushSubjectOf = (id: string, subjectOf: string) => workCollection.updateOne({ id }, { $push: { subjectOf } }) // findAndUpdate?
 
-    signedVerifiableClaim.claim.about && signedVerifiableClaim.claim.about
+    about
       .filter(claimsOnly)
       .map(urlToClaimId)
-      .map(id => pushSubjectOf(id, signedVerifiableClaim.id))
+      .map(id2 => pushSubjectOf(id2, id))
   }
 
-  const createWork = async (work: Work): Promise<void> => {
+  const createWork = async (work: Work): Promise<void> => { // TODO: work: Work -> incorrect type? Should be SignedVerifiableClaim?
     const logger = workControllerLogger.child({ method: 'createWork' })
     logger.trace({ work }, 'Creating Work')
 
@@ -61,7 +62,7 @@ export const WorkController = ({
     if (existing) return
 
     await workCollection.insertOne(work)
-    await updateAboutRelationships(work)
+    await updateAboutRelationships(work.id, work.about)
   }
 
   const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
@@ -146,7 +147,11 @@ export const WorkController = ({
       ),
     )
     const claims = claimIPFSHashPairs.map(({ claim }) => claim)
-    await Promise.all(claims.map(updateAboutRelationships))
+    await Promise.all(
+      claims
+        .filter(claim => claim.claim.about)
+        .map(claim => updateAboutRelationships(claim.id, claim.claim.about))
+    )
   }
 
   return {
