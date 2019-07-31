@@ -44,8 +44,7 @@ export const WorkController = ({
   const updateAboutRelationships = async (subjectOf: string, about: ReadonlyArray<string>) => {
     const poetClaimsOnly = (url: string) => url.startsWith('poet:claims/')
     const uriToClaimId = (url: string) => url.split(':')[1].split('/')[1]
-
-    const pushSubjectOf = (id: string) => workCollection.updateOne({ id }, { $push: { subjectOf } }) // findAndUpdate?
+    const pushSubjectOf = (id: string) => workCollection.updateOne({ id }, { $push: { subjectOf } }) // findOneAndUpdate?
 
     about
       .filter(poetClaimsOnly)
