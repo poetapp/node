@@ -60,14 +60,15 @@ export const GraphController = ({
       if (searchUris.length === 0)
         return foundEdges
       const newFoundEdges = await findEdges(searchUris)
-      const filteredNewFoundEdges = newFoundEdges.filter(edge => !foundEdges.some(edgesMatch(edge)))
-      const newSearchUris = edgesToUris(filteredNewFoundEdges)
+      const deduplicatedNewFoundEdges = newFoundEdges.filter(edge => !foundEdges.some(edgesMatch(edge)))
+      const newSearchUris = edgesToUris(deduplicatedNewFoundEdges)
         .filter(uri => !searchUris.includes(uri))
         .filter(uri => !searchedUris.includes(uri))
+      const deduplicatedNewSearchUris = searchUris.filter(uri => !searchedUris.includes(uri))
       return recursive(
         newSearchUris,
-        [...searchedUris, ...searchUris.filter(uri => !searchedUris.includes(uri))],
-        [...foundEdges, ...filteredNewFoundEdges],
+        [...searchedUris, ...deduplicatedNewSearchUris],
+        [...foundEdges, ...deduplicatedNewFoundEdges],
       )
     }
 
