@@ -50,7 +50,8 @@ export const WorkController = ({
     if (existing) return
 
     await workCollection.insertOne(verifiableClaim)
-    await insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about)
+    if (Array.isArray(verifiableClaim.claim.about))
+      await insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about)
   }
 
   const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
