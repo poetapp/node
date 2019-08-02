@@ -48,6 +48,8 @@ export const GraphController = ({
         .map(({ origin, target }) => [origin, target])
         .reduce((a, c) => [...a, ...c], []) // TODO: Array.flatMap
 
+    const edgesMatch = (a: Edge) => (b: Edge) => a.origin === b.origin && a.target === b.target
+
     const recursive = async (
       searchUris: ReadonlyArray<string>,
       searchedUris: ReadonlyArray<string>,
@@ -55,11 +57,16 @@ export const GraphController = ({
     ): Promise<ReadonlyArray<Edge>> => {
       if (searchUris.length === 0)
         return foundEdges
-      logger.trace({ searchUris, searchedUris, foundEdges }, 'recursive iteration')
       const newFoundEdges = await findEdges(searchUris)
-      const newSearchUris = edgesToUris(newFoundEdges).filter(uri => !searchedUris.includes(uri))
-      logger.trace({ newFoundEdges, newSearchUris }, 'edgesToUris')
-      return recursive(newSearchUris, [...searchedUris, ...searchUris], [...foundEdges, ...newFoundEdges])
+      const filteredNewFoundEdges = newFoundEdges.filter(edge => !foundEdges.some(edgesMatch(edge)))
+      const newSearchUris = edgesToUris(filteredNewFoundEdges)
+        .filter(uri => !searchUris.includes(uri))
+        .filter(uri => !searchedUris.includes(uri))
+      return recursive(
+        newSearchUris,
+        [...searchedUris, ...searchUris.filter(uri => !searchedUris.includes(uri))],
+        [...foundEdges, ...filteredNewFoundEdges],
+      )
     }
 
     return recursive([uri], [], [])
