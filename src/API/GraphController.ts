@@ -41,7 +41,8 @@ export const GraphController = ({
     }).toArray()
 
   const getByUri = async (uri: string): Promise<ReadonlyArray<Edge>> => {
-    logger.trace({ method: 'getById', uri }, 'Getting graph edges')
+    const methodLogger = logger.child({ method: 'getById', uri })
+    methodLogger.trace('Getting graph edges')
 
     const edgesToUris = (edges: ReadonlyArray<Edge>): ReadonlyArray<string> =>
       edges
@@ -50,11 +51,15 @@ export const GraphController = ({
 
     const edgesMatch = (a: Edge) => (b: Edge) => a.origin === b.origin && a.target === b.target
 
+    let maxStack = 0
+
     const recursive = async (
       searchUris: ReadonlyArray<string> | string,
       searchedUris: ReadonlyArray<string> = [],
       foundEdges: ReadonlyArray<Edge> = [],
+      stackDepth: number = 0,
     ): Promise<ReadonlyArray<Edge>> => {
+      maxStack++
       if (typeof searchUris === 'string')
         return recursive([searchUris])
       if (searchUris.length === 0)
@@ -69,10 +74,15 @@ export const GraphController = ({
         newSearchUris,
         [...searchedUris, ...deduplicatedNewSearchUris],
         [...foundEdges, ...deduplicatedNewFoundEdges],
+        stackDepth + 1,
       )
     }
 
-    return recursive(uri)
+    const edges = await recursive(uri)
+
+    methodLogger.info({ maxStack })
+
+    return edges
   }
 
   return {
