@@ -138,7 +138,7 @@ export const WorkController = ({
     const verifiableClaims = claimIPFSHashPairs.map(({ claim }) => claim)
     await Promise.all(
       verifiableClaims
-        .filter(verifiableClaim => verifiableClaim.claim.about && Array.isArray(verifiableClaim.claim.about))
+        .filter(verifiableClaim => Array.isArray(verifiableClaim.claim.about))
         .map(verifiableClaim => insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about))
     )
   }
