@@ -144,7 +144,7 @@ export const WorkController = ({
   }
 
   const insertGraphEdges = async (id: string, about: ReadonlyArray<string>) =>
-    graphCollection.insertMany(about.map(about => ({ uri: `poet:claims/${id}`, about })))
+    graphCollection.insertMany(about.map(target => ({ origin: `poet:claims/${id}`, target })))
 
   return {
     createWork,
