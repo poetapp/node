@@ -51,10 +51,12 @@ export const GraphController = ({
     const edgesMatch = (a: Edge) => (b: Edge) => a.origin === b.origin && a.target === b.target
 
     const recursive = async (
-      searchUris: ReadonlyArray<string>,
+      searchUris: ReadonlyArray<string> | string,
       searchedUris: ReadonlyArray<string> = [],
       foundEdges: ReadonlyArray<Edge> = [],
     ): Promise<ReadonlyArray<Edge>> => {
+      if (typeof searchUris === 'string')
+        return recursive([searchUris])
       if (searchUris.length === 0)
         return foundEdges
       const newFoundEdges = await findEdges(searchUris)
@@ -69,7 +71,7 @@ export const GraphController = ({
       )
     }
 
-    return recursive([uri])
+    return recursive(uri)
   }
 
   return {
