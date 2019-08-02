@@ -1,6 +1,5 @@
 import { getVerifiableClaimSigner } from '@po.et/poet-js'
 import { Collection, MongoClient, Db } from 'mongodb'
-import * as Pino from 'pino'
 
 import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
@@ -11,6 +10,7 @@ import { FileController, FileControllerConfiguration } from './FileController'
 import * as FileDAO from './FileDAO'
 import { HealthController } from './HealthController'
 import { Router } from './Router'
+import { GraphController } from './GraphController'
 import { WorkController } from './WorkController'
 
 export interface APIConfiguration extends LoggingConfiguration, FileControllerConfiguration {
@@ -70,6 +70,13 @@ export const API = (configuration: APIConfiguration): API => {
       exchange: configuration.exchanges,
     })
 
+    const graphController = GraphController({
+      dependencies: {
+        logger,
+        db: dbConnection,
+      },
+    })
+
     const healthController = HealthController({
       dependencies: {
         db: dbConnection,
@@ -82,6 +89,7 @@ export const API = (configuration: APIConfiguration): API => {
         logger,
         fileController,
         workController,
+        graphController,
         healthController,
         verifiableClaimSigner: getVerifiableClaimSigner(),
       },
