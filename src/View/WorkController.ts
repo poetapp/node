@@ -41,16 +41,16 @@ export const WorkController = ({
   const workCollection: Collection = db.collection('works')
   const graphCollection: Collection = db.collection('graph')
 
-  const createWork = async (work: Work): Promise<void> => { // TODO: work: Work -> incorrect type? Should be SignedVerifiableClaim?
+  const createWork = async (verifiableClaim: Work): Promise<void> => { // TODO: verifiableClaim: Work -> incorrect type? Should be SignedVerifiableClaim?
     const logger = workControllerLogger.child({ method: 'createWork' })
-    logger.trace({ work }, 'Creating Work')
+    logger.trace({ verifiableClaim }, 'Creating Work')
 
-    const existing = await workCollection.findOne({ id: work.id })
+    const existing = await workCollection.findOne({ id: verifiableClaim.id })
 
     if (existing) return
 
-    await workCollection.insertOne(work)
-    await insertGraphEdges(work.id, work.claim.about)
+    await workCollection.insertOne(verifiableClaim)
+    await insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about)
   }
 
   const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
