@@ -50,7 +50,7 @@ export const WorkController = ({
     if (existing) return
 
     await workCollection.insertOne(work)
-    await insertGraphEdges(work.id, work.about)
+    await insertGraphEdges(work.id, work.claim.about)
   }
 
   const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
