@@ -41,7 +41,7 @@ export const WorkController = ({
   const workCollection: Collection = db.collection('works')
   const graphCollection: Collection = db.collection('graph')
 
-  const createWork = async (verifiableClaim: Work): Promise<void> => { // TODO: verifiableClaim: Work -> incorrect type? Should be SignedVerifiableClaim?
+  const createWork = async (verifiableClaim: SignedVerifiableClaim): Promise<void> => {
     const logger = workControllerLogger.child({ method: 'createWork' })
     logger.trace({ verifiableClaim }, 'Creating Work')
 
