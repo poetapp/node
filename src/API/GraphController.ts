@@ -52,8 +52,8 @@ export const GraphController = ({
 
     const recursive = async (
       searchUris: ReadonlyArray<string>,
-      searchedUris: ReadonlyArray<string>,
-      foundEdges: ReadonlyArray<Edge>,
+      searchedUris: ReadonlyArray<string> = [],
+      foundEdges: ReadonlyArray<Edge> = [],
     ): Promise<ReadonlyArray<Edge>> => {
       if (searchUris.length === 0)
         return foundEdges
@@ -69,7 +69,7 @@ export const GraphController = ({
       )
     }
 
-    return recursive([uri], [], [])
+    return recursive([uri])
   }
 
   return {
