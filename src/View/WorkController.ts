@@ -134,11 +134,11 @@ export const WorkController = ({
         workCollection.updateOne({ 'anchor.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
       ),
     )
-    const claims = claimIPFSHashPairs.map(({ claim }) => claim)
+    const verifiableClaims = claimIPFSHashPairs.map(({ claim }) => claim)
     await Promise.all(
-      claims
-        .filter(claim => claim.claim.about && Array.isArray(claim.claim.about))
-        .map(claim => insertGraphEdges(claim.id, claim.claim.about))
+      verifiableClaims
+        .filter(verifiableClaim => verifiableClaim.claim.about && Array.isArray(verifiableClaim.claim.about))
+        .map(verifiableClaim => insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about))
     )
   }
 
