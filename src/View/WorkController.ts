@@ -139,7 +139,7 @@ export const WorkController = ({
     await Promise.all(
       verifiableClaims
         .filter(verifiableClaim => Array.isArray(verifiableClaim.claim.about))
-        .map(verifiableClaim => insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about))
+        .map(verifiableClaim => insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about as string[])) // See 1
     )
   }
 
@@ -156,3 +156,12 @@ export const WorkController = ({
     upsertClaimIPFSHashPair,
   }
 }
+
+// 1. as string[]: TypeScript doesn't [yet] automatically narrow types in Array.filter unless an explicit type
+// guard is provided. Proper solution would be something like
+// ```
+// const isStandardVerifiableClaim = (x: VerifiableClaim): x is StandardVerifiableClaim =>
+//   Array.isArray(x.claim.about) && etc
+// ...
+// verifiableClaims.filter(isStandardVerifiableClaim).map(...)
+// ```
