@@ -32,7 +32,7 @@ export const GraphController = ({
 
   const getByUri = (uri: string): Promise<ReadonlyArray<Edge>> => {
     logger.trace({ method: 'getById', uri }, 'Getting graph edges')
-    return collection.find({ uri }, { projection: { _id: false } }).toArray()
+    return collection.find({ $or: [ { uri }, { about: uri } ] }, { projection: { _id: false } }).toArray()
   }
 
   return {
