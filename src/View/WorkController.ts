@@ -137,7 +137,7 @@ export const WorkController = ({
     const claims = claimIPFSHashPairs.map(({ claim }) => claim)
     await Promise.all(
       claims
-        .filter(claim => claim.claim.about)
+        .filter(claim => claim.claim.about && Array.isArray(claim.claim.about))
         .map(claim => insertGraphEdges(claim.id, claim.claim.about))
     )
   }
