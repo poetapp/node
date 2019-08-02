@@ -51,19 +51,16 @@ export const GraphController = ({
 
     const edgesMatch = (a: Edge) => (b: Edge) => a.origin === b.origin && a.target === b.target
 
-    let maxStack = 0
-
     const recursive = async (
       searchUris: ReadonlyArray<string> | string,
       searchedUris: ReadonlyArray<string> = [],
       foundEdges: ReadonlyArray<Edge> = [],
-      stackDepth: number = 0,
-    ): Promise<ReadonlyArray<Edge>> => {
-      maxStack++
+      stackDepth: number = 1,
+    ): Promise<{ edges: ReadonlyArray<Edge>, stackDepth: number }> => {
       if (typeof searchUris === 'string')
         return recursive([searchUris])
       if (searchUris.length === 0)
-        return foundEdges
+        return { edges: foundEdges, stackDepth }
       const newFoundEdges = await findEdges(searchUris)
       const deduplicatedNewFoundEdges = newFoundEdges.filter(edge => !foundEdges.some(edgesMatch(edge)))
       const newSearchUris = edgesToUris(deduplicatedNewFoundEdges)
@@ -78,9 +75,9 @@ export const GraphController = ({
       )
     }
 
-    const edges = await recursive(uri)
+    const { edges, stackDepth } = await recursive(uri)
 
-    methodLogger.info({ maxStack })
+    methodLogger.info({ stackDepth })
 
     return edges
   }
