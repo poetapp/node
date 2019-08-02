@@ -39,18 +39,7 @@ export const WorkController = ({
   const workControllerLogger: Pino.Logger = childWithFileName(logger, __filename)
   const anchorCollection: Collection = db.collection('anchors')
   const workCollection: Collection = db.collection('works')
-
-  // return about of updated claims, so it can be called recursively?
-  const updateAboutRelationships = async (subjectOf: string, about: ReadonlyArray<string>) => {
-    const poetClaimsOnly = (url: string) => url.startsWith('poet:claims/')
-    const uriToClaimId = (url: string) => url.split(':')[1].split('/')[1]
-    const pushSubjectOf = (id: string) => workCollection.updateOne({ id }, { $push: { subjectOf } }) // findOneAndUpdate?
-
-    about
-      .filter(poetClaimsOnly)
-      .map(uriToClaimId)
-      .map(pushSubjectOf)
-  }
+  const graphCollection: Collection = db.collection('graph')
 
   const createWork = async (work: Work): Promise<void> => { // TODO: work: Work -> incorrect type? Should be SignedVerifiableClaim?
     const logger = workControllerLogger.child({ method: 'createWork' })
@@ -61,7 +50,7 @@ export const WorkController = ({
     if (existing) return
 
     await workCollection.insertOne(work)
-    await updateAboutRelationships(work.id, work.about)
+    await insertGraphEdges(work.id, work.about)
   }
 
   const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
@@ -149,9 +138,12 @@ export const WorkController = ({
     await Promise.all(
       claims
         .filter(claim => claim.claim.about)
-        .map(claim => updateAboutRelationships(claim.id, claim.claim.about))
+        .map(claim => insertGraphEdges(claim.id, claim.claim.about))
     )
   }
+
+  const insertGraphEdges = async (subjectOf: string, about: ReadonlyArray<string>) =>
+    graphCollection.insertMany(about.map(id => ({ id, subjectOf })))
 
   return {
     createWork,
