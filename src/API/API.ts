@@ -8,9 +8,9 @@ import { Messaging } from 'Messaging/Messaging'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileController, FileControllerConfiguration } from './FileController'
 import * as FileDAO from './FileDAO'
+import { GraphController } from './GraphController'
 import { HealthController } from './HealthController'
 import { Router } from './Router'
-import { GraphController } from './GraphController'
 import { WorkController } from './WorkController'
 
 export interface APIConfiguration extends LoggingConfiguration, FileControllerConfiguration {

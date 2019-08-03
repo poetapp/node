@@ -139,7 +139,7 @@ export const WorkController = ({
     await Promise.all(
       verifiableClaims
         .filter(verifiableClaim => Array.isArray(verifiableClaim.claim.about))
-        .map(verifiableClaim => insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about as string[])) // See 1
+        .map(verifiableClaim => insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about as string[])), // See 1
     )
   }
 

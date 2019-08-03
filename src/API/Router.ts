@@ -20,12 +20,12 @@ import { map, values, prop, pipe } from 'ramda'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { FileController } from './FileController'
+import { GraphController } from './GraphController'
 import { HealthController } from './HealthController'
 import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
 import { LoggerMiddleware } from './Middlewares/LoggerMiddleware'
 import { RequestValidationMiddleware } from './Middlewares/RequestValidationMiddleware'
 import { SecurityHeaders } from './SecurityHeaders'
-import { GraphController } from './GraphController'
 import { WorkController } from './WorkController'
 
 export interface RouterConfiguration {

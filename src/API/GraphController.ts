@@ -35,7 +35,7 @@ export const GraphController = ({
       $or: [
         { origin: { $in: uris } },
         { target: { $in: uris } },
-      ]
+      ],
     },
     { projection: { _id: false },
     }).toArray()
