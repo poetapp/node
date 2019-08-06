@@ -15,7 +15,6 @@ const getWorkFromNode = getWork(NODE_PORT)
 const postWorkToNode = postWork(NODE_PORT)
 const postGraphToNode = getGraph(NODE_PORT)
 
-
 describe('GET /graph', async assert => {
   const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
@@ -76,10 +75,10 @@ describe('GET /graph', async assert => {
     // console.log(JSON.stringify(ThePiperAtTheGatesOfDawnByPinkFloyd, null, 2))
 
     assert({
-      given: 'GET /graph',
-      should: 'return 202',
-      actual: 1,
-      expected: 1,
+      given: 'ThePiperAtTheGatesOfDawnBySydBarrett Verifiable Claim',
+      should: 'be a valid SignedVerifiableClaim',
+      actual: await VerifiableClaimSigner.isValidSignedVerifiableClaim(ThePiperAtTheGatesOfDawnBySydBarrett),
+      expected: true,
     })
 
     await postWorkToNode(ThePiperAtTheGatesOfDawnBySydBarrett)
