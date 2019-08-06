@@ -97,11 +97,11 @@ describe('GET /graph', async assert => {
       expected: [
         {
           origin: `poet:claims/${ThePiperAtTheGatesOfDawnBySydBarrett.id}`,
-          target: 'https://en.wikipedia.org/wiki/The_Piper_at_the_Gates_of_Dawn',
+          target: wikiLink,
         },
         {
           origin: `poet:claims/${ThePiperAtTheGatesOfDawnByTrackListing.id}`,
-          target: 'https://en.wikipedia.org/wiki/The_Piper_at_the_Gates_of_Dawn',
+          target: wikiLink,
         },
         {
           origin: `poet:claims/${ThePiperAtTheGatesOfDawnByPinkFloyd.id}`,
