@@ -64,6 +64,7 @@ describe('GET /graph', async assert => {
     const context = {
       about: 'schema:url',
       tracks: 'schema:url',
+      year: 'schema:year',
     }
 
     const createSignedClaim = pipeP(
@@ -106,10 +107,18 @@ describe('GET /graph', async assert => {
       ],
     })
 
+    const ThePiperAtTheGatesOfDawnYear = await createSignedClaim({
+      year: 1967,
+      about: [
+        `poet:claims/${ThePiperAtTheGatesOfDawnByPinkFloyd.id}`,
+      ],
+    })
+
     return {
       ThePiperAtTheGatesOfDawnBySydBarrett,
       ThePiperAtTheGatesOfDawnByTrackListing,
       ThePiperAtTheGatesOfDawnByPinkFloyd,
+      ThePiperAtTheGatesOfDawnYear,
     }
   }
 
@@ -127,12 +136,14 @@ describe('GET /graph', async assert => {
       ThePiperAtTheGatesOfDawnBySydBarrett,
       ThePiperAtTheGatesOfDawnByTrackListing,
       ThePiperAtTheGatesOfDawnByPinkFloyd,
+      ThePiperAtTheGatesOfDawnYear,
     } = await createClaims(wikiLink)
 
     const signedVerifiableClaims = [
       ThePiperAtTheGatesOfDawnBySydBarrett,
       ThePiperAtTheGatesOfDawnByTrackListing,
       ThePiperAtTheGatesOfDawnByPinkFloyd,
+      ThePiperAtTheGatesOfDawnYear,
     ]
 
     await postClaims(signedVerifiableClaims)
@@ -151,6 +162,10 @@ describe('GET /graph', async assert => {
       {
         origin: `poet:claims/${ThePiperAtTheGatesOfDawnByPinkFloyd.id}`,
         target: `poet:claims/${ThePiperAtTheGatesOfDawnBySydBarrett.id}`,
+      },
+      {
+        origin: `poet:claims/${ThePiperAtTheGatesOfDawnYear.id}`,
+        target: `poet:claims/${ThePiperAtTheGatesOfDawnByPinkFloyd.id}`,
       },
     ]
 
