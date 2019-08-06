@@ -54,6 +54,7 @@ export const View = (configuration: ViewConfiguration): View => {
       exchange: configuration.exchanges,
     })
     await router.start()
+    await workController.createDbIndices()
 
     logger.info('View Started')
   }

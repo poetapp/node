@@ -15,6 +15,7 @@ export interface Arguments {
 }
 
 export interface WorkController {
+  readonly createDbIndices: () => Promise<void>
   readonly createWork: (work: Work) => Promise<void>
   readonly setIPFSHash: (workId: string, ipfsFileHash: string) => Promise<void>
   readonly setDirectoryHashOnEntries: (data: {
@@ -40,6 +41,10 @@ export const WorkController = ({
   const anchorCollection: Collection = db.collection('anchors')
   const workCollection: Collection = db.collection('works')
   const graphCollection: Collection = db.collection('graph')
+
+  const createDbIndices = async () => {
+    await graphCollection.createIndex({ origin: 1, target: 1 }, { unique: true })
+  }
 
   const createWork = async (verifiableClaim: SignedVerifiableClaim): Promise<void> => {
     const logger = workControllerLogger.child({ method: 'createWork' })
@@ -147,6 +152,7 @@ export const WorkController = ({
     graphCollection.insertMany(about.map(target => ({ origin: `poet:claims/${id}`, target })))
 
   return {
+    createDbIndices,
     createWork,
     setIPFSHash,
     setDirectoryHashOnEntries,
