@@ -1,11 +1,11 @@
-import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
+import { GraphDAO } from './GraphDAO'
 
 export interface Dependencies {
   readonly logger: Pino.Logger
-  readonly db: Db
+  readonly graphDao: GraphDAO
 }
 
 export interface Arguments {
@@ -24,21 +24,10 @@ export interface GraphController {
 export const GraphController = ({
   dependencies: {
     logger: parentLogger,
-    db,
+    graphDao,
   },
 }: Arguments): GraphController => {
   const logger = childWithFileName(parentLogger, __filename)
-  const collection: Collection = db.collection('graph')
-
-  const findEdges = (uris: ReadonlyArray<string>) => collection.find(
-    {
-      $or: [
-        { origin: { $in: uris } },
-        { target: { $in: uris } },
-      ],
-    },
-    { projection: { _id: false },
-    }).toArray()
 
   const getByUri = async (uri: string): Promise<ReadonlyArray<Edge>> => {
     const methodLogger = logger.child({ method: 'getById', uri })
@@ -61,7 +50,7 @@ export const GraphController = ({
         return recursive([searchUris])
       if (searchUris.length === 0)
         return { edges: foundEdges, stackDepth }
-      const newFoundEdges = await findEdges(searchUris)
+      const newFoundEdges = await graphDao.findEdges(searchUris)
       const deduplicatedNewFoundEdges = newFoundEdges.filter(edge => !foundEdges.some(edgesMatch(edge)))
       const newSearchUris = edgesToUris(deduplicatedNewFoundEdges)
         .filter(uri => !searchUris.includes(uri))

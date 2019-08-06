@@ -9,6 +9,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileController, FileControllerConfiguration } from './FileController'
 import * as FileDAO from './FileDAO'
 import { GraphController } from './GraphController'
+import { GraphDAO } from './GraphDAO'
 import { HealthController } from './HealthController'
 import { Router } from './Router'
 import { WorkController } from './WorkController'
@@ -31,6 +32,7 @@ export const API = (configuration: APIConfiguration): API => {
   let router: Router
   let messaging: Messaging
   let fileCollection: Collection
+  let graphCollection: Collection
 
   const logger = createModuleLogger(configuration, __dirname)
 
@@ -40,6 +42,7 @@ export const API = (configuration: APIConfiguration): API => {
     dbConnection = await mongoClient.db()
 
     fileCollection = dbConnection.collection('files')
+    graphCollection = dbConnection.collection('graph')
 
     messaging = new Messaging(configuration.rabbitmqUrl, configuration.exchanges)
     await messaging.start()
@@ -47,6 +50,12 @@ export const API = (configuration: APIConfiguration): API => {
     const fileDao = FileDAO.FileDAO({
       dependencies: {
         collection: fileCollection,
+      },
+    })
+
+    const graphDao = GraphDAO({
+      dependencies: {
+        collection: graphCollection,
       },
     })
 
@@ -73,7 +82,7 @@ export const API = (configuration: APIConfiguration): API => {
     const graphController = GraphController({
       dependencies: {
         logger,
-        db: dbConnection,
+        graphDao,
       },
     })
 
