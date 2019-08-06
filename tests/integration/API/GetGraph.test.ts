@@ -3,24 +3,26 @@ import { randomBytes } from 'crypto'
 
 import { configureCreateVerifiableClaim, createIssuerFromPrivateKey, getVerifiableClaimSigner } from '@po.et/poet-js'
 import * as bs58 from 'bs58'
-import { pipe, pipeP } from 'ramda'
+import { pipeP } from 'ramda'
 import { describe } from 'riteway'
 
 import { delay, runtimeId, setUpServerAndDb } from '../../helpers/utils'
-import { getWork, postWork } from '../../helpers/works'
+import { getWork, postWork, getGraph } from '../../helpers/works'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
 const getWorkFromNode = getWork(NODE_PORT)
 const postWorkToNode = postWork(NODE_PORT)
+const postGraphToNode = getGraph(NODE_PORT)
 
 
 describe('GET /graph', async assert => {
-  // const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT })
+  const { db, server, rabbitMQ } = await setUpServerAndDb({ PREFIX, NODE_PORT })
 
   const VerifiableClaimSigner = getVerifiableClaimSigner()
 
   {
+    const wikiLink = 'https://en.wikipedia.org/wiki/The_Piper_at_the_Gates_of_Dawn'
     const privateKey = bs58.encode(randomBytes(64))
     const issuer = createIssuerFromPrivateKey(privateKey)
 
@@ -38,7 +40,7 @@ describe('GET /graph', async assert => {
       name: 'The Piper at the Gates of Dawn',
       author: 'Syd Barrett',
       about: [
-        'https://en.wikipedia.org/wiki/The_Piper_at_the_Gates_of_Dawn',
+        wikiLink,
       ],
     })
 
@@ -57,7 +59,7 @@ describe('GET /graph', async assert => {
         'Bike',
       ],
       about: [
-        'https://en.wikipedia.org/wiki/The_Piper_at_the_Gates_of_Dawn',
+        wikiLink,
       ],
     })
 
@@ -80,16 +82,24 @@ describe('GET /graph', async assert => {
       expected: 1,
     })
 
-    // await postWorkToNode(ABraveAndStartlingTruth)
-    // await delay(5000)
-    // await postWorkToNode(ABraveAndStartlingTruth)
-    // await delay(5000)
-    // await postWorkToNode(ABraveAndStartlingTruth)
-    // await delay(5000)
+    await postWorkToNode(ThePiperAtTheGatesOfDawnBySydBarrett)
+    await delay(1000)
+    await postWorkToNode(ThePiperAtTheGatesOfDawnByTrackListing)
+    await delay(1000)
+    await postWorkToNode(ThePiperAtTheGatesOfDawnByPinkFloyd)
+    await delay(5000)
 
+    const graph = await postGraphToNode(wikiLink)
+
+    assert({
+      given: 'GET /graph',
+      should: 'return 202',
+      actual: graph,
+      expected: 1,
+    })
   }
 
-  // await server.stop()
-  // await db.teardown()
-  // await rabbitMQ.stop()
+  await server.stop()
+  await db.teardown()
+  await rabbitMQ.stop()
 })
