@@ -42,8 +42,7 @@ describe('GET /graph', async assert => {
     })
   }
 
-  {
-    const wikiLink = 'https://en.wikipedia.org/wiki/The_Piper_at_the_Gates_of_Dawn'
+  const createClaims = async (rootAbout: string) => {
     const { privateKey } = generateED25519Base58Keys()
     const issuer = createIssuerFromPrivateKey(privateKey)
 
@@ -61,7 +60,7 @@ describe('GET /graph', async assert => {
       name: 'The Piper at the Gates of Dawn',
       author: 'Syd Barrett',
       about: [
-        wikiLink,
+        rootAbout,
       ],
     })
 
@@ -80,7 +79,7 @@ describe('GET /graph', async assert => {
         'Bike',
       ],
       about: [
-        wikiLink,
+        rootAbout,
       ],
     })
 
@@ -91,6 +90,22 @@ describe('GET /graph', async assert => {
         `poet:claims/${ThePiperAtTheGatesOfDawnBySydBarrett.id}`,
       ],
     })
+
+    return {
+      ThePiperAtTheGatesOfDawnBySydBarrett,
+      ThePiperAtTheGatesOfDawnByTrackListing,
+      ThePiperAtTheGatesOfDawnByPinkFloyd,
+    }
+  }
+
+  {
+    const wikiLink = 'https://en.wikipedia.org/wiki/The_Piper_at_the_Gates_of_Dawn'
+
+    const {
+      ThePiperAtTheGatesOfDawnBySydBarrett,
+      ThePiperAtTheGatesOfDawnByTrackListing,
+      ThePiperAtTheGatesOfDawnByPinkFloyd,
+    } = await createClaims(wikiLink)
 
     await postWorkToNode(ThePiperAtTheGatesOfDawnBySydBarrett)
     await delay(1000)
