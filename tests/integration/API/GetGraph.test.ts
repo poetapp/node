@@ -22,7 +22,7 @@ describe('GET /graph', async assert => {
 
   const VerifiableClaimSigner = getVerifiableClaimSigner()
 
-  const getAndAssertGraph = async (uri: string, expectedGraph: any) => {
+  const getAndAssertGraph = async (uri: string, expectedGraph: ReadonlyArray<any>) => {
     const graphResponse = await postGraphToNode(uri)
 
     assert({
@@ -36,10 +36,25 @@ describe('GET /graph', async assert => {
 
     assert({
       given: 'GET /graph',
-      should: 'return 200',
-      actual: graph,
-      expected: expectedGraph,
+      should: 'return return an array',
+      actual: Array.isArray(graph),
+      expected: true,
     })
+
+    assert({
+      given: 'GET /graph',
+      should: 'should return an array of expected length',
+      actual: graph.length,
+      expected: expectedGraph.length,
+    })
+
+    for (const expectedEdge of expectedGraph)
+      assert({
+        given: 'GET /graph',
+        should: 'return 200',
+        actual: graph.some((edge: any) => expectedEdge.origin === edge.origin && expectedEdge.target === edge.target),
+        expected: true,
+      })
   }
 
   const createClaims = async (rootAbout: string) => {
@@ -114,11 +129,13 @@ describe('GET /graph', async assert => {
       ThePiperAtTheGatesOfDawnByPinkFloyd,
     } = await createClaims(wikiLink)
 
-    await postClaims([
+    const signedVerifiableClaims = [
       ThePiperAtTheGatesOfDawnBySydBarrett,
       ThePiperAtTheGatesOfDawnByTrackListing,
       ThePiperAtTheGatesOfDawnByPinkFloyd,
-    ])
+    ]
+
+    await postClaims(signedVerifiableClaims)
 
     await delay(2000)
 
@@ -138,6 +155,8 @@ describe('GET /graph', async assert => {
     ]
 
     await getAndAssertGraph(wikiLink, expectedGraph)
+    for (const signedVerifiableClaim of signedVerifiableClaims)
+      await getAndAssertGraph(`poet:claims/${signedVerifiableClaim.id}`, expectedGraph)
   }
 
   await server.stop()
