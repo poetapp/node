@@ -12,13 +12,11 @@ export const dbHelper = () => {
   let tempDbName: string
 
   const dbExecute = async (...fns: any) => {
-    // const mongodbUrl = loadConfigurationWithDefaults({
-    //   MONGODB_USER: 'root',
-    //   MONGODB_PASSWORD: 'rootPass',
-    //   MONGODB_DATABASE: tempDbName,
-    // }).mongodbUrl
-
-    const mongodbUrl = `mongodb://root:rootPass@localhost:27017/${tempDbName}`
+    const mongodbUrl = loadConfigurationWithDefaults({
+      MONGODB_USER: 'root',
+      MONGODB_PASSWORD: 'rootPass',
+      MONGODB_DATABASE: tempDbName,
+    }).mongodbUrl
 
     console.log(`Connecting to temporary DB (${mongodbUrl})...`)
     const mongoClient = await MongoClient.connect(
