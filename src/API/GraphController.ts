@@ -66,7 +66,7 @@ export const GraphController = ({
 
     const { edges, stackDepth } = await recursive(uri)
 
-    methodLogger.info({ stackDepth })
+    methodLogger.info({ uri, stackDepth })
 
     return edges
   }
