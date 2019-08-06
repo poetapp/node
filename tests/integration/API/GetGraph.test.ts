@@ -4,13 +4,13 @@ import {
   configureCreateVerifiableClaim,
   createIssuerFromPrivateKey,
   getVerifiableClaimSigner,
-  generateED25519Base58Keys
+  generateED25519Base58Keys,
 } from '@po.et/poet-js'
 import { pipeP } from 'ramda'
 import { describe } from 'riteway'
 
 import { delay, runtimeId, setUpServerAndDb } from '../../helpers/utils'
-import { getWork, postWork, getGraph } from '../../helpers/works'
+import { postWork, getGraph } from '../../helpers/works'
 
 const PREFIX = `test-functional-node-poet-${runtimeId()}`
 const NODE_PORT = '28081'
