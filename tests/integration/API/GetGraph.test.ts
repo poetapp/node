@@ -22,6 +22,26 @@ describe('GET /graph', async assert => {
 
   const VerifiableClaimSigner = getVerifiableClaimSigner()
 
+  const getAndAssertGraph = async (uri: string, expectedGraph: any) => {
+    const graphResponse = await postGraphToNode(uri)
+
+    assert({
+      given: 'GET /graph',
+      should: 'return 202',
+      actual: graphResponse.ok,
+      expected: true,
+    })
+
+    const graph = await graphResponse.json()
+
+    assert({
+      given: 'GET /graph',
+      should: 'return 200',
+      actual: graph,
+      expected: expectedGraph,
+    })
+  }
+
   {
     const wikiLink = 'https://en.wikipedia.org/wiki/The_Piper_at_the_Gates_of_Dawn'
     const { privateKey } = generateED25519Base58Keys()
@@ -79,36 +99,22 @@ describe('GET /graph', async assert => {
     await postWorkToNode(ThePiperAtTheGatesOfDawnByPinkFloyd)
     await delay(5000)
 
-    const graphResponse = await postGraphToNode(wikiLink)
+    const expectedGraph = [
+      {
+        origin: `poet:claims/${ThePiperAtTheGatesOfDawnBySydBarrett.id}`,
+        target: wikiLink,
+      },
+      {
+        origin: `poet:claims/${ThePiperAtTheGatesOfDawnByTrackListing.id}`,
+        target: wikiLink,
+      },
+      {
+        origin: `poet:claims/${ThePiperAtTheGatesOfDawnByPinkFloyd.id}`,
+        target: `poet:claims/${ThePiperAtTheGatesOfDawnBySydBarrett.id}`,
+      },
+    ]
 
-    assert({
-      given: 'GET /graph',
-      should: 'return 202',
-      actual: graphResponse.ok,
-      expected: true,
-    })
-
-    const graph = await graphResponse.json()
-
-    assert({
-      given: 'GET /graph',
-      should: 'return 200',
-      actual: graph,
-      expected: [
-        {
-          origin: `poet:claims/${ThePiperAtTheGatesOfDawnBySydBarrett.id}`,
-          target: wikiLink,
-        },
-        {
-          origin: `poet:claims/${ThePiperAtTheGatesOfDawnByTrackListing.id}`,
-          target: wikiLink,
-        },
-        {
-          origin: `poet:claims/${ThePiperAtTheGatesOfDawnByPinkFloyd.id}`,
-          target: `poet:claims/${ThePiperAtTheGatesOfDawnBySydBarrett.id}`,
-        },
-      ],
-    })
+    await getAndAssertGraph(wikiLink, expectedGraph)
   }
 
   await server.stop()
