@@ -4,7 +4,7 @@ import {
   configureCreateVerifiableClaim,
   createIssuerFromPrivateKey,
   getVerifiableClaimSigner,
-  generateED25519Base58Keys,
+  generateED25519Base58Keys, SignedVerifiableClaim,
 } from '@po.et/poet-js'
 import { pipeP } from 'ramda'
 import { describe } from 'riteway'
@@ -98,6 +98,13 @@ describe('GET /graph', async assert => {
     }
   }
 
+  const postClaims = async (signedVerifiableClaims: ReadonlyArray<SignedVerifiableClaim>): Promise<void> => {
+    for (const signedVerifiableClaim of signedVerifiableClaims) {
+      await postWorkToNode(signedVerifiableClaim)
+      await delay(500)
+    }
+  }
+
   {
     const wikiLink = 'https://en.wikipedia.org/wiki/The_Piper_at_the_Gates_of_Dawn'
 
@@ -107,12 +114,13 @@ describe('GET /graph', async assert => {
       ThePiperAtTheGatesOfDawnByPinkFloyd,
     } = await createClaims(wikiLink)
 
-    await postWorkToNode(ThePiperAtTheGatesOfDawnBySydBarrett)
-    await delay(1000)
-    await postWorkToNode(ThePiperAtTheGatesOfDawnByTrackListing)
-    await delay(1000)
-    await postWorkToNode(ThePiperAtTheGatesOfDawnByPinkFloyd)
-    await delay(5000)
+    await postClaims([
+      ThePiperAtTheGatesOfDawnBySydBarrett,
+      ThePiperAtTheGatesOfDawnByTrackListing,
+      ThePiperAtTheGatesOfDawnByPinkFloyd,
+    ])
+
+    await delay(2000)
 
     const expectedGraph = [
       {
