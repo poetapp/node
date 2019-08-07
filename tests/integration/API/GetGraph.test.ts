@@ -70,7 +70,7 @@ describe('GET /graph', async assert => {
         '@id': 'schema:track',
         '@container': '@list',
       },
-      year: 'schema:year',
+      datePublished: 'schema:datePublished',
     }
 
     const createSignedClaim = pipeP(
@@ -114,7 +114,7 @@ describe('GET /graph', async assert => {
     })
 
     const ThePiperAtTheGatesOfDawnYear = await createSignedClaim({
-      year: 1967,
+      datePublished: '1967-08-04',
       about: [
         `poet:claims/${ThePiperAtTheGatesOfDawnByPinkFloyd.id}`,
       ],
