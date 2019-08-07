@@ -20,6 +20,7 @@ import { map, values, prop, pipe } from 'ramda'
 import { childWithFileName } from 'Helpers/Logging'
 
 import { FileController } from './FileController'
+import { GraphController } from './GraphController'
 import { HealthController } from './HealthController'
 import { HttpExceptionsMiddleware } from './Middlewares/HttpExceptionsMiddleware'
 import { LoggerMiddleware } from './Middlewares/LoggerMiddleware'
@@ -39,6 +40,7 @@ export interface Dependencies {
   readonly logger: Pino.Logger
   readonly fileController: FileController
   readonly workController: WorkController
+  readonly graphController: GraphController
   readonly healthController: HealthController
   readonly verifiableClaimSigner: VerifiableClaimSigner
 }
@@ -58,6 +60,7 @@ export const Router = ({
     logger,
     fileController,
     workController,
+    graphController,
     healthController,
     verifiableClaimSigner,
   },
@@ -163,6 +166,13 @@ export const Router = ({
     context.status = 202
   }
 
+  const getGraph = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    const { uri } = context.params
+    routerLogger.debug({ uri }, 'GET /graph')
+    const graph = await graphController.getByUri(uri)
+    context.body = graph
+  }
+
   koaRouter.post(
     '/files',
     KoaBody({ multipart: true, formidable: { multiples: false, maxFields: 1 } }),
@@ -171,6 +181,7 @@ export const Router = ({
   koaRouter.get('/works/:id', RequestValidationMiddleware(getWorkSchema), getWork)
   koaRouter.get('/works', RequestValidationMiddleware(getWorksSchema), getWorks)
   koaRouter.post('/works', KoaBody({ textLimit: 1000000 }), postWork)
+  koaRouter.get('/graph/:uri', getGraph)
   koaRouter.get('/health', getHealth)
   koaRouter.get('/metrics', getWorkCounts)
 

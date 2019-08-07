@@ -1,4 +1,4 @@
-import { Work, PoetBlockAnchor } from '@po.et/poet-js'
+import { Work, PoetBlockAnchor, SignedVerifiableClaim } from '@po.et/poet-js'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
@@ -15,6 +15,7 @@ export interface Arguments {
 }
 
 export interface WorkController {
+  readonly createDbIndices: () => Promise<void>
   readonly createWork: (work: Work) => Promise<void>
   readonly setIPFSHash: (workId: string, ipfsFileHash: string) => Promise<void>
   readonly setDirectoryHashOnEntries: (data: {
@@ -39,16 +40,23 @@ export const WorkController = ({
   const workControllerLogger: Pino.Logger = childWithFileName(logger, __filename)
   const anchorCollection: Collection = db.collection('anchors')
   const workCollection: Collection = db.collection('works')
+  const graphCollection: Collection = db.collection('graph')
 
-  const createWork = async (work: Work): Promise<void> => {
+  const createDbIndices = async () => {
+    await graphCollection.createIndex({ origin: 1, target: 1 }, { unique: true })
+  }
+
+  const createWork = async (verifiableClaim: SignedVerifiableClaim): Promise<void> => {
     const logger = workControllerLogger.child({ method: 'createWork' })
-    logger.trace({ work }, 'Creating Work')
+    logger.trace({ verifiableClaim }, 'Creating Work')
 
-    const existing = await workCollection.findOne({ id: work.id })
+    const existing = await workCollection.findOne({ id: verifiableClaim.id })
 
     if (existing) return
 
-    await workCollection.insertOne(work)
+    await workCollection.insertOne(verifiableClaim)
+    if (Array.isArray(verifiableClaim.claim.about))
+      await insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about)
   }
 
   const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
@@ -132,9 +140,19 @@ export const WorkController = ({
         workCollection.updateOne({ 'anchor.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
       ),
     )
+    const verifiableClaims = claimIPFSHashPairs.map(({ claim }) => claim)
+    await Promise.all(
+      verifiableClaims
+        .filter(verifiableClaim => Array.isArray(verifiableClaim.claim.about))
+        .map(verifiableClaim => insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about as string[])), // See 1
+    )
   }
 
+  const insertGraphEdges = async (id: string, about: ReadonlyArray<string>) =>
+    graphCollection.insertMany(about.map(target => ({ origin: `poet:claims/${id}`, target })))
+
   return {
+    createDbIndices,
     createWork,
     setIPFSHash,
     setDirectoryHashOnEntries,
@@ -144,3 +162,12 @@ export const WorkController = ({
     upsertClaimIPFSHashPair,
   }
 }
+
+// 1. as string[]: TypeScript doesn't [yet] automatically narrow types in Array.filter unless an explicit type
+// guard is provided. Proper solution would be something like
+// ```
+// const isStandardVerifiableClaim = (x: VerifiableClaim): x is StandardVerifiableClaim =>
+//   Array.isArray(x.claim.about) && etc
+// ...
+// verifiableClaims.filter(isStandardVerifiableClaim).map(...)
+// ```

@@ -1,6 +1,5 @@
 import { getVerifiableClaimSigner } from '@po.et/poet-js'
 import { Collection, MongoClient, Db } from 'mongodb'
-import * as Pino from 'pino'
 
 import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
@@ -9,6 +8,8 @@ import { Messaging } from 'Messaging/Messaging'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileController, FileControllerConfiguration } from './FileController'
 import * as FileDAO from './FileDAO'
+import { GraphController } from './GraphController'
+import { GraphDAO } from './GraphDAO'
 import { HealthController } from './HealthController'
 import { Router } from './Router'
 import { WorkController } from './WorkController'
@@ -31,6 +32,7 @@ export const API = (configuration: APIConfiguration): API => {
   let router: Router
   let messaging: Messaging
   let fileCollection: Collection
+  let graphCollection: Collection
 
   const logger = createModuleLogger(configuration, __dirname)
 
@@ -40,6 +42,7 @@ export const API = (configuration: APIConfiguration): API => {
     dbConnection = await mongoClient.db()
 
     fileCollection = dbConnection.collection('files')
+    graphCollection = dbConnection.collection('graph')
 
     messaging = new Messaging(configuration.rabbitmqUrl, configuration.exchanges)
     await messaging.start()
@@ -47,6 +50,12 @@ export const API = (configuration: APIConfiguration): API => {
     const fileDao = FileDAO.FileDAO({
       dependencies: {
         collection: fileCollection,
+      },
+    })
+
+    const graphDao = GraphDAO({
+      dependencies: {
+        collection: graphCollection,
       },
     })
 
@@ -70,6 +79,13 @@ export const API = (configuration: APIConfiguration): API => {
       exchange: configuration.exchanges,
     })
 
+    const graphController = GraphController({
+      dependencies: {
+        logger,
+        graphDao,
+      },
+    })
+
     const healthController = HealthController({
       dependencies: {
         db: dbConnection,
@@ -82,6 +98,7 @@ export const API = (configuration: APIConfiguration): API => {
         logger,
         fileController,
         workController,
+        graphController,
         healthController,
         verifiableClaimSigner: getVerifiableClaimSigner(),
       },

@@ -1,4 +1,5 @@
 /* tslint:disable:no-relative-imports */
+import './API/GetGraph.test'
 import './API/GetWork.test'
 import './API/GetWorks.test'
 import './API/GetWorksByIssuer.test'

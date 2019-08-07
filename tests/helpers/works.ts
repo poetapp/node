@@ -24,3 +24,6 @@ export const postWorkWithDelay = (port: string, host?: string, delayValue: numbe
   await delay(delayValue)
   return response
 }
+
+export const getGraph = (port: string, host?: string) => (uri: string) =>
+  fetch(`${baseUrl(port, host)}/graph/${encodeURIComponent(uri)}`)

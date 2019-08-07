@@ -6,6 +6,7 @@ const main = async () => {
   const attributes = {
     name: process.argv[2] || 'testing claim',
     author: process.argv[3] || 'the tester',
+    about: [ process.argv[4] ],
   }
   const client = new Client()
   const claim = await createACDClaim(attributes)
