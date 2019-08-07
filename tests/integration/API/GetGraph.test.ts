@@ -62,8 +62,14 @@ describe('GET /graph', async assert => {
     const issuer = createIssuerFromPrivateKey(privateKey)
 
     const context = {
-      about: 'schema:url',
-      tracks: 'schema:url',
+      about: {
+        '@id': 'schema:url',
+        '@container': '@list',
+      },
+      tracks: {
+        '@id': 'schema:track',
+        '@container': '@list',
+      },
       year: 'schema:year',
     }
 
