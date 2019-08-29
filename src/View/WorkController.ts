@@ -1,6 +1,7 @@
 import { Work, PoetBlockAnchor, SignedVerifiableClaim } from '@po.et/poet-js'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
+import { identity } from 'ramda'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { ClaimIPFSHashPair } from 'Interfaces'
@@ -149,7 +150,7 @@ export const WorkController = ({
   }
 
   const insertGraphEdges = async (id: string, about: ReadonlyArray<string>) =>
-    graphCollection.insertMany(about.map(target => ({ origin: `poet:claims/${id}`, target })))
+    graphCollection.insertMany(about.filter(identity).map(target => ({ origin: `poet:claims/${id}`, target })))
 
   return {
     createDbIndices,
