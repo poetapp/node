@@ -35,7 +35,6 @@ export const Router = ({
   const routerLogger = childWithFileName(logger, __filename)
 
   const start = async () => {
-    await messaging.consume(exchange.newClaim, onNewClaim)
     await messaging.consume(exchange.claimIpfsHash, onClaimIPFSHash)
     await messaging.consume(exchange.ipfsHashTxId, onIPFSHashTxId)
     await messaging.consumeBlockDownloaded(onPoetBlockAnchorsDownloaded)
@@ -54,19 +53,6 @@ export const Router = ({
     routerLogger.info('Stopping EthereumRegistryWriter Router...')
     routerLogger.info('Stopping EthereumRegistryWriter Messaging...')
     await messaging.stop()
-  }
-
-  const onNewClaim = async (message: any) => {
-    const logger = routerLogger.child({ method: 'onNewClaim' })
-
-    const messageContent = message.content.toString()
-    logger.trace({ messageContent }, 'Setting message content on works')
-
-    try {
-      await controller.createWork(JSON.parse(messageContent))
-    } catch (error) {
-      logger.error({ error }, 'Failed to create on works')
-    }
   }
 
   const onClaimIPFSHash = async (message: any) => {
