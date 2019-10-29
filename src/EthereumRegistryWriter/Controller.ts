@@ -21,7 +21,6 @@ export interface Controller {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => Promise<void>
-  readonly setTxId: (ipfsDirectoryHash: string, transactionId: string) => Promise<void>
   readonly upsertAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
   readonly setFileHashesForDirectoryHash: (data: {
     ipfsFileHashes: ReadonlyArray<string>
@@ -64,15 +63,6 @@ export const Controller = ({
           { $set: { ipfsDirectoryHash } },
         ),
       ),
-    )
-  }
-
-  const setTxId = async (ipfsDirectoryHash: string, transactionId: string): Promise<void> => {
-    const logger = controllerLogger.child({ method: 'setTxId' })
-    logger.trace({ ipfsDirectoryHash, transactionId }, 'Setting the Transaction ID for a IPFS Hash')
-    await workCollection.updateMany(
-      { 'anchor.ipfsDirectoryHash': ipfsDirectoryHash },
-      { $set: { 'anchor.transactionId': transactionId } },
     )
   }
 
@@ -128,7 +118,6 @@ export const Controller = ({
     createDbIndices,
     insertClaimIdIPFSFileHashPair,
     setDirectoryHash,
-    setTxId,
     upsertAnchors,
     setFileHashesForDirectoryHash,
     upsertClaimIPFSHashPair,

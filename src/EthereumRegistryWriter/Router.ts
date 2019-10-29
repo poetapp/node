@@ -36,7 +36,6 @@ export const Router = ({
 
   const start = async () => {
     await messaging.consume(exchange.claimIpfsHash, onClaimIPFSHash)
-    await messaging.consume(exchange.ipfsHashTxId, onIPFSHashTxId)
     await messaging.consumeBlockDownloaded(onPoetBlockAnchorsDownloaded)
     await messaging.consumeClaimsDownloaded(onClaimsDownloaded)
     await messaging.consume(
@@ -98,21 +97,6 @@ export const Router = ({
         },
         'Error setting IPFS Directory Hashes',
       )
-    }
-  }
-
-  const onIPFSHashTxId = async (message: any) => {
-    const logger = routerLogger.child({ method: 'onIPFSHashTxId' })
-
-    const messageContent = message.content.toString()
-    const { ipfsDirectoryHash, txId } = JSON.parse(messageContent)
-
-    logger.trace({ ipfsDirectoryHash, txId }, 'Setting TransactionID for IPFS Directory Hash')
-
-    try {
-      await controller.setTxId(ipfsDirectoryHash, txId)
-    } catch (error) {
-      logger.error({ error }, 'Failed to set txId on works')
     }
   }
 
