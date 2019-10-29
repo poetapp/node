@@ -131,11 +131,11 @@ export const Router = ({
   const onClaimsDownloaded = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
     const logger = routerLogger.child({ method: 'onClaimsDownloaded' })
 
-    logger.trace({ claimIPFSHashPairs }, 'Downloaded a (IPFS Hash, Claim Id) Pair')
+    logger.trace({ claimIPFSHashPairs }, 'Downloaded (IPFS Hash, Claim) pairs')
     try {
-      await controller.upsertClaimIPFSHashPair(claimIPFSHashPairs)
+      await controller.verifyIPFSFileHashes(claimIPFSHashPairs)
     } catch (error) {
-      logger.error({ error }, 'Failed to upsert claimIPFSHashPairs on works')
+      logger.error({ error })
     }
   }
 

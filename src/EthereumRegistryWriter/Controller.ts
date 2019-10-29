@@ -26,7 +26,7 @@ export interface Controller {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => Promise<void>
-  readonly upsertClaimIPFSHashPair: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
+  readonly verifyIPFSFileHashes: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
 }
 
 export const Controller = ({
@@ -101,14 +101,15 @@ export const Controller = ({
     // TODO: do something for files that don't match the expected directory
   }
 
-  const upsertClaimIPFSHashPair = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    const logger = controllerLogger.child({ method: 'upsertClaimIPFSHashPair' })
+  const verifyIPFSFileHashes = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
+    const logger = controllerLogger.child({ method: 'verifyIPFSFileHashes' })
     logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
-        workCollection.updateOne({ 'anchor.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
+        workCollection.updateOne({ claimId: claim.id, ipfsFileHash }, { $set: { ipfsFileHashVerified: true } }),
       ),
     )
+    // TODO: do something for claims that don't match the expected file
   }
 
   return {
@@ -117,6 +118,6 @@ export const Controller = ({
     setDirectoryHash,
     setAnchors,
     verifyIPFSDirectoryHashes,
-    upsertClaimIPFSHashPair,
+    verifyIPFSFileHashes,
   }
 }
