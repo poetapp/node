@@ -61,10 +61,10 @@ export const Router = ({
     const messageContent = message.content.toString()
     const { claimId, ipfsFileHash } = JSON.parse(messageContent)
 
-    logger.info({ claimId, ipfsFileHash }, 'Setting IPFSHash on works')
+    logger.info({ claimId, ipfsFileHash }, 'Storing an IPFS File Hash + Claim Id')
 
     try {
-      await controller.setIPFSHash(claimId, ipfsFileHash)
+      await controller.insertClaimIdIPFSFileHashPair(claimId, ipfsFileHash)
     } catch (error) {
       logger.error({ error }, 'Failed to set claimId and ipfsFileHash on works')
     }

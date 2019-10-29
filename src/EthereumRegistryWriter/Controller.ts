@@ -17,7 +17,7 @@ export interface Arguments {
 export interface Controller {
   readonly createDbIndices: () => Promise<void>
   readonly createWork: (work: Work) => Promise<void>
-  readonly setIPFSHash: (workId: string, ipfsFileHash: string) => Promise<void>
+  readonly insertClaimIdIPFSFileHashPair: (claimId: string, ipfsFileHash: string) => Promise<void>
   readonly setDirectoryHashOnEntries: (data: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
@@ -56,10 +56,8 @@ export const Controller = ({
     await workCollection.insertOne(verifiableClaim)
   }
 
-  const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
-    const logger = controllerLogger.child({ method: 'setIPFSHash' })
-    logger.trace({ workId, ipfsFileHash }, 'Setting the IPFS Hash for a Work')
-    await workCollection.updateOne({ id: workId }, { $set: { 'anchor.ipfsFileHash': ipfsFileHash } })
+  const insertClaimIdIPFSFileHashPair = async (claimId: string, ipfsFileHash: string): Promise<void> => {
+    await workCollection.insertOne({ claimId, ipfsFileHash })
   }
 
   const setDirectoryHashOnEntries = async ({
@@ -142,7 +140,7 @@ export const Controller = ({
   return {
     createDbIndices,
     createWork,
-    setIPFSHash,
+    insertClaimIdIPFSFileHashPair,
     setDirectoryHashOnEntries,
     setTxId,
     upsertAnchors,
