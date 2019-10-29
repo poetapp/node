@@ -36,13 +36,13 @@ export const Router = ({
 
   const start = async () => {
     await messaging.consume(exchange.claimIpfsHash, onClaimIPFSHash)
+    await messaging.consume(exchange.ipfsDirectoryCreated, onIPFSDirectoryCreated)
     await messaging.consumeBlockDownloaded(onPoetBlockAnchorsDownloaded)
     await messaging.consumeClaimsDownloaded(onClaimsDownloaded)
     await messaging.consume(
       exchange.batchReaderReadNextDirectorySuccess,
       onBatchReaderReadNextDirectorySuccess,
     )
-    await messaging.consume(exchange.ipfsDirectoryCreated, onIPFSDirectoryCreated)
   }
 
   const stop = async () => {
