@@ -43,10 +43,7 @@ export const Router = ({
       exchange.batchReaderReadNextDirectorySuccess,
       onBatchReaderReadNextDirectorySuccess,
     )
-    await messaging.consume(
-      exchange.batchWriterCreateNextBatchSuccess,
-      onBatchWriterCreateNextBatchSuccess,
-    )
+    await messaging.consume(exchange.ipfsDirectoryCreated, onIPFSDirectoryCreated)
   }
 
   const stop = async () => {
@@ -70,9 +67,9 @@ export const Router = ({
     }
   }
 
-  const onBatchWriterCreateNextBatchSuccess = async (message: any): Promise<void> => {
+  const onIPFSDirectoryCreated = async (message: any): Promise<void> => {
     const logger = routerLogger.child({
-      method: 'onBatchWriterCreateNextBatchSuccess',
+      method: 'onIPFSDirectoryCreated',
     })
 
     const messageContent = message.content.toString()
@@ -83,13 +80,13 @@ export const Router = ({
         ipfsDirectoryHash,
         ipfsFileHashes,
       },
-      'Adding IPFS Directory Hash to claims',
+      'Setting IPFS Directory Hashes',
     )
 
     try {
-      await controller.setDirectoryHashOnEntries({
-        ipfsDirectoryHash,
+      await controller.setDirectoryHash({
         ipfsFileHashes,
+        ipfsDirectoryHash,
       })
       logger.trace({ ipfsDirectoryHash, ipfsFileHashes }, 'IPFS Directory Hash set successfully')
     } catch (error) {
@@ -99,7 +96,7 @@ export const Router = ({
           ipfsFileHashes,
           error,
         },
-        'Error setting IPFS Directory Hash',
+        'Error setting IPFS Directory Hashes',
       )
     }
   }

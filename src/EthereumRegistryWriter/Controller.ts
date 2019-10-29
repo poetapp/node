@@ -17,7 +17,7 @@ export interface Arguments {
 export interface Controller {
   readonly createDbIndices: () => Promise<void>
   readonly insertClaimIdIPFSFileHashPair: (claimId: string, ipfsFileHash: string) => Promise<void>
-  readonly setDirectoryHashOnEntries: (data: {
+  readonly setDirectoryHash: (data: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => Promise<void>
@@ -48,7 +48,7 @@ export const Controller = ({
     await workCollection.insertOne({ claimId, ipfsFileHash })
   }
 
-  const setDirectoryHashOnEntries = async ({
+  const setDirectoryHash = async ({
     ipfsFileHashes,
     ipfsDirectoryHash,
   }: {
@@ -56,13 +56,12 @@ export const Controller = ({
     ipfsDirectoryHash: string,
   }) => {
     const logger = controllerLogger.child({ method: 'setDirectoryHash' })
-    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
+    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash for file hashes')
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
         workCollection.updateOne(
-          { 'anchor.ipfsFileHash': ipfsFileHash },
-          { $set: { 'anchor.ipfsDirectoryHash': ipfsDirectoryHash } },
-          { upsert: true },
+          { ipfsFileHash },
+          { $set: { ipfsDirectoryHash } },
         ),
       ),
     )
@@ -128,7 +127,7 @@ export const Controller = ({
   return {
     createDbIndices,
     insertClaimIdIPFSFileHashPair,
-    setDirectoryHashOnEntries,
+    setDirectoryHash,
     setTxId,
     upsertAnchors,
     setFileHashesForDirectoryHash,
