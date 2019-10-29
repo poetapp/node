@@ -36,7 +36,6 @@ export const Controller = ({
   },
 }: Arguments): Controller => {
   const controllerLogger: Pino.Logger = childWithFileName(logger, __filename)
-  const anchorCollection: Collection = db.collection('anchors')
   const workCollection: Collection = db.collection('works')
 
   const createDbIndices = async () => {
