@@ -40,10 +40,9 @@ export const Controller = ({
   const controllerLogger: Pino.Logger = childWithFileName(logger, __filename)
   const anchorCollection: Collection = db.collection('anchors')
   const workCollection: Collection = db.collection('works')
-  const graphCollection: Collection = db.collection('graph')
 
   const createDbIndices = async () => {
-    await graphCollection.createIndex({ origin: 1, target: 1 }, { unique: true })
+
   }
 
   const createWork = async (verifiableClaim: SignedVerifiableClaim): Promise<void> => {
@@ -55,8 +54,6 @@ export const Controller = ({
     if (existing) return
 
     await workCollection.insertOne(verifiableClaim)
-    if (Array.isArray(verifiableClaim.claim.about))
-      await insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about)
   }
 
   const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
@@ -140,16 +137,7 @@ export const Controller = ({
         workCollection.updateOne({ 'anchor.ipfsFileHash': ipfsFileHash }, { $set: claim }, { upsert: true }),
       ),
     )
-    const verifiableClaims = claimIPFSHashPairs.map(({ claim }) => claim)
-    await Promise.all(
-      verifiableClaims
-        .filter(verifiableClaim => Array.isArray(verifiableClaim.claim.about))
-        .map(verifiableClaim => insertGraphEdges(verifiableClaim.id, verifiableClaim.claim.about as string[])), // See 1
-    )
   }
-
-  const insertGraphEdges = async (id: string, about: ReadonlyArray<string>) =>
-    graphCollection.insertMany(about.map(target => ({ origin: `poet:claims/${id}`, target })))
 
   return {
     createDbIndices,
@@ -162,12 +150,3 @@ export const Controller = ({
     upsertClaimIPFSHashPair,
   }
 }
-
-// 1. as string[]: TypeScript doesn't [yet] automatically narrow types in Array.filter unless an explicit type
-// guard is provided. Proper solution would be something like
-// ```
-// const isStandardVerifiableClaim = (x: VerifiableClaim): x is StandardVerifiableClaim =>
-//   Array.isArray(x.claim.about) && etc
-// ...
-// verifiableClaims.filter(isStandardVerifiableClaim).map(...)
-// ```
