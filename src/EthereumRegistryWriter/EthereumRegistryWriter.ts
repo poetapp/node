@@ -8,7 +8,7 @@ import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
-import { WorkController } from './WorkController'
+import { Controller } from './Controller'
 
 export interface ViewConfiguration extends LoggingConfiguration {
   readonly dbUrl: string
@@ -38,7 +38,7 @@ export const View = (configuration: ViewConfiguration): EthereumRegistryWriter =
     messaging = new Messaging(configuration.rabbitmqUrl, exchangesMessaging)
     await messaging.start()
 
-    const workController = WorkController({
+    const controller = Controller({
       dependencies: {
         logger,
         db: dbConnection,
@@ -49,12 +49,12 @@ export const View = (configuration: ViewConfiguration): EthereumRegistryWriter =
       dependencies: {
         logger,
         messaging,
-        workController,
+        controller,
       },
       exchange: configuration.exchanges,
     })
     await router.start()
-    await workController.createDbIndices()
+    await controller.createDbIndices()
 
     logger.info('EthereumRegistryWriter Started')
   }

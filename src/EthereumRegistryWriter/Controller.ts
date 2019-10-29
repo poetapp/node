@@ -14,7 +14,7 @@ export interface Arguments {
   readonly dependencies: Dependencies
 }
 
-export interface WorkController {
+export interface Controller {
   readonly createDbIndices: () => Promise<void>
   readonly createWork: (work: Work) => Promise<void>
   readonly setIPFSHash: (workId: string, ipfsFileHash: string) => Promise<void>
@@ -31,13 +31,13 @@ export interface WorkController {
   readonly upsertClaimIPFSHashPair: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
 }
 
-export const WorkController = ({
+export const Controller = ({
   dependencies: {
     logger,
     db,
   },
-}: Arguments): WorkController => {
-  const workControllerLogger: Pino.Logger = childWithFileName(logger, __filename)
+}: Arguments): Controller => {
+  const controllerLogger: Pino.Logger = childWithFileName(logger, __filename)
   const anchorCollection: Collection = db.collection('anchors')
   const workCollection: Collection = db.collection('works')
   const graphCollection: Collection = db.collection('graph')
@@ -47,7 +47,7 @@ export const WorkController = ({
   }
 
   const createWork = async (verifiableClaim: SignedVerifiableClaim): Promise<void> => {
-    const logger = workControllerLogger.child({ method: 'createWork' })
+    const logger = controllerLogger.child({ method: 'createWork' })
     logger.trace({ verifiableClaim }, 'Creating Work')
 
     const existing = await workCollection.findOne({ id: verifiableClaim.id })
@@ -60,7 +60,7 @@ export const WorkController = ({
   }
 
   const setIPFSHash = async (workId: string, ipfsFileHash: string): Promise<void> => {
-    const logger = workControllerLogger.child({ method: 'setIPFSHash' })
+    const logger = controllerLogger.child({ method: 'setIPFSHash' })
     logger.trace({ workId, ipfsFileHash }, 'Setting the IPFS Hash for a Work')
     await workCollection.updateOne({ id: workId }, { $set: { 'anchor.ipfsFileHash': ipfsFileHash } })
   }
@@ -72,7 +72,7 @@ export const WorkController = ({
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => {
-    const logger = workControllerLogger.child({ method: 'setDirectoryHash' })
+    const logger = controllerLogger.child({ method: 'setDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
@@ -86,7 +86,7 @@ export const WorkController = ({
   }
 
   const setTxId = async (ipfsDirectoryHash: string, transactionId: string): Promise<void> => {
-    const logger = workControllerLogger.child({ method: 'setTxId' })
+    const logger = controllerLogger.child({ method: 'setTxId' })
     logger.trace({ ipfsDirectoryHash, transactionId }, 'Setting the Transaction ID for a IPFS Hash')
     await workCollection.updateMany(
       { 'anchor.ipfsDirectoryHash': ipfsDirectoryHash },
@@ -95,7 +95,7 @@ export const WorkController = ({
   }
 
   const upsertAnchors =  async (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => {
-    const logger = workControllerLogger.child({ method: 'upsertAnchors' })
+    const logger = controllerLogger.child({ method: 'upsertAnchors' })
     logger.trace({ poetAnchors }, 'Upserting Po.et Anchors')
 
     await Promise.all(
@@ -116,7 +116,7 @@ export const WorkController = ({
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => {
-    const logger = workControllerLogger.child({ method: 'setFileHashesForDirectoryHash' })
+    const logger = controllerLogger.child({ method: 'setFileHashesForDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
     const anchor = await anchorCollection.findOne({ ipfsDirectoryHash }, { projection: { _id: 0 } })
     logger.debug({ ipfsFileHashes, ipfsDirectoryHash, anchor }, 'setting directory hash on work entries')
@@ -133,7 +133,7 @@ export const WorkController = ({
   }
 
   const upsertClaimIPFSHashPair = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    const logger = workControllerLogger.child({ method: 'upsertClaimIPFSHashPair' })
+    const logger = controllerLogger.child({ method: 'upsertClaimIPFSHashPair' })
     logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>

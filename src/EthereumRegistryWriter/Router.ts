@@ -6,12 +6,12 @@ import { BlockDownloaded } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ExchangeConfiguration } from './ExchangeConfiguration'
-import { WorkController } from './WorkController'
+import { Controller } from './Controller'
 
 export interface Dependencies {
   readonly logger: Pino.Logger
   readonly messaging: Messaging
-  readonly workController: WorkController
+  readonly controller: Controller
 }
 
 export interface Arguments {
@@ -28,7 +28,7 @@ export const Router = ({
   dependencies: {
     logger,
     messaging,
-    workController,
+    controller,
   },
   exchange,
 }: Arguments): Router => {
@@ -63,7 +63,7 @@ export const Router = ({
     logger.trace({ messageContent }, 'Setting message content on works')
 
     try {
-      await workController.createWork(JSON.parse(messageContent))
+      await controller.createWork(JSON.parse(messageContent))
     } catch (error) {
       logger.error({ error }, 'Failed to create on works')
     }
@@ -78,7 +78,7 @@ export const Router = ({
     logger.info({ claimId, ipfsFileHash }, 'Setting IPFSHash on works')
 
     try {
-      await workController.setIPFSHash(claimId, ipfsFileHash)
+      await controller.setIPFSHash(claimId, ipfsFileHash)
     } catch (error) {
       logger.error({ error }, 'Failed to set claimId and ipfsFileHash on works')
     }
@@ -101,7 +101,7 @@ export const Router = ({
     )
 
     try {
-      await workController.setDirectoryHashOnEntries({
+      await controller.setDirectoryHashOnEntries({
         ipfsDirectoryHash,
         ipfsFileHashes,
       })
@@ -127,7 +127,7 @@ export const Router = ({
     logger.trace({ ipfsDirectoryHash, txId }, 'Setting TransactionID for IPFS Directory Hash')
 
     try {
-      await workController.setTxId(ipfsDirectoryHash, txId)
+      await controller.setTxId(ipfsDirectoryHash, txId)
     } catch (error) {
       logger.error({ error }, 'Failed to set txId on works')
     }
@@ -140,7 +140,7 @@ export const Router = ({
 
     logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Anchor')
     try {
-      await workController.upsertAnchors(poetBlockAnchors)
+      await controller.upsertAnchors(poetBlockAnchors)
     } catch (error) {
       logger.error({ error }, 'Failed to upsert poetBlockAnchors on works')
     }
@@ -155,7 +155,7 @@ export const Router = ({
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
     logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Setting ipfsDirectoryHash on works')
     try {
-      await workController.setFileHashesForDirectoryHash({
+      await controller.setFileHashesForDirectoryHash({
         ipfsFileHashes,
         ipfsDirectoryHash,
       })
@@ -169,7 +169,7 @@ export const Router = ({
 
     logger.trace({ claimIPFSHashPairs }, 'Downloaded a (IPFS Hash, Claim Id) Pair')
     try {
-      await workController.upsertClaimIPFSHashPair(claimIPFSHashPairs)
+      await controller.upsertClaimIPFSHashPair(claimIPFSHashPairs)
     } catch (error) {
       logger.error({ error }, 'Failed to upsert claimIPFSHashPairs on works')
     }
