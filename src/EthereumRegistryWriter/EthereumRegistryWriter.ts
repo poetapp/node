@@ -10,7 +10,7 @@ import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { Controller } from './Controller'
 
-export interface ViewConfiguration extends LoggingConfiguration {
+export interface EthereumRegistryWriterConfiguration extends LoggingConfiguration {
   readonly dbUrl: string
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
@@ -21,7 +21,7 @@ export interface EthereumRegistryWriter {
   readonly stop: () => Promise<void>
 }
 
-export const View = (configuration: ViewConfiguration): EthereumRegistryWriter => {
+export const EthereumRegistryWriter = (configuration: EthereumRegistryWriterConfiguration): EthereumRegistryWriter => {
   let router: Router
   let mongoClient: MongoClient
   let dbConnection: Db
