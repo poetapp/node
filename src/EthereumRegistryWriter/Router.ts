@@ -5,8 +5,8 @@ import { ClaimIPFSHashPair } from 'Interfaces'
 import { BlockDownloaded } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
-import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Controller } from './Controller'
+import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export interface Dependencies {
   readonly logger: Pino.Logger

@@ -6,9 +6,9 @@ import { LoggingConfiguration } from 'Configuration'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
+import { Controller } from './Controller'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
-import { Controller } from './Controller'
 
 export interface EthereumRegistryWriterConfiguration extends LoggingConfiguration {
   readonly dbUrl: string

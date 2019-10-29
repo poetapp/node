@@ -39,7 +39,10 @@ export const Controller = ({
   const claimAnchorReceiptsCollection: Collection = db.collection('claimAnchorReceipts')
 
   const createDbIndices = async () => {
-    await claimAnchorReceiptsCollection.createIndex({ claimId: 1, ipfsFileHash: 1, ipfsDirectoryHash: 1 }, { unique: true })
+    await claimAnchorReceiptsCollection.createIndex(
+      { claimId: 1, ipfsFileHash: 1, ipfsDirectoryHash: 1 },
+      { unique: true },
+    )
   }
 
   const insertClaimIdIPFSFileHashPair = async (claimId: string, ipfsFileHash: string): Promise<void> => {
@@ -105,7 +108,10 @@ export const Controller = ({
     logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
-        claimAnchorReceiptsCollection.updateOne({ claimId: claim.id, ipfsFileHash }, { $set: { ipfsFileHashVerified: true } }),
+        claimAnchorReceiptsCollection.updateOne(
+          { claimId: claim.id, ipfsFileHash },
+          { $set: { ipfsFileHashVerified: true } },
+        ),
       ),
     )
     // TODO: do something for claims that don't match the expected file
