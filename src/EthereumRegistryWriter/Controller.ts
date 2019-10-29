@@ -39,7 +39,7 @@ export const Controller = ({
   const claimAnchorReceiptsCollection: Collection = db.collection('claimAnchorReceipts')
 
   const createDbIndices = async () => {
-
+    await claimAnchorReceiptsCollection.createIndex({ claimId: 1, ipfsFileHash: 1, ipfsDirectoryHash: 1 }, { unique: true })
   }
 
   const insertClaimIdIPFSFileHashPair = async (claimId: string, ipfsFileHash: string): Promise<void> => {
