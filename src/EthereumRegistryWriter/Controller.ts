@@ -36,14 +36,14 @@ export const Controller = ({
   },
 }: Arguments): Controller => {
   const controllerLogger: Pino.Logger = childWithFileName(logger, __filename)
-  const workCollection: Collection = db.collection('works')
+  const claimAnchorReceiptsCollection: Collection = db.collection('claimAnchorReceipts')
 
   const createDbIndices = async () => {
 
   }
 
   const insertClaimIdIPFSFileHashPair = async (claimId: string, ipfsFileHash: string): Promise<void> => {
-    await workCollection.insertOne({ claimId, ipfsFileHash })
+    await claimAnchorReceiptsCollection.insertOne({ claimId, ipfsFileHash })
   }
 
   const setDirectoryHash = async ({
@@ -57,7 +57,7 @@ export const Controller = ({
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash for file hashes')
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
-        workCollection.updateOne(
+        claimAnchorReceiptsCollection.updateOne(
           { ipfsFileHash },
           { $set: { ipfsDirectoryHash } },
         ),
@@ -71,7 +71,7 @@ export const Controller = ({
 
     await Promise.all(
       poetAnchors.map(anchor =>
-        workCollection.updateOne(
+        claimAnchorReceiptsCollection.updateOne(
           { ipfsDirectoryHash: anchor.ipfsDirectoryHash },
           { $set: anchor },
         ),
@@ -91,7 +91,7 @@ export const Controller = ({
 
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
-        workCollection.updateOne(
+        claimAnchorReceiptsCollection.updateOne(
           { ipfsFileHash, ipfsDirectoryHash },
           { $set: { ipfsDirectoryHashVerified: true } },
         ),
@@ -105,7 +105,7 @@ export const Controller = ({
     logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
-        workCollection.updateOne({ claimId: claim.id, ipfsFileHash }, { $set: { ipfsFileHashVerified: true } }),
+        claimAnchorReceiptsCollection.updateOne({ claimId: claim.id, ipfsFileHash }, { $set: { ipfsFileHashVerified: true } }),
       ),
     )
     // TODO: do something for claims that don't match the expected file
