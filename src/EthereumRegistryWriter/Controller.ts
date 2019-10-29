@@ -22,7 +22,7 @@ export interface Controller {
     ipfsDirectoryHash: string,
   }) => Promise<void>
   readonly setAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
-  readonly setFileHashesForDirectoryHash: (data: {
+  readonly verifyIPFSDirectoryHashes: (data: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => Promise<void>
@@ -80,7 +80,7 @@ export const Controller = ({
     )
   }
 
-  const setFileHashesForDirectoryHash = async ({
+  const verifyIPFSDirectoryHashes = async ({
     ipfsFileHashes,
     ipfsDirectoryHash,
   }: {
@@ -89,18 +89,16 @@ export const Controller = ({
   }) => {
     const logger = controllerLogger.child({ method: 'setFileHashesForDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
-    const anchor = await anchorCollection.findOne({ ipfsDirectoryHash }, { projection: { _id: 0 } })
-    logger.debug({ ipfsFileHashes, ipfsDirectoryHash, anchor }, 'setting directory hash on work entries')
 
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
         workCollection.updateOne(
-          { 'anchor.ipfsFileHash': ipfsFileHash },
-          { $set: { anchor: { ...anchor, ipfsFileHash } } },
-          { upsert: true },
+          { ipfsFileHash, ipfsDirectoryHash },
+          { $set: { ipfsDirectoryHashVerified: true } },
         ),
       ),
     )
+    // TODO: do something for files that don't match the expected directory
   }
 
   const upsertClaimIPFSHashPair = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
@@ -118,7 +116,7 @@ export const Controller = ({
     insertClaimIdIPFSFileHashPair,
     setDirectoryHash,
     setAnchors,
-    setFileHashesForDirectoryHash,
+    verifyIPFSDirectoryHashes,
     upsertClaimIPFSHashPair,
   }
 }

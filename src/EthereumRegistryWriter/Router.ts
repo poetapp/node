@@ -39,10 +39,7 @@ export const Router = ({
     await messaging.consume(exchange.ipfsDirectoryCreated, onIPFSDirectoryCreated)
     await messaging.consumeBlockDownloaded(onPoetBlockAnchorsDownloaded)
     await messaging.consumeClaimsDownloaded(onClaimsDownloaded)
-    await messaging.consume(
-      exchange.batchReaderReadNextDirectorySuccess,
-      onBatchReaderReadNextDirectorySuccess,
-    )
+    await messaging.consume(exchange.ipfsDirectoryRead, onIPFSDirectoryRead)
   }
 
   const stop = async () => {
@@ -113,21 +110,21 @@ export const Router = ({
     }
   }
 
-  const onBatchReaderReadNextDirectorySuccess = async (message: any) => {
+  const onIPFSDirectoryRead = async (message: any) => {
     const logger = routerLogger.child({
-      method: 'onBatchReaderReadNextDirectorySuccess',
+      method: 'onIPFSDirectoryRead',
     })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
-    logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Setting ipfsDirectoryHash on works')
+    logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Verifying IPFS directory hashes against file hashes...')
     try {
-      await controller.setFileHashesForDirectoryHash({
+      await controller.verifyIPFSDirectoryHashes({
         ipfsFileHashes,
         ipfsDirectoryHash,
       })
     } catch (error) {
-      logger.error({ error, ipfsFileHashes, ipfsDirectoryHash }, 'Failed to set ipfsDirectoryHash on works')
+      logger.error({ error, ipfsFileHashes, ipfsDirectoryHash })
     }
   }
 
