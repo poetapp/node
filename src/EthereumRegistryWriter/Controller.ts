@@ -21,7 +21,7 @@ export interface Controller {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => Promise<void>
-  readonly upsertAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
+  readonly setAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
   readonly setFileHashesForDirectoryHash: (data: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
@@ -66,16 +66,15 @@ export const Controller = ({
     )
   }
 
-  const upsertAnchors =  async (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => {
-    const logger = controllerLogger.child({ method: 'upsertAnchors' })
-    logger.trace({ poetAnchors }, 'Upserting Po.et Anchors')
+  const setAnchors =  async (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => {
+    const logger = controllerLogger.child({ method: 'setAnchors' })
+    logger.trace({ poetAnchors }, 'Setting Po.et Anchors')
 
     await Promise.all(
       poetAnchors.map(anchor =>
-        anchorCollection.updateOne(
+        workCollection.updateOne(
           { ipfsDirectoryHash: anchor.ipfsDirectoryHash },
           { $set: anchor },
-          { upsert: true },
         ),
       ),
     )
@@ -118,7 +117,7 @@ export const Controller = ({
     createDbIndices,
     insertClaimIdIPFSFileHashPair,
     setDirectoryHash,
-    upsertAnchors,
+    setAnchors,
     setFileHashesForDirectoryHash,
     upsertClaimIPFSHashPair,
   }

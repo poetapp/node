@@ -107,7 +107,7 @@ export const Router = ({
 
     logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Anchor')
     try {
-      await controller.upsertAnchors(poetBlockAnchors)
+      await controller.setAnchors(poetBlockAnchors)
     } catch (error) {
       logger.error({ error }, 'Failed to upsert poetBlockAnchors on works')
     }
