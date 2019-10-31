@@ -27,6 +27,7 @@ export interface Controller {
     ipfsDirectoryHash: string,
   }) => Promise<void>
   readonly verifyIPFSFileHashes: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
+  readonly uploadNextAnchorReceipt: () => Promise<void>
 }
 
 export const Controller = ({
@@ -117,6 +118,16 @@ export const Controller = ({
     // TODO: do something for claims that don't match the expected file
   }
 
+  const uploadNextAnchorReceipt = async () => {
+    const logger = controllerLogger.child({ method: 'uploadNextAnchorReceipt' })
+    const anchorReceipt = await claimAnchorReceiptsCollection.findOne({
+      ipfsFileHashVerified: true,
+      ipfsDirectoryHashVerified: true,
+      anchorReceiptFileHash: null,
+    })
+    logger.debug({ anchorReceipt })
+  }
+
   return {
     createDbIndices,
     insertClaimIdIPFSFileHashPair,
@@ -124,5 +135,6 @@ export const Controller = ({
     setAnchors,
     verifyIPFSDirectoryHashes,
     verifyIPFSFileHashes,
+    uploadNextAnchorReceipt,
   }
 }

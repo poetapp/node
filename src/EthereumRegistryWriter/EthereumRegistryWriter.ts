@@ -9,6 +9,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { Controller } from './Controller'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
+import { Service } from './Service'
 
 export interface EthereumRegistryWriterConfiguration extends LoggingConfiguration {
   readonly dbUrl: string
@@ -26,6 +27,7 @@ export const EthereumRegistryWriter = (configuration: EthereumRegistryWriterConf
   let mongoClient: MongoClient
   let dbConnection: Db
   let messaging: Messaging
+  let service: Service
 
   const logger: Pino.Logger = createModuleLogger(configuration, __dirname)
 
@@ -56,12 +58,24 @@ export const EthereumRegistryWriter = (configuration: EthereumRegistryWriterConf
     await router.start()
     await controller.createDbIndices()
 
+    service = Service({
+      dependencies: {
+        logger,
+        controller,
+      },
+      configuration: {
+        uploadAnchorReceiptIntervalInSeconds: 5,
+      }
+    })
+    await service.start()
+
     logger.info('EthereumRegistryWriter Started')
   }
 
   const stop = async () => {
     logger.info('Stopping EthereumRegistryWriter...')
     await router.stop()
+    await service.stop()
     logger.info('Stopping EthereumRegistryWriter Database...')
     await mongoClient.close()
   }
