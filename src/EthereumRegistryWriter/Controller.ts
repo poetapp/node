@@ -123,14 +123,20 @@ export const Controller = ({
 
   const uploadNextAnchorReceipt = async () => {
     const logger = controllerLogger.child({ method: 'uploadNextAnchorReceipt' })
-    const anchorReceipt = await claimAnchorReceiptsCollection.findOne({
+    const entry = await claimAnchorReceiptsCollection.findOne({
       ipfsFileHashVerified: true,
       ipfsDirectoryHashVerified: true,
       anchorReceiptFileHash: null,
     })
-    logger.debug({ anchorReceipt })
-    const ipfsFileHash = await ipfs.addText()(JSON.stringify(anchorReceipt))
-    logger.debug({ anchorReceipt, ipfsFileHash })
+    if (!entry) {
+      logger.trace('No more anchor receipts to upload to IPFS')
+      return
+    }
+    logger.debug({ entry })
+    const { _id, ipfsDirectoryHashVerified, ipfsFileHashVerified, ...anchorReceipt } = entry
+    const anchorReceiptFileHash = await ipfs.addText()(JSON.stringify(anchorReceipt))
+    logger.debug({ anchorReceipt, anchorReceiptFileHash })
+    await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { anchorReceiptFileHash } })
   }
 
   return {
