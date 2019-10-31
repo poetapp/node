@@ -3,6 +3,7 @@ import * as Pino from 'pino'
 import { pick } from 'ramda'
 
 import { LoggingConfiguration } from 'Configuration'
+import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
@@ -15,6 +16,7 @@ export interface EthereumRegistryWriterConfiguration extends LoggingConfiguratio
   readonly dbUrl: string
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
+  readonly ipfs: IPFSConfiguration
 }
 
 export interface EthereumRegistryWriter {
@@ -40,10 +42,13 @@ export const EthereumRegistryWriter = (configuration: EthereumRegistryWriterConf
     messaging = new Messaging(configuration.rabbitmqUrl, exchangesMessaging)
     await messaging.start()
 
+    const ipfs = IPFS(configuration.ipfs)
+
     const controller = Controller({
       dependencies: {
         logger,
         db: dbConnection,
+        ipfs,
       },
     })
 

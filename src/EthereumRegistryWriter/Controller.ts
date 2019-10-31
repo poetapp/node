@@ -2,12 +2,14 @@ import { Work, PoetBlockAnchor, SignedVerifiableClaim } from '@po.et/poet-js'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
+import { IPFS } from 'Helpers/IPFS'
 import { childWithFileName } from 'Helpers/Logging'
 import { ClaimIPFSHashPair } from 'Interfaces'
 
 export interface Dependencies {
   readonly logger: Pino.Logger
   readonly db: Db
+  readonly ipfs: IPFS
 }
 
 export interface Arguments {
@@ -34,6 +36,7 @@ export const Controller = ({
   dependencies: {
     logger,
     db,
+    ipfs,
   },
 }: Arguments): Controller => {
   const controllerLogger: Pino.Logger = childWithFileName(logger, __filename)
@@ -126,6 +129,8 @@ export const Controller = ({
       anchorReceiptFileHash: null,
     })
     logger.debug({ anchorReceipt })
+    const ipfsFileHash = await ipfs.addText()(JSON.stringify(anchorReceipt))
+    logger.debug({ anchorReceipt, ipfsFileHash })
   }
 
   return {

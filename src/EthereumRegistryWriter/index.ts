@@ -21,6 +21,9 @@ const ethereumRegistryWriter = EthereumRegistryWriter({
   loggingPretty: configuration.loggingPretty,
   dbUrl: configuration.mongodbUrl,
   rabbitmqUrl: configuration.rabbitmqUrl,
+  ipfs: {
+    url: configuration.ipfsUrl,
+  },
   exchanges: {
     claimIpfsHash: configuration.exchangeClaimIpfsHash,
     ipfsDirectoryCreated: configuration.exchangeBatchWriterCreateNextBatchSuccess,
