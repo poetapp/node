@@ -1,4 +1,4 @@
-import { Work, PoetBlockAnchor, SignedVerifiableClaim } from '@po.et/poet-js'
+import { PoetBlockAnchor } from '@po.et/poet-js'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
