@@ -74,10 +74,12 @@ export const EthereumRegistryWriter = (configuration: EthereumRegistryWriterConf
 
   const stop = async () => {
     logger.info('Stopping EthereumRegistryWriter...')
-    await router.stop()
     await service.stop()
-    logger.info('Stopping EthereumRegistryWriter Database...')
+    logger.debug('Stopping EthereumRegistryWriter Messaging...')
+    await messaging.stop()
+    logger.debug('Stopping EthereumRegistryWriter Database...')
     await mongoClient.close()
+    logger.info('Stopped EthereumRegistryWriter...')
   }
 
   return {

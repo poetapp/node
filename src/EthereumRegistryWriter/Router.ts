@@ -21,7 +21,6 @@ export interface Arguments {
 
 export interface Router {
   readonly start: () => Promise<void>
-  readonly stop: () => Promise<void>
 }
 
 export const Router = ({
@@ -40,12 +39,6 @@ export const Router = ({
     await messaging.consumeBlockDownloaded(onPoetBlockAnchorsDownloaded)
     await messaging.consumeClaimsDownloaded(onClaimsDownloaded)
     await messaging.consume(exchange.ipfsDirectoryRead, onIPFSDirectoryRead)
-  }
-
-  const stop = async () => {
-    routerLogger.info('Stopping EthereumRegistryWriter Router...')
-    routerLogger.info('Stopping EthereumRegistryWriter Messaging...')
-    await messaging.stop()
   }
 
   const onClaimIPFSHash = async (message: any) => {
@@ -141,6 +134,5 @@ export const Router = ({
 
   return {
     start,
-    stop,
   }
 }
