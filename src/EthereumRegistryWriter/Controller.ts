@@ -139,8 +139,14 @@ export const Controller = ({
     logger.debug({ anchorReceipt, anchorReceiptFileHash })
     await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { anchorReceiptFileHash } })
     const ipfsDirectoryHash = await ipfs.createEmptyDirectory()
-    const ipfsDirectoryHashWithFiles = await ipfs.addFilesToDirectory({ ipfsDirectoryHash, ipfsFileHashes: [ entry.ipfsFileHash, anchorReceiptFileHash ] })
-    logger.info({ anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles }, 'Stored Claim + Anchor Receipt in IPFS Directory')
+    const ipfsDirectoryHashWithFiles = await ipfs.addFilesToDirectory({
+      ipfsDirectoryHash,
+      ipfsFileHashes: [ entry.ipfsFileHash, anchorReceiptFileHash ],
+    })
+    logger.info(
+      { anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles },
+      'Stored Claim + Anchor Receipt in IPFS Directory',
+    )
     await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { ipfsDirectoryHashWithFiles } })
     // TODO: rename some of these fields and constants
   }

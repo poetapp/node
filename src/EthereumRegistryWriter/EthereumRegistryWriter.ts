@@ -70,7 +70,7 @@ export const EthereumRegistryWriter = (configuration: EthereumRegistryWriterConf
       },
       configuration: {
         uploadAnchorReceiptIntervalInSeconds: 5,
-      }
+      },
     })
     await service.start()
 
