@@ -70,11 +70,12 @@ export const Controller = ({
         ),
       ),
     )
+    logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'IPFS Directory Hash set successfully')
   }
 
   const setAnchors =  async (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => {
     const logger = controllerLogger.child({ method: 'setAnchors' })
-    logger.trace({ poetAnchors }, 'Setting Po.et Anchors')
+    logger.info({ poetAnchors }, 'Setting Po.et Anchors')
 
     await Promise.all(
       poetAnchors.map(anchor =>
@@ -137,6 +138,11 @@ export const Controller = ({
     const anchorReceiptFileHash = await ipfs.addText()(JSON.stringify(anchorReceipt))
     logger.debug({ anchorReceipt, anchorReceiptFileHash })
     await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { anchorReceiptFileHash } })
+    const ipfsDirectoryHash = await ipfs.createEmptyDirectory()
+    const ipfsDirectoryHashWithFiles = await ipfs.addFilesToDirectory({ ipfsDirectoryHash, ipfsFileHashes: [ entry.ipfsFileHash, anchorReceiptFileHash ] })
+    logger.info({ anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles }, 'Stored Claim + Anchor Receipt in IPFS Directory')
+    await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { ipfsDirectoryHashWithFiles } })
+    // TODO: rename some of these fields and constants
   }
 
   return {
