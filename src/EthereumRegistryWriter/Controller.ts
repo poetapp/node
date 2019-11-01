@@ -148,7 +148,7 @@ export const Controller = ({
       'Stored Claim + Anchor Receipt in IPFS Directory',
     )
     await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { ipfsDirectoryHashWithFiles } })
-    // TODO: rename some of these fields and constants
+    // TODO: rename some of these fields and constants asd
   }
 
   return {
