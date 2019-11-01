@@ -79,6 +79,10 @@ export const IPFS = ({
       `${url}/api/v0/object/patch/add-link?arg=${ipfsDirectoryHash}&arg=${fileHash}&arg=${fileHash}`,
     )
     const json = await response.json()
+
+    if (json.Type === 'error')
+      throw new Error(json.Message)
+
     return json.Hash
   }
 
