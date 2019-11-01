@@ -77,7 +77,6 @@ export const Router = ({
         ipfsFileHashes,
         ipfsDirectoryHash,
       })
-      logger.trace({ ipfsDirectoryHash, ipfsFileHashes }, 'IPFS Directory Hash set successfully')
     } catch (error) {
       logger.error(
         {
