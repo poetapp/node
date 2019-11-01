@@ -66,19 +66,19 @@ export async function app(localVars: any = {}) {
   }
 
   const batchWriter = new BatchWriter({
-        ...loggingConfiguration,
-        batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
-        dbUrl: configuration.mongodbUrl,
-        ipfs: { url: configuration.ipfsUrl },
-        rabbitmqUrl: configuration.rabbitmqUrl,
-        exchanges: {
-          claimIpfsHash: configuration.exchangeClaimIpfsHash,
-          batchWriterCreateNextBatchRequest: configuration.exchangeBatchWriterCreateNextBatchRequest,
-          batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
-          poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
-          claimsDownloaded: configuration.exchangeClaimsDownloaded,
-        },
-      })
+    ...loggingConfiguration,
+    batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
+    dbUrl: configuration.mongodbUrl,
+    ipfs: { url: configuration.ipfsUrl },
+    rabbitmqUrl: configuration.rabbitmqUrl,
+    exchanges: {
+      claimIpfsHash: configuration.exchangeClaimIpfsHash,
+      batchWriterCreateNextBatchRequest: configuration.exchangeBatchWriterCreateNextBatchRequest,
+      batchWriterCreateNextBatchSuccess: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
+    },
+  })
 
   try {
     await batchWriter.start()
