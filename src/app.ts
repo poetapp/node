@@ -69,7 +69,7 @@ export async function app(localVars: any = {}) {
         ...loggingConfiguration,
         batchCreationIntervalInSeconds: configuration.batchCreationIntervalInSeconds,
         dbUrl: configuration.mongodbUrl,
-        ipfsUrl: configuration.ipfsUrl,
+        ipfs: { url: configuration.ipfsUrl },
         rabbitmqUrl: configuration.rabbitmqUrl,
         exchanges: {
           claimIpfsHash: configuration.exchangeClaimIpfsHash,

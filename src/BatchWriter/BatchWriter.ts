@@ -3,20 +3,21 @@ import * as Pino from 'pino'
 import { pick } from 'ramda'
 
 import { LoggingConfiguration } from 'Configuration'
+import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { ClaimController } from './ClaimController'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { FileDAO } from './FileDAO'
-import { IPFS, IPFSConfiguration } from './IPFS'
 import { Router } from './Router'
 import { Service, ServiceConfiguration } from './Service'
 
-export interface BatchWriterConfiguration extends LoggingConfiguration, ServiceConfiguration, IPFSConfiguration {
+export interface BatchWriterConfiguration extends LoggingConfiguration, ServiceConfiguration {
   readonly dbUrl: string
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
+  readonly ipfs: IPFSConfiguration
 }
 
 export class BatchWriter {
@@ -42,11 +43,7 @@ export class BatchWriter {
     this.messaging = new Messaging(this.configuration.rabbitmqUrl, exchangesMessaging)
     await this.messaging.start()
 
-    const ipfs = new IPFS({
-      configuration: {
-        ipfsUrl: this.configuration.ipfsUrl,
-      },
-    })
+    const ipfs = IPFS(this.configuration.ipfs)
 
     const fileCollection: Collection = this.dbConnection.collection('batchWriter')
 
