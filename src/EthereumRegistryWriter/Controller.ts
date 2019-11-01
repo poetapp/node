@@ -143,6 +143,7 @@ export const Controller = ({
       ipfsDirectoryHash,
       ipfsFileHashes: [ entry.ipfsFileHash, anchorReceiptFileHash ],
     })
+    // TODO: adding another TODO to test this tool...
     logger.info(
       { anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles },
       'Stored Claim + Anchor Receipt in IPFS Directory',
