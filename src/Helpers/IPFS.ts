@@ -17,10 +17,16 @@ export interface IPFSConfiguration {
 
 type addText = (config?: FetchOptions) => (text: string) => Promise<string>
 type cat = (options?: FetchOptions) => (hash: string) => Promise<string>
+type createEmptyDirectory = () => Promise<string>
+type addFileToDirectory = (directoryhash: string, filehash: string) => Promise<string>
+type addFilesToDirectory = (x: { ipfsDirectoryHash: string; ipfsFileHashes: ReadonlyArray<string> }) => Promise<string>
 
 export interface IPFS {
-  addText: addText
-  cat: cat
+  readonly addText: addText
+  readonly cat: cat
+  readonly createEmptyDirectory: createEmptyDirectory
+  readonly addFileToDirectory: addFileToDirectory
+  readonly addFilesToDirectory: addFilesToDirectory
 }
 
 export const IPFS = ({
@@ -62,8 +68,31 @@ export const IPFS = ({
     return response.text()
   }
 
+  const createEmptyDirectory: createEmptyDirectory = async () => {
+    const response = await fetch(`${url}/api/v0/object/new?arg=unixfs-dir`)
+    const json = await response.json()
+    return json.Hash
+  }
+
+  const addFileToDirectory: addFileToDirectory = async (ipfsDirectoryHash, fileHash) => {
+    const response = await fetch(
+      `${url}/api/v0/object/patch/add-link?arg=${ipfsDirectoryHash}&arg=${fileHash}&arg=${fileHash}`,
+    )
+    const json = await response.json()
+    return json.Hash
+  }
+
+  const addFilesToDirectory: addFilesToDirectory = ({ ipfsDirectoryHash = '', ipfsFileHashes = [] }) =>
+    ipfsFileHashes.reduce(
+      async (acc, cur) => addFileToDirectory(await acc, cur),
+      Promise.resolve(ipfsDirectoryHash),
+    )
+
   return {
     addText,
     cat,
+    createEmptyDirectory,
+    addFileToDirectory,
+    addFilesToDirectory,
   }
 }
