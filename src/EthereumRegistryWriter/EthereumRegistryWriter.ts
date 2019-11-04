@@ -27,7 +27,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
   logger.info({ configuration }, 'EthereumRegistryWriter Starting')
 
   const mongoClient = await MongoClient.connect(configuration.dbUrl)
-  const dbConnection = await mongoClient.db()
+  const db = await mongoClient.db()
 
   const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
   const messaging = new Messaging(configuration.rabbitmqUrl, exchangesMessaging)
@@ -38,7 +38,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
   const controller = Controller({
     dependencies: {
       logger,
-      db: dbConnection,
+      db,
       ipfs,
     },
   })
