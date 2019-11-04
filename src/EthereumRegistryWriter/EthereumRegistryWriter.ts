@@ -1,4 +1,4 @@
-import { Db, MongoClient } from 'mongodb'
+import { MongoClient } from 'mongodb'
 import * as Pino from 'pino'
 import { pick } from 'ramda'
 
@@ -19,65 +19,55 @@ export interface EthereumRegistryWriterConfiguration extends LoggingConfiguratio
   readonly ipfs: IPFSConfiguration
 }
 
-export interface EthereumRegistryWriter {
-  readonly start: () => Promise<void>
-  readonly stop: () => Promise<void>
-}
+type stop = () => Promise<void>
 
-export const EthereumRegistryWriter = (configuration: EthereumRegistryWriterConfiguration): EthereumRegistryWriter => {
-  let router: Router
-  let mongoClient: MongoClient
-  let dbConnection: Db
-  let messaging: Messaging
-  let service: Service
-
+export const EthereumRegistryWriter = async (configuration: EthereumRegistryWriterConfiguration): Promise<stop> => {
   const logger: Pino.Logger = createModuleLogger(configuration, __dirname)
 
-  const start = async () => {
-    logger.info({ configuration }, 'EthereumRegistryWriter Starting')
-    mongoClient = await MongoClient.connect(configuration.dbUrl)
-    dbConnection = await mongoClient.db()
+  logger.info({ configuration }, 'EthereumRegistryWriter Starting')
 
-    const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
-    messaging = new Messaging(configuration.rabbitmqUrl, exchangesMessaging)
-    await messaging.start()
+  const mongoClient = await MongoClient.connect(configuration.dbUrl)
+  const dbConnection = await mongoClient.db()
 
-    const ipfs = IPFS(configuration.ipfs)
+  const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
+  const messaging = new Messaging(configuration.rabbitmqUrl, exchangesMessaging)
+  await messaging.start()
 
-    const controller = Controller({
-      dependencies: {
-        logger,
-        db: dbConnection,
-        ipfs,
-      },
-    })
+  const ipfs = IPFS(configuration.ipfs)
 
-    router = Router({
-      dependencies: {
-        logger,
-        messaging,
-        controller,
-      },
-      exchange: configuration.exchanges,
-    })
-    await router.start()
-    await controller.createDbIndices()
+  const controller = Controller({
+    dependencies: {
+      logger,
+      db: dbConnection,
+      ipfs,
+    },
+  })
 
-    service = Service({
-      dependencies: {
-        logger,
-        controller,
-      },
-      configuration: {
-        uploadAnchorReceiptIntervalInSeconds: 5,
-      },
-    })
-    await service.start()
+  const router = Router({
+    dependencies: {
+      logger,
+      messaging,
+      controller,
+    },
+    exchange: configuration.exchanges,
+  })
+  await router.start()
+  await controller.createDbIndices()
 
-    logger.info('EthereumRegistryWriter Started')
-  }
+  const service = Service({
+    dependencies: {
+      logger,
+      controller,
+    },
+    configuration: {
+      uploadAnchorReceiptIntervalInSeconds: 5,
+    },
+  })
+  await service.start()
 
-  const stop = async () => {
+  logger.info('EthereumRegistryWriter Started')
+
+  return async () => {
     logger.info('Stopping EthereumRegistryWriter...')
     await service.stop()
     logger.debug('Stopping EthereumRegistryWriter Messaging...')
@@ -87,8 +77,4 @@ export const EthereumRegistryWriter = (configuration: EthereumRegistryWriterConf
     logger.info('Stopped EthereumRegistryWriter...')
   }
 
-  return {
-    start,
-    stop,
-  }
 }

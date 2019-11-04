@@ -16,24 +16,25 @@ const logger: Pino.Logger = Pino({
   prettyPrint: configuration.loggingPretty,
 })
 
-const ethereumRegistryWriter = EthereumRegistryWriter({
-  loggingLevel: configuration.loggingLevel,
-  loggingPretty: configuration.loggingPretty,
-  dbUrl: configuration.mongodbUrl,
-  rabbitmqUrl: configuration.rabbitmqUrl,
-  ipfs: {
-    url: configuration.ipfsUrl,
-  },
-  exchanges: {
-    claimIpfsHash: configuration.exchangeClaimIpfsHash,
-    ipfsDirectoryCreated: configuration.exchangeBatchWriterCreateNextBatchSuccess,
-    ipfsDirectoryRead: configuration.exchangeBatchReaderReadNextDirectorySuccess,
-    poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
-    claimsDownloaded: configuration.exchangeClaimsDownloaded,
-  },
-})
+const main = async () => {
+  const stop = await EthereumRegistryWriter({
+    loggingLevel: configuration.loggingLevel,
+    loggingPretty: configuration.loggingPretty,
+    dbUrl: configuration.mongodbUrl,
+    rabbitmqUrl: configuration.rabbitmqUrl,
+    ipfs: {
+      url: configuration.ipfsUrl,
+    },
+    exchanges: {
+      claimIpfsHash: configuration.exchangeClaimIpfsHash,
+      ipfsDirectoryCreated: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+      ipfsDirectoryRead: configuration.exchangeBatchReaderReadNextDirectorySuccess,
+      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+      claimsDownloaded: configuration.exchangeClaimsDownloaded,
+    },
+  })
 
-process.on('SIGINT', ethereumRegistryWriter.stop)
+  process.on('SIGINT', stop)
+}
 
-ethereumRegistryWriter.start()
-  .catch(catchStartupError('EthereumRegistryWriter', logger))
+main().catch(catchStartupError('EthereumRegistryWriter', logger))
