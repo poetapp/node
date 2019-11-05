@@ -8,6 +8,7 @@ import { Controller } from './Controller'
 
 export interface Configuration {
   readonly uploadAnchorReceiptIntervalInSeconds: number
+  readonly registerNextDirectoryIntervalInSeconds: number
 }
 
 export interface Dependencies {
@@ -48,14 +49,30 @@ export const Service = ({
     secondsToMiliseconds(configuration.uploadAnchorReceiptIntervalInSeconds),
   )
 
+  const registerNextDirectory = async () => {
+    const methodLogger = logger.child({ method: 'registerNextDirectory' })
+    try {
+      await controller.registerNextDirectory()
+    } catch (error) {
+      methodLogger.error({ error }, 'Uncaught exception')
+    }
+  }
+
+  const registerNextDirectoryInterval = new Interval(
+    registerNextDirectory,
+    secondsToMiliseconds(configuration.registerNextDirectoryIntervalInSeconds),
+  )
+
   const start = async () => {
     logger.info({ configuration }, 'EthereumRegistryWriter Service Starting')
     await uploadNextClaimInterval.start()
+    registerNextDirectoryInterval.start()
   }
 
   const stop = async () => {
     logger.info({ configuration }, 'EthereumRegistryWriter Service Stopping')
     await uploadNextClaimInterval.stop()
+    registerNextDirectoryInterval.stop()
   }
 
   return {

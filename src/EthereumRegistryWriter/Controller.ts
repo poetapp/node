@@ -2,6 +2,7 @@ import { PoetBlockAnchor } from '@po.et/poet-js'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 
+import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
 import { IPFS } from 'Helpers/IPFS'
 import { childWithFileName } from 'Helpers/Logging'
 import { ClaimIPFSHashPair } from 'Interfaces'
@@ -10,6 +11,7 @@ export interface Dependencies {
   readonly logger: Pino.Logger
   readonly db: Db
   readonly ipfs: IPFS
+  readonly ethereumRegistryContract: EthereumRegistryContract
 }
 
 export interface Arguments {
@@ -30,6 +32,7 @@ export interface Controller {
   }) => Promise<void>
   readonly verifyIPFSFileHashes: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
   readonly uploadNextAnchorReceipt: () => Promise<void>
+  readonly registerNextDirectory: () => Promise<void>
 }
 
 export const Controller = ({
@@ -37,6 +40,7 @@ export const Controller = ({
     logger,
     db,
     ipfs,
+    ethereumRegistryContract,
   },
 }: Arguments): Controller => {
   const controllerLogger: Pino.Logger = childWithFileName(logger, __filename)
@@ -152,6 +156,18 @@ export const Controller = ({
     // TODO: rename some of these fields and constants asd
   }
 
+  const registerNextDirectory = async () => {
+    const logger = controllerLogger.child({ method: 'registerNextDirectory' })
+    const entry = await claimAnchorReceiptsCollection.findOne({
+      ipfsDirectoryHashWithFiles: { $not: null },
+      registryIndex: null,
+    })
+    const cidCount = await ethereumRegistryContract.getCidCount()
+    logger.info({ entry, cidCount }, 'Registering next IPFS directory to Ethereum')
+    await ethereumRegistryContract.addCid(entry.ipfsDirectoryHashWithFiles)
+    logger.trace({ entry, cidCount }, 'IPFS Directory added to Ethereum')
+  }
+
   return {
     createDbIndices,
     insertClaimIdIPFSFileHashPair,
@@ -160,5 +176,6 @@ export const Controller = ({
     verifyIPFSDirectoryHashes,
     verifyIPFSFileHashes,
     uploadNextAnchorReceipt,
+    registerNextDirectory,
   }
 }

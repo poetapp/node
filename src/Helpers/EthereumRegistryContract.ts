@@ -3,21 +3,27 @@ import Web3 from 'web3'
 import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
 
 interface EthereumRegistryContractArguments {
-  readonly web3host: string
+  readonly rpcUrl?: string
   readonly contractAddress: string
   readonly privateKey: string
-  readonly gasPrice: number
-  readonly chainId: number
+  readonly gasPrice?: number
+  readonly chainId?: number
+}
+
+export interface EthereumRegistryContract {
+  readonly getCidCount: () => Promise<number>
+  readonly getCid: (index: number) => Promise<string>
+  readonly addCid: (cid: string) => Promise<void>
 }
 
 export const EthereumRegistryContract = ({
-  web3host,
+  rpcUrl = 'http://localhost:8545',
   contractAddress,
   privateKey,
   gasPrice = 1e9,
   chainId = 1984,
-}: EthereumRegistryContractArguments) => {
-  const web3 = new Web3(web3host)
+}: EthereumRegistryContractArguments): EthereumRegistryContract => {
+  const web3 = new Web3(rpcUrl)
   const account = web3.eth.accounts.privateKeyToAccount(privateKey)
   const contract = new web3.eth.Contract(EthereumRegistryContractAbi, contractAddress, { from: account.address })
 
@@ -40,7 +46,7 @@ export const EthereumRegistryContract = ({
 
     const { rawTransaction } = await account.signTransaction(tx)
 
-    return web3.eth.sendSignedTransaction(rawTransaction)
+    await web3.eth.sendSignedTransaction(rawTransaction)
   }
 
   return {

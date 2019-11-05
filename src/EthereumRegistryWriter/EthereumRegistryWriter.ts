@@ -3,6 +3,7 @@ import * as Pino from 'pino'
 import { pick } from 'ramda'
 
 import { LoggingConfiguration } from 'Configuration'
+import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
 import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
@@ -34,12 +35,16 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
   await messaging.start()
 
   const ipfs = IPFS(configuration.ipfs)
-
+  const ethereumRegistryContract = EthereumRegistryContract({
+    contractAddress: '0x480199b32e33221df509ac5Fd310a52F14620bcD',
+    privateKey: '0x2046947f5116678ea286ecd0cbf0f423ed45c4d949d0f971c803915eea42df54',
+  })
   const controller = Controller({
     dependencies: {
       logger,
       db,
       ipfs,
+      ethereumRegistryContract,
     },
   })
 
@@ -61,6 +66,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     },
     configuration: {
       uploadAnchorReceiptIntervalInSeconds: 5,
+      registerNextDirectoryIntervalInSeconds: 5,
     },
   })
   await service.start()
