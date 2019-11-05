@@ -1,5 +1,5 @@
 /* tslint:disable:no-relative-imports */
-import * as assert from 'assert'
+import assert from 'assert'
 import { readFileSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import * as path from 'path'

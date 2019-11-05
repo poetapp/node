@@ -10,7 +10,8 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "outDir": "./dist/ts",
-    "baseUrl": "./src/"
+    "baseUrl": "./src/",
+    "esModuleInterop": true
   },
   "include": [
     "./src/**/*",

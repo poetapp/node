@@ -1,5 +1,5 @@
 /* tslint:disable:no-console */
-import * as Pino from 'pino'
+import Pino from 'pino'
 
 import 'Extensions/Array'
 import 'Extensions/Error'

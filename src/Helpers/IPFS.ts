@@ -1,5 +1,5 @@
-import * as FormData from 'form-data'
-import fetch, { Response } from 'node-fetch'
+import FormData from 'form-data'
+import fetch from 'node-fetch'
 import { prop } from 'ramda'
 import * as str from 'string-to-stream'
 

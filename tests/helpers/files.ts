@@ -1,4 +1,4 @@
-import * as FormData from 'form-data'
+import FormData from 'form-data'
 import * as fs from 'fs'
 import fetch, { Response } from 'node-fetch'
 import * as stringToStream from 'string-to-stream'

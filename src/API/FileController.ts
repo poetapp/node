@@ -1,9 +1,8 @@
-import * as FormData from 'form-data'
+import FormData from 'form-data'
 import * as fs from 'fs'
 import fetch, {Response} from 'node-fetch'
 import * as Pino from 'pino'
 
-import { childWithFileName } from 'Helpers/Logging'
 import { minutesToMiliseconds  } from 'Helpers/Time'
 import { asyncPipe } from 'Helpers/asyncPipe'
 
