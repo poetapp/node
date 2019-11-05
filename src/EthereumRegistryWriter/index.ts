@@ -32,6 +32,8 @@ const main = async () => {
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
     },
+    contractAddress: configuration.ethereumRegistryContractAddress,
+    privateKey: configuration.ethereumRegistryPrivateKey,
   })
 
   process.on('SIGINT', stop)

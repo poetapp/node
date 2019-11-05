@@ -18,6 +18,8 @@ export interface EthereumRegistryWriterConfiguration extends LoggingConfiguratio
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
   readonly ipfs: IPFSConfiguration
+  readonly contractAddress: string,
+  readonly privateKey: string,
 }
 
 type stop = () => Promise<void>
@@ -36,8 +38,8 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
 
   const ipfs = IPFS(configuration.ipfs)
   const ethereumRegistryContract = EthereumRegistryContract({
-    contractAddress: '0x480199b32e33221df509ac5Fd310a52F14620bcD',
-    privateKey: '0x2046947f5116678ea286ecd0cbf0f423ed45c4d949d0f971c803915eea42df54',
+    contractAddress: configuration.contractAddress,
+    privateKey: configuration.privateKey,
   })
   const controller = Controller({
     dependencies: {

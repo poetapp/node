@@ -43,6 +43,9 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
 
   readonly bitcoinFeeEstimateMode: 'CONSERVATIVE' | 'ECONOMICAL'
   readonly bitcoinFeeRate: number
+
+  readonly ethereumRegistryContractAddress: string
+  readonly ethereumRegistryPrivateKey: string
 }
 
 export interface LoggingConfiguration {
@@ -127,6 +130,9 @@ export const DefaultConfiguration: Configuration = {
   uploadClaimMaxAttempts: 10,
 
   forceBlockHeight: undefined,
+
+  ethereumRegistryContractAddress: '',
+  ethereumRegistryPrivateKey: '',
 
   exchangeAnchorNextHashRequest: 'ANCHOR_NEXT_HASH_REQUEST',
   exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
