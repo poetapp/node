@@ -159,7 +159,7 @@ export const Controller = ({
   const registerNextDirectory = async () => {
     const logger = controllerLogger.child({ method: 'registerNextDirectory' })
     const entry = await claimAnchorReceiptsCollection.findOne({
-      ipfsDirectoryHashWithFiles: { $not: null },
+      ipfsDirectoryHashWithFiles: { $ne: null },
       registryIndex: null,
     })
     const cidCount = await ethereumRegistryContract.getCidCount()
