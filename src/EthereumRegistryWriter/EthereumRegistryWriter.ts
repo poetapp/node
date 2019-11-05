@@ -18,8 +18,10 @@ export interface EthereumRegistryWriterConfiguration extends LoggingConfiguratio
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
   readonly ipfs: IPFSConfiguration
-  readonly contractAddress: string,
-  readonly privateKey: string,
+  readonly contractAddress: string
+  readonly privateKey: string
+  readonly uploadAnchorReceiptIntervalInSeconds: number
+  readonly registerNextDirectoryIntervalInSeconds: number
 }
 
 type stop = () => Promise<void>
@@ -67,8 +69,8 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
       controller,
     },
     configuration: {
-      uploadAnchorReceiptIntervalInSeconds: 5,
-      registerNextDirectoryIntervalInSeconds: 5,
+      uploadAnchorReceiptIntervalInSeconds: configuration.uploadAnchorReceiptIntervalInSeconds,
+      registerNextDirectoryIntervalInSeconds: configuration.registerNextDirectoryIntervalInSeconds,
     },
   })
   await service.start()

@@ -34,6 +34,8 @@ const main = async () => {
     },
     contractAddress: configuration.ethereumRegistryContractAddress,
     privateKey: configuration.ethereumRegistryPrivateKey,
+    uploadAnchorReceiptIntervalInSeconds: configuration.ethereumRegistryUploadAnchorReceiptIntervalInSeconds,
+    registerNextDirectoryIntervalInSeconds: configuration.ethereumRegistryRegisterNextDirectoryIntervalInSeconds,
   })
 
   process.on('SIGINT', stop)

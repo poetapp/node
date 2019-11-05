@@ -46,6 +46,8 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
 
   readonly ethereumRegistryContractAddress: string
   readonly ethereumRegistryPrivateKey: string
+  readonly ethereumRegistryUploadAnchorReceiptIntervalInSeconds: number
+  readonly ethereumRegistryRegisterNextDirectoryIntervalInSeconds: number
 }
 
 export interface LoggingConfiguration {
@@ -133,6 +135,8 @@ export const DefaultConfiguration: Configuration = {
 
   ethereumRegistryContractAddress: '',
   ethereumRegistryPrivateKey: '',
+  ethereumRegistryUploadAnchorReceiptIntervalInSeconds: 60,
+  ethereumRegistryRegisterNextDirectoryIntervalInSeconds: 60,
 
   exchangeAnchorNextHashRequest: 'ANCHOR_NEXT_HASH_REQUEST',
   exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',
