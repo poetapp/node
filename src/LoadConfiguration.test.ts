@@ -11,7 +11,7 @@ import {
 } from './LoadConfiguration'
 
 const defaultConfig = mergeConfigs()
-
+// TODO: will this check?
 describe('src/LoadConfiguration', async assert => {
   assert({
     given: 'no arguments',
