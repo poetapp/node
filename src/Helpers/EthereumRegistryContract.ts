@@ -1,6 +1,6 @@
 import Web3 from 'web3'
 
-import * as EthereumRegistryContractAbi from './EthereumRegistryContractAbi.json'
+import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
 
 interface EthereumRegistryContractArguments {
   readonly web3host: string
@@ -19,7 +19,7 @@ export const EthereumRegistryContract = ({
 }: EthereumRegistryContractArguments) => {
   const web3 = new Web3(web3host)
   const account = web3.eth.accounts.privateKeyToAccount(privateKey)
-  const contract = new web3.eth.Contract(EthereumRegistryContractAbi as any, contractAddress, { from: account.address })
+  const contract = new web3.eth.Contract(EthereumRegistryContractAbi, contractAddress, { from: account.address })
 
   const getCidCount = () => contract.methods.getCidCount().call().then(parseInt)
 
