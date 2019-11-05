@@ -5,7 +5,7 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     inputs: [],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'constructor'
+    type: 'constructor',
   },
   {
     constant: true,
@@ -14,45 +14,45 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     outputs: [
       {
         name: '',
-        type: 'address'
-      }
+        type: 'address',
+      },
     ],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
     inputs: [
       {
         name: 'cid',
-        type: 'string'
-      }
+        type: 'string',
+      },
     ],
     name: 'addCid',
     outputs: [],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: true,
     inputs: [
       {
         name: '',
-        type: 'uint256'
-      }
+        type: 'uint256',
+      },
     ],
     name: 'cids',
     outputs: [
       {
         name: 'cid',
-        type: 'string'
-      }
+        type: 'string',
+      },
     ],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: true,
@@ -61,13 +61,13 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     outputs: [
       {
         name: '',
-        type: 'uint256'
-      }
+        type: 'uint256',
+      },
     ],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
-  }
+    type: 'function',
+  },
 ]
 
 /*
