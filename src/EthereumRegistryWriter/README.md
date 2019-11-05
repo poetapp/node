@@ -8,9 +8,10 @@ The following configuration properties affect the EthereumRegistryWriter Module:
 
 ```ts
 {
-  "dbUrl": string,
-  "rabbitmqUrl": string,
-  "batchCreationIntervalInSeconds": number
+  dbUrl: string
+  rabbitmqUrl: string
+  exchanges: ExchangeConfiguration
+  ipfs: IPFSConfiguration
 }
 ```
 
@@ -28,7 +29,7 @@ Once both `ipfsDirectoryHashVerified` and `ipfsFileHashVerified` are `true` for 
 
 After the entry has `ipfsDirectoryHashWithFiles` set, it once again gets picked up, this time to be stored in the Ethereum Po.et Registry Contract.
 
-# Database
+## Database
 
 This module uses the `claimAnchorReceipts` collection. Entries in the collection look as follows:
 
@@ -50,3 +51,25 @@ This module uses the `claimAnchorReceipts` collection. Entries in the collection
   "ipfsDirectoryHashWithFiles" : "QmVawzn56AYBo6ipCpbq93o1bHUPZnN8aipuBFRfYzprWX"
 }
 ```
+
+## Files
+
+### EthereumRegistryWriter
+
+Composition root of the entire micro service.
+
+### index.ts
+
+Bootstrap to run the service.
+
+### Router
+
+Responsible for interaction with RabbitMQ.
+
+### Service
+
+Responsible for running and managing intervals.
+
+### Controller
+
+All business logic goes here.
