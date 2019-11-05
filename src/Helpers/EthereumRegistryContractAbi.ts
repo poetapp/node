@@ -13,7 +13,6 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     name: '_owner',
     outputs: [
       {
-        internalType: 'address',
         name: '',
         type: 'address'
       }
@@ -26,7 +25,6 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     constant: false,
     inputs: [
       {
-        internalType: 'string',
         name: 'cid',
         type: 'string'
       }
@@ -41,7 +39,6 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     constant: true,
     inputs: [
       {
-        internalType: 'uint256',
         name: '',
         type: 'uint256'
       }
@@ -49,7 +46,6 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     name: 'cids',
     outputs: [
       {
-        internalType: 'string',
         name: 'cid',
         type: 'string'
       }
@@ -64,7 +60,6 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     name: 'getCidCount',
     outputs: [
       {
-        internalType: 'uint256',
         name: '',
         type: 'uint256'
       }
@@ -74,3 +69,8 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     type: 'function'
   }
 ]
+
+/*
+Note: `internalType` properties were manually removed to match the type declaration.
+See https://github.com/ethereum/web3.js/pull/3178
+ */
