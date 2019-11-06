@@ -70,6 +70,6 @@ Responsible for interaction with RabbitMQ.
 
 Responsible for running and managing intervals.
 
-### Controller
+### Business
 
 All business logic goes here.
