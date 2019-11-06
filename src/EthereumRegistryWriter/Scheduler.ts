@@ -4,7 +4,7 @@ import * as Pino from 'pino'
 import { childWithFileName } from 'Helpers/Logging'
 import { secondsToMiliseconds } from 'Helpers/Time'
 
-import { Controller } from './Controller'
+import { Business } from './Business'
 
 export interface Configuration {
   readonly uploadAnchorReceiptIntervalInSeconds: number
@@ -13,7 +13,7 @@ export interface Configuration {
 
 export interface Dependencies {
   readonly logger: Pino.Logger
-  readonly controller: Controller
+  readonly business: Business
 }
 
 export interface Arguments {
@@ -30,7 +30,7 @@ export const Scheduler = ({
   configuration,
   dependencies: {
     logger: parentLogger,
-    controller,
+    business,
   },
 }: Arguments): Scheduler => {
   const logger = childWithFileName(parentLogger, __filename)
@@ -38,7 +38,7 @@ export const Scheduler = ({
   const uploadNextAnchorReceipt = async () => {
     const methodLogger = logger.child({ method: 'uploadNextAnchorReceipt' })
     try {
-      await controller.uploadNextAnchorReceipt()
+      await business.uploadNextAnchorReceipt()
     } catch (error) {
       methodLogger.error({ error }, 'Uncaught exception')
     }
@@ -52,7 +52,7 @@ export const Scheduler = ({
   const registerNextDirectory = async () => {
     const methodLogger = logger.child({ method: 'registerNextDirectory' })
     try {
-      await controller.registerNextDirectory()
+      await business.registerNextDirectory()
     } catch (error) {
       methodLogger.error({ error }, 'Uncaught exception')
     }

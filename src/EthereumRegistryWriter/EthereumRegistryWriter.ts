@@ -8,7 +8,7 @@ import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
 import { createModuleLogger } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
-import { Controller } from './Controller'
+import { Business } from './Business'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
 import { Scheduler } from './Scheduler'
@@ -43,7 +43,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     contractAddress: configuration.contractAddress,
     privateKey: configuration.privateKey,
   })
-  const controller = Controller({
+  const business = Business({
     dependencies: {
       logger,
       db,
@@ -56,17 +56,17 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     dependencies: {
       logger,
       messaging,
-      controller,
+      business,
     },
     exchange: configuration.exchanges,
   })
   await router.start()
-  await controller.createDbIndices()
+  await business.createDbIndices()
 
   const scheduler = Scheduler({
     dependencies: {
       logger,
-      controller,
+      business,
     },
     configuration: {
       uploadAnchorReceiptIntervalInSeconds: configuration.uploadAnchorReceiptIntervalInSeconds,

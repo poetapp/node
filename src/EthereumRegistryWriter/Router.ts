@@ -5,13 +5,13 @@ import { ClaimIPFSHashPair } from 'Interfaces'
 import { BlockDownloaded } from 'Messaging/Messages'
 import { Messaging } from 'Messaging/Messaging'
 
-import { Controller } from './Controller'
+import { Business } from './Business'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
 export interface Dependencies {
   readonly logger: Pino.Logger
   readonly messaging: Messaging
-  readonly controller: Controller
+  readonly business: Business
 }
 
 export interface Arguments {
@@ -27,7 +27,7 @@ export const Router = ({
   dependencies: {
     logger,
     messaging,
-    controller,
+    business,
   },
   exchange,
 }: Arguments): Router => {
@@ -50,7 +50,7 @@ export const Router = ({
     logger.info({ claimId, ipfsFileHash }, 'Storing an IPFS File Hash + Claim Id')
 
     try {
-      await controller.insertClaimIdIPFSFileHashPair(claimId, ipfsFileHash)
+      await business.insertClaimIdIPFSFileHashPair(claimId, ipfsFileHash)
     } catch (error) {
       logger.error({ error }, 'Failed to set claimId and ipfsFileHash on works')
     }
@@ -73,7 +73,7 @@ export const Router = ({
     )
 
     try {
-      await controller.setDirectoryHash({
+      await business.setDirectoryHash({
         ipfsFileHashes,
         ipfsDirectoryHash,
       })
@@ -96,7 +96,7 @@ export const Router = ({
 
     logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Anchor')
     try {
-      await controller.setAnchors(poetBlockAnchors)
+      await business.setAnchors(poetBlockAnchors)
     } catch (error) {
       logger.error({ error }, 'Failed to upsert poetBlockAnchors on works')
     }
@@ -111,7 +111,7 @@ export const Router = ({
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
     logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Verifying IPFS directory hashes against file hashes...')
     try {
-      await controller.verifyIPFSDirectoryHashes({
+      await business.verifyIPFSDirectoryHashes({
         ipfsFileHashes,
         ipfsDirectoryHash,
       })
@@ -125,7 +125,7 @@ export const Router = ({
 
     logger.trace({ claimIPFSHashPairs }, 'Downloaded (IPFS Hash, Claim) pairs')
     try {
-      await controller.verifyIPFSFileHashes(claimIPFSHashPairs)
+      await business.verifyIPFSFileHashes(claimIPFSHashPairs)
     } catch (error) {
       logger.error({ error })
     }

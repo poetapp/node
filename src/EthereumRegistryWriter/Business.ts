@@ -18,7 +18,7 @@ export interface Arguments {
   readonly dependencies: Dependencies
 }
 
-export interface Controller {
+export interface Business {
   readonly createDbIndices: () => Promise<void>
   readonly insertClaimIdIPFSFileHashPair: (claimId: string, ipfsFileHash: string) => Promise<void>
   readonly setDirectoryHash: (data: {
@@ -35,15 +35,15 @@ export interface Controller {
   readonly registerNextDirectory: () => Promise<void>
 }
 
-export const Controller = ({
+export const Business = ({
   dependencies: {
     logger,
     db,
     ipfs,
     ethereumRegistryContract,
   },
-}: Arguments): Controller => {
-  const controllerLogger: Pino.Logger = childWithFileName(logger, __filename)
+}: Arguments): Business => {
+  const businessLogger: Pino.Logger = childWithFileName(logger, __filename)
   const claimAnchorReceiptsCollection: Collection = db.collection('claimAnchorReceipts')
 
   const createDbIndices = async () => {
@@ -64,7 +64,7 @@ export const Controller = ({
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => {
-    const logger = controllerLogger.child({ method: 'setDirectoryHash' })
+    const logger = businessLogger.child({ method: 'setDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash for file hashes')
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
@@ -78,7 +78,7 @@ export const Controller = ({
   }
 
   const setAnchors =  async (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => {
-    const logger = controllerLogger.child({ method: 'setAnchors' })
+    const logger = businessLogger.child({ method: 'setAnchors' })
     logger.info({ poetAnchors }, 'Setting Po.et Anchors')
 
     await Promise.all(
@@ -98,7 +98,7 @@ export const Controller = ({
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => {
-    const logger = controllerLogger.child({ method: 'setFileHashesForDirectoryHash' })
+    const logger = businessLogger.child({ method: 'setFileHashesForDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
 
     await Promise.all(
@@ -113,7 +113,7 @@ export const Controller = ({
   }
 
   const verifyIPFSFileHashes = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    const logger = controllerLogger.child({ method: 'verifyIPFSFileHashes' })
+    const logger = businessLogger.child({ method: 'verifyIPFSFileHashes' })
     logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
@@ -127,7 +127,7 @@ export const Controller = ({
   }
 
   const uploadNextAnchorReceipt = async () => {
-    const logger = controllerLogger.child({ method: 'uploadNextAnchorReceipt' })
+    const logger = businessLogger.child({ method: 'uploadNextAnchorReceipt' })
     const entry = await claimAnchorReceiptsCollection.findOne({
       ipfsFileHashVerified: true,
       ipfsDirectoryHashVerified: true,
@@ -157,7 +157,7 @@ export const Controller = ({
   }
 
   const registerNextDirectory = async () => {
-    const logger = controllerLogger.child({ method: 'registerNextDirectory' })
+    const logger = businessLogger.child({ method: 'registerNextDirectory' })
     const entry = await claimAnchorReceiptsCollection.findOne({
       ipfsDirectoryHashWithFiles: { $ne: null },
       registryIndex: null,
