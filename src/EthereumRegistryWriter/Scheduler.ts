@@ -21,18 +21,18 @@ export interface Arguments {
   readonly dependencies: Dependencies
 }
 
-export interface Service {
+export interface Scheduler {
   readonly start: () => Promise<void>
   readonly stop: () => Promise<void>
 }
 
-export const Service = ({
+export const Scheduler = ({
   configuration,
   dependencies: {
     logger: parentLogger,
     controller,
   },
-}: Arguments): Service => {
+}: Arguments): Scheduler => {
   const logger = childWithFileName(parentLogger, __filename)
 
   const uploadNextAnchorReceipt = async () => {
@@ -64,13 +64,13 @@ export const Service = ({
   )
 
   const start = async () => {
-    logger.info({ configuration }, 'EthereumRegistryWriter Service Starting')
+    logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Starting')
     await uploadNextClaimInterval.start()
     registerNextDirectoryInterval.start()
   }
 
   const stop = async () => {
-    logger.info({ configuration }, 'EthereumRegistryWriter Service Stopping')
+    logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Stopping')
     await uploadNextClaimInterval.stop()
     registerNextDirectoryInterval.stop()
   }

@@ -25,7 +25,7 @@ Whenever an IPFS directory is read and the list of IFPS files it contains is ret
 
 The same goes for verifying that the `claimId` in its database was actually anchored in the `ipfsFileHash` we expected it to, and if so, sets `ipfsFileHashVerified` to `true`. 
 
-Once both `ipfsDirectoryHashVerified` and `ipfsFileHashVerified` are `true` for a given entry, it gets picked up by the Service, which then creates an IPFS Directory and stores the Claim along with the Anchor Receipt in it, and sets `ipfsDirectoryHashWithFiles` to the address of the directory.
+Once both `ipfsDirectoryHashVerified` and `ipfsFileHashVerified` are `true` for a given entry, it gets picked up by the Scheduler, which then creates an IPFS Directory and stores the Claim along with the Anchor Receipt in it, and sets `ipfsDirectoryHashWithFiles` to the address of the directory.
 
 After the entry has `ipfsDirectoryHashWithFiles` set, it once again gets picked up, this time to be stored in the Ethereum Po.et Registry Contract.
 
@@ -66,7 +66,7 @@ Bootstrap to run the service.
 
 Responsible for interaction with RabbitMQ.
 
-### Service
+### Scheduler
 
 Responsible for running and managing intervals.
 

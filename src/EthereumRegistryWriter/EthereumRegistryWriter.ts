@@ -11,7 +11,7 @@ import { Messaging } from 'Messaging/Messaging'
 import { Controller } from './Controller'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 import { Router } from './Router'
-import { Service } from './Service'
+import { Scheduler } from './Scheduler'
 
 export interface EthereumRegistryWriterConfiguration extends LoggingConfiguration {
   readonly dbUrl: string
@@ -63,7 +63,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
   await router.start()
   await controller.createDbIndices()
 
-  const service = Service({
+  const scheduler = Scheduler({
     dependencies: {
       logger,
       controller,
@@ -73,13 +73,13 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
       registerNextDirectoryIntervalInSeconds: configuration.registerNextDirectoryIntervalInSeconds,
     },
   })
-  await service.start()
+  await scheduler.start()
 
   logger.info('EthereumRegistryWriter Started')
 
   return async () => {
     logger.info('Stopping EthereumRegistryWriter...')
-    await service.stop()
+    await scheduler.stop()
     logger.debug('Stopping EthereumRegistryWriter Messaging...')
     await messaging.stop()
     logger.debug('Stopping EthereumRegistryWriter Database...')
