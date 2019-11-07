@@ -57,9 +57,7 @@ export const Router = ({
   }
 
   const onBatchCreated = async (message: any): Promise<void> => {
-    const logger = routerLogger.child({
-      method: 'onBatchCreated',
-    })
+    const logger = routerLogger.child({ method: 'onBatchCreated' })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
@@ -87,13 +85,11 @@ export const Router = ({
   }
 
   const onBatchRead = async (message: any) => {
-    const logger = routerLogger.child({
-      method: 'onBatchRead',
-    })
+    const logger = routerLogger.child({ method: 'onBatchRead' })
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
-    logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Verifying IPFS directory hashes against file hashes...')
+    logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Batch Read')
     try {
       await business.confirmBatchDirectory(ipfsFileHashes, ipfsDirectoryHash)
     } catch (error) {

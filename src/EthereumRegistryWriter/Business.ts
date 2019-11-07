@@ -83,8 +83,8 @@ export const Business = ({
     ipfsFileHashes: ReadonlyArray<string>,
     ipfsDirectoryHash: string,
   ) => {
-    const logger = businessLogger.child({ method: 'setFileHashesForDirectoryHash' })
-    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
+    const logger = businessLogger.child({ method: 'confirmBatchDirectory' })
+    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'Confirming batch directory')
 
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
@@ -94,12 +94,14 @@ export const Business = ({
         ),
       ),
     )
+
+    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'Batch directory confirmed')
     // TODO: do something for files that don't match the expected directory
   }
 
   const verifyIPFSFileHashes = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
     const logger = businessLogger.child({ method: 'verifyIPFSFileHashes' })
-    logger.debug({ claimIPFSHashPairs }, 'Upserting Claims by IPFS Hash')
+    logger.debug({ claimIPFSHashPairs }, 'Confirming IPFS file hashes')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
         claimAnchorReceiptsCollection.updateOne(
