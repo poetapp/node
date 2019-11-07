@@ -62,7 +62,7 @@ export const Business = ({
   }
 
   const setBatchDirectory = async (ipfsFileHashes: ReadonlyArray<string>, ipfsDirectoryHash: string) => {
-    const logger = businessLogger.child({ method: 'setDirectoryHash' })
+    const logger = businessLogger.child({ method: 'setBatchDirectory' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash for file hashes')
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
