@@ -26,10 +26,7 @@ export interface Business {
     ipfsDirectoryHash: string,
   }) => Promise<void>
   readonly setAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
-  readonly confirmBatchDirectory: (data: {
-    ipfsFileHashes: ReadonlyArray<string>
-    ipfsDirectoryHash: string,
-  }) => Promise<void>
+  readonly confirmBatchDirectory: (ipfsFileHashes: ReadonlyArray<string>, ipfsDirectoryHash: string) => Promise<void>
   readonly verifyIPFSFileHashes: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
   readonly uploadNextAnchorReceipt: () => Promise<void>
   readonly registerNextDirectory: () => Promise<void>
@@ -91,13 +88,10 @@ export const Business = ({
     )
   }
 
-  const confirmBatchDirectory = async ({
-    ipfsFileHashes,
-    ipfsDirectoryHash,
-  }: {
-    ipfsFileHashes: ReadonlyArray<string>
+  const confirmBatchDirectory = async (
+    ipfsFileHashes: ReadonlyArray<string>,
     ipfsDirectoryHash: string,
-  }) => {
+  ) => {
     const logger = businessLogger.child({ method: 'setFileHashesForDirectoryHash' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash on work entries')
 
