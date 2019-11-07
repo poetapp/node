@@ -29,6 +29,16 @@ export interface Business {
   readonly registerNextDirectory: () => Promise<void>
 }
 
+interface DbEntry {
+  readonly _id?: string
+  readonly claimId: string
+  readonly ipfsFileHash?: string
+  readonly ipfsDirectoryHash?: string
+  readonly ipfsDirectoryHashWithFiles?: string
+  readonly ipfsDirectoryHashVerified?: string
+  readonly ipfsFileHashVerified?: string
+}
+
 export const Business = ({
   dependencies: {
     logger,
@@ -38,7 +48,7 @@ export const Business = ({
   },
 }: Arguments): Business => {
   const businessLogger: Pino.Logger = childWithFileName(logger, __filename)
-  const claimAnchorReceiptsCollection: Collection = db.collection('claimAnchorReceipts')
+  const claimAnchorReceiptsCollection: Collection<DbEntry> = db.collection('claimAnchorReceipts')
 
   const createDbIndices = async () => {
     await claimAnchorReceiptsCollection.createIndex(
