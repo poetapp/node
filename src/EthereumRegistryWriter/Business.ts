@@ -26,7 +26,7 @@ export interface Business {
     ipfsDirectoryHash: string,
   }) => Promise<void>
   readonly setAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
-  readonly verifyIPFSDirectoryHashes: (data: {
+  readonly confirmBatchDirectory: (data: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => Promise<void>
@@ -91,7 +91,7 @@ export const Business = ({
     )
   }
 
-  const verifyIPFSDirectoryHashes = async ({
+  const confirmBatchDirectory = async ({
     ipfsFileHashes,
     ipfsDirectoryHash,
   }: {
@@ -173,7 +173,7 @@ export const Business = ({
     insertClaimIdIPFSFileHashPair,
     setDirectoryHash,
     setAnchors,
-    verifyIPFSDirectoryHashes,
+    confirmBatchDirectory,
     verifyIPFSFileHashes,
     uploadNextAnchorReceipt,
     registerNextDirectory,

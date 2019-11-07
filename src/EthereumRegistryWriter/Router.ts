@@ -111,7 +111,7 @@ export const Router = ({
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
     logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Verifying IPFS directory hashes against file hashes...')
     try {
-      await business.verifyIPFSDirectoryHashes({
+      await business.confirmBatchDirectory({
         ipfsFileHashes,
         ipfsDirectoryHash,
       })
