@@ -64,25 +64,12 @@ export const Router = ({
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
 
-    logger.trace(
-      {
-        ipfsDirectoryHash,
-        ipfsFileHashes,
-      },
-      'Setting IPFS Directory Hashes',
-    )
+    logger.trace({ ipfsDirectoryHash, ipfsFileHashes }, 'Setting IPFS Directory Hashes')
 
     try {
       await business.setBatchDirectory(ipfsFileHashes, ipfsDirectoryHash)
     } catch (error) {
-      logger.error(
-        {
-          ipfsDirectoryHash,
-          ipfsFileHashes,
-          error,
-        },
-        'Error setting IPFS Directory Hashes',
-      )
+      logger.error({ ipfsDirectoryHash, ipfsFileHashes, error }, 'Error setting IPFS Directory Hashes')
     }
   }
 
