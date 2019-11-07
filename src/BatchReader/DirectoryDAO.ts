@@ -14,7 +14,7 @@ export interface Entry {
 
 type start = () => Promise<void>
 
-type addEntries = (xs: ReadonlyArray<Entry>) => Promise<InsertWriteOpResult>
+type addEntries = (xs: ReadonlyArray<Entry>) => Promise<void>
 
 type findNextEntry = (
   options?: {
@@ -53,8 +53,8 @@ export class DirectoryDAO {
     await this.directoryCollection.createIndex({ ipfsDirectoryHash: 1 }, { unique: true })
   }
 
-  readonly addEntries: addEntries = async (entries = []) =>
-    this.directoryCollection
+  readonly addEntries: addEntries = async (entries = []) => {
+    await this.directoryCollection
       .insertMany(
         entries.map((entry: Entry) => ({
           ipfsDirectoryHash: entry.ipfsDirectoryHash,
@@ -66,6 +66,7 @@ export class DirectoryDAO {
         { ordered: false },
       )
       .ignoreError(error => error.code === ErrorCodes.DuplicateKey)
+  }
 
   readonly findNextEntry: findNextEntry = ({
     currentTime = new Date().getTime(),
