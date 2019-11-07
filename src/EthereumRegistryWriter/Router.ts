@@ -73,10 +73,7 @@ export const Router = ({
     )
 
     try {
-      await business.setBatchDirectory({
-        ipfsFileHashes,
-        ipfsDirectoryHash,
-      })
+      await business.setBatchDirectory(ipfsFileHashes, ipfsDirectoryHash)
     } catch (error) {
       logger.error(
         {
