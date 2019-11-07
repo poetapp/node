@@ -33,7 +33,6 @@ interface DbEntry extends Partial<PoetBlockAnchor> {
   readonly _id?: string
   readonly claimId: string
   readonly ipfsFileHash?: string
-  readonly ipfsDirectoryHash?: string
   readonly ipfsDirectoryHashWithFiles?: string
   readonly ipfsDirectoryHashVerified?: boolean
   readonly ipfsFileHashVerified?: boolean
