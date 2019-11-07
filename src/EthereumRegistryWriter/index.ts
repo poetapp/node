@@ -28,7 +28,7 @@ const main = async () => {
     exchanges: {
       claimIpfsHash: configuration.exchangeClaimIpfsHash,
       ipfsDirectoryCreated: configuration.exchangeBatchWriterCreateNextBatchSuccess,
-      ipfsDirectoryRead: configuration.exchangeBatchReaderReadNextDirectorySuccess,
+      batchRead: configuration.exchangeBatchReaderReadNextDirectorySuccess,
       poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
       claimsDownloaded: configuration.exchangeClaimsDownloaded,
     },

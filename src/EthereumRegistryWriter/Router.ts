@@ -38,7 +38,7 @@ export const Router = ({
     await messaging.consume(exchange.ipfsDirectoryCreated, onIPFSDirectoryCreated)
     await messaging.consumeBlockDownloaded(onPoetBlockAnchorsDownloaded)
     await messaging.consumeClaimsDownloaded(onClaimsDownloaded)
-    await messaging.consume(exchange.ipfsDirectoryRead, onIPFSDirectoryRead)
+    await messaging.consume(exchange.batchRead, onBatchRead)
   }
 
   const onClaimIPFSHash = async (message: any) => {
@@ -73,7 +73,7 @@ export const Router = ({
     )
 
     try {
-      await business.setDirectoryHash({
+      await business.setBatchDirectory({
         ipfsFileHashes,
         ipfsDirectoryHash,
       })
@@ -102,9 +102,9 @@ export const Router = ({
     }
   }
 
-  const onIPFSDirectoryRead = async (message: any) => {
+  const onBatchRead = async (message: any) => {
     const logger = routerLogger.child({
-      method: 'onIPFSDirectoryRead',
+      method: 'onBatchRead',
     })
 
     const messageContent = message.content.toString()

@@ -21,7 +21,7 @@ export interface Arguments {
 export interface Business {
   readonly createDbIndices: () => Promise<void>
   readonly insertClaimIdIPFSFileHashPair: (claimId: string, ipfsFileHash: string) => Promise<void>
-  readonly setDirectoryHash: (data: {
+  readonly setBatchDirectory: (data: {
     ipfsFileHashes: ReadonlyArray<string>
     ipfsDirectoryHash: string,
   }) => Promise<void>
@@ -54,7 +54,7 @@ export const Business = ({
     await claimAnchorReceiptsCollection.insertOne({ claimId, ipfsFileHash })
   }
 
-  const setDirectoryHash = async ({
+  const setBatchDirectory = async ({
     ipfsFileHashes,
     ipfsDirectoryHash,
   }: {
@@ -165,7 +165,7 @@ export const Business = ({
   return {
     createDbIndices,
     insertClaimIdIPFSFileHashPair,
-    setDirectoryHash,
+    setBatchDirectory,
     setAnchors,
     confirmBatchDirectory,
     verifyIPFSFileHashes,
