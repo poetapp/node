@@ -35,7 +35,7 @@ export const Router = ({
 
   const start = async () => {
     await messaging.consume(exchange.claimIpfsHash, onClaimIPFSHash)
-    await messaging.consume(exchange.ipfsDirectoryCreated, onIPFSDirectoryCreated)
+    await messaging.consume(exchange.batchCreated, onBatchCreated)
     await messaging.consumeBlockDownloaded(onPoetBlockAnchorsDownloaded)
     await messaging.consumeClaimsDownloaded(onClaimsDownloaded)
     await messaging.consume(exchange.batchRead, onBatchRead)
@@ -56,9 +56,9 @@ export const Router = ({
     }
   }
 
-  const onIPFSDirectoryCreated = async (message: any): Promise<void> => {
+  const onBatchCreated = async (message: any): Promise<void> => {
     const logger = routerLogger.child({
-      method: 'onIPFSDirectoryCreated',
+      method: 'onBatchCreated',
     })
 
     const messageContent = message.content.toString()
