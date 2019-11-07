@@ -144,13 +144,11 @@ export const Business = ({
       ipfsDirectoryHash,
       ipfsFileHashes: [ entry.ipfsFileHash, anchorReceiptFileHash ],
     })
-    // TODO: adding another TODO to test this tool...
     logger.info(
       { anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles },
       'Stored Claim + Anchor Receipt in IPFS Directory',
     )
     await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { ipfsDirectoryHashWithFiles } })
-    // TODO: rename some of these fields and constants asd
   }
 
   const registerNextDirectory = async () => {
