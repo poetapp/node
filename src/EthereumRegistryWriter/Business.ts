@@ -24,7 +24,7 @@ export interface Business {
   readonly setBatchDirectory: (ipfsFileHashes: ReadonlyArray<string>, ipfsDirectoryHash: string) => Promise<void>
   readonly setAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
   readonly confirmBatchDirectory: (ipfsFileHashes: ReadonlyArray<string>, ipfsDirectoryHash: string) => Promise<void>
-  readonly verifyIPFSFileHashes: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
+  readonly confirmClaimFiles: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
   readonly uploadNextAnchorReceipt: () => Promise<void>
   readonly registerNextDirectory: () => Promise<void>
 }
@@ -99,9 +99,9 @@ export const Business = ({
     // TODO: do something for files that don't match the expected directory
   }
 
-  const verifyIPFSFileHashes = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
-    const logger = businessLogger.child({ method: 'verifyIPFSFileHashes' })
-    logger.debug({ claimIPFSHashPairs }, 'Confirming IPFS file hashes')
+  const confirmClaimFiles = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
+    const logger = businessLogger.child({ method: 'confirmClaimFiles' })
+    logger.debug({ claimIPFSHashPairs }, 'Confirming Claim files')
     await Promise.all(
       claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
         claimAnchorReceiptsCollection.updateOne(
@@ -161,7 +161,7 @@ export const Business = ({
     setBatchDirectory,
     setAnchors,
     confirmBatchDirectory,
-    verifyIPFSFileHashes,
+    confirmClaimFiles,
     uploadNextAnchorReceipt,
     registerNextDirectory,
   }

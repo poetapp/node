@@ -102,7 +102,7 @@ export const Router = ({
 
     logger.trace({ claimIPFSHashPairs }, 'Downloaded (IPFS Hash, Claim) pairs')
     try {
-      await business.verifyIPFSFileHashes(claimIPFSHashPairs)
+      await business.confirmClaimFiles(claimIPFSHashPairs)
     } catch (error) {
       logger.error({ error })
     }
