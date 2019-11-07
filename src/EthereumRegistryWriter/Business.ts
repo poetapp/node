@@ -37,6 +37,7 @@ interface DbEntry {
   readonly ipfsDirectoryHashWithFiles?: string
   readonly ipfsDirectoryHashVerified?: boolean
   readonly ipfsFileHashVerified?: boolean
+  readonly anchorReceiptFileHash?: string
 }
 
 export const Business = ({
