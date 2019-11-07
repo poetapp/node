@@ -29,7 +29,7 @@ export interface Business {
   readonly registerNextDirectory: () => Promise<void>
 }
 
-interface DbEntry {
+interface DbEntry extends Partial<PoetBlockAnchor> {
   readonly _id?: string
   readonly claimId: string
   readonly ipfsFileHash?: string
