@@ -20,10 +20,10 @@ export interface Arguments {
 
 export interface Business {
   readonly createDbIndices: () => Promise<void>
-  readonly insertClaimIdIPFSFileHashPair: (claimId: string, ipfsFileHash: string) => Promise<void>
-  readonly setBatchDirectory: (ipfsFileHashes: ReadonlyArray<string>, ipfsDirectoryHash: string) => Promise<void>
+  readonly insertClaimIdFilePair: (claimId: string, claimFile: string) => Promise<void>
+  readonly setBatchDirectory: (claimFiles: ReadonlyArray<string>, ipfsDirectoryHash: string) => Promise<void>
   readonly setAnchors: (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => Promise<void>
-  readonly confirmBatchDirectory: (ipfsFileHashes: ReadonlyArray<string>, ipfsDirectoryHash: string) => Promise<void>
+  readonly confirmBatchDirectory: (claimFiles: ReadonlyArray<string>, ipfsDirectoryHash: string) => Promise<void>
   readonly confirmClaimFiles: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
   readonly uploadNextAnchorReceipt: () => Promise<void>
   readonly registerNextDirectory: () => Promise<void>
@@ -31,7 +31,7 @@ export interface Business {
 
 interface DbEntry {
   readonly claimId: string
-  readonly ipfsFileHash: string
+  readonly claimFile: string
   readonly anchorReceipt?: Partial<PoetBlockAnchor>
   readonly anchorReceiptFileHash?: string
   readonly claimFileConfirmed?: boolean
@@ -53,7 +53,7 @@ export const Business = ({
 
   const createDbIndices = async () => {
     await claimAnchorReceiptsCollection.createIndex({ claimId: 1 }, { unique: true })
-    await claimAnchorReceiptsCollection.createIndex({ ipfsFileHash: 1 }, { unique: true })
+    await claimAnchorReceiptsCollection.createIndex({ claimFile: 1 }, { unique: true })
     await claimAnchorReceiptsCollection.createIndex({ 'anchorReceipt.ipfsDirectoryHash': 1 })
     await claimAnchorReceiptsCollection.createIndex(
       { claimFileConfirmed: 1, batchDirectoryConfirmed: 1, anchorReceiptFileHash: 1 },
@@ -62,22 +62,22 @@ export const Business = ({
     await claimAnchorReceiptsCollection.createIndex({ ipfsDirectoryHashWithFiles: 1 }, { unique: true })
   }
 
-  const insertClaimIdIPFSFileHashPair = async (claimId: string, ipfsFileHash: string): Promise<void> => {
-    await claimAnchorReceiptsCollection.insertOne({ claimId, ipfsFileHash })
+  const insertClaimIdFilePair = async (claimId: string, claimFile: string): Promise<void> => {
+    await claimAnchorReceiptsCollection.insertOne({ claimId, claimFile })
   }
 
-  const setBatchDirectory = async (ipfsFileHashes: ReadonlyArray<string>, ipfsDirectoryHash: string) => {
+  const setBatchDirectory = async (claimFiles: ReadonlyArray<string>, ipfsDirectoryHash: string) => {
     const logger = businessLogger.child({ method: 'setBatchDirectory' })
-    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'Setting batch directory')
+    logger.trace({ claimFiles, ipfsDirectoryHash }, 'Setting batch directory')
 
-    const setBatchDirectoryForClaimFile = (ipfsFileHash: string) =>
+    const setBatchDirectoryForClaimFile = (claimFile: string) =>
       claimAnchorReceiptsCollection.updateOne(
-        { ipfsFileHash },
+        { claimFile },
         { $set: { 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash } },
       )
 
-    await Promise.all(ipfsFileHashes.map(setBatchDirectoryForClaimFile))
-    logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'IPFS Directory Hash set successfully')
+    await Promise.all(claimFiles.map(setBatchDirectoryForClaimFile))
+    logger.info({ ipfsDirectoryHash, claimFiles }, 'IPFS Directory Hash set successfully')
   }
 
   const setAnchors =  async (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => {
@@ -94,21 +94,21 @@ export const Business = ({
   }
 
   const confirmBatchDirectory = async (
-    ipfsFileHashes: ReadonlyArray<string>,
+    claimFiles: ReadonlyArray<string>,
     ipfsDirectoryHash: string,
   ) => {
     const logger = businessLogger.child({ method: 'confirmBatchDirectory' })
-    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'Confirming batch directory')
+    logger.trace({ claimFiles, ipfsDirectoryHash }, 'Confirming batch directory')
 
-    const confirmBatchDirectory = (ipfsFileHash: string) =>
+    const confirmBatchDirectory = (claimFile: string) =>
       claimAnchorReceiptsCollection.updateOne(
-        { ipfsFileHash, 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash },
+        { claimFile, 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash },
         { $set: { batchDirectoryConfirmed: true } },
       )
 
-    await Promise.all(ipfsFileHashes.map(confirmBatchDirectory))
+    await Promise.all(claimFiles.map(confirmBatchDirectory))
 
-    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'Batch directory confirmed')
+    logger.trace({ claimFiles, ipfsDirectoryHash }, 'Batch directory confirmed')
     // TODO: do something for files that don't match the expected directory
   }
 
@@ -116,9 +116,9 @@ export const Business = ({
     const logger = businessLogger.child({ method: 'confirmClaimFiles' })
     logger.debug({ claimIPFSHashPairs }, 'Confirming Claim files')
 
-    const confirmClaimFile = ({ claim, ipfsFileHash }: ClaimIPFSHashPair) =>
+    const confirmClaimFile = ({ claim, ipfsFileHash: claimFile }: ClaimIPFSHashPair) =>
       claimAnchorReceiptsCollection.updateOne(
-        { claimId: claim.id, ipfsFileHash },
+        { claimId: claim.id, claimFile },
         { $set: { claimFileConfirmed: true } },
       )
 
@@ -136,11 +136,11 @@ export const Business = ({
     if (!entry)
       return
     logger.debug({ entry })
-    const { claimId, ipfsFileHash, anchorReceipt } = entry
-    const anchorReceiptFileHash = await ipfs.addJson({ claimId, ipfsFileHash, ...anchorReceipt})
+    const { claimId, claimFile, anchorReceipt } = entry
+    const anchorReceiptFileHash = await ipfs.addJson({ claimId, claimFile, ...anchorReceipt})
     logger.debug({ anchorReceipt, anchorReceiptFileHash })
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { anchorReceiptFileHash } })
-    const ipfsDirectoryHashWithFiles = await ipfs.createDirectory([ ipfsFileHash, anchorReceiptFileHash ])
+    const ipfsDirectoryHashWithFiles = await ipfs.createDirectory([ claimFile, anchorReceiptFileHash ])
     logger.info(
       { anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles },
       'Stored Claim + Anchor Receipt in IPFS Directory',
@@ -166,7 +166,7 @@ export const Business = ({
 
   return {
     createDbIndices,
-    insertClaimIdIPFSFileHashPair,
+    insertClaimIdFilePair,
     setBatchDirectory,
     setAnchors,
     confirmBatchDirectory,

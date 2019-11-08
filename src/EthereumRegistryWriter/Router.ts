@@ -50,7 +50,7 @@ export const Router = ({
     logger.info({ claimId, ipfsFileHash }, 'Storing an IPFS File Hash + Claim Id')
 
     try {
-      await business.insertClaimIdIPFSFileHashPair(claimId, ipfsFileHash)
+      await business.insertClaimIdFilePair(claimId, ipfsFileHash)
     } catch (error) {
       logger.error({ error }, 'Failed to set claimId and ipfsFileHash on works')
     }
