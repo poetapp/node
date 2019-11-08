@@ -158,7 +158,7 @@ export const Business = ({
     const entry = await claimAnchorReceiptsCollection.findOne({
       ipfsDirectoryHashWithFiles: { $ne: null },
       registryIndex: null,
-    }) || {}
+    })
     if (!entry)
       return
     const { claimId, ipfsDirectoryHashWithFiles } = entry
