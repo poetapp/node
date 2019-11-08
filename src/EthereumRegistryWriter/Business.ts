@@ -157,11 +157,15 @@ export const Business = ({
     const entry = await claimAnchorReceiptsCollection.findOne({
       ipfsDirectoryHashWithFiles: { $ne: null },
       registryIndex: null,
-    })
+    }) || {}
+    if (!entry)
+      return
+    const { claimId, ipfsDirectoryHashWithFiles } = entry
     const cidCount = await ethereumRegistryContract.getCidCount()
-    logger.info({ entry, cidCount }, 'Registering next IPFS directory to Ethereum')
-    await ethereumRegistryContract.addCid(entry.ipfsDirectoryHashWithFiles)
-    logger.trace({ entry, cidCount }, 'IPFS Directory added to Ethereum')
+    logger.info({ claimId, ipfsDirectoryHashWithFiles, cidCount }, 'Registering next IPFS directory to Ethereum')
+    await ethereumRegistryContract.addCid(ipfsDirectoryHashWithFiles)
+    logger.trace({ claimId, ipfsDirectoryHashWithFiles, cidCount }, 'IPFS Directory added to Ethereum')
+    await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { registryIndex: cidCount } })
   }
 
   return {
