@@ -33,7 +33,7 @@ interface DbEntry {
   readonly claimId: string
   readonly claimFile: string
   readonly anchorReceipt?: Partial<PoetBlockAnchor>
-  readonly anchorReceiptFileHash?: string
+  readonly anchorReceiptFile?: string
   readonly claimFileConfirmed?: boolean
   readonly batchDirectoryConfirmed?: boolean
   readonly claimAndAnchorReceiptDirectory?: string
@@ -56,7 +56,7 @@ export const Business = ({
     await claimAnchorReceiptsCollection.createIndex({ claimFile: 1 }, { unique: true })
     await claimAnchorReceiptsCollection.createIndex({ 'anchorReceipt.ipfsDirectoryHash': 1 })
     await claimAnchorReceiptsCollection.createIndex(
-      { claimFileConfirmed: 1, batchDirectoryConfirmed: 1, anchorReceiptFileHash: 1 },
+      { claimFileConfirmed: 1, batchDirectoryConfirmed: 1, anchorReceiptFile: 1 },
       { unique: true },
     )
     await claimAnchorReceiptsCollection.createIndex({ claimAndAnchorReceiptDirectory: 1 }, { unique: true })
@@ -131,18 +131,18 @@ export const Business = ({
     const entry = await claimAnchorReceiptsCollection.findOne({
       claimFileConfirmed: true,
       batchDirectoryConfirmed: true,
-      anchorReceiptFileHash: null,
+      anchorReceiptFile: null,
     })
     if (!entry)
       return
     logger.debug({ entry })
     const { claimId, claimFile, anchorReceipt } = entry
-    const anchorReceiptFileHash = await ipfs.addJson({ claimId, claimFile, ...anchorReceipt})
-    logger.debug({ anchorReceipt, anchorReceiptFileHash })
-    await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { anchorReceiptFileHash } })
-    const claimAndAnchorReceiptDirectory = await ipfs.createDirectory([ claimFile, anchorReceiptFileHash ])
+    const anchorReceiptFile = await ipfs.addJson({ claimId, claimFile, ...anchorReceipt})
+    logger.debug({ anchorReceipt, anchorReceiptFile })
+    await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { anchorReceiptFile } })
+    const claimAndAnchorReceiptDirectory = await ipfs.createDirectory([ claimFile, anchorReceiptFile ])
     logger.info(
-      { anchorReceipt, anchorReceiptFileHash, claimAndAnchorReceiptDirectory },
+      { anchorReceipt, anchorReceiptFile, claimAndAnchorReceiptDirectory },
       'Stored Claim + Anchor Receipt in IPFS Directory',
     )
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { claimAndAnchorReceiptDirectory } })
