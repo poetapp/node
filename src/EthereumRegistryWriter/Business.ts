@@ -131,10 +131,8 @@ export const Business = ({
       ipfsDirectoryHashVerified: true,
       anchorReceiptFileHash: null,
     })
-    if (!entry) {
-      logger.trace('No more anchor receipts to upload to IPFS')
+    if (!entry)
       return
-    }
     logger.debug({ entry })
     const { _id, claimId, ipfsFileHash, anchorReceipt } = entry
     const anchorReceiptFileHash = await ipfs.addText()(JSON.stringify({ claimId, ipfsFileHash, ...anchorReceipt}))
