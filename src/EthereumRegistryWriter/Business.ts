@@ -30,7 +30,6 @@ export interface Business {
 }
 
 interface DbEntry {
-  readonly _id?: string
   readonly claimId: string
   readonly ipfsFileHash: string
   readonly anchorReceipt?: Partial<PoetBlockAnchor>
@@ -52,10 +51,14 @@ export const Business = ({
   const claimAnchorReceiptsCollection: Collection<DbEntry> = db.collection('claimAnchorReceipts')
 
   const createDbIndices = async () => {
+    await claimAnchorReceiptsCollection.createIndex({ claimId: 1 }, { unique: true })
+    await claimAnchorReceiptsCollection.createIndex({ ipfsFileHash: 1 }, { unique: true })
+    await claimAnchorReceiptsCollection.createIndex({ 'anchorReceipt.ipfsDirectoryHash': 1 })
     await claimAnchorReceiptsCollection.createIndex(
-      { claimId: 1, ipfsFileHash: 1, 'anchorReceipt.ipfsDirectoryHash': 1 },
+      { ipfsFileHashVerified: 1, ipfsDirectoryHashVerified: 1, anchorReceiptFileHash: 1 },
       { unique: true },
     )
+    await claimAnchorReceiptsCollection.createIndex({ ipfsDirectoryHashWithFiles: 1 }, { unique: true })
   }
 
   const insertClaimIdIPFSFileHashPair = async (claimId: string, ipfsFileHash: string): Promise<void> => {
@@ -134,10 +137,10 @@ export const Business = ({
     if (!entry)
       return
     logger.debug({ entry })
-    const { _id, claimId, ipfsFileHash, anchorReceipt } = entry
+    const { claimId, ipfsFileHash, anchorReceipt } = entry
     const anchorReceiptFileHash = await ipfs.addText()(JSON.stringify({ claimId, ipfsFileHash, ...anchorReceipt}))
     logger.debug({ anchorReceipt, anchorReceiptFileHash })
-    await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { anchorReceiptFileHash } })
+    await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { anchorReceiptFileHash } })
     const ipfsDirectoryHash = await ipfs.createEmptyDirectory()
     const ipfsDirectoryHashWithFiles = await ipfs.addFilesToDirectory({
       ipfsDirectoryHash,
@@ -147,7 +150,7 @@ export const Business = ({
       { anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles },
       'Stored Claim + Anchor Receipt in IPFS Directory',
     )
-    await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { ipfsDirectoryHashWithFiles } })
+    await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { ipfsDirectoryHashWithFiles } })
   }
 
   const registerNextDirectory = async () => {
