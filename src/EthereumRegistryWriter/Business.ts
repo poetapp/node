@@ -36,7 +36,7 @@ interface DbEntry {
   readonly anchorReceiptFileHash?: string
   readonly claimFileConfirmed?: boolean
   readonly batchDirectoryConfirmed?: boolean
-  readonly ipfsDirectoryHashWithFiles?: string
+  readonly claimAndAnchorReceiptDirectory?: string
   readonly registryIndex?: number
 }
 
@@ -59,7 +59,7 @@ export const Business = ({
       { claimFileConfirmed: 1, batchDirectoryConfirmed: 1, anchorReceiptFileHash: 1 },
       { unique: true },
     )
-    await claimAnchorReceiptsCollection.createIndex({ ipfsDirectoryHashWithFiles: 1 }, { unique: true })
+    await claimAnchorReceiptsCollection.createIndex({ claimAndAnchorReceiptDirectory: 1 }, { unique: true })
   }
 
   const insertClaimIdFilePair = async (claimId: string, claimFile: string): Promise<void> => {
@@ -140,27 +140,27 @@ export const Business = ({
     const anchorReceiptFileHash = await ipfs.addJson({ claimId, claimFile, ...anchorReceipt})
     logger.debug({ anchorReceipt, anchorReceiptFileHash })
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { anchorReceiptFileHash } })
-    const ipfsDirectoryHashWithFiles = await ipfs.createDirectory([ claimFile, anchorReceiptFileHash ])
+    const claimAndAnchorReceiptDirectory = await ipfs.createDirectory([ claimFile, anchorReceiptFileHash ])
     logger.info(
-      { anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles },
+      { anchorReceipt, anchorReceiptFileHash, claimAndAnchorReceiptDirectory },
       'Stored Claim + Anchor Receipt in IPFS Directory',
     )
-    await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { ipfsDirectoryHashWithFiles } })
+    await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { claimAndAnchorReceiptDirectory } })
   }
 
   const registerNextDirectory = async () => {
     const logger = businessLogger.child({ method: 'registerNextDirectory' })
     const entry = await claimAnchorReceiptsCollection.findOne({
-      ipfsDirectoryHashWithFiles: { $ne: null },
+      claimAndAnchorReceiptDirectory: { $ne: null },
       registryIndex: null,
     })
     if (!entry)
       return
-    const { claimId, ipfsDirectoryHashWithFiles } = entry
+    const { claimId, claimAndAnchorReceiptDirectory } = entry
     const cidCount = await ethereumRegistryContract.getCidCount()
-    logger.info({ claimId, ipfsDirectoryHashWithFiles, cidCount }, 'Registering next IPFS directory to Ethereum')
-    await ethereumRegistryContract.addCid(ipfsDirectoryHashWithFiles)
-    logger.trace({ claimId, ipfsDirectoryHashWithFiles, cidCount }, 'IPFS Directory added to Ethereum')
+    logger.info({ claimId, claimAndAnchorReceiptDirectory, cidCount }, 'Registering next IPFS directory to Ethereum')
+    await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
+    logger.trace({ claimId, claimAndAnchorReceiptDirectory, cidCount }, 'IPFS Directory added to Ethereum')
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { registryIndex: cidCount } })
   }
 
