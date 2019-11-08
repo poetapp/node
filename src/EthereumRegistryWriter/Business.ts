@@ -29,14 +29,15 @@ export interface Business {
   readonly registerNextDirectory: () => Promise<void>
 }
 
-interface DbEntry extends Partial<PoetBlockAnchor> {
+interface DbEntry {
   readonly _id?: string
   readonly claimId: string
-  readonly ipfsFileHash?: string
+  readonly ipfsFileHash: string
+  readonly anchorReceipt?: Partial<PoetBlockAnchor>
+  readonly anchorReceiptFileHash?: string
+  readonly ipfsFileHashVerified?: boolean
   readonly ipfsDirectoryHashWithFiles?: string
   readonly ipfsDirectoryHashVerified?: boolean
-  readonly ipfsFileHashVerified?: boolean
-  readonly anchorReceiptFileHash?: string
 }
 
 export const Business = ({
@@ -52,7 +53,7 @@ export const Business = ({
 
   const createDbIndices = async () => {
     await claimAnchorReceiptsCollection.createIndex(
-      { claimId: 1, ipfsFileHash: 1, ipfsDirectoryHash: 1 },
+      { claimId: 1, ipfsFileHash: 1, 'anchorReceipt.ipfsDirectoryHash': 1 },
       { unique: true },
     )
   }
@@ -63,12 +64,12 @@ export const Business = ({
 
   const setBatchDirectory = async (ipfsFileHashes: ReadonlyArray<string>, ipfsDirectoryHash: string) => {
     const logger = businessLogger.child({ method: 'setBatchDirectory' })
-    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'setting directory hash for file hashes')
+    logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'Setting batch directory')
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
         claimAnchorReceiptsCollection.updateOne(
           { ipfsFileHash },
-          { $set: { ipfsDirectoryHash } },
+          { $set: { 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash } },
         ),
       ),
     )
@@ -80,10 +81,10 @@ export const Business = ({
     logger.info({ poetAnchors }, 'Setting Po.et Anchors')
 
     await Promise.all(
-      poetAnchors.map(anchor =>
+      poetAnchors.map(anchorReceipt =>
         claimAnchorReceiptsCollection.updateOne(
-          { ipfsDirectoryHash: anchor.ipfsDirectoryHash },
-          { $set: anchor },
+          { 'anchorReceipt.ipfsDirectoryHash': anchorReceipt.ipfsDirectoryHash },
+          { $set: { anchorReceipt } },
         ),
       ),
     )
@@ -99,7 +100,7 @@ export const Business = ({
     await Promise.all(
       ipfsFileHashes.map(ipfsFileHash =>
         claimAnchorReceiptsCollection.updateOne(
-          { ipfsFileHash, ipfsDirectoryHash },
+          { ipfsFileHash, 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash },
           { $set: { ipfsDirectoryHashVerified: true } },
         ),
       ),
@@ -135,14 +136,14 @@ export const Business = ({
       return
     }
     logger.debug({ entry })
-    const { _id, ipfsDirectoryHashVerified, ipfsFileHashVerified, ...anchorReceipt } = entry
-    const anchorReceiptFileHash = await ipfs.addText()(JSON.stringify(anchorReceipt))
+    const { _id, claimId, ipfsFileHash, anchorReceipt } = entry
+    const anchorReceiptFileHash = await ipfs.addText()(JSON.stringify({ claimId, ipfsFileHash, ...anchorReceipt}))
     logger.debug({ anchorReceipt, anchorReceiptFileHash })
     await claimAnchorReceiptsCollection.updateOne({ _id }, { $set: { anchorReceiptFileHash } })
     const ipfsDirectoryHash = await ipfs.createEmptyDirectory()
     const ipfsDirectoryHashWithFiles = await ipfs.addFilesToDirectory({
       ipfsDirectoryHash,
-      ipfsFileHashes: [ entry.ipfsFileHash, anchorReceiptFileHash ],
+      ipfsFileHashes: [ ipfsFileHash, anchorReceiptFileHash ],
     })
     logger.info(
       { anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles },
