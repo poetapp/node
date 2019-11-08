@@ -69,14 +69,14 @@ export const Business = ({
   const setBatchDirectory = async (ipfsFileHashes: ReadonlyArray<string>, ipfsDirectoryHash: string) => {
     const logger = businessLogger.child({ method: 'setBatchDirectory' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'Setting batch directory')
-    await Promise.all(
-      ipfsFileHashes.map(ipfsFileHash =>
-        claimAnchorReceiptsCollection.updateOne(
-          { ipfsFileHash },
-          { $set: { 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash } },
-        ),
-      ),
-    )
+
+    const setBatchDirectoryForClaimFile = (ipfsFileHash: string) =>
+      claimAnchorReceiptsCollection.updateOne(
+        { ipfsFileHash },
+        { $set: { 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash } },
+      )
+
+    await Promise.all(ipfsFileHashes.map(setBatchDirectoryForClaimFile))
     logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'IPFS Directory Hash set successfully')
   }
 
@@ -84,14 +84,13 @@ export const Business = ({
     const logger = businessLogger.child({ method: 'setAnchors' })
     logger.info({ poetAnchors }, 'Setting Po.et Anchors')
 
-    await Promise.all(
-      poetAnchors.map(anchorReceipt =>
-        claimAnchorReceiptsCollection.updateOne(
-          { 'anchorReceipt.ipfsDirectoryHash': anchorReceipt.ipfsDirectoryHash },
-          { $set: { anchorReceipt } },
-        ),
-      ),
-    )
+    const setAnchorReceipt = (anchorReceipt: PoetBlockAnchor) =>
+      claimAnchorReceiptsCollection.updateOne(
+        { 'anchorReceipt.ipfsDirectoryHash': anchorReceipt.ipfsDirectoryHash },
+        { $set: { anchorReceipt } },
+      )
+
+    await Promise.all(poetAnchors.map(setAnchorReceipt))
   }
 
   const confirmBatchDirectory = async (
@@ -101,14 +100,13 @@ export const Business = ({
     const logger = businessLogger.child({ method: 'confirmBatchDirectory' })
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'Confirming batch directory')
 
-    await Promise.all(
-      ipfsFileHashes.map(ipfsFileHash =>
-        claimAnchorReceiptsCollection.updateOne(
-          { ipfsFileHash, 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash },
-          { $set: { batchDirectoryConfirmed: true } },
-        ),
-      ),
-    )
+    const confirmBatchDirectory = (ipfsFileHash: string) =>
+      claimAnchorReceiptsCollection.updateOne(
+        { ipfsFileHash, 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash },
+        { $set: { batchDirectoryConfirmed: true } },
+      )
+
+    await Promise.all(ipfsFileHashes.map(confirmBatchDirectory))
 
     logger.trace({ ipfsFileHashes, ipfsDirectoryHash }, 'Batch directory confirmed')
     // TODO: do something for files that don't match the expected directory
@@ -117,14 +115,14 @@ export const Business = ({
   const confirmClaimFiles = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
     const logger = businessLogger.child({ method: 'confirmClaimFiles' })
     logger.debug({ claimIPFSHashPairs }, 'Confirming Claim files')
-    await Promise.all(
-      claimIPFSHashPairs.map(({ claim, ipfsFileHash }) =>
-        claimAnchorReceiptsCollection.updateOne(
-          { claimId: claim.id, ipfsFileHash },
-          { $set: { claimFileConfirmed: true } },
-        ),
-      ),
-    )
+
+    const confirmClaimFile = ({ claim, ipfsFileHash }: ClaimIPFSHashPair) =>
+      claimAnchorReceiptsCollection.updateOne(
+        { claimId: claim.id, ipfsFileHash },
+        { $set: { claimFileConfirmed: true } },
+      )
+
+    await Promise.all(claimIPFSHashPairs.map(confirmClaimFile))
     // TODO: do something for claims that don't match the expected file
   }
 
