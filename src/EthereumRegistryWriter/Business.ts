@@ -35,7 +35,7 @@ interface DbEntry {
   readonly anchorReceipt?: Partial<PoetBlockAnchor>
   readonly anchorReceiptFileHash?: string
   readonly ipfsFileHashVerified?: boolean
-  readonly ipfsDirectoryHashVerified?: boolean
+  readonly batchDirectoryConfirmed?: boolean
   readonly ipfsDirectoryHashWithFiles?: string
   readonly registryIndex?: number
 }
@@ -56,7 +56,7 @@ export const Business = ({
     await claimAnchorReceiptsCollection.createIndex({ ipfsFileHash: 1 }, { unique: true })
     await claimAnchorReceiptsCollection.createIndex({ 'anchorReceipt.ipfsDirectoryHash': 1 })
     await claimAnchorReceiptsCollection.createIndex(
-      { ipfsFileHashVerified: 1, ipfsDirectoryHashVerified: 1, anchorReceiptFileHash: 1 },
+      { ipfsFileHashVerified: 1, batchDirectoryConfirmed: 1, anchorReceiptFileHash: 1 },
       { unique: true },
     )
     await claimAnchorReceiptsCollection.createIndex({ ipfsDirectoryHashWithFiles: 1 }, { unique: true })
@@ -105,7 +105,7 @@ export const Business = ({
       ipfsFileHashes.map(ipfsFileHash =>
         claimAnchorReceiptsCollection.updateOne(
           { ipfsFileHash, 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash },
-          { $set: { ipfsDirectoryHashVerified: true } },
+          { $set: { batchDirectoryConfirmed: true } },
         ),
       ),
     )
@@ -132,7 +132,7 @@ export const Business = ({
     const logger = businessLogger.child({ method: 'uploadNextAnchorReceipt' })
     const entry = await claimAnchorReceiptsCollection.findOne({
       ipfsFileHashVerified: true,
-      ipfsDirectoryHashVerified: true,
+      batchDirectoryConfirmed: true,
       anchorReceiptFileHash: null,
     })
     if (!entry)
