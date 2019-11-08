@@ -137,14 +137,10 @@ export const Business = ({
       return
     logger.debug({ entry })
     const { claimId, ipfsFileHash, anchorReceipt } = entry
-    const anchorReceiptFileHash = await ipfs.addText()(JSON.stringify({ claimId, ipfsFileHash, ...anchorReceipt}))
+    const anchorReceiptFileHash = await ipfs.addJson({ claimId, ipfsFileHash, ...anchorReceipt})
     logger.debug({ anchorReceipt, anchorReceiptFileHash })
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { anchorReceiptFileHash } })
-    const ipfsDirectoryHash = await ipfs.createEmptyDirectory()
-    const ipfsDirectoryHashWithFiles = await ipfs.addFilesToDirectory({
-      ipfsDirectoryHash,
-      ipfsFileHashes: [ ipfsFileHash, anchorReceiptFileHash ],
-    })
+    const ipfsDirectoryHashWithFiles = await ipfs.createDirectory([ ipfsFileHash, anchorReceiptFileHash ])
     logger.info(
       { anchorReceipt, anchorReceiptFileHash, ipfsDirectoryHashWithFiles },
       'Stored Claim + Anchor Receipt in IPFS Directory',

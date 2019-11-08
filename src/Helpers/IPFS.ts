@@ -16,17 +16,21 @@ export interface IPFSConfiguration {
 }
 
 type addText = (config?: FetchOptions) => (text: string) => Promise<string>
+type addJson = (json: any) => Promise<string>
 type cat = (options?: FetchOptions) => (hash: string) => Promise<string>
 type createEmptyDirectory = () => Promise<string>
 type addFileToDirectory = (directoryhash: string, filehash: string) => Promise<string>
 type addFilesToDirectory = (x: { ipfsDirectoryHash: string; ipfsFileHashes: ReadonlyArray<string> }) => Promise<string>
+type createDirectory = (ipfsFileHashes: ReadonlyArray<string>) => Promise<string>
 
 export interface IPFS {
   readonly addText: addText
+  readonly addJson: addJson
   readonly cat: cat
   readonly createEmptyDirectory: createEmptyDirectory
   readonly addFileToDirectory: addFileToDirectory
   readonly addFilesToDirectory: addFilesToDirectory
+  readonly createDirectory: createDirectory
 }
 
 export const IPFS = ({
@@ -58,6 +62,8 @@ export const IPFS = ({
 
     return getHash(json)
   }
+
+  const addJson: addJson = json => addText()(JSON.stringify(json))
 
   const cat: cat = ({
     timeout = minutesToMiliseconds(10),
@@ -92,11 +98,21 @@ export const IPFS = ({
       Promise.resolve(ipfsDirectoryHash),
     )
 
+  const createDirectory: createDirectory = async (ipfsFileHashes) => {
+    const ipfsDirectoryHash = await createEmptyDirectory()
+    return addFilesToDirectory({
+      ipfsDirectoryHash,
+      ipfsFileHashes,
+    })
+  }
+
   return {
     addText,
+    addJson,
     cat,
     createEmptyDirectory,
     addFileToDirectory,
     addFilesToDirectory,
+    createDirectory,
   }
 }
