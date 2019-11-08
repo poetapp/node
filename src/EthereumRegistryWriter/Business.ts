@@ -35,8 +35,9 @@ interface DbEntry {
   readonly anchorReceipt?: Partial<PoetBlockAnchor>
   readonly anchorReceiptFileHash?: string
   readonly ipfsFileHashVerified?: boolean
-  readonly ipfsDirectoryHashWithFiles?: string
   readonly ipfsDirectoryHashVerified?: boolean
+  readonly ipfsDirectoryHashWithFiles?: string
+  readonly registryIndex?: number
 }
 
 export const Business = ({
