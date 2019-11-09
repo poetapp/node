@@ -109,7 +109,20 @@ export const Business = ({
     await Promise.all(claimFiles.map(confirmBatchDirectory))
 
     logger.trace({ claimFiles, ipfsDirectoryHash }, 'Batch directory confirmed')
-    // TODO: do something for files that don't match the expected directory
+
+    const findUnexpectedBatchDirectoryMatch = (claimFile: string) =>
+      claimAnchorReceiptsCollection.findOne(
+        { claimFile, 'anchorReceipt.ipfsDirectoryHash': { $ne: ipfsDirectoryHash } },
+        { projection: { _id: 0, claimFile: 1, ipfsDirectoryHash: 1 } },
+      )
+
+    const unexpectedBatchDirectoryMatches = await Promise.all(claimFiles.map(findUnexpectedBatchDirectoryMatch))
+
+    if (unexpectedBatchDirectoryMatches.length)
+      logger.warn(
+        { unexpectedBatchDirectoryMatches, ipfsDirectoryHash },
+        'These claims were expected to have a different Batch Directory.',
+      )
   }
 
   const confirmClaimFiles = async (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => {
@@ -123,7 +136,20 @@ export const Business = ({
       )
 
     await Promise.all(claimIPFSHashPairs.map(confirmClaimFile))
-    // TODO: do something for claims that don't match the expected file
+
+    const findUnexpectedClaimFile = ({ claim, ipfsFileHash: claimFile }: ClaimIPFSHashPair) =>
+      claimAnchorReceiptsCollection.findOne(
+        { claimId: claim.id, claimFile: { $ne: claimFile } },
+        { projection: { _id: 0, claimId: 1, claimFile: 1 } },
+      )
+
+    const unexpectedClaimFileMatches = await Promise.all(claimIPFSHashPairs.map(findUnexpectedClaimFile))
+
+    if (unexpectedClaimFileMatches.length)
+      logger.warn(
+        { unexpectedClaimFileMatches },
+        'These claims were expected be stored in a different file.',
+      )
   }
 
   const uploadNextAnchorReceipt = async () => {
