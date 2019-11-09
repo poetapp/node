@@ -44,8 +44,22 @@ export const Scheduler = ({
     }
   }
 
-  const uploadNextClaimInterval = new Interval(
+  const uploadNextAnchorReceiptInterval = new Interval(
     uploadNextAnchorReceipt,
+    secondsToMiliseconds(configuration.uploadAnchorReceiptIntervalInSeconds),
+  )
+
+  const uploadNextClaimFileAnchorReceiptPair = async () => {
+    const methodLogger = logger.child({ method: 'uploadNextClaimFileAnchorReceiptPair' })
+    try {
+      await business.uploadNextClaimFileAnchorReceiptPair()
+    } catch (error) {
+      methodLogger.error({ error }, 'Uncaught exception')
+    }
+  }
+
+  const uploadNextClaimFileAnchorReceiptPairInterval = new Interval(
+    uploadNextClaimFileAnchorReceiptPair,
     secondsToMiliseconds(configuration.uploadAnchorReceiptIntervalInSeconds),
   )
 
@@ -65,14 +79,17 @@ export const Scheduler = ({
 
   const start = async () => {
     logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Starting')
-    await uploadNextClaimInterval.start()
-    registerNextDirectoryInterval.start()
+    await uploadNextAnchorReceiptInterval.start()
+    await uploadNextClaimFileAnchorReceiptPairInterval.start()
+    await registerNextDirectoryInterval.start()
   }
 
   const stop = async () => {
     logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Stopping')
-    await uploadNextClaimInterval.stop()
-    registerNextDirectoryInterval.stop()
+    await uploadNextAnchorReceiptInterval.stop()
+    await uploadNextClaimFileAnchorReceiptPairInterval.stop()
+    await registerNextDirectoryInterval.stop()
+    logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Stopped')
   }
 
   return {

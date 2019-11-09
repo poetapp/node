@@ -26,6 +26,7 @@ export interface Business {
   readonly confirmBatchDirectory: (claimFiles: ReadonlyArray<string>, ipfsDirectoryHash: string) => Promise<void>
   readonly confirmClaimFiles: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
   readonly uploadNextAnchorReceipt: () => Promise<void>
+  readonly uploadNextClaimFileAnchorReceiptPair: () => Promise<void>
   readonly registerNextDirectory: () => Promise<void>
 }
 
@@ -161,14 +162,26 @@ export const Business = ({
     })
     if (!entry)
       return
-    logger.debug({ entry })
+    logger.debug(entry, 'Storing Anchor Receipt in an IPFS file')
     const { claimId, claimFile, anchorReceipt } = entry
     const anchorReceiptFile = await ipfs.addJson({ claimId, claimFile, ...anchorReceipt })
-    logger.debug({ anchorReceipt, anchorReceiptFile })
+    logger.debug({ anchorReceipt, anchorReceiptFile }, 'Stored Anchor Receipt in an IPFS file')
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { anchorReceiptFile } })
+  }
+
+  const uploadNextClaimFileAnchorReceiptPair = async () => {
+    const logger = businessLogger.child({ method: 'uploadNextAnchorReceipt' })
+    const entry = await claimAnchorReceiptsCollection.findOne({
+      anchorReceiptFile: { $ne: null },
+      claimAndAnchorReceiptDirectory: null,
+    })
+    if (!entry)
+      return
+    logger.debug(entry, 'Storing Claim + Anchor Receipt in IPFS directory')
+    const { claimId, claimFile, anchorReceiptFile } = entry
     const claimAndAnchorReceiptDirectory = await ipfs.createDirectory([ claimFile, anchorReceiptFile ])
     logger.info(
-      { anchorReceipt, anchorReceiptFile, claimAndAnchorReceiptDirectory },
+      entry,
       'Stored Claim + Anchor Receipt in IPFS Directory',
     )
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { claimAndAnchorReceiptDirectory } })
@@ -198,6 +211,7 @@ export const Business = ({
     confirmBatchDirectory,
     confirmClaimFiles,
     uploadNextAnchorReceipt,
+    uploadNextClaimFileAnchorReceiptPair,
     registerNextDirectory,
   }
 }
