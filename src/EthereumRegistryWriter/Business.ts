@@ -163,7 +163,7 @@ export const Business = ({
       return
     logger.debug({ entry })
     const { claimId, claimFile, anchorReceipt } = entry
-    const anchorReceiptFile = await ipfs.addJson({ claimId, claimFile, ...anchorReceipt})
+    const anchorReceiptFile = await ipfs.addJson({ claimId, claimFile, ...anchorReceipt })
     logger.debug({ anchorReceipt, anchorReceiptFile })
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { anchorReceiptFile } })
     const claimAndAnchorReceiptDirectory = await ipfs.createDirectory([ claimFile, anchorReceiptFile ])
