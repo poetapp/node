@@ -1,6 +1,7 @@
 import { PoetBlockAnchor } from '@po.et/poet-js'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
+import { identity } from 'ramda'
 
 import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
 import { IPFS } from 'Helpers/IPFS'
@@ -117,7 +118,8 @@ export const Business = ({
         { projection: { _id: 0, claimFile: 1, ipfsDirectoryHash: 1 } },
       )
 
-    const unexpectedBatchDirectoryMatches = await Promise.all(claimFiles.map(findUnexpectedBatchDirectoryMatch))
+    const unexpectedBatchDirectoryMatches = (await Promise.all(claimFiles.map(findUnexpectedBatchDirectoryMatch)))
+      .filter(identity)
 
     if (unexpectedBatchDirectoryMatches.length)
       logger.warn(
@@ -144,7 +146,8 @@ export const Business = ({
         { projection: { _id: 0, claimId: 1, claimFile: 1 } },
       )
 
-    const unexpectedClaimFileMatches = await Promise.all(claimIPFSHashPairs.map(findUnexpectedClaimFile))
+    const unexpectedClaimFileMatches = (await Promise.all(claimIPFSHashPairs.map(findUnexpectedClaimFile)))
+      .filter(identity)
 
     if (unexpectedClaimFileMatches.length)
       logger.warn(
