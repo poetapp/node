@@ -82,6 +82,7 @@ export const Scheduler = ({
     await uploadNextAnchorReceiptInterval.start()
     await uploadNextClaimFileAnchorReceiptPairInterval.start()
     await registerNextDirectoryInterval.start()
+    logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Started')
   }
 
   const stop = async () => {
