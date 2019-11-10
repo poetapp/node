@@ -97,24 +97,24 @@ export const Business = ({
 
   const confirmBatchDirectory = async (
     claimFiles: ReadonlyArray<string>,
-    ipfsDirectoryHash: string,
+    batchDirectory: string,
   ) => {
     const logger = businessLogger.child({ method: 'confirmBatchDirectory' })
-    logger.trace({ claimFiles, ipfsDirectoryHash }, 'Confirming batch directory')
+    logger.trace({ claimFiles, batchDirectory }, 'Confirming batch directory')
 
     const confirmBatchDirectory = (claimFile: string) =>
       claimAnchorReceiptsCollection.updateOne(
-        { claimFile, 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash },
+        { claimFile, 'anchorReceipt.ipfsDirectoryHash': batchDirectory },
         { $set: { batchDirectoryConfirmed: true } },
       )
 
     await Promise.all(claimFiles.map(confirmBatchDirectory))
 
-    logger.trace({ claimFiles, ipfsDirectoryHash }, 'Batch directory confirmed')
+    logger.info({ claimFiles, batchDirectory }, 'Batch directory confirmed')
 
     const findUnexpectedBatchDirectoryMatch = (claimFile: string) =>
       claimAnchorReceiptsCollection.findOne(
-        { claimFile, 'anchorReceipt.ipfsDirectoryHash': { $ne: ipfsDirectoryHash } },
+        { claimFile, 'anchorReceipt.ipfsDirectoryHash': { $ne: batchDirectory } },
         { projection: { _id: 0, claimFile: 1, ipfsDirectoryHash: 1 } },
       )
 
@@ -123,7 +123,7 @@ export const Business = ({
 
     if (unexpectedBatchDirectoryMatches.length)
       logger.warn(
-        { unexpectedBatchDirectoryMatches, ipfsDirectoryHash },
+        { unexpectedBatchDirectoryMatches, batchDirectory },
         'These claims were expected to have a different Batch Directory.',
       )
   }
