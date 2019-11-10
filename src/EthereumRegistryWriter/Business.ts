@@ -68,18 +68,18 @@ export const Business = ({
     await claimAnchorReceiptsCollection.insertOne({ claimId, claimFile })
   }
 
-  const setBatchDirectory = async (claimFiles: ReadonlyArray<string>, ipfsDirectoryHash: string) => {
+  const setBatchDirectory = async (claimFiles: ReadonlyArray<string>, batchDirectory: string) => {
     const logger = businessLogger.child({ method: 'setBatchDirectory' })
-    logger.trace({ claimFiles, ipfsDirectoryHash }, 'Setting batch directory')
+    logger.trace({ claimFiles, batchDirectory }, 'Setting batch directory')
 
     const setBatchDirectoryForClaimFile = (claimFile: string) =>
       claimAnchorReceiptsCollection.updateOne(
         { claimFile },
-        { $set: { 'anchorReceipt.ipfsDirectoryHash': ipfsDirectoryHash } },
+        { $set: { 'anchorReceipt.ipfsDirectoryHash': batchDirectory } },
       )
 
     await Promise.all(claimFiles.map(setBatchDirectoryForClaimFile))
-    logger.info({ ipfsDirectoryHash, claimFiles }, 'IPFS Directory Hash set successfully')
+    logger.info({ batchDirectory, claimFiles }, 'Batch directory set successfully')
   }
 
   const setAnchors =  async (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => {
