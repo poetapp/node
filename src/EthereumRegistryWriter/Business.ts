@@ -150,10 +150,7 @@ export const Business = ({
       .filter(identity)
 
     if (unexpectedClaimFileMatches.length)
-      logger.warn(
-        { unexpectedClaimFileMatches },
-        'These claims were expected be stored in a different file.',
-      )
+      logger.warn({ unexpectedClaimFileMatches }, 'These claims were expected be stored in a different file.')
   }
 
   const uploadNextAnchorReceipt = async () => {
