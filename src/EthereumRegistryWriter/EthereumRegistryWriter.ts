@@ -14,7 +14,7 @@ import { Router } from './Router'
 import { Scheduler } from './Scheduler'
 
 export interface EthereumRegistryWriterConfiguration extends LoggingConfiguration {
-  readonly dbUrl: string
+  readonly mongodbUrl: string
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
   readonly ipfs: IPFSConfiguration
@@ -31,7 +31,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
 
   logger.info({ configuration }, 'EthereumRegistryWriter Starting')
 
-  const mongoClient = await MongoClient.connect(configuration.dbUrl)
+  const mongoClient = await MongoClient.connect(configuration.mongodbUrl)
   const db = await mongoClient.db()
 
   const exchangesMessaging = pick(['poetAnchorDownloaded', 'claimsDownloaded'], configuration.exchanges)
@@ -39,10 +39,12 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
   await messaging.start()
 
   const ipfs = IPFS(configuration.ipfs)
+
   const ethereumRegistryContract = EthereumRegistryContract({
     contractAddress: configuration.contractAddress,
     privateKey: configuration.privateKey,
   })
+
   const business = Business({
     dependencies: {
       logger,
@@ -51,6 +53,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
       ethereumRegistryContract,
     },
   })
+  await business.createDbIndices()
 
   const router = Router({
     dependencies: {
@@ -61,7 +64,6 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     exchange: configuration.exchanges,
   })
   await router.start()
-  await business.createDbIndices()
 
   const scheduler = Scheduler({
     dependencies: {

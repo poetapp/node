@@ -20,7 +20,7 @@ const main = async () => {
   const stop = await EthereumRegistryWriter({
     loggingLevel: configuration.loggingLevel,
     loggingPretty: configuration.loggingPretty,
-    dbUrl: configuration.mongodbUrl,
+    mongodbUrl: configuration.mongodbUrl,
     rabbitmqUrl: configuration.rabbitmqUrl,
     ipfs: {
       url: configuration.ipfsUrl,
