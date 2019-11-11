@@ -4,16 +4,7 @@ Creates Anchor Receipts for claims and adds them along the referenced claim to a
 
 ## Configuration
 
-The following configuration properties affect the EthereumRegistryWriter Module:
-
-```ts
-{
-  dbUrl: string
-  rabbitmqUrl: string
-  exchanges: ExchangeConfiguration
-  ipfs: IPFSConfiguration
-}
-```
+The configuration options for this service are detailed in the `EthereumRegistryWriterConfiguration` interface. The configuration is loaded in the `index.ts` file.
 
 ## Breakdown
 
@@ -36,31 +27,35 @@ This module uses the `claimAnchorReceipts` collection. Entries in the collection
 ```js
 > db.claimAnchorReceipts.find().pretty()
 {
-  "_id" : ObjectId("5db7b6a5045a3747f20023ba"),
-  "claimId" : "bdda37c20121c657eb40f249161c6aa8b86689ba3f75e296a5f6e5f815a18fa6",
-  "ipfsFileHash" : "Qmat8mbci8qBfCZtfWmSx7g9piBLVEg99m4K4gqA8779zQ",
-  "ipfsDirectoryHash" : "QmP3pMzGmjTFCc81ZCHB52E5D89K2zQu3xYTxXKoAMny5k",
-  "blockHash" : "53ac10b9d0efc5239f9019df634e0acd7d901a07dffdcded1bdba4377cf2eb02",
-  "blockHeight" : 104,
-  "prefix" : "POET",
-  "storageProtocol" : 0,
-  "transactionId" : "a8f86dc7a1e190d52969220ceb270d6b13d0a08cba7d1ce71a3eb5ab2d65f2bb",
-  "version" : 0,
-  "ipfsDirectoryHashVerified" : true,
-  "ipfsFileHashVerified" : true,
-  "ipfsDirectoryHashWithFiles" : "QmVawzn56AYBo6ipCpbq93o1bHUPZnN8aipuBFRfYzprWX"
+  "_id" : ObjectId("5dc66ac1804e2f27453ae0ed"),
+  "claimId" : "da9e8b71edbed23778cf286863a59f19be4119cb0edc70269dfed2a8d9cf6ea4",
+  "claimFile" : "QmeKmeDJawE39Lu4R4B6GsM2uJqKmkGUGaEXTBeHXheZJK",
+  "anchorReceipt" : {
+    "storageProtocol" : 0,
+    "prefix" : "POET",
+    "version" : 0,
+    "ipfsDirectoryHash" : "QmNhdBgy6U8LAgHYvrXg4ya3L2BAB1xt8UtCtGTZjLDmop",
+    "transactionId" : "5c5072848065cfa7c526bf29f8c016e9a40db5c1d1b3e9336ec31e12e80ca31b",
+    "blockHeight" : 140,
+    "blockHash" : "1a3653f5d41022fdab18faa226fb5ceea6d99d2bbc85c5323b1c466c7e3a2f13"
+  },
+  "batchDirectoryConfirmed" : true,
+  "claimFileConfirmed" : true,
+  "anchorReceiptFile" : "QmasXBjkzao1FSjq1qY6bbukiHdAny4Aac6SRRPbcCeNLs",
+  "claimAndAnchorReceiptDirectory" : "QmdoPtQGX3aVkmSBv4QrggBsAB2cLLaGxyX4XH4wmuXubY",
+  "registryIndex" : 1727
 }
 ```
 
 ## Files
 
+### index.ts
+
+Loads the configuration, creates the parent logger and instantiates and runs the EthereumRegistryWriter, passing it the loaded configuration.
+
 ### EthereumRegistryWriter
 
 Composition root of the entire micro service.
-
-### index.ts
-
-Bootstrap to run the service.
 
 ### Router
 
