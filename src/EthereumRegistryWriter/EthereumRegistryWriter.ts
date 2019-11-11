@@ -1,11 +1,11 @@
 import { MongoClient } from 'mongodb'
-import * as Pino from 'pino'
+import Pino from 'pino'
 import { pick } from 'ramda'
 
 import { LoggingConfiguration } from 'Configuration'
 import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
 import { IPFS, IPFSConfiguration } from 'Helpers/IPFS'
-import { createModuleLogger } from 'Helpers/Logging'
+import { loggingConfigurationToPinoConfiguration } from 'Helpers/Logging'
 import { Messaging } from 'Messaging/Messaging'
 
 import { Business } from './Business'
@@ -27,7 +27,7 @@ export interface EthereumRegistryWriterConfiguration extends LoggingConfiguratio
 type stop = () => Promise<void>
 
 export const EthereumRegistryWriter = async (configuration: EthereumRegistryWriterConfiguration): Promise<stop> => {
-  const logger: Pino.Logger = createModuleLogger(configuration, __dirname)
+  const logger = Pino(loggingConfigurationToPinoConfiguration(configuration))
 
   logger.info({ configuration }, 'EthereumRegistryWriter Starting')
 
