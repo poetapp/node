@@ -78,7 +78,7 @@ export const Scheduler = ({
   )
 
   const start = async () => {
-    logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Starting')
+    logger.debug({ configuration }, 'EthereumRegistryWriter Scheduler Starting')
     await uploadNextAnchorReceiptInterval.start()
     await uploadNextClaimFileAnchorReceiptPairInterval.start()
     await registerNextDirectoryInterval.start()
@@ -86,11 +86,11 @@ export const Scheduler = ({
   }
 
   const stop = async () => {
-    logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Stopping')
+    logger.debug('EthereumRegistryWriter Scheduler Stopping')
     await uploadNextAnchorReceiptInterval.stop()
     await uploadNextClaimFileAnchorReceiptPairInterval.stop()
     await registerNextDirectoryInterval.stop()
-    logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Stopped')
+    logger.info('EthereumRegistryWriter Scheduler Stopped')
   }
 
   return {
