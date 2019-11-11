@@ -8,17 +8,25 @@ The configuration options for this service are detailed in the `EthereumRegistry
 
 ## Breakdown
 
-This module listens to RabbitMQ messages coming from other modules and builds an internal database of anchors for claims created by the running node (claims downloaded from the network that weren't created by this node will be ignored by this service).
+This module listens to RabbitMQ messages coming from other modules and builds an internal database of anchor receipts for claims submitted to this node. Claims downloaded from the network that weren't submitted to this node are ignored by this service.
 
-The `ipfsFileHash` is added right along the `claimId` when the claim is created. The `ipfsDirectoryHash` is set when the IPFS directory is created. Everything else is set once the anchor is actually downloaded from Bitcoin, which means it has at least one confirmation. 
+The `claimFile` is added right along the `claimId` when the claim is submitted to this node. The `ipfsDirectoryHash` is set when the IPFS directory is created. Everything else is set once the anchor receipt is actually downloaded from Bitcoin, which means it has at least one confirmation. 
 
-Whenever an IPFS directory is read and the list of IFPS files it contains is retrieved this service will iterate over them and verify that the IPFS directory it has associated for every IPFS file it has in its database matches, which serves to confirm that the IPFS file we're dealing with actually got anchored with in the IPFS directory we expected it to, and no other (otherwise we'd have an incorrect anchor), and sets `ipfsDirectoryHashVerified` to `true`. 
+Whenever an batch directory is read and the list of files it contains is retrieved this service iterates over them and confirms that the Batch Directory it has associated for every Claim File it has in its database matches, which serves to confirm that the IPFS file we're dealing with actually got anchored with in the IPFS directory we expected it to, and no other (otherwise we'd have an incorrect anchor), and sets `batchDirectoryConfirmed` to `true`.
 
-The same goes for verifying that the `claimId` in its database was actually anchored in the `ipfsFileHash` we expected it to, and if so, sets `ipfsFileHashVerified` to `true`. 
+If there are any Claim Files in the database that don't match the Batch Directory we expected them to, the service will log a warning.
 
-Once both `ipfsDirectoryHashVerified` and `ipfsFileHashVerified` are `true` for a given entry, it gets picked up by the Scheduler, which then creates an IPFS Directory and stores the Claim along with the Anchor Receipt in it, and sets `ipfsDirectoryHashWithFiles` to the address of the directory.
+The same goes for confirming that the `claimId` in the database was actually anchored in the `claimFile` we expected it to, and if so, sets `claimFileConfirmed` to `true`.
 
-After the entry has `ipfsDirectoryHashWithFiles` set, it once again gets picked up, this time to be stored in the Ethereum Po.et Registry Contract.
+As with the confirmation of Batch Directories, the service will log a warning for unexpected Claim Id - Claim File matches. 
+
+Once both `claimFileConfirmed` and `batchDirectoryConfirmed` are `true` for a given entry, it gets picked up by the Scheduler, which then creates an IPFS Directory and stores the Claim along with the Anchor Receipt in it, and sets `claimAndAnchorReceiptDirectory` to the address of the directory.
+
+After the entry has `claimAndAnchorReceiptDirectory` set, it once again gets picked up by the Scheduler, this time to be stored in the Ethereum Po.et Registry Contract.
+
+If the `claimAndAnchorReceiptDirectory` gets successfully stored in the Ethereum contract, the cidCount() from the contract gets written to the database as `registryIndex` for reference. 
+
+The actual index of the entry in the contract's array should be greater than or equal to `registryIndex`, but there's no guarantee that it's the actual index since reading the count and storing a value are two separate, non-atomic operations, and the order in which elements are written to the contract's array is not guaranteed to be deterministic.
 
 ## Database
 
