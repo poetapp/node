@@ -16,29 +16,26 @@ const logger: Pino.Logger = Pino({
   prettyPrint: configuration.loggingPretty,
 })
 
-const main = async () => {
-  const stop = await EthereumRegistryWriter({
-    loggingLevel: configuration.loggingLevel,
-    loggingPretty: configuration.loggingPretty,
-    mongodbUrl: configuration.mongodbUrl,
-    rabbitmqUrl: configuration.rabbitmqUrl,
-    ipfs: {
-      url: configuration.ipfsUrl,
-    },
-    exchanges: {
-      claimIpfsHash: configuration.exchangeClaimIpfsHash,
-      batchCreated: configuration.exchangeBatchWriterCreateNextBatchSuccess,
-      batchRead: configuration.exchangeBatchReaderReadNextDirectorySuccess,
-      poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
-      claimsDownloaded: configuration.exchangeClaimsDownloaded,
-    },
-    contractAddress: configuration.ethereumRegistryContractAddress,
-    privateKey: configuration.ethereumRegistryPrivateKey,
-    uploadAnchorReceiptIntervalInSeconds: configuration.ethereumRegistryUploadAnchorReceiptIntervalInSeconds,
-    registerNextDirectoryIntervalInSeconds: configuration.ethereumRegistryRegisterNextDirectoryIntervalInSeconds,
-  })
+EthereumRegistryWriter({
+  loggingLevel: configuration.loggingLevel,
+  loggingPretty: configuration.loggingPretty,
+  mongodbUrl: configuration.mongodbUrl,
+  rabbitmqUrl: configuration.rabbitmqUrl,
+  ipfs: {
+    url: configuration.ipfsUrl,
+  },
+  exchanges: {
+    claimIpfsHash: configuration.exchangeClaimIpfsHash,
+    batchCreated: configuration.exchangeBatchWriterCreateNextBatchSuccess,
+    batchRead: configuration.exchangeBatchReaderReadNextDirectorySuccess,
+    poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
+    claimsDownloaded: configuration.exchangeClaimsDownloaded,
+  },
+  contractAddress: configuration.ethereumRegistryContractAddress,
+  privateKey: configuration.ethereumRegistryPrivateKey,
+  uploadAnchorReceiptIntervalInSeconds: configuration.ethereumRegistryUploadAnchorReceiptIntervalInSeconds,
+  registerNextDirectoryIntervalInSeconds: configuration.ethereumRegistryRegisterNextDirectoryIntervalInSeconds,
+})
+  .then(stop => process.on('SIGINT', stop))
+  .catch(catchStartupError('EthereumRegistryWriter', logger))
 
-  process.on('SIGINT', stop)
-}
-
-main().catch(catchStartupError('EthereumRegistryWriter', logger))
