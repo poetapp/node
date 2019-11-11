@@ -6,7 +6,29 @@ Creates Anchor Receipts for claims and adds them along the referenced claim to a
 
 The configuration options for this service are detailed in the `EthereumRegistryWriterConfiguration` interface. The configuration is loaded in the `index.ts` file.
 
-## Breakdown
+## Files
+
+### index.ts
+
+Loads the configuration, creates the parent logger and instantiates and runs the EthereumRegistryWriter, passing it the loaded configuration.
+
+### EthereumRegistryWriter
+
+Composition root of the entire micro service.
+
+### Router
+
+Responsible for interaction with RabbitMQ.
+
+### Scheduler
+
+Responsible for running and managing intervals.
+
+### Business
+
+All business logic goes here.
+
+## Business Logic Breakdown
 
 This module listens to RabbitMQ messages coming from other modules and builds an internal database of anchor receipts for claims submitted to this node. Claims downloaded from the network that weren't submitted to this node are ignored by this service.
 
@@ -54,25 +76,3 @@ This module uses the `claimAnchorReceipts` collection. Entries in the collection
   "registryIndex" : 1727
 }
 ```
-
-## Files
-
-### index.ts
-
-Loads the configuration, creates the parent logger and instantiates and runs the EthereumRegistryWriter, passing it the loaded configuration.
-
-### EthereumRegistryWriter
-
-Composition root of the entire micro service.
-
-### Router
-
-Responsible for interaction with RabbitMQ.
-
-### Scheduler
-
-Responsible for running and managing intervals.
-
-### Business
-
-All business logic goes here.
