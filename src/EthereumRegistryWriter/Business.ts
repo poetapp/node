@@ -70,7 +70,7 @@ export const Business = ({
 
   const setBatchDirectory = async (claimFiles: ReadonlyArray<string>, batchDirectory: string) => {
     const logger = businessLogger.child({ method: 'setBatchDirectory' })
-    logger.trace({ claimFiles, batchDirectory }, 'Setting batch directory')
+    logger.debug({ claimFiles, batchDirectory }, 'Setting batch directory')
 
     const setBatchDirectoryForClaimFile = (claimFile: string) =>
       claimAnchorReceiptsCollection.updateOne(
@@ -84,7 +84,7 @@ export const Business = ({
 
   const setAnchors =  async (poetAnchors: ReadonlyArray<PoetBlockAnchor>) => {
     const logger = businessLogger.child({ method: 'setAnchors' })
-    logger.info({ poetAnchors }, 'Setting Po.et Anchors')
+    logger.debug({ poetAnchors }, 'Setting anchor receipts')
 
     const setAnchorReceipt = (anchorReceipt: PoetBlockAnchor) =>
       claimAnchorReceiptsCollection.updateOne(
@@ -93,6 +93,7 @@ export const Business = ({
       )
 
     await Promise.all(poetAnchors.map(setAnchorReceipt))
+    logger.info({ poetAnchors }, 'Anchors receipts set')
   }
 
   const confirmBatchDirectory = async (
@@ -100,7 +101,7 @@ export const Business = ({
     batchDirectory: string,
   ) => {
     const logger = businessLogger.child({ method: 'confirmBatchDirectory' })
-    logger.trace({ claimFiles, batchDirectory }, 'Confirming batch directory')
+    logger.debug({ claimFiles, batchDirectory }, 'Confirming batch directory')
 
     const confirmBatchDirectory = (claimFile: string) =>
       claimAnchorReceiptsCollection.updateOne(
@@ -140,6 +141,8 @@ export const Business = ({
 
     await Promise.all(claimIPFSHashPairs.map(confirmClaimFile))
 
+    logger.info({ claimIPFSHashPairs }, 'Confirmed Claim files')
+
     const findUnexpectedClaimFile = ({ claim, ipfsFileHash: claimFile }: ClaimIPFSHashPair) =>
       claimAnchorReceiptsCollection.findOne(
         { claimId: claim.id, claimFile: { $ne: claimFile } },
@@ -165,25 +168,22 @@ export const Business = ({
     logger.debug(entry, 'Storing Anchor Receipt in an IPFS file')
     const { claimId, claimFile, anchorReceipt } = entry
     const anchorReceiptFile = await ipfs.addJson({ claimId, claimFile, ...anchorReceipt })
-    logger.debug({ anchorReceipt, anchorReceiptFile }, 'Stored Anchor Receipt in an IPFS file')
+    logger.info({ anchorReceipt, anchorReceiptFile }, 'Stored Anchor Receipt in an IPFS file')
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { anchorReceiptFile } })
   }
 
   const uploadNextClaimFileAnchorReceiptPair = async () => {
-    const logger = businessLogger.child({ method: 'uploadNextAnchorReceipt' })
+    const logger = businessLogger.child({ method: 'uploadNextClaimFileAnchorReceiptPair' })
     const entry = await claimAnchorReceiptsCollection.findOne({
       anchorReceiptFile: { $ne: null },
       claimAndAnchorReceiptDirectory: null,
     })
     if (!entry)
       return
-    logger.debug(entry, 'Storing Claim + Anchor Receipt in IPFS directory')
+    logger.debug(entry, 'Storing (claim + anchor receipt) in an IPFS directory')
     const { claimId, claimFile, anchorReceiptFile } = entry
     const claimAndAnchorReceiptDirectory = await ipfs.createDirectory([ claimFile, anchorReceiptFile ])
-    logger.info(
-      entry,
-      'Stored Claim + Anchor Receipt in IPFS Directory',
-    )
+    logger.info({ ...entry, claimAndAnchorReceiptDirectory }, 'Stored (claim + anchor receipt) in an IPFS Directory')
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { claimAndAnchorReceiptDirectory } })
   }
 
@@ -197,9 +197,9 @@ export const Business = ({
       return
     const { claimId, claimAndAnchorReceiptDirectory } = entry
     const cidCount = await ethereumRegistryContract.getCidCount()
-    logger.info({ claimId, claimAndAnchorReceiptDirectory, cidCount }, 'Registering next IPFS directory to Ethereum')
+    logger.debug({ claimId, claimAndAnchorReceiptDirectory, cidCount }, 'Registering next (claim + anchor receipt) directory to Ethereum')
     await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
-    logger.trace({ claimId, claimAndAnchorReceiptDirectory, cidCount }, 'IPFS Directory added to Ethereum')
+    logger.info({ claimId, claimAndAnchorReceiptDirectory, cidCount }, '(claim + anchor receipt) directory added to Ethereum')
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { registryIndex: cidCount } })
   }
 
