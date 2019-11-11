@@ -1,4 +1,4 @@
-import * as Pino from 'pino'
+import Pino from 'pino'
 
 import { childWithFileName } from 'Helpers/Logging'
 import { ClaimIPFSHashPair } from 'Interfaces'
@@ -47,12 +47,12 @@ export const Router = ({
     const messageContent = message.content.toString()
     const { claimId, ipfsFileHash } = JSON.parse(messageContent)
 
-    logger.info({ claimId, ipfsFileHash }, 'Storing an IPFS File Hash + Claim Id')
+    logger.trace({ claimId, ipfsFileHash }, 'Storing an IPFS File Hash + Claim Id')
 
     try {
       await business.insertClaimIdFilePair(claimId, ipfsFileHash)
     } catch (error) {
-      logger.error({ error }, 'Failed to set claimId and ipfsFileHash on works')
+      logger.error({ error, claimId, ipfsFileHash })
     }
   }
 
@@ -67,7 +67,7 @@ export const Router = ({
     try {
       await business.setBatchDirectory(ipfsFileHashes, ipfsDirectoryHash)
     } catch (error) {
-      logger.error({ ipfsDirectoryHash, ipfsFileHashes, error }, 'Error setting IPFS Directory Hashes')
+      logger.error({ error, ipfsDirectoryHash, ipfsFileHashes })
     }
   }
 
@@ -77,10 +77,11 @@ export const Router = ({
     const { poetBlockAnchors } = blockDownloaded
 
     logger.trace({ poetBlockAnchors }, 'Downloaded Po.et Anchor')
+
     try {
       await business.setAnchors(poetBlockAnchors)
     } catch (error) {
-      logger.error({ error }, 'Failed to upsert poetBlockAnchors on works')
+      logger.error({ error, poetBlockAnchors })
     }
   }
 
@@ -89,7 +90,9 @@ export const Router = ({
 
     const messageContent = message.content.toString()
     const { ipfsFileHashes, ipfsDirectoryHash } = JSON.parse(messageContent)
-    logger.info({ ipfsDirectoryHash, ipfsFileHashes }, 'Batch Read')
+
+    logger.trace({ ipfsDirectoryHash, ipfsFileHashes }, 'Batch Read')
+
     try {
       await business.confirmBatchDirectory(ipfsFileHashes, ipfsDirectoryHash)
     } catch (error) {
@@ -101,10 +104,11 @@ export const Router = ({
     const logger = routerLogger.child({ method: 'onClaimsDownloaded' })
 
     logger.trace({ claimIPFSHashPairs }, 'Downloaded (IPFS Hash, Claim) pairs')
+
     try {
       await business.confirmClaimFiles(claimIPFSHashPairs)
     } catch (error) {
-      logger.error({ error })
+      logger.error({ error, claimIPFSHashPairs })
     }
   }
 
