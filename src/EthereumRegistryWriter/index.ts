@@ -31,6 +31,8 @@ EthereumRegistryWriter({
     poetAnchorDownloaded: configuration.exchangePoetAnchorDownloaded,
     claimsDownloaded: configuration.exchangeClaimsDownloaded,
   },
+  rpcUrl: configuration.ethereumRpcUrl,
+  chainId: configuration.ethereumChainId,
   contractAddress: configuration.ethereumRegistryContractAddress,
   privateKey: configuration.ethereumRegistryPrivateKey,
   uploadAnchorReceiptIntervalInSeconds: configuration.ethereumRegistryUploadAnchorReceiptIntervalInSeconds,

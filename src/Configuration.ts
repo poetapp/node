@@ -44,6 +44,8 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly bitcoinFeeEstimateMode: 'CONSERVATIVE' | 'ECONOMICAL'
   readonly bitcoinFeeRate: number
 
+  readonly ethereumRpcUrl: string
+  readonly ethereumChainId: number
   readonly ethereumRegistryContractAddress: string
   readonly ethereumRegistryPrivateKey: string
   readonly ethereumRegistryUploadAnchorReceiptIntervalInSeconds: number
@@ -133,6 +135,8 @@ export const DefaultConfiguration: Configuration = {
 
   forceBlockHeight: undefined,
 
+  ethereumRpcUrl: 'http://localhost:8545',
+  ethereumChainId: 4,
   ethereumRegistryContractAddress: '',
   ethereumRegistryPrivateKey: '',
   ethereumRegistryUploadAnchorReceiptIntervalInSeconds: 60,

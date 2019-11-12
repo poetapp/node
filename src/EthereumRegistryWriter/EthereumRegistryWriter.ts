@@ -18,6 +18,8 @@ export interface EthereumRegistryWriterConfiguration extends LoggingConfiguratio
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
   readonly ipfs: IPFSConfiguration
+  readonly rpcUrl: string
+  readonly chainId: number
   readonly contractAddress: string
   readonly privateKey: string
   readonly uploadAnchorReceiptIntervalInSeconds: number
@@ -41,6 +43,8 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
   const ipfs = IPFS(configuration.ipfs)
 
   const ethereumRegistryContract = EthereumRegistryContract({
+    rpcUrl: configuration.rpcUrl,
+    chainId: configuration.chainId,
     contractAddress: configuration.contractAddress,
     privateKey: configuration.privateKey,
   })
