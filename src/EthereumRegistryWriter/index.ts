@@ -38,4 +38,3 @@ EthereumRegistryWriter({
 })
   .then(stop => process.on('SIGINT', stop))
   .catch(catchStartupError('EthereumRegistryWriter', logger))
-

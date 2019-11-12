@@ -197,9 +197,15 @@ export const Business = ({
       return
     const { claimId, claimAndAnchorReceiptDirectory } = entry
     const cidCount = await ethereumRegistryContract.getCidCount()
-    logger.debug({ claimId, claimAndAnchorReceiptDirectory, cidCount }, 'Registering next (claim + anchor receipt) directory to Ethereum')
+    logger.debug(
+      { claimId, claimAndAnchorReceiptDirectory, cidCount },
+      'Registering next (claim + anchor receipt) directory to Ethereum',
+    )
     await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
-    logger.info({ claimId, claimAndAnchorReceiptDirectory, cidCount }, '(claim + anchor receipt) directory added to Ethereum')
+    logger.info(
+      { claimId, claimAndAnchorReceiptDirectory, cidCount },
+      '(claim + anchor receipt) directory added to Ethereum',
+    )
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { registryIndex: cidCount } })
   }
 
