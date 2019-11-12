@@ -1,7 +1,7 @@
-import * as FormData from 'form-data'
-import fetch, { Response } from 'node-fetch'
+import FormData from 'form-data'
+import fetch from 'node-fetch'
 import { prop } from 'ramda'
-import * as str from 'string-to-stream'
+import str from 'string-to-stream'
 
 import { minutesToMiliseconds } from './Time'
 
@@ -16,11 +16,21 @@ export interface IPFSConfiguration {
 }
 
 type addText = (config?: FetchOptions) => (text: string) => Promise<string>
+type addJson = (json: any) => Promise<string>
 type cat = (options?: FetchOptions) => (hash: string) => Promise<string>
+type createEmptyDirectory = () => Promise<string>
+type addFileToDirectory = (directoryhash: string, filehash: string) => Promise<string>
+type addFilesToDirectory = (x: { ipfsDirectoryHash: string; ipfsFileHashes: ReadonlyArray<string> }) => Promise<string>
+type createDirectory = (ipfsFileHashes: ReadonlyArray<string>) => Promise<string>
 
 export interface IPFS {
-  addText: addText
-  cat: cat
+  readonly addText: addText
+  readonly addJson: addJson
+  readonly cat: cat
+  readonly createEmptyDirectory: createEmptyDirectory
+  readonly addFileToDirectory: addFileToDirectory
+  readonly addFilesToDirectory: addFilesToDirectory
+  readonly createDirectory: createDirectory
 }
 
 export const IPFS = ({
@@ -53,6 +63,8 @@ export const IPFS = ({
     return getHash(json)
   }
 
+  const addJson: addJson = json => addText()(JSON.stringify(json))
+
   const cat: cat = ({
     timeout = minutesToMiliseconds(10),
   }: FetchOptions = {}) => async (hash) => {
@@ -62,8 +74,45 @@ export const IPFS = ({
     return response.text()
   }
 
+  const createEmptyDirectory: createEmptyDirectory = async () => {
+    const response = await fetch(`${url}/api/v0/object/new?arg=unixfs-dir`)
+    const json = await response.json()
+    return json.Hash
+  }
+
+  const addFileToDirectory: addFileToDirectory = async (ipfsDirectoryHash, fileHash) => {
+    const response = await fetch(
+      `${url}/api/v0/object/patch/add-link?arg=${ipfsDirectoryHash}&arg=${fileHash}&arg=${fileHash}`,
+    )
+    const json = await response.json()
+
+    if (json.Type === 'error')
+      throw new Error(json.Message)
+
+    return json.Hash
+  }
+
+  const addFilesToDirectory: addFilesToDirectory = ({ ipfsDirectoryHash = '', ipfsFileHashes = [] }) =>
+    ipfsFileHashes.reduce(
+      async (acc, cur) => addFileToDirectory(await acc, cur),
+      Promise.resolve(ipfsDirectoryHash),
+    )
+
+  const createDirectory: createDirectory = async (ipfsFileHashes) => {
+    const ipfsDirectoryHash = await createEmptyDirectory()
+    return addFilesToDirectory({
+      ipfsDirectoryHash,
+      ipfsFileHashes,
+    })
+  }
+
   return {
     addText,
+    addJson,
     cat,
+    createEmptyDirectory,
+    addFileToDirectory,
+    addFilesToDirectory,
+    createDirectory,
   }
 }

@@ -1,8 +1,6 @@
 /* tslint:disable:no-relative-imports */
 import { asyncPipe } from 'Helpers/asyncPipe'
-import * as FormData from 'form-data'
-import * as fetch from 'node-fetch'
-import * as path from 'path'
+import FormData from 'form-data'
 import { prop, identity, head, map, view, lensPath } from 'ramda'
 import { describe } from 'riteway'
 

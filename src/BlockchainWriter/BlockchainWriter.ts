@@ -1,6 +1,6 @@
 import BitcoinCore = require('bitcoin-core')
 import { Collection, MongoClient } from 'mongodb'
-import * as Pino from 'pino'
+import Pino from 'pino'
 import { pick } from 'ramda'
 
 import { BitcoinRPCConfiguration, LoggingConfiguration } from 'Configuration'

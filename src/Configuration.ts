@@ -43,6 +43,13 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
 
   readonly bitcoinFeeEstimateMode: 'CONSERVATIVE' | 'ECONOMICAL'
   readonly bitcoinFeeRate: number
+
+  readonly ethereumRpcUrl: string
+  readonly ethereumChainId: number
+  readonly ethereumRegistryContractAddress: string
+  readonly ethereumRegistryPrivateKey: string
+  readonly ethereumRegistryUploadAnchorReceiptIntervalInSeconds: number
+  readonly ethereumRegistryRegisterNextDirectoryIntervalInSeconds: number
 }
 
 export interface LoggingConfiguration {
@@ -127,6 +134,13 @@ export const DefaultConfiguration: Configuration = {
   uploadClaimMaxAttempts: 10,
 
   forceBlockHeight: undefined,
+
+  ethereumRpcUrl: 'http://localhost:8545',
+  ethereumChainId: 4,
+  ethereumRegistryContractAddress: '',
+  ethereumRegistryPrivateKey: '',
+  ethereumRegistryUploadAnchorReceiptIntervalInSeconds: 60,
+  ethereumRegistryRegisterNextDirectoryIntervalInSeconds: 60,
 
   exchangeAnchorNextHashRequest: 'ANCHOR_NEXT_HASH_REQUEST',
   exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',

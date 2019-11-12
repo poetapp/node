@@ -9,7 +9,7 @@ export interface Entry {
 
 type start = () => Promise<void>
 
-type addEntry = (x: Entry) => Promise<InsertOneWriteOpResult>
+type addEntry = (x: Entry) => Promise<void>
 
 type findNextEntries = () => Promise<ReadonlyArray<Entry>>
 
@@ -40,8 +40,9 @@ export class FileDAO {
     await this.fileCollection.createIndex({ ipfsFileHash: 1 }, { unique: true })
   }
 
-  addEntry: addEntry = ({ ipfsFileHash }) =>
-    this.fileCollection.insertOne({ ipfsFileHash, successTime: null, ipfsDirectoryHash: null })
+  addEntry: addEntry = async ({ ipfsFileHash }) => {
+    await this.fileCollection.insertOne({ ipfsFileHash, successTime: null, ipfsDirectoryHash: null })
+  }
 
   findNextEntries: findNextEntries = () =>
     this.fileCollection.find({ successTime: null }, { fields: { _id: false, ipfsFileHash: true } }).toArray()

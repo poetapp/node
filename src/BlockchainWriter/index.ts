@@ -2,7 +2,7 @@ import 'Extensions/Array'
 import 'Extensions/Error'
 import 'Extensions/Promise'
 
-import * as Pino from 'pino'
+import Pino from 'pino'
 
 import { catchStartupError } from 'Helpers/moduleStartStopCatch'
 import { loadConfigurationWithDefaults } from 'LoadConfiguration'

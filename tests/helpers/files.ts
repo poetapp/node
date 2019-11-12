@@ -1,7 +1,7 @@
-import * as FormData from 'form-data'
+import FormData from 'form-data'
 import * as fs from 'fs'
-import fetch, { Response } from 'node-fetch'
-import * as stringToStream from 'string-to-stream'
+import fetch from 'node-fetch'
+import stringToStream from 'string-to-stream'
 
 const FILES_PATH = 'files'
 
@@ -39,8 +39,6 @@ const postStringStreams = (url: string) => (xs: ReadonlyArray<string>) => {
     body: formData,
   })
 }
-
-export const getResponseJson = (x: Response) => x.json()
 
 interface FileHelperConfiguration {
   readonly port: string

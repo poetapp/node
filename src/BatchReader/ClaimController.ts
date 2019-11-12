@@ -26,8 +26,9 @@ export class ClaimController {
     this.ipfs = ipfs
   }
 
-  addEntries = (entries: ReadonlyArray<{ ipfsDirectoryHash: string }>): Promise<InsertWriteOpResult> =>
-    this.directoryDAO.addEntries(entries)
+  addEntries = async (entries: ReadonlyArray<{ ipfsDirectoryHash: string }>): Promise<void> => {
+    await this.directoryDAO.addEntries(entries)
+  }
 
   readNextDirectory = async (): Promise<{ ipfsDirectoryHash: string; ipfsFileHashes: ReadonlyArray<string> }> => {
     const collectionItem = await this.directoryDAO.findNextEntry()

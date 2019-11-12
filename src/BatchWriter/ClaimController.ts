@@ -1,7 +1,7 @@
 import { NoMoreEntriesException } from 'Exceptions'
+import { IPFS } from 'Helpers/IPFS'
 
 import { FileDAO } from './FileDAO'
-import { IPFS } from './IPFS'
 
 export interface Dependencies {
   readonly fileDAO: FileDAO

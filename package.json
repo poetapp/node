@@ -8,6 +8,7 @@
   "scripts": {
     "start": "node dist/babel/src",
     "start:blockchain-writer": "node dist/babel/src/BlockchainWriter/index.js",
+    "start:ethereum-registry-writer": "node dist/babel/src/EthereumRegistryWriter/index.js",
     "build": "npm run build-clear && npm run build-ts && npm run build-babel",
     "lint": "tslint -p ./tsconfig.with-tests.json",
     "lint:fix": "tslint -p ./tsconfig.with-tests.json --fix",
@@ -71,7 +72,8 @@
     "pino": "4.17.6",
     "protobufjs": "6.8.8",
     "ramda": "0.26.1",
-    "string-to-stream": "1.1.1"
+    "string-to-stream": "1.1.1",
+    "web3": "1.2.2"
   },
   "devDependencies": {
     "@po.et/tslint-rules": "2.2.0",
@@ -82,7 +84,7 @@
     "@types/koa": "2.0.47",
     "@types/koa-helmet": "3.1.2",
     "@types/koa-router": "7.0.35",
-    "@types/mongodb": "3.1.17",
+    "@types/mongodb": "3.3.8",
     "@types/node-fetch": "1.6.9",
     "@types/pino": "4.16.1",
     "@types/ramda": "0.26.0",
