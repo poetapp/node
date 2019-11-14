@@ -31,7 +31,7 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     outputs: [
       {
         name: '',
-        type: 'address'
+        type: 'address',
       },
     ],
     payable: false,
@@ -84,7 +84,7 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     payable: false,
     stateMutability: 'view',
     type: 'function',
-  }
+  },
 ]
 
 /*
