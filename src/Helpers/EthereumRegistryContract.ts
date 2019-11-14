@@ -1,4 +1,5 @@
 import Web3 from 'web3'
+import { WebsocketProvider } from 'web3-core'
 
 import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
 
@@ -11,9 +12,11 @@ interface EthereumRegistryContractArguments {
 }
 
 export interface EthereumRegistryContract {
+  readonly close: () => Promise<void>
   readonly getCidCount: () => Promise<number>
   readonly getCid: (index: number) => Promise<string>
   readonly addCid: (cid: string) => Promise<void>
+  readonly onCidAdded: any
 }
 
 export const EthereumRegistryContract = ({
@@ -26,6 +29,17 @@ export const EthereumRegistryContract = ({
   const web3 = new Web3(rpcUrl)
   const account = web3.eth.accounts.privateKeyToAccount(privateKey)
   const contract = new web3.eth.Contract(EthereumRegistryContractAbi, contractAddress, { from: account.address })
+
+  const close = (web3.currentProvider as any).disconnect
+
+  // console.log('wtf is this then', WebsocketProvider)
+  //
+  // if (web3.currentProvider instanceof Web3.providers.WebsocketProvider)
+  //   console.log('web3.currentProvider', web3.currentProvider.disconnect)
+  // else
+  //   console.log('web3.currentProvider', 'wtf', web3.currentProvider)
+  //
+
 
   const getCidCount = () => contract.methods.getCidCount().call().then(parseInt)
 
@@ -49,9 +63,13 @@ export const EthereumRegistryContract = ({
     await web3.eth.sendSignedTransaction(rawTransaction)
   }
 
+  const onCidAdded = contract.events.CidAdded
+
   return {
+    close,
     getCidCount,
     getCid,
     addCid,
+    onCidAdded,
   }
 }
