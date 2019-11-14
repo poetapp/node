@@ -22,7 +22,7 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
       },
     ],
     name: 'CidAdded',
-    type: 'event'
+    type: 'event',
   },
   {
     constant: true,
@@ -64,7 +64,7 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     outputs: [
       {
         name: 'cid',
-        type: 'string'
+        type: 'string',
       },
     ],
     payable: false,
@@ -78,7 +78,7 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     outputs: [
       {
         name: '',
-        type: 'uint256'
+        type: 'uint256',
       },
     ],
     payable: false,
