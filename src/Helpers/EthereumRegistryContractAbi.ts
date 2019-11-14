@@ -2,72 +2,89 @@ import { AbiItem } from 'web3-utils'
 
 export const EthereumRegistryContractAbi: AbiItem[] = [
   {
-    inputs: [],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'constructor',
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
-    constant: true,
-    inputs: [],
-    name: '_owner',
-    outputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        name: '',
-        type: 'address',
+        "indexed": false,
+        "name": "cid",
+        "type": "string"
       },
+      {
+        "indexed": false,
+        "name": "index",
+        "type": "uint256"
+      }
     ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
+    "name": "CidAdded",
+    "type": "event"
   },
   {
-    constant: false,
-    inputs: [
+    "constant": true,
+    "inputs": [],
+    "name": "_owner",
+    "outputs": [
       {
-        name: 'cid',
-        type: 'string',
-      },
+        "name": "",
+        "type": "address"
+      }
     ],
-    name: 'addCid',
-    outputs: [],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function',
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    constant: true,
-    inputs: [
+    "constant": false,
+    "inputs": [
       {
-        name: '',
-        type: 'uint256',
-      },
+        "name": "cid",
+        "type": "string"
+      }
     ],
-    name: 'cids',
-    outputs: [
-      {
-        name: 'cid',
-        type: 'string',
-      },
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
+    "name": "addCid",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    constant: true,
-    inputs: [],
-    name: 'getCidCount',
-    outputs: [
+    "constant": true,
+    "inputs": [
       {
-        name: '',
-        type: 'uint256',
-      },
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
+    "name": "cids",
+    "outputs": [
+      {
+        "name": "cid",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getCidCount",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
 ]
 
 /*
