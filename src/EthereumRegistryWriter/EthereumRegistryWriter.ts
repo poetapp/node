@@ -108,7 +108,9 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     logger.debug('Closing database connection...')
     await mongoClient.close()
     logger.info('Database connection closed')
-    await ethereumRegistryContract.close()
+    logger.debug('Closing WS connection to geth...')
+    ethereumRegistryContract.close()
+    logger.info('WS connection to geth closed')
     logger.info('Stopped EthereumRegistryWriter...')
   }
 
