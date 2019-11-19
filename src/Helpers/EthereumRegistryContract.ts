@@ -31,7 +31,7 @@ export const EthereumRegistryContract = ({
 
   const close = () => {
     if (web3.currentProvider instanceof Web3.providers.WebsocketProvider)
-      web3.currentProvider.disconnect()
+      web3.currentProvider.disconnect(null, null) // null, null: see https://github.com/ethereum/web3.js/pull/3218
   }
 
   const getCidCount = () => contract.methods.getCidCount().call().then(parseInt)
