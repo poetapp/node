@@ -135,7 +135,20 @@ export const Router = ({
   }
 
   const onCidAdded = async (event: any) => {
-    logger.info({ event }, 'onCidAdded')
+    const logger = routerLogger.child({ method: 'onCidAdded' })
+
+    logger.trace({ event }, 'Downloaded (IPFS Hash, Claim) pairs')
+
+    try {
+      await business.confirmClaimAndAnchorReceiptDirectory(
+        event.returnValues.cid,
+        event.returnValues.index,
+        event.blockNumber,
+        event.transactionHash,
+      )
+    } catch (error) {
+      logger.error({ error, event })
+    }
   }
 
   return {

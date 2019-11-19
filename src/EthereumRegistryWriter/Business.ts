@@ -29,6 +29,12 @@ export interface Business {
   readonly uploadNextAnchorReceipt: () => Promise<void>
   readonly uploadNextClaimFileAnchorReceiptPair: () => Promise<void>
   readonly registerNextDirectory: () => Promise<void>
+  readonly confirmClaimAndAnchorReceiptDirectory: (
+    confirmClaimAndAnchorReceiptDirectory: string,
+    registryIndex: number,
+    blockNumber: number,
+    transactionHash: string,
+  ) => Promise<void>
 }
 
 interface DbEntry {
@@ -209,6 +215,24 @@ export const Business = ({
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { registryIndex: cidCount } })
   }
 
+
+  const confirmClaimAndAnchorReceiptDirectory = async (
+    claimAndAnchorReceiptDirectory: string,
+    registryIndex: number,
+    blockNumber: number,
+    transactionHash: string,
+  ) => {
+    const logger = businessLogger.child({ method: 'confirmClaimAndAnchorReceiptDirectory' })
+    await claimAnchorReceiptsCollection.updateOne(
+      { claimAndAnchorReceiptDirectory },
+      { $set: { registryIndex, blockNumber, transactionHash } },
+    )
+    logger.info(
+      { claimAndAnchorReceiptDirectory, registryIndex },
+      'Confirmed registry index for (claim + anchor receipt) directory',
+    )
+  }
+
   return {
     createDbIndices,
     insertClaimIdFilePair,
@@ -219,5 +243,6 @@ export const Business = ({
     uploadNextAnchorReceipt,
     uploadNextClaimFileAnchorReceiptPair,
     registerNextDirectory,
+    confirmClaimAndAnchorReceiptDirectory,
   }
 }

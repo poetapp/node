@@ -137,8 +137,8 @@ export const DefaultConfiguration: Configuration = {
 
   ethereumRpcUrl: 'http://localhost:8545',
   ethereumChainId: 4,
-  ethereumRegistryContractAddress: '',
-  ethereumRegistryPrivateKey: '',
+  ethereumRegistryContractAddress: 'a',
+  ethereumRegistryPrivateKey: 'b',
   ethereumRegistryUploadAnchorReceiptIntervalInSeconds: 60,
   ethereumRegistryRegisterNextDirectoryIntervalInSeconds: 60,
 
