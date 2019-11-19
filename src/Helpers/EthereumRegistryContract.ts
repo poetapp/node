@@ -1,5 +1,4 @@
 import Web3 from 'web3'
-import { WebsocketProvider } from 'web3-core'
 
 import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
 
@@ -31,14 +30,9 @@ export const EthereumRegistryContract = ({
   const contract = new web3.eth.Contract(EthereumRegistryContractAbi, contractAddress, { from: account.address })
 
   const close = () => {
-    (web3.currentProvider as any).disconnect()
+    if (web3.currentProvider instanceof Web3.providers.WebsocketProvider)
+      web3.currentProvider.disconnect()
   }
-
-  // if (web3.currentProvider instanceof Web3.providers.WebsocketProvider)
-  //   console.log('web3.currentProvider', web3.currentProvider.disconnect)
-  // else
-  //   console.log('web3.currentProvider', 'wtf', web3.currentProvider)
-  //
 
   const getCidCount = () => contract.methods.getCidCount().call().then(parseInt)
 
