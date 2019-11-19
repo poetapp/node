@@ -49,22 +49,6 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     privateKey: configuration.privateKey,
   })
 
-  const onCidAdded = await ethereumRegistryContract.onCidAdded({ fromBlock: 0 }, (error: any, event: any) => console.log('ehh', error, event))
-
-  onCidAdded
-    .on('connected', (subscriptionId: string) => {
-      logger.info({ subscriptionId }, 'onCidAdded connected')
-    })
-    .on('data', (event: any) => {
-      logger.warn({ event }, 'onCidAdded data')
-    })
-    .on('changed', function(event: any){
-      logger.warn({ event }, 'onCidAdded changed')
-    })
-    .on('error', function(error: any){
-      logger.warn({ error }, 'onCidAdded error')
-    })
-
   const business = Business({
     dependencies: {
       logger,
@@ -80,6 +64,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
       logger,
       messaging,
       business,
+      ethereumRegistryContract,
     },
     exchange: configuration.exchanges,
   })
