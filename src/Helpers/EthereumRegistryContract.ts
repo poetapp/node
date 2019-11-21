@@ -55,7 +55,37 @@ export const EthereumRegistryContract = ({
     return account.signTransaction(tx)
   }
 
-  const sendSignedTransaction = ({ rawTransaction }: any) => web3.eth.sendSignedTransaction(rawTransaction)
+  const sendSignedTransaction = ({ rawTransaction }: any) => {
+    const xxx = web3.eth.sendSignedTransaction(rawTransaction)
+    console.log('xxx', xxx)
+
+    xxx.on('transactionHash', (transactionHash: string) => {
+        console.log(
+          { transactionHash },
+          '(claim + anchor receipt) transaction sent',
+        )
+      })
+      .on('receipt', (receipt: any) => {
+        console.log(
+          { receipt },
+          'Got receipt for (claim + anchor receipt) registry',
+        )
+      })
+      .on('confirmation', (confirmationNumber: number, receipt: any) => {
+        console.log(
+          { confirmationNumber, receipt },
+          'Got a confirmation for (claim + anchor receipt) registry',
+        )
+      })
+      .on('error', (error : any) => {
+        console.log(
+          { error },
+          'Error while registering (claim + anchor receipt) directory',
+        )
+      })
+
+    return xxx
+  }
 
   const createSignAndSendTransaction = (method: any) =>
     createSignedTransaction(method)
