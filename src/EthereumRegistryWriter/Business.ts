@@ -215,7 +215,6 @@ export const Business = ({
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { registryIndex: cidCount } })
   }
 
-
   const confirmClaimAndAnchorReceiptDirectory = async (
     claimAndAnchorReceiptDirectory: string,
     registryIndex: number,
