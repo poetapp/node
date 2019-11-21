@@ -195,24 +195,57 @@ export const Business = ({
 
   const registerNextDirectory = async () => {
     const logger = businessLogger.child({ method: 'registerNextDirectory' })
-    const entry = await claimAnchorReceiptsCollection.findOne({
-      claimAndAnchorReceiptDirectory: { $ne: null },
-      registryIndex: null,
-    })
-    if (!entry)
+    const entry = await claimAnchorReceiptsCollection.findOneAndUpdate(
+      {
+        claimAndAnchorReceiptDirectory: { $ne: null },
+        $or: [{ registryDate: null }, { registryDate: { $lt: new Date(new Date().getTime() - 5 * 60 * 1000) } }],
+      },
+      {
+        $set: { registryDate: new Date() }
+      },
+    )
+    if (!entry.value)
       return
-    const { claimId, claimAndAnchorReceiptDirectory } = entry
-    const cidCount = await ethereumRegistryContract.getCidCount()
+    const { claimId, claimAndAnchorReceiptDirectory } = entry.value
     logger.debug(
-      { claimId, claimAndAnchorReceiptDirectory, cidCount },
-      'Registering next (claim + anchor receipt) directory to Ethereum',
+      { claimId, claimAndAnchorReceiptDirectory },
+      'Adding (claim + anchor receipt) directory to Ethereum',
     )
-    await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
-    logger.info(
-      { claimId, claimAndAnchorReceiptDirectory, cidCount },
-      '(claim + anchor receipt) directory added to Ethereum',
-    )
-    await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { registryIndex: cidCount } })
+    // const tx = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
+    // logger.info(
+    //   { claimId, claimAndAnchorReceiptDirectory, tx },
+    //   '(claim + anchor receipt) directory added to Ethereum',
+    // )
+
+    const xxx = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
+
+    logger.warn({ xxx }, 'wat')
+    console.log('xxx', xxx)
+
+      xxx.on('transactionHash', (transactionHash: string) => {
+        logger.info(
+          { claimId, claimAndAnchorReceiptDirectory, transactionHash },
+          '(claim + anchor receipt) transaction sent',
+        )
+      })
+      .on('receipt', (receipt: any) => {
+        logger.info(
+          { claimId, claimAndAnchorReceiptDirectory, receipt },
+          'Got receipt for (claim + anchor receipt) registry',
+        )
+      })
+      .on('confirmation', (confirmationNumber: number, receipt: any) => {
+        logger.info(
+          { claimId, claimAndAnchorReceiptDirectory, confirmationNumber, receipt },
+          'Got a confirmation for (claim + anchor receipt) registry',
+        )
+      })
+      .on('error', (error : any) => {
+        logger.error(
+          { claimId, claimAndAnchorReceiptDirectory, error },
+          'Error while registering (claim + anchor receipt) directory',
+        )
+      })
   }
 
   const confirmClaimAndAnchorReceiptDirectory = async (
