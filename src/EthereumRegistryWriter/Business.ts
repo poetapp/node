@@ -225,13 +225,13 @@ export const Business = ({
         'Got receipt for (claim + anchor receipt) registry',
       )
     })
-    addCidEvents.onConfirmation((confirmationNumber: number, receipt: any) => {
+    addCidEvents.onConfirmation((confirmationNumber, receipt) => {
       logger.info(
         { claimId, claimAndAnchorReceiptDirectory, confirmationNumber, receipt },
         'Got a confirmation for (claim + anchor receipt) registry',
       )
     })
-    addCidEvents.onError((error : Error) => {
+    addCidEvents.onError(error => {
       logger.error(
         { claimId, claimAndAnchorReceiptDirectory, error },
         'Error while registering (claim + anchor receipt) directory',

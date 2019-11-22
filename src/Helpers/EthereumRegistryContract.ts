@@ -1,7 +1,8 @@
 import Web3 from 'web3'
 
 import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
-import { PromiEvent, TransactionReceipt } from 'web3-core'
+import { PromiEvent, TransactionReceipt, SignedTransaction } from 'web3-core'
+import { ContractSendMethod } from 'web3-eth-contract'
 
 interface EthereumRegistryContractArguments {
   readonly rpcUrl?: string
@@ -70,7 +71,7 @@ export const EthereumRegistryContract = ({
 
   const getCid = (index: number) => contract.methods.cids(index).call()
 
-  const createSignedTransaction = async (method: any) => {
+  const createSignedTransaction = async (method: ContractSendMethod): Promise<SignedTransaction> => {
     const tx = {
       from: account.address,
       to: contractAddress,
@@ -84,10 +85,10 @@ export const EthereumRegistryContract = ({
     return account.signTransaction(tx)
   }
 
-  const sendSignedTransaction = ({ rawTransaction }: any) =>
+  const sendSignedTransaction = ({ rawTransaction }: SignedTransaction) =>
     wrapTransactionReceiptPromiEvent(web3.eth.sendSignedTransaction(rawTransaction))
 
-  const createSignAndSendTransaction = (method: any) =>
+  const createSignAndSendTransaction = (method: ContractSendMethod) =>
     createSignedTransaction(method)
       .then(sendSignedTransaction)
 
