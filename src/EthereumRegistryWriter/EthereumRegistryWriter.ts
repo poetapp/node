@@ -51,6 +51,8 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     gasPrice: configuration.gasPrice,
   })
 
+  logger.info({ ethereumAccountAddress: ethereumRegistryContract.accountAddress })
+
   const business = Business({
     dependencies: {
       logger,

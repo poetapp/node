@@ -13,6 +13,7 @@ interface EthereumRegistryContractArguments {
 }
 
 export interface EthereumRegistryContract {
+  readonly accountAddress: string
   readonly close: () => void
   readonly getCidCount: () => Promise<number>
   readonly getCid: (index: number) => Promise<string>
@@ -60,8 +61,6 @@ export const EthereumRegistryContract = ({
   const account = web3.eth.accounts.privateKeyToAccount(privateKey)
   const contract = new web3.eth.Contract(EthereumRegistryContractAbi, contractAddress, { from: account.address })
 
-  console.log('instantiating EthRegContract', account) // TODO: remove comment
-
   const close = () => {
     if (web3.currentProvider instanceof Web3.providers.WebsocketProvider)
       web3.currentProvider.disconnect(null, null)
@@ -97,6 +96,7 @@ export const EthereumRegistryContract = ({
   const onCidAdded = contract.events.CidAdded
 
   return {
+    accountAddress: account.address,
     close,
     getCidCount,
     getCid,
