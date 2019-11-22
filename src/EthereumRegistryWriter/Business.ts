@@ -201,7 +201,7 @@ export const Business = ({
         $or: [{ registryDate: null }, { registryDate: { $lt: new Date(new Date().getTime() - 5 * 60 * 1000) } }],
       },
       {
-        $set: { registryDate: new Date() }
+        $set: { registryDate: new Date() },
       },
     )
     if (!entry.value)

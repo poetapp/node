@@ -1,8 +1,8 @@
 import Web3 from 'web3'
-
-import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
 import { PromiEvent, TransactionReceipt, SignedTransaction } from 'web3-core'
 import { ContractSendMethod } from 'web3-eth-contract'
+
+import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
 
 interface EthereumRegistryContractArguments {
   readonly rpcUrl?: string
@@ -25,13 +25,13 @@ export interface SendTransactionEvents {
   readonly onTransactionHash: (callback: (transactionHash: string) => void) => void
   readonly onReceipt: (callback: (transactionReceipt: TransactionReceipt) => void) => void
   readonly onConfirmation: (
-    callback: (confirmationNumber: number, transactionReceipt: TransactionReceipt) => void
+    callback: (confirmationNumber: number, transactionReceipt: TransactionReceipt) => void,
   ) => void
   readonly onError: (callback: (error: Error) => void) => void
 }
 
 const wrapTransactionReceiptPromiEvent = (
-  signedTransactionReceiptPromiEvent: PromiEvent<TransactionReceipt>
+  signedTransactionReceiptPromiEvent: PromiEvent<TransactionReceipt>,
 ): SendTransactionEvents => {
   const onTransactionHash = (callback: (transactionHash: string) => void) =>
     signedTransactionReceiptPromiEvent.on('transactionHash', callback)
