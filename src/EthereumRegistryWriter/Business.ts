@@ -211,41 +211,32 @@ export const Business = ({
       { claimId, claimAndAnchorReceiptDirectory },
       'Adding (claim + anchor receipt) directory to Ethereum',
     )
-    // const tx = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
-    // logger.info(
-    //   { claimId, claimAndAnchorReceiptDirectory, tx },
-    //   '(claim + anchor receipt) directory added to Ethereum',
-    // )
+    const addCidEvents = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
 
-    const xxx = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
-
-    logger.warn({ xxx }, 'wat')
-    console.log('xxx', xxx)
-
-      xxx.on('transactionHash', (transactionHash: string) => {
-        logger.info(
-          { claimId, claimAndAnchorReceiptDirectory, transactionHash },
-          '(claim + anchor receipt) transaction sent',
-        )
-      })
-      .on('receipt', (receipt: any) => {
-        logger.info(
-          { claimId, claimAndAnchorReceiptDirectory, receipt },
-          'Got receipt for (claim + anchor receipt) registry',
-        )
-      })
-      .on('confirmation', (confirmationNumber: number, receipt: any) => {
-        logger.info(
-          { claimId, claimAndAnchorReceiptDirectory, confirmationNumber, receipt },
-          'Got a confirmation for (claim + anchor receipt) registry',
-        )
-      })
-      .on('error', (error : any) => {
-        logger.error(
-          { claimId, claimAndAnchorReceiptDirectory, error },
-          'Error while registering (claim + anchor receipt) directory',
-        )
-      })
+    addCidEvents.onTransactionHash(transactionHash => {
+      logger.info(
+        { claimId, claimAndAnchorReceiptDirectory, transactionHash },
+        '(claim + anchor receipt) transaction sent',
+      )
+    })
+    addCidEvents.onReceipt(receipt => {
+      logger.info(
+        { claimId, claimAndAnchorReceiptDirectory, receipt },
+        'Got receipt for (claim + anchor receipt) registry',
+      )
+    })
+    addCidEvents.onConfirmation((confirmationNumber: number, receipt: any) => {
+      logger.info(
+        { claimId, claimAndAnchorReceiptDirectory, confirmationNumber, receipt },
+        'Got a confirmation for (claim + anchor receipt) registry',
+      )
+    })
+    addCidEvents.onError((error : Error) => {
+      logger.error(
+        { claimId, claimAndAnchorReceiptDirectory, error },
+        'Error while registering (claim + anchor receipt) directory',
+      )
+    })
   }
 
   const confirmClaimAndAnchorReceiptDirectory = async (

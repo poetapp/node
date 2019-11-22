@@ -15,8 +15,37 @@ export interface EthereumRegistryContract {
   readonly close: () => void
   readonly getCidCount: () => Promise<number>
   readonly getCid: (index: number) => Promise<string>
-  readonly addCid: (cid: string) => any // Promise<PromiEvent<TransactionReceipt>>
+  readonly addCid: (cid: string) => Promise<SendTransactionEvents>
   readonly onCidAdded: any
+}
+
+export interface SendTransactionEvents {
+  readonly onTransactionHash: (callback: (transactionHash: string) => void) => void
+  readonly onReceipt: (callback: (transactionReceipt: TransactionReceipt) => void) => void
+  readonly onConfirmation: (
+    callback: (confirmationNumber: number, transactionReceipt: TransactionReceipt) => void
+  ) => void
+  readonly onError: (callback: (error: Error) => void) => void
+}
+
+const wrapTransactionReceiptPromiEvent = (
+  signedTransactionReceiptPromiEvent: PromiEvent<TransactionReceipt>
+): SendTransactionEvents => {
+  const onTransactionHash = (callback: (transactionHash: string) => void) =>
+    signedTransactionReceiptPromiEvent.on('transactionHash', callback)
+  const onReceipt = (callback: (transactionReceipt: TransactionReceipt) => void) =>
+    signedTransactionReceiptPromiEvent.on('receipt', callback)
+  const onConfirmation = (callback: (confirmationNumber: number, transactionReceipt: TransactionReceipt) => void) =>
+    signedTransactionReceiptPromiEvent.on('confirmation', callback)
+  const onError = (callback: (error: Error) => void) =>
+    signedTransactionReceiptPromiEvent.on('error', callback)
+
+  return {
+    onTransactionHash,
+    onReceipt,
+    onConfirmation,
+    onError,
+  }
 }
 
 export const EthereumRegistryContract = ({
@@ -55,37 +84,8 @@ export const EthereumRegistryContract = ({
     return account.signTransaction(tx)
   }
 
-  const sendSignedTransaction = ({ rawTransaction }: any) => {
-    const xxx = web3.eth.sendSignedTransaction(rawTransaction)
-    console.log('xxx', xxx)
-
-    xxx.on('transactionHash', (transactionHash: string) => {
-        console.log(
-          { transactionHash },
-          '(claim + anchor receipt) transaction sent',
-        )
-      })
-      .on('receipt', (receipt: any) => {
-        console.log(
-          { receipt },
-          'Got receipt for (claim + anchor receipt) registry',
-        )
-      })
-      .on('confirmation', (confirmationNumber: number, receipt: any) => {
-        console.log(
-          { confirmationNumber, receipt },
-          'Got a confirmation for (claim + anchor receipt) registry',
-        )
-      })
-      .on('error', (error : any) => {
-        console.log(
-          { error },
-          'Error while registering (claim + anchor receipt) directory',
-        )
-      })
-
-    return xxx
-  }
+  const sendSignedTransaction = ({ rawTransaction }: any) =>
+    wrapTransactionReceiptPromiEvent(web3.eth.sendSignedTransaction(rawTransaction))
 
   const createSignAndSendTransaction = (method: any) =>
     createSignedTransaction(method)
