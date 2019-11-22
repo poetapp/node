@@ -24,6 +24,7 @@ export interface EthereumRegistryWriterConfiguration extends LoggingConfiguratio
   readonly privateKey: string
   readonly uploadAnchorReceiptIntervalInSeconds: number
   readonly registerNextDirectoryIntervalInSeconds: number
+  readonly gasPrice?: number
 }
 
 type stop = () => Promise<void>
@@ -47,6 +48,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     chainId: configuration.chainId,
     contractAddress: configuration.contractAddress,
     privateKey: configuration.privateKey,
+    gasPrice: configuration.gasPrice,
   })
 
   const business = Business({
