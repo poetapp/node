@@ -1,5 +1,6 @@
+import { flow } from 'fp-ts/lib/function'
 import Web3 from 'web3'
-import { PromiEvent, TransactionReceipt, SignedTransaction } from 'web3-core'
+import { PromiEvent, TransactionReceipt, SignedTransaction, TransactionConfig } from 'web3-core'
 import { ContractSendMethod } from 'web3-eth-contract'
 
 import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
@@ -50,6 +51,8 @@ const wrapTransactionReceiptPromiEvent = (
   }
 }
 
+const pickRawTransaction = ({ rawTransaction }: SignedTransaction) => rawTransaction
+
 export const EthereumRegistryContract = ({
   rpcUrl = 'http://localhost:8545',
   contractAddress,
@@ -70,25 +73,25 @@ export const EthereumRegistryContract = ({
 
   const getCid = (index: number) => contract.methods.cids(index).call()
 
-  const createSignedTransaction = async (method: ContractSendMethod): Promise<SignedTransaction> => {
-    const tx = {
-      from: account.address,
-      to: contractAddress,
-      gas: await method.estimateGas(),
-      gasPrice,
-      data: method.encodeABI(),
-      chainId,
-      nonce: await web3.eth.getTransactionCount(account.address, 'pending'),
-    }
+  const createTransaction = async (method: ContractSendMethod): Promise<TransactionConfig> => ({
+    from: account.address,
+    to: contractAddress,
+    gas: await method.estimateGas(),
+    gasPrice,
+    data: method.encodeABI(),
+    chainId,
+    nonce: await web3.eth.getTransactionCount(account.address, 'pending'),
+  })
 
-    return account.signTransaction(tx)
-  }
-
-  const sendSignedTransaction = ({ rawTransaction }: SignedTransaction) =>
-    wrapTransactionReceiptPromiEvent(web3.eth.sendSignedTransaction(rawTransaction))
+  const sendSignedTransaction = flow(
+    web3.eth.sendSignedTransaction,
+    wrapTransactionReceiptPromiEvent,
+  )
 
   const createSignAndSendTransaction = (method: ContractSendMethod) =>
-    createSignedTransaction(method)
+    createTransaction(method)
+      .then(account.signTransaction)
+      .then(pickRawTransaction)
       .then(sendSignedTransaction)
 
   const addCid = (cid: string) => createSignAndSendTransaction(contract.methods.addCid(cid))
