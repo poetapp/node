@@ -193,12 +193,18 @@ export const Business = ({
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { claimAndAnchorReceiptDirectory } })
   }
 
+  // TODO: rename method? writeNextDirectoryToEthereum?
   const registerNextDirectory = async () => {
     const logger = businessLogger.child({ method: 'registerNextDirectory' })
+    const maximumStaleTransactionAgeInSeconds = 5 * 60 * 1000 // TODO: configurable
+    const nowMinus = (ms: number) => new Date(new Date().getTime() - ms) // TODO: luxon / momentjs
     const entry = await claimAnchorReceiptsCollection.findOneAndUpdate(
       {
         claimAndAnchorReceiptDirectory: { $ne: null },
-        $or: [{ registryDate: null }, { registryDate: { $lt: new Date(new Date().getTime() - 5 * 60 * 1000) } }],
+        $or: [
+          { registryDate: null },
+          { registryDate: { $lt: nowMinus(maximumStaleTransactionAgeInSeconds) } }, // TODO: AND tx not set
+        ],
       },
       {
         $set: { registryDate: new Date() },
@@ -213,6 +219,7 @@ export const Business = ({
     )
     const addCidEvents = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
 
+    // TODO: refactor this into EthereumRegistryContract-level + Router event handling
     addCidEvents.onTransactionHash(transactionHash => {
       logger.info(
         { claimId, claimAndAnchorReceiptDirectory, transactionHash },
@@ -224,6 +231,7 @@ export const Business = ({
         { claimId, claimAndAnchorReceiptDirectory, receipt },
         'Got receipt for (claim + anchor receipt) registry',
       )
+      // TODO: update entry with tx receipt
     })
     addCidEvents.onConfirmation((confirmationNumber, receipt) => {
       logger.info(
@@ -239,6 +247,7 @@ export const Business = ({
     })
   }
 
+  // TODO: rename method, not confirming, just downloading new data
   const confirmClaimAndAnchorReceiptDirectory = async (
     claimAndAnchorReceiptDirectory: string,
     registryIndex: number,
