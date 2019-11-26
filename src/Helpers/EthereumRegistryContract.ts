@@ -31,16 +31,16 @@ export interface SendTransactionEvents {
 }
 
 const wrapTransactionReceiptPromiEvent = (
-  signedTransactionReceiptPromiEvent: PromiEvent<TransactionReceipt>,
+  transactionReceiptPromiEvent: PromiEvent<TransactionReceipt>,
 ): SendTransactionEvents => {
   const onTransactionHash = (callback: (transactionHash: string) => void) =>
-    signedTransactionReceiptPromiEvent.on('transactionHash', callback)
+    transactionReceiptPromiEvent.on('transactionHash', callback)
   const onReceipt = (callback: (transactionReceipt: TransactionReceipt) => void) =>
-    signedTransactionReceiptPromiEvent.on('receipt', callback)
+    transactionReceiptPromiEvent.on('receipt', callback)
   const onConfirmation = (callback: (confirmationNumber: number, transactionReceipt: TransactionReceipt) => void) =>
-    signedTransactionReceiptPromiEvent.on('confirmation', callback)
+    transactionReceiptPromiEvent.on('confirmation', callback)
   const onError = (callback: (error: Error) => void) =>
-    signedTransactionReceiptPromiEvent.on('error', callback)
+    transactionReceiptPromiEvent.on('error', callback)
 
   return {
     onTransactionHash,
