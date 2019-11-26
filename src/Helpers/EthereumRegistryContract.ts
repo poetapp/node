@@ -3,6 +3,7 @@ import Web3 from 'web3'
 import { PromiEvent, TransactionReceipt, SignedTransaction, TransactionConfig } from 'web3-core'
 import { ContractSendMethod } from 'web3-eth-contract'
 
+import { asyncPipe } from 'Helpers/asyncPipe'
 import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
 
 interface EthereumRegistryContractArguments {
@@ -31,6 +32,7 @@ export interface SendTransactionEvents {
   readonly onError: (callback: (error: Error) => void) => void
 }
 
+// See https://github.com/ethereum/web3.js/issues/1547 :(
 const wrapTransactionReceiptPromiEvent = (
   transactionReceiptPromiEvent: PromiEvent<TransactionReceipt>,
 ): SendTransactionEvents => {
@@ -88,11 +90,13 @@ export const EthereumRegistryContract = ({
     wrapTransactionReceiptPromiEvent,
   )
 
-  const createSignAndSendTransaction = (method: ContractSendMethod) =>
-    createTransaction(method)
-      .then(account.signTransaction)
-      .then(pickRawTransaction)
-      .then(sendSignedTransaction)
+  // TODO: https://github.com/gcanti/fp-ts/issues/477 ?
+  const createSignAndSendTransaction = asyncPipe(
+    createTransaction,
+    account.signTransaction,
+    pickRawTransaction,
+    sendSignedTransaction,
+  )
 
   const addCid = (cid: string) => createSignAndSendTransaction(contract.methods.addCid(cid))
 
