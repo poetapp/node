@@ -93,7 +93,7 @@ export const EthereumRegistryContract = ({
   const createSignAndSendTransaction = asyncPipe(
     createTransaction,
     account.signTransaction,
-    pickRawTransaction,
+    pickRawTransaction, // TODO: we need the transactionHash too, createSignAndSendTransaction should return it
     sendSignedTransaction,
   )
 
