@@ -1,4 +1,5 @@
 import { PoetBlockAnchor } from '@po.et/poet-js'
+import { DateTime } from 'luxon'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
 import { identity } from 'ramda'
@@ -207,14 +208,14 @@ export const Business = ({
 
   const writeNextDirectoryToEthereum = async () => {
     const logger = businessLogger.child({ method: 'registerNextDirectory' })
-    const nowMinus = (ms: number) => new Date(new Date().getTime() - ms) // TODO: luxon / momentjs
+
     const entry = await claimAnchorReceiptsCollection.findOneAndUpdate(
       {
         claimAndAnchorReceiptDirectory: { $ne: null },
         $or: [
           { registryDate: null },
           { $and: [
-            { registryDate: { $lt: nowMinus(maximumUnconfirmedTransactionAgeInSeconds) } },
+            { registryDate: { $lt: DateTime.utc().minus({ seconds: maximumUnconfirmedTransactionAgeInSeconds }).toJSDate() } },
             { blockNumber: null },
           ]},
         ],
