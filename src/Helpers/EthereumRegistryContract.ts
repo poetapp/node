@@ -90,7 +90,6 @@ export const EthereumRegistryContract = ({
     wrapTransactionReceiptPromiEvent,
   )
 
-  // TODO: https://github.com/gcanti/fp-ts/issues/477 ?
   const createSignAndSendTransaction = asyncPipe(
     createTransaction,
     account.signTransaction,
