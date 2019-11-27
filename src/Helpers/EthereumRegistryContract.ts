@@ -32,7 +32,7 @@ export interface SendTransactionEvents {
   readonly onError: (callback: (error: Error) => void) => void
 }
 
-// See https://github.com/ethereum/web3.js/issues/1547 :(
+// See https://github.com/ethereum/web3.js/issues/1547#issuecomment-558618977
 const wrapTransactionReceiptPromiEvent = (
   transactionReceiptPromiEvent: PromiEvent<TransactionReceipt>,
 ): SendTransactionEvents => {
