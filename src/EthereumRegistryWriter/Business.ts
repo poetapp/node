@@ -34,7 +34,7 @@ export interface Business {
   readonly uploadNextAnchorReceipt: () => Promise<void>
   readonly uploadNextClaimFileAnchorReceiptPair: () => Promise<void>
   readonly writeNextDirectoryToEthereum: () => Promise<void>
-  readonly confirmClaimAndAnchorReceiptDirectory: (
+  readonly setRegistryIndex: (
     confirmClaimAndAnchorReceiptDirectory: string,
     registryIndex: number,
     blockNumber: number,
@@ -284,8 +284,7 @@ export const Business = ({
     })
   }
 
-  // TODO: rename method, not confirming, just downloading new data
-  const confirmClaimAndAnchorReceiptDirectory = async (
+  const setRegistryIndex = async (
     claimAndAnchorReceiptDirectory: string,
     registryIndex: number,
     blockNumber: number,
@@ -297,7 +296,7 @@ export const Business = ({
       { $set: { registryIndex, blockNumber, transactionHash } },
     )
     logger.info(
-      { claimAndAnchorReceiptDirectory, registryIndex },
+      { claimAndAnchorReceiptDirectory, registryIndex, blockNumber, transactionHash },
       'Confirmed registry index for (claim + anchor receipt) directory',
     )
   }
@@ -312,6 +311,6 @@ export const Business = ({
     uploadNextAnchorReceipt,
     uploadNextClaimFileAnchorReceiptPair,
     writeNextDirectoryToEthereum,
-    confirmClaimAndAnchorReceiptDirectory,
+    setRegistryIndex,
   }
 }

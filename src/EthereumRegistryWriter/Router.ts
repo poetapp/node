@@ -140,7 +140,7 @@ export const Router = ({
     logger.trace({ event }, 'Downloaded (IPFS Hash, Claim) pairs')
 
     try {
-      await business.confirmClaimAndAnchorReceiptDirectory(
+      await business.setRegistryIndex(
         event.returnValues.cid,
         event.returnValues.index,
         event.blockNumber,
