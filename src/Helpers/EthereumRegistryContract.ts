@@ -1,4 +1,5 @@
 import { flow } from 'fp-ts/lib/function'
+import { tap } from 'ramda'
 import Web3 from 'web3'
 import { PromiEvent, TransactionReceipt, SignedTransaction, TransactionConfig } from 'web3-core'
 import { ContractSendMethod } from 'web3-eth-contract'
@@ -19,7 +20,7 @@ export interface EthereumRegistryContract {
   readonly close: () => void
   readonly getCidCount: () => Promise<number>
   readonly getCid: (index: number) => Promise<string>
-  readonly addCid: (cid: string) => Promise<SendTransactionEvents>
+  readonly addCid: (cid: string) => Promise<string>
   readonly onCidAdded: any
 }
 
@@ -53,7 +54,8 @@ const wrapTransactionReceiptPromiEvent = (
   }
 }
 
-const pickRawTransaction = ({ rawTransaction }: SignedTransaction) => rawTransaction
+const pickRawTransaction = (_: SignedTransaction) => _.rawTransaction
+const pickTransactionHash = (_: SignedTransaction) => _.transactionHash
 
 export const EthereumRegistryContract = ({
   rpcUrl = 'http://localhost:8545',
@@ -90,11 +92,24 @@ export const EthereumRegistryContract = ({
     wrapTransactionReceiptPromiEvent,
   )
 
+  const addTransactionEventHandlers = (sendTransactionEvents: SendTransactionEvents) => {
+    sendTransactionEvents.onReceipt(transactionReceipt => {
+      console.log('transactionReceipt', transactionReceipt)
+    })
+    sendTransactionEvents.onConfirmation((confirmationNumber, transactionReceipt) => {
+      console.log('confirmation', confirmationNumber, transactionReceipt)
+    })
+  }
+
   const createSignAndSendTransaction = asyncPipe(
     createTransaction,
     account.signTransaction,
-    pickRawTransaction, // TODO: we need the transactionHash too, createSignAndSendTransaction should return it
-    sendSignedTransaction,
+    tap(asyncPipe(
+      pickRawTransaction,
+      sendSignedTransaction,
+      addTransactionEventHandlers,
+    )),
+    pickTransactionHash,
   )
 
   const addCid = (cid: string) => createSignAndSendTransaction(contract.methods.addCid(cid))

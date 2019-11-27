@@ -231,58 +231,59 @@ export const Business = ({
       { claimId, claimAndAnchorReceiptDirectory },
       'Adding (claim + anchor receipt) directory to Ethereum',
     )
-    const addCidEvents = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
+    const transactionHash = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
 
-    // TODO: remove onTransactionHash, we don't need it for locally created transactions. Have addCid return transactionHash instead
-    addCidEvents.onTransactionHash(async transactionHash => {
-      logger.info(
-        { claimId, claimAndAnchorReceiptDirectory, transactionHash },
-        '(claim + anchor receipt) transaction sent',
-      )
-      await claimAnchorReceiptsCollection.updateOne(
-        { claimAndAnchorReceiptDirectory },
-        { $set: { transactionHash } },
-      )
-    })
-    // TODO: refactor onReceipt, onConfirmation and onError into EthereumRegistryContract-level + Router event handling
-    addCidEvents.onReceipt(async ({ transactionHash, blockHash, blockNumber }) => {
-      logger.info(
-        { claimId, claimAndAnchorReceiptDirectory, transactionHash, blockHash, blockNumber },
-        'Got transaction receipt',
-      )
+    logger.info(
+      { claimId, claimAndAnchorReceiptDirectory, transactionHash },
+      '(claim + anchor receipt) transaction sent',
+    )
 
-      const updateWriteOpResult = await claimAnchorReceiptsCollection.updateOne(
-        { transactionHash },
-        { $set: { blockHash, blockNumber } },
-      )
+    await claimAnchorReceiptsCollection.updateOne(
+      { claimAndAnchorReceiptDirectory },
+      { $set: { transactionHash } },
+    )
 
-      if (!updateWriteOpResult.modifiedCount)
-        logger.error({ transactionHash }, 'Got a receipt for an unknown transactionHash!')
-
-    })
-    addCidEvents.onConfirmation(async (confirmationNumber, { transactionHash, blockHash, blockNumber }) => {
-      logger.info(
-        { transactionHash, blockHash, blockNumber, confirmationNumber },
-        'Got a confirmation for a transaction',
-      )
-
-      const updateWriteOpResult = await claimAnchorReceiptsCollection.updateMany(
-        { transactionHash, blockHash },
-        { confirmationNumber },
-      )
-
-      if (!updateWriteOpResult.modifiedCount)
-        logger.error(
-          { transactionHash, blockHash, blockNumber, confirmationNumber },
-          'Got a confirmation for an unknown transactionHash/blockHash!',
-        )
-    })
-    addCidEvents.onError(error => {
-      logger.error(
-        { claimId, claimAndAnchorReceiptDirectory, error },
-        'Error while registering (claim + anchor receipt) directory',
-      )
-    })
+    // const addCidEvents = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
+    //
+    // // TODO: refactor onReceipt, onConfirmation and onError into EthereumRegistryContract-level + Router event handling
+    // addCidEvents.onReceipt(async ({ transactionHash, blockHash, blockNumber }) => {
+    //   logger.info(
+    //     { claimId, claimAndAnchorReceiptDirectory, transactionHash, blockHash, blockNumber },
+    //     'Got transaction receipt',
+    //   )
+    //
+    //   const updateWriteOpResult = await claimAnchorReceiptsCollection.updateOne(
+    //     { transactionHash },
+    //     { $set: { blockHash, blockNumber } },
+    //   )
+    //
+    //   if (!updateWriteOpResult.modifiedCount)
+    //     logger.error({ transactionHash }, 'Got a receipt for an unknown transactionHash!')
+    //
+    // })
+    // addCidEvents.onConfirmation(async (confirmationNumber, { transactionHash, blockHash, blockNumber }) => {
+    //   logger.info(
+    //     { transactionHash, blockHash, blockNumber, confirmationNumber },
+    //     'Got a confirmation for a transaction',
+    //   )
+    //
+    //   const updateWriteOpResult = await claimAnchorReceiptsCollection.updateMany(
+    //     { transactionHash, blockHash },
+    //     { confirmationNumber },
+    //   )
+    //
+    //   if (!updateWriteOpResult.modifiedCount)
+    //     logger.error(
+    //       { transactionHash, blockHash, blockNumber, confirmationNumber },
+    //       'Got a confirmation for an unknown transactionHash/blockHash!',
+    //     )
+    // })
+    // addCidEvents.onError(error => {
+    //   logger.error(
+    //     { claimId, claimAndAnchorReceiptDirectory, error },
+    //     'Error while registering (claim + anchor receipt) directory',
+    //   )
+    // })
   }
 
   const setRegistryIndex = async (
