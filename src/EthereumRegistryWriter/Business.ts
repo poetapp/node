@@ -51,6 +51,10 @@ interface DbEntry {
   readonly batchDirectoryConfirmed?: boolean
   readonly claimAndAnchorReceiptDirectory?: string
   readonly registryIndex?: number
+  readonly transactionHash?: string // TODO: group these under registryAdditionTransactionReceipt
+  readonly blockHash?: string
+  readonly blockNumber?: number
+  readonly confirmationNumber?: number
 }
 
 export const Business = ({
@@ -228,25 +232,49 @@ export const Business = ({
     )
     const addCidEvents = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
 
-    // TODO: refactor this into EthereumRegistryContract-level + Router event handling
-    addCidEvents.onTransactionHash(transactionHash => {
+    // TODO: remove onTransactionHash, we don't need it for locally created transactions. Have addCid return transactionHash instead
+    addCidEvents.onTransactionHash(async transactionHash => {
       logger.info(
         { claimId, claimAndAnchorReceiptDirectory, transactionHash },
         '(claim + anchor receipt) transaction sent',
       )
-    })
-    addCidEvents.onReceipt(receipt => {
-      logger.info(
-        { claimId, claimAndAnchorReceiptDirectory, receipt },
-        'Got receipt for (claim + anchor receipt) registry',
+      await claimAnchorReceiptsCollection.updateOne(
+        { claimAndAnchorReceiptDirectory },
+        { $set: { transactionHash } },
       )
-      // TODO: update entry with tx receipt
     })
-    addCidEvents.onConfirmation((confirmationNumber, receipt) => {
+    // TODO: refactor onReceipt, onConfirmation and onError into EthereumRegistryContract-level + Router event handling
+    addCidEvents.onReceipt(async ({ transactionHash, blockHash, blockNumber }) => {
       logger.info(
-        { claimId, claimAndAnchorReceiptDirectory, confirmationNumber, receipt },
-        'Got a confirmation for (claim + anchor receipt) registry',
+        { claimId, claimAndAnchorReceiptDirectory, transactionHash, blockHash, blockNumber },
+        'Got transaction receipt',
       )
+
+      const updateWriteOpResult = await claimAnchorReceiptsCollection.updateOne(
+        { transactionHash },
+        { $set: { blockHash, blockNumber } },
+      )
+
+      if (!updateWriteOpResult.modifiedCount)
+        logger.error({ transactionHash }, 'Got a receipt for an unknown transactionHash!')
+
+    })
+    addCidEvents.onConfirmation(async (confirmationNumber, { transactionHash, blockHash, blockNumber }) => {
+      logger.info(
+        { transactionHash, blockHash, blockNumber, confirmationNumber },
+        'Got a confirmation for a transaction',
+      )
+
+      const updateWriteOpResult = await claimAnchorReceiptsCollection.updateMany(
+        { transactionHash, blockHash },
+        { confirmationNumber },
+      )
+
+      if (!updateWriteOpResult.modifiedCount)
+        logger.error(
+          { transactionHash, blockHash, blockNumber, confirmationNumber },
+          'Got a confirmation for an unknown transactionHash/blockHash!',
+        )
     })
     addCidEvents.onError(error => {
       logger.error(
