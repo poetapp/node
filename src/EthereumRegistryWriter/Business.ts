@@ -209,7 +209,10 @@ export const Business = ({
         claimAndAnchorReceiptDirectory: { $ne: null },
         $or: [
           { registryDate: null },
-          { registryDate: { $lt: nowMinus(maximumUnconfirmedTransactionAgeInSeconds) } }, // TODO: AND tx not set
+          { $and: [
+            { registryDate: { $lt: nowMinus(maximumUnconfirmedTransactionAgeInSeconds) } },
+            { blockNumber: null },
+          ]},
         ],
       },
       {
