@@ -66,7 +66,7 @@ export const Scheduler = ({
   const registerNextDirectory = async () => {
     const methodLogger = logger.child({ method: 'registerNextDirectory' })
     try {
-      await business.registerNextDirectory()
+      await business.writeNextDirectoryToEthereum()
     } catch (error) {
       methodLogger.error({ error }, 'Uncaught exception')
     }

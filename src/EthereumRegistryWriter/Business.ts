@@ -28,7 +28,7 @@ export interface Business {
   readonly confirmClaimFiles: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
   readonly uploadNextAnchorReceipt: () => Promise<void>
   readonly uploadNextClaimFileAnchorReceiptPair: () => Promise<void>
-  readonly registerNextDirectory: () => Promise<void>
+  readonly writeNextDirectoryToEthereum: () => Promise<void>
   readonly confirmClaimAndAnchorReceiptDirectory: (
     confirmClaimAndAnchorReceiptDirectory: string,
     registryIndex: number,
@@ -193,8 +193,7 @@ export const Business = ({
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { claimAndAnchorReceiptDirectory } })
   }
 
-  // TODO: rename method? writeNextDirectoryToEthereum?
-  const registerNextDirectory = async () => {
+  const writeNextDirectoryToEthereum = async () => {
     const logger = businessLogger.child({ method: 'registerNextDirectory' })
     const maximumStaleTransactionAgeInSeconds = 5 * 60 * 1000 // TODO: configurable
     const nowMinus = (ms: number) => new Date(new Date().getTime() - ms) // TODO: luxon / momentjs
@@ -274,7 +273,7 @@ export const Business = ({
     confirmClaimFiles,
     uploadNextAnchorReceipt,
     uploadNextClaimFileAnchorReceiptPair,
-    registerNextDirectory,
+    writeNextDirectoryToEthereum,
     confirmClaimAndAnchorReceiptDirectory,
   }
 }
