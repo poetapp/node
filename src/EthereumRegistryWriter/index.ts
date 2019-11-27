@@ -38,6 +38,7 @@ EthereumRegistryWriter({
   gasPrice: configuration.ethereumGasPrice,
   uploadAnchorReceiptIntervalInSeconds: configuration.ethereumRegistryUploadAnchorReceiptIntervalInSeconds,
   registerNextDirectoryIntervalInSeconds: configuration.ethereumRegistryRegisterNextDirectoryIntervalInSeconds,
+  maximumUnconfirmedTransactionAgeInSeconds: configuration.maximumUnconfirmedTransactionAgeInSeconds,
 })
   .then(stop => process.on('SIGINT', stop))
   .catch(catchStartupError('EthereumRegistryWriter', logger))

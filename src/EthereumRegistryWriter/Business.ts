@@ -15,8 +15,13 @@ export interface Dependencies {
   readonly ethereumRegistryContract: EthereumRegistryContract
 }
 
+export interface Configuration {
+  readonly maximumUnconfirmedTransactionAgeInSeconds: number
+}
+
 export interface Arguments {
   readonly dependencies: Dependencies
+  readonly configuration: Configuration
 }
 
 export interface Business {
@@ -54,6 +59,9 @@ export const Business = ({
     db,
     ipfs,
     ethereumRegistryContract,
+  },
+  configuration: {
+    maximumUnconfirmedTransactionAgeInSeconds,
   },
 }: Arguments): Business => {
   const businessLogger: Pino.Logger = childWithFileName(logger, __filename)
@@ -195,14 +203,13 @@ export const Business = ({
 
   const writeNextDirectoryToEthereum = async () => {
     const logger = businessLogger.child({ method: 'registerNextDirectory' })
-    const maximumStaleTransactionAgeInSeconds = 5 * 60 * 1000 // TODO: configurable
     const nowMinus = (ms: number) => new Date(new Date().getTime() - ms) // TODO: luxon / momentjs
     const entry = await claimAnchorReceiptsCollection.findOneAndUpdate(
       {
         claimAndAnchorReceiptDirectory: { $ne: null },
         $or: [
           { registryDate: null },
-          { registryDate: { $lt: nowMinus(maximumStaleTransactionAgeInSeconds) } }, // TODO: AND tx not set
+          { registryDate: { $lt: nowMinus(maximumUnconfirmedTransactionAgeInSeconds) } }, // TODO: AND tx not set
         ],
       },
       {

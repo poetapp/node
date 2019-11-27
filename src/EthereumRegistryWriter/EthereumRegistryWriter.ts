@@ -25,6 +25,7 @@ export interface EthereumRegistryWriterConfiguration extends LoggingConfiguratio
   readonly uploadAnchorReceiptIntervalInSeconds: number
   readonly registerNextDirectoryIntervalInSeconds: number
   readonly gasPrice?: number
+  readonly maximumUnconfirmedTransactionAgeInSeconds: number
 }
 
 type stop = () => Promise<void>
@@ -60,6 +61,9 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
       ipfs,
       ethereumRegistryContract,
     },
+    configuration: {
+      maximumUnconfirmedTransactionAgeInSeconds: configuration.maximumUnconfirmedTransactionAgeInSeconds,
+    }
   })
   await business.createDbIndices()
 
