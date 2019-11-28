@@ -245,7 +245,7 @@ export const Business = ({
 
     // const addCidEvents = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
     //
-    // // TODO: refactor onReceipt, onConfirmation and onError into EthereumRegistryContract-level + Router event handling
+    // TODO: Replace the use of `PromiEvent.on('receipt'` with a new Scheduler that periodically requests `web3.eth.getTransactionReceipt` for every entry in the database that has a `transactionHash` set but no `blockHash`.
     // addCidEvents.onReceipt(async ({ transactionHash, blockHash, blockNumber }) => {
     //   logger.info(
     //     { claimId, claimAndAnchorReceiptDirectory, transactionHash, blockHash, blockNumber },
@@ -257,27 +257,8 @@ export const Business = ({
     //     { $set: { blockHash, blockNumber } },
     //   )
     //
-    //   if (!updateWriteOpResult.modifiedCount)
-    //     logger.error({ transactionHash }, 'Got a receipt for an unknown transactionHash!')
-    //
     // })
-    // addCidEvents.onConfirmation(async (confirmationNumber, { transactionHash, blockHash, blockNumber }) => {
-    //   logger.info(
-    //     { transactionHash, blockHash, blockNumber, confirmationNumber },
-    //     'Got a confirmation for a transaction',
-    //   )
-    //
-    //   const updateWriteOpResult = await claimAnchorReceiptsCollection.updateMany(
-    //     { transactionHash, blockHash },
-    //     { confirmationNumber },
-    //   )
-    //
-    //   if (!updateWriteOpResult.modifiedCount)
-    //     logger.error(
-    //       { transactionHash, blockHash, blockNumber, confirmationNumber },
-    //       'Got a confirmation for an unknown transactionHash/blockHash!',
-    //     )
-    // })
+    // TODO: if (!receipt.status) { logger.error({ receipt }) }
     // addCidEvents.onError(error => {
     //   logger.error(
     //     { claimId, claimAndAnchorReceiptDirectory, error },
