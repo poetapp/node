@@ -1,7 +1,6 @@
-import { flow } from 'fp-ts/lib/function'
 import { tap } from 'ramda'
 import Web3 from 'web3'
-import { PromiEvent, TransactionReceipt, SignedTransaction, TransactionConfig } from 'web3-core'
+import { SignedTransaction, TransactionConfig } from 'web3-core'
 import { ContractSendMethod } from 'web3-eth-contract'
 
 import { asyncPipe } from 'Helpers/asyncPipe'
@@ -24,37 +23,6 @@ export interface EthereumRegistryContract {
   readonly onCidAdded: any
 }
 
-export interface SendTransactionEvents {
-  readonly onTransactionHash: (callback: (transactionHash: string) => void) => void
-  readonly onReceipt: (callback: (transactionReceipt: TransactionReceipt) => void) => void
-  readonly onConfirmation: (
-    callback: (confirmationNumber: number, transactionReceipt: TransactionReceipt) => void,
-  ) => void
-  readonly onError: (callback: (error: Error) => void) => void
-}
-
-// See https://github.com/ethereum/web3.js/issues/1547#issuecomment-558618977
-const wrapTransactionReceiptPromiEvent = (
-  transactionReceiptPromiEvent: PromiEvent<TransactionReceipt>,
-): SendTransactionEvents => {
-  const onTransactionHash = (callback: (transactionHash: string) => void) =>
-    transactionReceiptPromiEvent.on('transactionHash', callback)
-  const onReceipt = (callback: (transactionReceipt: TransactionReceipt) => void) =>
-    transactionReceiptPromiEvent.on('receipt', callback)
-  const onConfirmation = (callback: (confirmationNumber: number, transactionReceipt: TransactionReceipt) => void) =>
-    transactionReceiptPromiEvent.on('confirmation', callback)
-  const onError = (callback: (error: Error) => void) =>
-    transactionReceiptPromiEvent.on('error', callback)
-
-  return {
-    onTransactionHash,
-    onReceipt,
-    onConfirmation,
-    onError,
-  }
-}
-
-const pickRawTransaction = (_: SignedTransaction) => _.rawTransaction
 const pickTransactionHash = (_: SignedTransaction) => _.transactionHash
 
 export const EthereumRegistryContract = ({
@@ -87,28 +55,10 @@ export const EthereumRegistryContract = ({
     nonce: await web3.eth.getTransactionCount(account.address, 'pending'),
   })
 
-  const sendSignedTransaction = flow(
-    web3.eth.sendSignedTransaction,
-    wrapTransactionReceiptPromiEvent,
-  )
-
-  const addTransactionEventHandlers = (sendTransactionEvents: SendTransactionEvents) => {
-    sendTransactionEvents.onReceipt(transactionReceipt => {
-      console.log('transactionReceipt', transactionReceipt)
-    })
-    sendTransactionEvents.onConfirmation((confirmationNumber, transactionReceipt) => {
-      console.log('confirmation', confirmationNumber, transactionReceipt)
-    })
-  }
-
   const createSignAndSendTransaction = asyncPipe(
     createTransaction,
     account.signTransaction,
-    tap(asyncPipe(
-      pickRawTransaction,
-      sendSignedTransaction,
-      addTransactionEventHandlers,
-    )),
+    tap(web3.eth.sendSignedTransaction),
     pickTransactionHash,
   )
 
