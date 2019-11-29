@@ -41,6 +41,7 @@ export interface Business {
     blockNumber: number,
     transactionHash: string,
   ) => Promise<void>
+  readonly getEthereumTransactionReceipts: () => Promise<void>
 }
 
 interface DbEntry {
@@ -284,6 +285,50 @@ export const Business = ({
     )
   }
 
+  const getEthereumTransactionReceipts = async () => {
+    const logger = businessLogger.child({ method: 'getEthereumTransactionReceipts' })
+
+    logger.trace('Looking for transactions without confirmation')
+
+    const entries = await claimAnchorReceiptsCollection.find(
+      { transactionHash: { $ne: null }, blockHash: null },
+      { projection: { transactionHash: 1 } },
+    ).toArray()
+
+    if (!entries.length) {
+      logger.trace('No transactions without confirmation found')
+      return
+    }
+
+    const transactionHashes = entries.map(_ => _.transactionHash)
+
+    logger.debug({ transactionHashes }, 'These transactions have no known confirmations yet')
+
+    const receipts = await Promise.all(transactionHashes.map(ethereumRegistryContract.getTransactionReceipt))
+
+    const simplifiedReceipts = receipts.filter(identity).map(({ transactionHash, blockHash, blockNumber }) => ({
+      transactionHash,
+      blockHash,
+      blockNumber,
+    }))
+
+    if (!simplifiedReceipts.length) {
+      logger.trace({ transactionHashes }, 'No transactions receipts available yet for these transactions')
+      return
+    }
+
+    logger.debug({ simplifiedReceipts }, 'Got these transaction receipts')
+
+    await Promise.all(simplifiedReceipts.map(({ transactionHash, blockHash, blockNumber }) =>
+      claimAnchorReceiptsCollection.updateOne(
+        { transactionHash },
+        { $set: { blockHash, blockNumber } },
+      )
+    ))
+
+    logger.info({ simplifiedReceipts }, 'Transaction receipts set')
+  }
+
   return {
     createDbIndices,
     insertClaimIdFilePair,
@@ -295,5 +340,6 @@ export const Business = ({
     uploadNextClaimFileAnchorReceiptPair,
     writeNextDirectoryToEthereum,
     setRegistryIndex,
+    getEthereumTransactionReceipts,
   }
 }

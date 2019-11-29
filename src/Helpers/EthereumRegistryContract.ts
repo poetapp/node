@@ -1,6 +1,6 @@
 import { tap } from 'ramda'
 import Web3 from 'web3'
-import { SignedTransaction, TransactionConfig } from 'web3-core'
+import { SignedTransaction, TransactionConfig, TransactionReceipt } from 'web3-core'
 import { ContractSendMethod } from 'web3-eth-contract'
 
 import { asyncPipe } from 'Helpers/asyncPipe'
@@ -21,8 +21,10 @@ export interface EthereumRegistryContract {
   readonly getCid: (index: number) => Promise<string>
   readonly addCid: (cid: string) => Promise<string>
   readonly onCidAdded: any
+  readonly getTransactionReceipt: (hash: string) => Promise<TransactionReceipt>
 }
 
+const pickRawTransaction = (_: SignedTransaction) => _.rawTransaction
 const pickTransactionHash = (_: SignedTransaction) => _.transactionHash
 
 export const EthereumRegistryContract = ({
@@ -58,13 +60,19 @@ export const EthereumRegistryContract = ({
   const createSignAndSendTransaction = asyncPipe(
     createTransaction,
     account.signTransaction,
-    tap(web3.eth.sendSignedTransaction),
+    tap(asyncPipe(
+      pickRawTransaction,
+      web3.eth.sendSignedTransaction,
+    )),
     pickTransactionHash,
   )
 
   const addCid = (cid: string) => createSignAndSendTransaction(contract.methods.addCid(cid))
 
   const onCidAdded = contract.events.CidAdded
+
+  // TODO: probably no sense in passing this, just accept web3 as a parameter
+  const getTransactionReceipt = web3.eth.getTransactionReceipt
 
   return {
     accountAddress: account.address,
@@ -73,5 +81,6 @@ export const EthereumRegistryContract = ({
     getCid,
     addCid,
     onCidAdded,
+    getTransactionReceipt,
   }
 }
