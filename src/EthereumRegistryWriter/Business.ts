@@ -244,21 +244,6 @@ export const Business = ({
       { $set: { transactionHash } },
     )
 
-    // const addCidEvents = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
-    //
-    // TODO: Replace the use of `PromiEvent.on('receipt'` with a new Scheduler that periodically requests `web3.eth.getTransactionReceipt` for every entry in the database that has a `transactionHash` set but no `blockHash`.
-    // addCidEvents.onReceipt(async ({ transactionHash, blockHash, blockNumber }) => {
-    //   logger.info(
-    //     { claimId, claimAndAnchorReceiptDirectory, transactionHash, blockHash, blockNumber },
-    //     'Got transaction receipt',
-    //   )
-    //
-    //   const updateWriteOpResult = await claimAnchorReceiptsCollection.updateOne(
-    //     { transactionHash },
-    //     { $set: { blockHash, blockNumber } },
-    //   )
-    //
-    // })
     // TODO: if (!receipt.status) { logger.error({ receipt }) }
     // addCidEvents.onError(error => {
     //   logger.error(
