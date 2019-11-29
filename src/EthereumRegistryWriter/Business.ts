@@ -2,8 +2,10 @@ import { PoetBlockAnchor } from '@po.et/poet-js'
 import { DateTime } from 'luxon'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
-import { identity } from 'ramda'
+import { identity, map, filter, tap } from 'ramda'
+import { TransactionReceipt } from 'web3-core'
 
+import { asyncPipe } from 'Helpers/asyncPipe'
 import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
 import { IPFS } from 'Helpers/IPFS'
 import { childWithFileName } from 'Helpers/Logging'
@@ -289,29 +291,36 @@ export const Business = ({
 
     logger.debug({ transactionHashes }, 'These transactions have no known confirmations yet')
 
-    const receipts = await Promise.all(transactionHashes.map(ethereumRegistryContract.getTransactionReceipt))
-
-    const simplifiedReceipts = receipts.filter(identity).map(({ transactionHash, blockHash, blockNumber }) => ({
+    const receiptToSimplified = ({ transactionHash, blockHash, blockNumber }: TransactionReceipt) => ({
       transactionHash,
       blockHash,
       blockNumber,
-    }))
+    })
 
-    if (!simplifiedReceipts.length) {
+    const getReceipts = asyncPipe(
+      map(ethereumRegistryContract.getTransactionReceipt),
+      Promise.all.bind(Promise),
+      filter(identity),
+      map(receiptToSimplified),
+    ) as (transactionHashes: ReadonlyArray<string>) => Promise<ReadonlyArray<Partial<TransactionReceipt>>>
+
+    const receipts = await getReceipts(transactionHashes)
+
+    if (!receipts.length) {
       logger.trace({ transactionHashes }, 'No transactions receipts available yet for these transactions')
       return
     }
 
-    logger.debug({ simplifiedReceipts }, 'Got these transaction receipts')
+    logger.debug({ receipts }, 'Got these transaction receipts')
 
-    await Promise.all(simplifiedReceipts.map(({ transactionHash, blockHash, blockNumber }) =>
+    await Promise.all(receipts.map(({ transactionHash, blockHash, blockNumber }) =>
       claimAnchorReceiptsCollection.updateOne(
         { transactionHash },
         { $set: { blockHash, blockNumber } },
       )
     ))
 
-    logger.info({ simplifiedReceipts }, 'Transaction receipts set')
+    logger.info({ receipts }, 'Transaction receipts set')
   }
 
   return {
