@@ -2,7 +2,7 @@ import { PoetBlockAnchor } from '@po.et/poet-js'
 import { DateTime } from 'luxon'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
-import { identity, map, filter, tap } from 'ramda'
+import { identity, map, filter } from 'ramda'
 import { TransactionReceipt } from 'web3-core'
 
 import { asyncPipe } from 'Helpers/asyncPipe'
