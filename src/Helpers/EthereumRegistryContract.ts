@@ -71,7 +71,6 @@ export const EthereumRegistryContract = ({
 
   const onCidAdded = contract.events.CidAdded
 
-  // TODO: probably no sense in passing this, just accept web3 as a parameter
   const getTransactionReceipt = web3.eth.getTransactionReceipt
 
   return {
