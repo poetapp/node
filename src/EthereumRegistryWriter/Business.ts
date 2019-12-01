@@ -60,7 +60,6 @@ interface DbEntry {
     readonly transactionCreationDate?: Date
     readonly blockHash?: string
     readonly blockNumber?: number
-    readonly confirmationNumber?: number
   }
 }
 
