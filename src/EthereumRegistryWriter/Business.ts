@@ -223,7 +223,7 @@ export const Business = ({
             { 'registryAdditionTransactionReceipt.transactionCreationDate': {
               $lt: DateTime.utc().minus({ seconds: maximumUnconfirmedTransactionAgeInSeconds }).toJSDate(),
             } },
-            { blockNumber: null },
+            { 'registryAdditionTransactionReceipt.blockHash': null },
           ]},
         ],
       },
