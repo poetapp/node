@@ -55,10 +55,13 @@ interface DbEntry {
   readonly batchDirectoryConfirmed?: boolean
   readonly claimAndAnchorReceiptDirectory?: string
   readonly registryIndex?: number
-  readonly transactionHash?: string // TODO: group these under registryAdditionTransactionReceipt
-  readonly blockHash?: string
-  readonly blockNumber?: number
-  readonly confirmationNumber?: number
+  readonly registryAdditionTransactionReceipt?: {
+    readonly transactionHash?: string
+    readonly transactionCreationDate?: Date
+    readonly blockHash?: string
+    readonly blockNumber?: number
+    readonly confirmationNumber?: number
+  }
 }
 
 export const Business = ({
@@ -216,9 +219,9 @@ export const Business = ({
       {
         claimAndAnchorReceiptDirectory: { $ne: null },
         $or: [
-          { registryDate: null },
+          { 'registryAdditionTransactionReceipt.transactionCreationDate': null },
           { $and: [
-            { registryDate: {
+            { 'registryAdditionTransactionReceipt.transactionCreationDate': {
               $lt: DateTime.utc().minus({ seconds: maximumUnconfirmedTransactionAgeInSeconds }).toJSDate(),
             } },
             { blockNumber: null },
@@ -226,7 +229,7 @@ export const Business = ({
         ],
       },
       {
-        $set: { registryDate: new Date() },
+        $set: { 'registryAdditionTransactionReceipt.transactionCreationDate': new Date() },
       },
     )
     if (!entry.value)
@@ -245,7 +248,7 @@ export const Business = ({
 
     await claimAnchorReceiptsCollection.updateOne(
       { claimAndAnchorReceiptDirectory },
-      { $set: { transactionHash } },
+      { $set: { 'registryAdditionTransactionReceipt.transactionHash': transactionHash } },
     )
 
   }
@@ -273,8 +276,8 @@ export const Business = ({
     logger.trace('Looking for transactions without confirmation')
 
     const entries = await claimAnchorReceiptsCollection.find(
-      { transactionHash: { $ne: null }, blockHash: null },
-      { projection: { transactionHash: 1 } },
+      { 'registryAdditionTransactionReceipt.transactionHash': { $ne: null }, 'registryAdditionTransactionReceipt.blockHash': null },
+      { projection: { 'registryAdditionTransactionReceipt.transactionHash': 1 } },
     ).toArray()
 
     if (!entries.length) {
@@ -282,7 +285,7 @@ export const Business = ({
       return
     }
 
-    const transactionHashes = entries.map(_ => _.transactionHash)
+    const transactionHashes = entries.map(_ => _.registryAdditionTransactionReceipt.transactionHash)
 
     logger.debug({ transactionHashes }, 'These transactions have no known confirmations yet')
 
@@ -325,8 +328,8 @@ export const Business = ({
 
     await Promise.all(receipts.map(({ transactionHash, blockHash, blockNumber }) =>
       claimAnchorReceiptsCollection.updateOne(
-        { transactionHash },
-        { $set: { blockHash, blockNumber } },
+        { 'registryAdditionTransactionReceipt.transactionHash': transactionHash },
+        { $set: { 'registryAdditionTransactionReceipt.blockHash': blockHash, 'registryAdditionTransactionReceipt.blockNumber': blockNumber } },
       ),
     ))
 
