@@ -2,7 +2,7 @@ import { PoetBlockAnchor } from '@po.et/poet-js'
 import { DateTime } from 'luxon'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
-import { identity, map, filter } from 'ramda'
+import { identity, map, filter, tap, complement } from 'ramda'
 import { TransactionReceipt } from 'web3-core'
 
 import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
@@ -248,13 +248,6 @@ export const Business = ({
       { $set: { transactionHash } },
     )
 
-    // TODO: if (!receipt.status) { logger.error({ receipt }) }
-    // addCidEvents.onError(error => {
-    //   logger.error(
-    //     { claimId, claimAndAnchorReceiptDirectory, error },
-    //     'Error while registering (claim + anchor receipt) directory',
-    //   )
-    // })
   }
 
   const setRegistryIndex = async (
@@ -299,10 +292,25 @@ export const Business = ({
       blockNumber,
     })
 
+    const logErrors = (transactionReceipt: TransactionReceipt) => {
+      logger.error({ transactionReceipt }, 'Error in transaction receipt')
+    }
+
+    const transactionReceiptIsOk = (transactionReceipt: TransactionReceipt) => transactionReceipt.status
+
+    const filterAndLogErrors = asyncPipe(
+      tap(asyncPipe(
+        filter(complement(transactionReceiptIsOk)),
+        map(logErrors),
+      )),
+      filter(transactionReceiptIsOk),
+    )
+
     const getReceipts = asyncPipe(
       map(ethereumRegistryContract.getTransactionReceipt),
       Promise.all.bind(Promise),
       filter(identity),
+      filterAndLogErrors,
       map(receiptToSimplified),
     ) as (transactionHashes: ReadonlyArray<string>) => Promise<ReadonlyArray<Partial<TransactionReceipt>>>
 
