@@ -63,7 +63,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     },
     configuration: {
       maximumUnconfirmedTransactionAgeInSeconds: configuration.maximumUnconfirmedTransactionAgeInSeconds,
-    }
+    },
   })
   await business.createDbIndices()
 

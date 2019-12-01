@@ -3,8 +3,8 @@ import Web3 from 'web3'
 import { SignedTransaction, TransactionConfig, TransactionReceipt } from 'web3-core'
 import { ContractSendMethod } from 'web3-eth-contract'
 
-import { asyncPipe } from 'Helpers/asyncPipe'
 import { EthereumRegistryContractAbi } from './EthereumRegistryContractAbi'
+import { asyncPipe } from './asyncPipe'
 
 interface EthereumRegistryContractArguments {
   readonly rpcUrl?: string

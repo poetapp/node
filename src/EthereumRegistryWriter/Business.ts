@@ -5,10 +5,10 @@ import * as Pino from 'pino'
 import { identity, map, filter } from 'ramda'
 import { TransactionReceipt } from 'web3-core'
 
-import { asyncPipe } from 'Helpers/asyncPipe'
 import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
 import { IPFS } from 'Helpers/IPFS'
 import { childWithFileName } from 'Helpers/Logging'
+import { asyncPipe } from 'Helpers/asyncPipe'
 import { ClaimIPFSHashPair } from 'Interfaces'
 
 export interface Dependencies {
@@ -218,7 +218,9 @@ export const Business = ({
         $or: [
           { registryDate: null },
           { $and: [
-            { registryDate: { $lt: DateTime.utc().minus({ seconds: maximumUnconfirmedTransactionAgeInSeconds }).toJSDate() } },
+            { registryDate: {
+              $lt: DateTime.utc().minus({ seconds: maximumUnconfirmedTransactionAgeInSeconds }).toJSDate(),
+            } },
             { blockNumber: null },
           ]},
         ],
@@ -317,7 +319,7 @@ export const Business = ({
       claimAnchorReceiptsCollection.updateOne(
         { transactionHash },
         { $set: { blockHash, blockNumber } },
-      )
+      ),
     ))
 
     logger.info({ receipts }, 'Transaction receipts set')
