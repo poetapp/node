@@ -59,7 +59,7 @@ interface DbEntry {
     readonly transactionHash?: string
     readonly transactionCreationDate?: Date
     readonly blockHash?: string
-    readonly blockNumber?: number
+    readonly blockNumber?: number, // comma due to some tslint randomness, will move to eslint in the future
   }
 }
 
@@ -275,7 +275,10 @@ export const Business = ({
     logger.trace('Looking for transactions without confirmation')
 
     const entries = await claimAnchorReceiptsCollection.find(
-      { 'registryAdditionTransactionReceipt.transactionHash': { $ne: null }, 'registryAdditionTransactionReceipt.blockHash': null },
+      {
+        'registryAdditionTransactionReceipt.transactionHash': { $ne: null },
+        'registryAdditionTransactionReceipt.blockHash': null,
+      },
       { projection: { 'registryAdditionTransactionReceipt.transactionHash': 1 } },
     ).toArray()
 
@@ -328,7 +331,10 @@ export const Business = ({
     await Promise.all(receipts.map(({ transactionHash, blockHash, blockNumber }) =>
       claimAnchorReceiptsCollection.updateOne(
         { 'registryAdditionTransactionReceipt.transactionHash': transactionHash },
-        { $set: { 'registryAdditionTransactionReceipt.blockHash': blockHash, 'registryAdditionTransactionReceipt.blockNumber': blockNumber } },
+        { $set: {
+          'registryAdditionTransactionReceipt.blockHash': blockHash,
+          'registryAdditionTransactionReceipt.blockNumber': blockNumber,
+        } },
       ),
     ))
 
