@@ -265,14 +265,14 @@ export const Business = ({
     blockHash: string,
     blockNumber: number,
   ) => {
-    const logger = businessLogger.child({ method: 'confirmClaimAndAnchorReceiptDirectory' })
+    const logger = businessLogger.child({ method: 'setRegistryIndex' })
     await claimAnchorReceiptsCollection.updateOne(
       { claimAndAnchorReceiptDirectory },
       { $set: { registryIndex, onCidAdded: { transactionHash, blockHash, blockNumber } } },
     )
     logger.info(
       { claimAndAnchorReceiptDirectory, registryIndex, blockNumber, transactionHash },
-      'Confirmed registry index for (claim + anchor receipt) directory',
+      'Registry index for (claim + anchor receipt) directory set',
     )
   }
 
