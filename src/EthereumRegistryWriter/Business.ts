@@ -40,8 +40,9 @@ export interface Business {
   readonly setRegistryIndex: (
     confirmClaimAndAnchorReceiptDirectory: string,
     registryIndex: number,
-    blockNumber: number,
     transactionHash: string,
+    blockHash: string,
+    blockNumber: number,
   ) => Promise<void>
   readonly getEthereumTransactionReceipts: () => Promise<void>
 }
@@ -58,6 +59,11 @@ interface DbEntry {
   readonly registryAdditionTransactionReceipt?: {
     readonly transactionHash?: string
     readonly transactionCreationDate?: Date
+    readonly blockHash?: string
+    readonly blockNumber?: number, // comma due to some tslint randomness, will move to eslint in the future
+  }
+  readonly onCidAdded?: {
+    readonly transactionHash?: string
     readonly blockHash?: string
     readonly blockNumber?: number, // comma due to some tslint randomness, will move to eslint in the future
   }
@@ -255,13 +261,14 @@ export const Business = ({
   const setRegistryIndex = async (
     claimAndAnchorReceiptDirectory: string,
     registryIndex: number,
-    blockNumber: number,
     transactionHash: string,
+    blockHash: string,
+    blockNumber: number,
   ) => {
     const logger = businessLogger.child({ method: 'confirmClaimAndAnchorReceiptDirectory' })
     await claimAnchorReceiptsCollection.updateOne(
       { claimAndAnchorReceiptDirectory },
-      { $set: { registryIndex, blockNumber, transactionHash } },
+      { $set: { registryIndex, onCidAdded: { transactionHash, blockHash, blockNumber } } },
     )
     logger.info(
       { claimAndAnchorReceiptDirectory, registryIndex, blockNumber, transactionHash },

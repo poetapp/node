@@ -137,14 +137,15 @@ export const Router = ({
   const onCidAdded = async (event: any) => {
     const logger = routerLogger.child({ method: 'onCidAdded' })
 
-    logger.trace({ event }, 'Downloaded (IPFS Hash, Claim) pairs')
+    logger.trace({ event }, 'onCidAdded')
 
     try {
       await business.setRegistryIndex(
         event.returnValues.cid,
         event.returnValues.index,
-        event.blockNumber,
         event.transactionHash,
+        event.blockHash,
+        event.blockNumber,
       )
     } catch (error) {
       logger.error({ error, event })
