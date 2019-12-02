@@ -50,6 +50,8 @@ export interface Configuration extends LoggingConfiguration, BitcoinRPCConfigura
   readonly ethereumRegistryPrivateKey: string
   readonly ethereumRegistryUploadAnchorReceiptIntervalInSeconds: number
   readonly ethereumRegistryRegisterNextDirectoryIntervalInSeconds: number
+  readonly ethereumGasPrice: number
+  readonly ethereumMaximumUnconfirmedTransactionAgeInSeconds: number
 }
 
 export interface LoggingConfiguration {
@@ -141,6 +143,8 @@ export const DefaultConfiguration: Configuration = {
   ethereumRegistryPrivateKey: '',
   ethereumRegistryUploadAnchorReceiptIntervalInSeconds: 60,
   ethereumRegistryRegisterNextDirectoryIntervalInSeconds: 60,
+  ethereumGasPrice: 1e9,
+  ethereumMaximumUnconfirmedTransactionAgeInSeconds: 5 * 60 * 1000,
 
   exchangeAnchorNextHashRequest: 'ANCHOR_NEXT_HASH_REQUEST',
   exchangeBatchReaderReadNextDirectoryRequest: 'BATCH_READER::READ_NEXT_DIRECTORY_REQUEST',

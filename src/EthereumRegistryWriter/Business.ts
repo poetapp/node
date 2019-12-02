@@ -1,11 +1,14 @@
 import { PoetBlockAnchor } from '@po.et/poet-js'
+import { DateTime } from 'luxon'
 import { Collection, Db } from 'mongodb'
 import * as Pino from 'pino'
-import { identity } from 'ramda'
+import { identity, map, filter, tap, complement } from 'ramda'
+import { TransactionReceipt } from 'web3-core'
 
 import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
 import { IPFS } from 'Helpers/IPFS'
 import { childWithFileName } from 'Helpers/Logging'
+import { asyncPipe } from 'Helpers/asyncPipe'
 import { ClaimIPFSHashPair } from 'Interfaces'
 
 export interface Dependencies {
@@ -15,8 +18,13 @@ export interface Dependencies {
   readonly ethereumRegistryContract: EthereumRegistryContract
 }
 
+export interface Configuration {
+  readonly maximumUnconfirmedTransactionAgeInSeconds: number
+}
+
 export interface Arguments {
   readonly dependencies: Dependencies
+  readonly configuration: Configuration
 }
 
 export interface Business {
@@ -28,7 +36,15 @@ export interface Business {
   readonly confirmClaimFiles: (claimIPFSHashPairs: ReadonlyArray<ClaimIPFSHashPair>) => Promise<void>
   readonly uploadNextAnchorReceipt: () => Promise<void>
   readonly uploadNextClaimFileAnchorReceiptPair: () => Promise<void>
-  readonly registerNextDirectory: () => Promise<void>
+  readonly writeNextDirectoryToEthereum: () => Promise<void>
+  readonly setRegistryIndex: (
+    confirmClaimAndAnchorReceiptDirectory: string,
+    registryIndex: number,
+    transactionHash: string,
+    blockHash: string,
+    blockNumber: number,
+  ) => Promise<void>
+  readonly getEthereumTransactionReceipts: () => Promise<void>
 }
 
 interface DbEntry {
@@ -40,6 +56,17 @@ interface DbEntry {
   readonly batchDirectoryConfirmed?: boolean
   readonly claimAndAnchorReceiptDirectory?: string
   readonly registryIndex?: number
+  readonly registryAdditionTransactionReceipt?: {
+    readonly transactionHash?: string
+    readonly transactionCreationDate?: Date
+    readonly blockHash?: string
+    readonly blockNumber?: number, // comma due to some tslint randomness, will move to eslint in the future
+  }
+  readonly onCidAdded?: {
+    readonly transactionHash?: string
+    readonly blockHash?: string
+    readonly blockNumber?: number, // comma due to some tslint randomness, will move to eslint in the future
+  }
 }
 
 export const Business = ({
@@ -48,6 +75,9 @@ export const Business = ({
     db,
     ipfs,
     ethereumRegistryContract,
+  },
+  configuration: {
+    maximumUnconfirmedTransactionAgeInSeconds,
   },
 }: Arguments): Business => {
   const businessLogger: Pino.Logger = childWithFileName(logger, __filename)
@@ -187,26 +217,135 @@ export const Business = ({
     await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { claimAndAnchorReceiptDirectory } })
   }
 
-  const registerNextDirectory = async () => {
+  const writeNextDirectoryToEthereum = async () => {
     const logger = businessLogger.child({ method: 'registerNextDirectory' })
-    const entry = await claimAnchorReceiptsCollection.findOne({
-      claimAndAnchorReceiptDirectory: { $ne: null },
-      registryIndex: null,
-    })
-    if (!entry)
+
+    const entry = await claimAnchorReceiptsCollection.findOneAndUpdate(
+      {
+        claimAndAnchorReceiptDirectory: { $ne: null },
+        $or: [
+          { 'registryAdditionTransactionReceipt.transactionCreationDate': null },
+          { $and: [
+            { 'registryAdditionTransactionReceipt.transactionCreationDate': {
+              $lt: DateTime.utc().minus({ seconds: maximumUnconfirmedTransactionAgeInSeconds }).toJSDate(),
+            } },
+            { 'registryAdditionTransactionReceipt.blockHash': null },
+          ]},
+        ],
+      },
+      {
+        $set: { 'registryAdditionTransactionReceipt.transactionCreationDate': new Date() },
+      },
+    )
+    if (!entry.value)
       return
-    const { claimId, claimAndAnchorReceiptDirectory } = entry
-    const cidCount = await ethereumRegistryContract.getCidCount()
+    const { claimId, claimAndAnchorReceiptDirectory } = entry.value
     logger.debug(
-      { claimId, claimAndAnchorReceiptDirectory, cidCount },
-      'Registering next (claim + anchor receipt) directory to Ethereum',
+      { claimId, claimAndAnchorReceiptDirectory },
+      'Adding (claim + anchor receipt) directory to Ethereum',
     )
-    await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
+    const transactionHash = await ethereumRegistryContract.addCid(claimAndAnchorReceiptDirectory)
+
     logger.info(
-      { claimId, claimAndAnchorReceiptDirectory, cidCount },
-      '(claim + anchor receipt) directory added to Ethereum',
+      { claimId, claimAndAnchorReceiptDirectory, transactionHash },
+      '(claim + anchor receipt) transaction sent',
     )
-    await claimAnchorReceiptsCollection.updateOne({ claimId }, { $set: { registryIndex: cidCount } })
+
+    await claimAnchorReceiptsCollection.updateOne(
+      { claimAndAnchorReceiptDirectory },
+      { $set: { 'registryAdditionTransactionReceipt.transactionHash': transactionHash } },
+    )
+
+  }
+
+  const setRegistryIndex = async (
+    claimAndAnchorReceiptDirectory: string,
+    registryIndex: number,
+    transactionHash: string,
+    blockHash: string,
+    blockNumber: number,
+  ) => {
+    const logger = businessLogger.child({ method: 'setRegistryIndex' })
+    await claimAnchorReceiptsCollection.updateOne(
+      { claimAndAnchorReceiptDirectory },
+      { $set: { registryIndex, onCidAdded: { transactionHash, blockHash, blockNumber } } },
+    )
+    logger.info(
+      { claimAndAnchorReceiptDirectory, registryIndex, blockNumber, transactionHash },
+      'Registry index for (claim + anchor receipt) directory set',
+    )
+  }
+
+  const getEthereumTransactionReceipts = async () => {
+    const logger = businessLogger.child({ method: 'getEthereumTransactionReceipts' })
+
+    logger.trace('Looking for transactions without confirmation')
+
+    const entries = await claimAnchorReceiptsCollection.find(
+      {
+        'registryAdditionTransactionReceipt.transactionHash': { $ne: null },
+        'registryAdditionTransactionReceipt.blockHash': null,
+      },
+      { projection: { 'registryAdditionTransactionReceipt.transactionHash': 1 } },
+    ).toArray()
+
+    if (!entries.length) {
+      logger.trace('No transactions without confirmation found')
+      return
+    }
+
+    const transactionHashes = entries.map(_ => _.registryAdditionTransactionReceipt.transactionHash)
+
+    logger.debug({ transactionHashes }, 'These transactions have no known confirmations yet')
+
+    const receiptToSimplified = ({ transactionHash, blockHash, blockNumber }: TransactionReceipt) => ({
+      transactionHash,
+      blockHash,
+      blockNumber,
+    })
+
+    const logErrors = (transactionReceipt: TransactionReceipt) => {
+      logger.error({ transactionReceipt }, 'Error in transaction receipt')
+    }
+
+    const transactionReceiptIsOk = (transactionReceipt: TransactionReceipt) => transactionReceipt.status
+
+    const filterAndLogErrors = asyncPipe(
+      tap(asyncPipe(
+        filter(complement(transactionReceiptIsOk)),
+        map(logErrors),
+      )),
+      filter(transactionReceiptIsOk),
+    )
+
+    const getReceipts = asyncPipe(
+      map(ethereumRegistryContract.getTransactionReceipt),
+      Promise.all.bind(Promise),
+      filter(identity),
+      filterAndLogErrors,
+      map(receiptToSimplified),
+    ) as (transactionHashes: ReadonlyArray<string>) => Promise<ReadonlyArray<Partial<TransactionReceipt>>>
+
+    const receipts = await getReceipts(transactionHashes)
+
+    if (!receipts.length) {
+      logger.trace({ transactionHashes }, 'No transactions receipts available yet for these transactions')
+      return
+    }
+
+    logger.debug({ receipts }, 'Got these transaction receipts')
+
+    await Promise.all(receipts.map(({ transactionHash, blockHash, blockNumber }) =>
+      claimAnchorReceiptsCollection.updateOne(
+        { 'registryAdditionTransactionReceipt.transactionHash': transactionHash },
+        { $set: {
+          'registryAdditionTransactionReceipt.blockHash': blockHash,
+          'registryAdditionTransactionReceipt.blockNumber': blockNumber,
+        } },
+      ),
+    ))
+
+    logger.info({ receipts }, 'Transaction receipts set')
   }
 
   return {
@@ -218,6 +357,8 @@ export const Business = ({
     confirmClaimFiles,
     uploadNextAnchorReceipt,
     uploadNextClaimFileAnchorReceiptPair,
-    registerNextDirectory,
+    writeNextDirectoryToEthereum,
+    setRegistryIndex,
+    getEthereumTransactionReceipts,
   }
 }

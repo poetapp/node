@@ -8,6 +8,23 @@ export const EthereumRegistryContractAbi: AbiItem[] = [
     type: 'constructor',
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        name: 'cid',
+        type: 'string',
+      },
+      {
+        indexed: false,
+        name: 'index',
+        type: 'uint256',
+      },
+    ],
+    name: 'CidAdded',
+    type: 'event',
+  },
+  {
     constant: true,
     inputs: [],
     name: '_owner',

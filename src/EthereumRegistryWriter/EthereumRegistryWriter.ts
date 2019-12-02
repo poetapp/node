@@ -24,6 +24,8 @@ export interface EthereumRegistryWriterConfiguration extends LoggingConfiguratio
   readonly privateKey: string
   readonly uploadAnchorReceiptIntervalInSeconds: number
   readonly registerNextDirectoryIntervalInSeconds: number
+  readonly gasPrice?: number
+  readonly maximumUnconfirmedTransactionAgeInSeconds: number
 }
 
 type stop = () => Promise<void>
@@ -47,7 +49,10 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     chainId: configuration.chainId,
     contractAddress: configuration.contractAddress,
     privateKey: configuration.privateKey,
+    gasPrice: configuration.gasPrice,
   })
+
+  logger.info({ ethereumAccountAddress: ethereumRegistryContract.accountAddress })
 
   const business = Business({
     dependencies: {
@@ -55,6 +60,9 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
       db,
       ipfs,
       ethereumRegistryContract,
+    },
+    configuration: {
+      maximumUnconfirmedTransactionAgeInSeconds: configuration.maximumUnconfirmedTransactionAgeInSeconds,
     },
   })
   await business.createDbIndices()
@@ -64,6 +72,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
       logger,
       messaging,
       business,
+      ethereumRegistryContract,
     },
     exchange: configuration.exchanges,
   })
@@ -92,6 +101,9 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     logger.debug('Closing database connection...')
     await mongoClient.close()
     logger.info('Database connection closed')
+    logger.debug('Closing WS connection to geth...')
+    ethereumRegistryContract.close()
+    logger.info('WS connection to geth closed')
     logger.info('Stopped EthereumRegistryWriter...')
   }
 

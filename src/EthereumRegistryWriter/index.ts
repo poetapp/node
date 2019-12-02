@@ -35,8 +35,10 @@ EthereumRegistryWriter({
   chainId: configuration.ethereumChainId,
   contractAddress: configuration.ethereumRegistryContractAddress,
   privateKey: configuration.ethereumRegistryPrivateKey,
+  gasPrice: configuration.ethereumGasPrice,
   uploadAnchorReceiptIntervalInSeconds: configuration.ethereumRegistryUploadAnchorReceiptIntervalInSeconds,
   registerNextDirectoryIntervalInSeconds: configuration.ethereumRegistryRegisterNextDirectoryIntervalInSeconds,
+  maximumUnconfirmedTransactionAgeInSeconds: configuration.ethereumMaximumUnconfirmedTransactionAgeInSeconds,
 })
   .then(stop => process.on('SIGINT', stop))
   .catch(catchStartupError('EthereumRegistryWriter', logger))

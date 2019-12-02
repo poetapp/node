@@ -1,5 +1,6 @@
 import Pino from 'pino'
 
+import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
 import { childWithFileName } from 'Helpers/Logging'
 import { ClaimIPFSHashPair } from 'Interfaces'
 import { BlockDownloaded } from 'Messaging/Messages'
@@ -12,6 +13,7 @@ export interface Dependencies {
   readonly logger: Pino.Logger
   readonly messaging: Messaging
   readonly business: Business
+  readonly ethereumRegistryContract: EthereumRegistryContract
 }
 
 export interface Arguments {
@@ -28,6 +30,7 @@ export const Router = ({
     logger,
     messaging,
     business,
+    ethereumRegistryContract,
   },
   exchange,
 }: Arguments): Router => {
@@ -39,6 +42,25 @@ export const Router = ({
     await messaging.consumeBlockDownloaded(onPoetBlockAnchorsDownloaded)
     await messaging.consumeClaimsDownloaded(onClaimsDownloaded)
     await messaging.consume(exchange.batchRead, onBatchRead)
+
+    const handleEventError = (error: any, event: any) => {
+      if (error)
+        logger.error({ error, event })
+    }
+
+    const onCidAddedPromievent = await ethereumRegistryContract.onCidAdded({}, handleEventError)
+
+    onCidAddedPromievent
+      .on('connected', (subscriptionId: string) => {
+        logger.info({ subscriptionId }, 'onCidAdded connected')
+      })
+      .on('data', onCidAdded)
+      .on('changed', (event: any) => {
+        logger.warn({ event }, 'onCidAdded changed')
+      })
+      .on('error', (error: any) => {
+        logger.error({ error }, 'onCidAdded error')
+      })
   }
 
   const onClaimIPFSHash = async (message: any) => {
@@ -109,6 +131,24 @@ export const Router = ({
       await business.confirmClaimFiles(claimIPFSHashPairs)
     } catch (error) {
       logger.error({ error, claimIPFSHashPairs })
+    }
+  }
+
+  const onCidAdded = async (event: any) => {
+    const logger = routerLogger.child({ method: 'onCidAdded' })
+
+    logger.trace({ event }, 'onCidAdded')
+
+    try {
+      await business.setRegistryIndex(
+        event.returnValues.cid,
+        event.returnValues.index,
+        event.transactionHash,
+        event.blockHash,
+        event.blockNumber,
+      )
+    } catch (error) {
+      logger.error({ error, event })
     }
   }
 

@@ -66,7 +66,7 @@ export const Scheduler = ({
   const registerNextDirectory = async () => {
     const methodLogger = logger.child({ method: 'registerNextDirectory' })
     try {
-      await business.registerNextDirectory()
+      await business.writeNextDirectoryToEthereum()
     } catch (error) {
       methodLogger.error({ error }, 'Uncaught exception')
     }
@@ -77,11 +77,26 @@ export const Scheduler = ({
     secondsToMiliseconds(configuration.registerNextDirectoryIntervalInSeconds),
   )
 
+  const getEthereumTransactionReceipts = async () => {
+    const methodLogger = logger.child({ method: 'getNextEthereumTransactionReceipt' })
+    try {
+      await business.getEthereumTransactionReceipts()
+    } catch (error) {
+      methodLogger.error({ error }, 'Uncaught exception')
+    }
+  }
+
+  const getEthereumTransactionReceiptsInterval = new Interval(
+    getEthereumTransactionReceipts,
+    secondsToMiliseconds(10),
+  )
+
   const start = async () => {
     logger.debug({ configuration }, 'EthereumRegistryWriter Scheduler Starting')
     await uploadNextAnchorReceiptInterval.start()
     await uploadNextClaimFileAnchorReceiptPairInterval.start()
     await registerNextDirectoryInterval.start()
+    await getEthereumTransactionReceiptsInterval.start()
     logger.info({ configuration }, 'EthereumRegistryWriter Scheduler Started')
   }
 
@@ -90,6 +105,7 @@ export const Scheduler = ({
     await uploadNextAnchorReceiptInterval.stop()
     await uploadNextClaimFileAnchorReceiptPairInterval.stop()
     await registerNextDirectoryInterval.stop()
+    await getEthereumTransactionReceiptsInterval.stop()
     logger.info('EthereumRegistryWriter Scheduler Stopped')
   }
 

@@ -1,3 +1,5 @@
+// Note: we should be able to replace our asyncPipe with fp-ts. See https://github.com/gcanti/fp-ts/issues/477.
+
 export function asyncPipe<V0 extends any, T1>(fn1: (x?: V0) => T1 | Promise<T1>): (x?: V0) => Promise<T1>
 
 export function asyncPipe<V0 extends any, T1, T2>(
