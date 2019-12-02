@@ -48,7 +48,7 @@ export const Router = ({
         logger.error({ error, event })
     }
 
-    const onCidAddedPromievent = await ethereumRegistryContract.onCidAdded({ fromBlock: 0 }, handleEventError)
+    const onCidAddedPromievent = await ethereumRegistryContract.onCidAdded({}, handleEventError)
 
     onCidAddedPromievent
       .on('connected', (subscriptionId: string) => {
