@@ -90,7 +90,10 @@ export const Business = ({
     await claimAnchorReceiptsCollection.createIndex(
       { claimFileConfirmed: 1, batchDirectoryConfirmed: 1, anchorReceiptFile: 1 },
     )
-    await claimAnchorReceiptsCollection.createIndex({ claimAndAnchorReceiptDirectory: 1 }, { unique: true, sparse: true })
+    await claimAnchorReceiptsCollection.createIndex(
+      { claimAndAnchorReceiptDirectory: 1 },
+      { unique: true, sparse: true },
+    )
   }
 
   const insertClaimIdFilePair = async (claimId: string, claimFile: string): Promise<void> => {
