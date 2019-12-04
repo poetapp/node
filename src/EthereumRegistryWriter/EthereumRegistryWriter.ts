@@ -78,7 +78,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
     configuration: {
       apiPort: configuration.apiPort,
       exchange: configuration.exchanges,
-    }
+    },
   })
   await router.start()
 

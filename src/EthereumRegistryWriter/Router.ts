@@ -1,4 +1,4 @@
-import { Server } from "http";
+import { Server } from 'http'
 import Koa from 'koa'
 import KoaRouter from 'koa-router'
 import Pino from 'pino'
