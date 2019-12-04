@@ -14,6 +14,7 @@ import { Router } from './Router'
 import { Scheduler } from './Scheduler'
 
 export interface EthereumRegistryWriterConfiguration extends LoggingConfiguration {
+  readonly apiPort: number
   readonly mongodbUrl: string
   readonly rabbitmqUrl: string
   readonly exchanges: ExchangeConfiguration
@@ -74,7 +75,10 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
       business,
       ethereumRegistryContract,
     },
-    exchange: configuration.exchanges,
+    configuration: {
+      apiPort: configuration.apiPort,
+      exchange: configuration.exchanges,
+    },
   })
   await router.start()
 
@@ -95,6 +99,7 @@ export const EthereumRegistryWriter = async (configuration: EthereumRegistryWrit
   return async () => {
     logger.info('Stopping EthereumRegistryWriter...')
     await scheduler.stop()
+    await router.stop()
     logger.debug('Stopping EthereumRegistryWriter Messaging...')
     await messaging.stop()
     logger.info('EthereumRegistryWriter Messaging Stopped')

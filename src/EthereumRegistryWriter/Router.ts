@@ -1,4 +1,8 @@
+import { Server } from 'http'
+import Koa from 'koa'
+import KoaRouter from 'koa-router'
 import Pino from 'pino'
+import { promisify } from 'util'
 
 import { EthereumRegistryContract } from 'Helpers/EthereumRegistryContract'
 import { childWithFileName } from 'Helpers/Logging'
@@ -9,6 +13,11 @@ import { Messaging } from 'Messaging/Messaging'
 import { Business } from './Business'
 import { ExchangeConfiguration } from './ExchangeConfiguration'
 
+export interface Configuration {
+  readonly apiPort: number
+  readonly exchange: ExchangeConfiguration
+}
+
 export interface Dependencies {
   readonly logger: Pino.Logger
   readonly messaging: Messaging
@@ -18,11 +27,12 @@ export interface Dependencies {
 
 export interface Arguments {
   readonly dependencies: Dependencies
-  readonly exchange: ExchangeConfiguration
+  readonly configuration: Configuration
 }
 
 export interface Router {
   readonly start: () => Promise<void>
+  readonly stop: () => Promise<void>
 }
 
 export const Router = ({
@@ -32,9 +42,15 @@ export const Router = ({
     business,
     ethereumRegistryContract,
   },
-  exchange,
+  configuration: {
+    apiPort,
+    exchange,
+  },
 }: Arguments): Router => {
   const routerLogger = childWithFileName(logger, __filename)
+  const koa = new Koa()
+  const koaRouter = new KoaRouter()
+  let server: Server
 
   const start = async () => {
     await messaging.consume(exchange.claimIpfsHash, onClaimIPFSHash)
@@ -61,6 +77,15 @@ export const Router = ({
       .on('error', (error: any) => {
         logger.error({ error }, 'onCidAdded error')
       })
+
+    server = koa.listen(apiPort, '0.0.0.0')
+  }
+
+  const stop = async () => {
+    routerLogger.debug('Stopping API Router...')
+    server.unref()
+    await promisify(server.close.bind(server))
+    routerLogger.info('API Router stopped')
   }
 
   const onClaimIPFSHash = async (message: any) => {
@@ -152,7 +177,16 @@ export const Router = ({
     }
   }
 
+  const getHealth = async (context: KoaRouter.IRouterContext, next: () => Promise<any>) => {
+    context.body = await business.getHealth()
+  }
+
+  koaRouter.get('/health', getHealth)
+  koa.use(koaRouter.allowedMethods())
+  koa.use(koaRouter.routes())
+
   return {
     start,
+    stop,
   }
 }
