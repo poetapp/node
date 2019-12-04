@@ -19,6 +19,7 @@ const logger: Pino.Logger = Pino({
 EthereumRegistryWriter({
   loggingLevel: configuration.loggingLevel,
   loggingPretty: configuration.loggingPretty,
+  apiPort: configuration.ethereumRegistryWriterApiPort,
   mongodbUrl: configuration.mongodbUrl,
   rabbitmqUrl: configuration.rabbitmqUrl,
   ipfs: {

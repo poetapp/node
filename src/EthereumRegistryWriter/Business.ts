@@ -27,7 +27,12 @@ export interface Arguments {
   readonly configuration: Configuration
 }
 
+export interface Health {
+  readonly healthy: boolean
+}
+
 export interface Business {
+  readonly getHealth: () => Promise<Health>
   readonly createDbIndices: () => Promise<void>
   readonly insertClaimIdFilePair: (claimId: string, claimFile: string) => Promise<void>
   readonly setBatchDirectory: (claimFiles: ReadonlyArray<string>, ipfsDirectoryHash: string) => Promise<void>
@@ -82,6 +87,10 @@ export const Business = ({
 }: Arguments): Business => {
   const businessLogger: Pino.Logger = childWithFileName(logger, __filename)
   const claimAnchorReceiptsCollection: Collection<DbEntry> = db.collection('claimAnchorReceipts')
+
+  const getHealth = async () => ({
+    healthy: true,
+  })
 
   const createDbIndices = async () => {
     await claimAnchorReceiptsCollection.createIndex({ claimId: 1 }, { unique: true })
@@ -351,6 +360,7 @@ export const Business = ({
   }
 
   return {
+    getHealth,
     createDbIndices,
     insertClaimIdFilePair,
     setBatchDirectory,
